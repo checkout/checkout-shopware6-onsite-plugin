@@ -1,0 +1,18 @@
+{
+  "name": "checkoutcom/shopware",
+  "description": "Checkout.com plugin for Shopware",
+  "type": "shopware-platform-plugin",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "CheckoutcomShopware\\": "src/"
+    }
+  },
+  "extra": {
+    "shopware-plugin-class": "CheckoutcomShopware\\CheckoutcomShopware",
+    "label": {
+      "de-DE": "Skeleton plugin",
+      "en-GB": "Skeleton plugin"
+    }
+  }
+}
