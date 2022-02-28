@@ -1,0 +1,17 @@
+{
+  "checkout-payments": {
+    "config": {
+      "api": {
+        "testButton": "Test API Keys",
+        "apiLinkButton": "Get your API keys from the Checkout Dashboard",
+        "testApiKeys": {
+          "title": "Checkout",
+          "secretKey": "Secret key",
+          "publicKey": "Public key",
+          "isValid": "is valid",
+          "isInvalid": "is invalid"
+        }
+      }
+    }
+  }
+}
