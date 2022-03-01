@@ -1,18 +1,65 @@
 {
   "name": "checkoutcom/shopware",
   "description": "Checkout.com plugin for Shopware",
+  "version": "1.0.0",
   "type": "shopware-platform-plugin",
   "license": "MIT",
+  "keywords": [
+    "checkout.com",
+    "shopware",
+    "payment",
+    "gateway",
+    "checkout",
+    "checkoutcom",
+    "GW3",
+    "CKO"
+  ],
+  "extra": {
+    "shopware-plugin-class": "CheckoutcomShopware\\CheckoutcomShopware",
+    "copyright": "(c) by Checkout.com",
+    "label": {
+      "de-DE": "Checkout.com Zahlungen",
+      "en-GB": "Checkout.com Payments"
+    }
+  },
+  "authors": [
+    {
+      "name": "Shape & Shift",
+      "homepage": "https://shapeandshift.dev",
+      "email": "integrations@checkout.com"
+    }
+  ],
   "autoload": {
     "psr-4": {
       "CheckoutcomShopware\\": "src/"
     }
   },
-  "extra": {
-    "shopware-plugin-class": "CheckoutcomShopware\\CheckoutcomShopware",
-    "label": {
-      "de-DE": "Skeleton plugin",
-      "en-GB": "Skeleton plugin"
+  "autoload-dev": {
+    "psr-4": {
+      "CheckoutcomShopware\\Tests\\": "tests/PHPUnit/",
+      "CheckoutcomShopware\\PHPStan\\": "tests/PHPStan/"
     }
+  },
+  "require": {
+    "php": ">= 7.4"
+  },
+  "require-dev": {
+    "shopware/core": "*",
+    "shopware/administration": "*",
+    "shopware/storefront": "*",
+    "phpunit/phpunit": "^9.5",
+    "phpstan/phpstan": "^0.12.82",
+    "friendsofphp/php-cs-fixer": "^2.18",
+    "phpcompatibility/php-compatibility": "^9.3",
+    "squizlabs/php_codesniffer": "^3.6",
+    "infection/infection": "^0.25.4"
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "[ ! -f vendor/bin/phpcs ] || vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility"
+    ],
+    "post-update-cmd": [
+      "[ ! -f vendor/bin/phpcs ] || vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility"
+    ]
   }
 }
