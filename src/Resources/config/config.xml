@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
+
+    <card>
+        <title>API Keys</title>
+        <title lang="de-DE">API Keys</title>
+
+        <input-field type="password">
+            <name>liveApiSecretKey</name>
+            <copyable>true</copyable>
+            <label>Secret Key</label>
+            <label lang="de-DE">Secret Key</label>
+        </input-field>
+        <input-field type="password">
+            <name>sandboxApiSecretKey</name>
+            <copyable>true</copyable>
+            <label>Sandbox Secret Key</label>
+            <label lang="de-DE">Sandbox Secret Key</label>
+        </input-field>
+        <input-field type="bool">
+            <name>sandboxMode</name>
+            <label>Sandbox Mode</label>
+            <label lang="de-DE">Sandbox Modus</label>
+            <defaultValue>true</defaultValue>
+            <helpText>Enables the test mode with the Checkout.com Sandbox payment page.</helpText>
+            <helpText lang="de-DE">Aktiviert den Testmodus mit der Checkout.com Sandbox Zahlungsseite.</helpText>
+        </input-field>
+    </card>
+</config>
