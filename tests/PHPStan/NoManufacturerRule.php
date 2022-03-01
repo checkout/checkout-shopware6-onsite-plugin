@@ -72,11 +72,11 @@ final class NoManufacturerRule implements \PHPStan\Rules\Rule
     }
 
     /**
-     * @param $manufacturer
+     * @param string $manufacturer
      * @param Node $node
      * @return bool
      */
-    private function hasNodeManufacturer($manufacturer, Node $node)
+    private function hasNodeManufacturer(string $manufacturer, Node $node)
     {
         if ($node->getDocComment() !== null) {
 
@@ -99,11 +99,11 @@ final class NoManufacturerRule implements \PHPStan\Rules\Rule
     }
 
     /**
-     * @param $search
-     * @param $text
+     * @param string $search
+     * @param string $text
      * @return bool
      */
-    private function stringContains($search, $text)
+    private function stringContains(string $search, string $text)
     {
         $pos = strpos($text, $search);
 
