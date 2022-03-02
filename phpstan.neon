@@ -6,3 +6,4 @@ parameters:
     	- %rootDir%/../../../src
     excludes_analyse:
         - %rootDir%/../../../vendor/*
+        - easy-coding-standard.php

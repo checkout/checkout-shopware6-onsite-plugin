@@ -8,21 +8,14 @@ use PHPStan\Node\FileNode;
 use PHPStan\Rules\Rule;
 use PHPStan\ShouldNotHappenException;
 
-
 final class StrictTypeRule implements Rule
 {
-
-    /**
-     * @return string
-     */
     public function getNodeType(): string
     {
         return FileNode::class;
     }
 
     /**
-     * @param Node $node
-     * @param Scope $scope
      * @return array|string[]
      */
     public function processNode(Node $node, Scope $scope): array
@@ -37,7 +30,7 @@ final class StrictTypeRule implements Rule
 
         $nodes = $node->getNodes();
 
-        if (0 === \count($nodes)) {
+        if (\count($nodes) === 0) {
             return [];
         }
 
@@ -45,8 +38,8 @@ final class StrictTypeRule implements Rule
 
         if (
             $firstNode instanceof Node\Stmt\InlineHTML
-            && 2 === $firstNode->getEndLine()
-            && 0 === \mb_strpos($firstNode->value, '#!')
+            && $firstNode->getEndLine() === 2
+            && \mb_strpos($firstNode->value, '#!') === 0
         ) {
             $firstNode = \array_shift($nodes);
         }
@@ -54,9 +47,9 @@ final class StrictTypeRule implements Rule
         if ($firstNode instanceof Node\Stmt\Declare_) {
             foreach ($firstNode->declares as $declare) {
                 if (
-                    'strict_types' === $declare->key->toLowerString()
+                    $declare->key->toLowerString() === 'strict_types'
                     && $declare->value instanceof Node\Scalar\LNumber
-                    && 1 === $declare->value->value
+                    && $declare->value->value === 1
                 ) {
                     return [];
                 }
@@ -67,5 +60,4 @@ final class StrictTypeRule implements Rule
             'File has no "declare(strict_types=1)" declaration. This is required for this project!',
         ];
     }
-
 }
