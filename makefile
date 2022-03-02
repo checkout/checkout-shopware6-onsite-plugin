@@ -27,8 +27,12 @@ phpunit: ## Starts all PHPUnit Tests
 stan: ## Starts the PHPStan Analyser
 	php ./vendor/bin/phpstan --memory-limit=1G analyse .
 
+ecs: ## Starts the ESC checker
+	php ./vendor/bin/ecs check . --config easy-coding-standard.php
+
 # ------------------------------------------------------------------------------------------------------------
 
 review: ## Starts the full review pipeline
 	make phpunit -B
+	make ecs -B
 	make stan -B
