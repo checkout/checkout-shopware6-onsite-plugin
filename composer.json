@@ -40,8 +40,18 @@
       "CheckoutcomShopware\\PHPStan\\": "tests/PHPStan/"
     }
   },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "conflict": {
+    "shopware/storefront": "<6,>=7",
+    "shopware/administration": "<6,>=7"
+  },
+  "replace": {
+    "symfony/deprecation-contracts": "*"
+  },
   "require": {
-    "php": ">= 7.4"
+    "php": ">= 7.4",
+    "checkout/checkout-sdk-php": "^2.0"
   },
   "require-dev": {
     "shopware/core": "*",
