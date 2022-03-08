@@ -9,5 +9,13 @@
                 <argument type="service" id="service_container"/>
             </call>
         </service>
+
+        <service id="CheckoutCom\Shopware6\Storefront\Controller\ComponentsController" public="true">
+            <argument type="service" id="CheckoutCom\Shopware6\Service\CustomerService"/>
+
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
     </services>
 </container>

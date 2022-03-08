@@ -1,0 +1,94 @@
+{% block checkout_com_components_credit_card_import_frame_script %}
+    <script src="{{ page.extensions.checkoutCom.frameUrl }}"></script>
+{% endblock %}
+
+{% set cardOptions = {
+    "publicKey": page.extensions.checkoutCom.publicKey,
+    "localization": {
+        cardNumberPlaceholder: "checkoutCom.components.card.cardNumberPlaceholder"|trans|striptags,
+        expiryMonthPlaceholder: "checkoutCom.components.card.expiryMonthPlaceholder"|trans|striptags,
+        expiryYearPlaceholder: "checkoutCom.components.card.expiryYearPlaceholder"|trans|striptags,
+        cvvPlaceholder: "checkoutCom.components.card.cvvPlaceholder"|trans|striptags,
+    },
+    "storeCardUrl": seoUrl('frontend.checkout-com.store-card-token', { customerId: context.customer.id }),
+    "csrfToken": sw_csrf('frontend.checkout-com.store-card-token', { customerId: context.customer.id, mode: 'token' })
+} %}
+
+{% block checkout_com_components_credit_card %}
+    <div id="checkout-com_components_credit_card"
+         class="checkout-com-components-credit-card d-none"
+         data-checkout-com-credit-card-components
+         data-checkout-com-credit-card-components-options='{{ cardOptions|json_encode }}'
+    >
+        {% block checkout_com_components_credit_card_form_card_holder %}
+            <div class="form-row">
+                <div class="form-group col">
+                    {% block checkout_com_components_credit_card_form_card_holder_label %}
+                        <label class="form-label" for="cardholder-name">
+                            {{ "checkoutCom.components.card.cardholderNameLabel"|trans|striptags }}
+                        </label>
+                    {% endblock %}
+                    {% block checkout_com_components_credit_card_form_card_holder_input %}
+                        <input id="cardholder-name" class="form-control checkout-com-field__cardholder-name"
+                               type="text"
+                               placeholder="{{ "checkoutCom.components.card.cardholderNamePlaceholder"|trans|striptags }}"
+                        />
+                    {% endblock %}
+                </div>
+            </div>
+        {% endblock %}
+        {% block checkout_com_components_credit_card_form_card_number %}
+            <div class="form-row">
+                <div class="form-group col">
+                    {% block checkout_com_components_credit_card_form_card_number_label %}
+                        <label class="form-label" for="card-number">
+                            {{ "checkoutCom.components.card.cardNumberLabel"|trans|striptags }}{{ "general.required"|trans|sw_sanitize }}
+                        </label>
+                    {% endblock %}
+                    {% block checkout_com_components_credit_card_form_card_number_input %}
+                        <div class="card-number-frame form-control checkout-com-field__card-number"></div>
+                    {% endblock %}
+                    {% block checkout_com_components_credit_card_form_card_number_input_error %}
+                        <div class="invalid-feedback">
+                            {{ "checkoutCom.messages.card.cardNumber"|trans|striptags }}
+                        </div>
+                    {% endblock %}
+                </div>
+            </div>
+        {% endblock %}
+        {% block checkout_com_components_credit_card_form_extra %}
+            <div class="form-row">
+                <div class="form-group col-6">
+                    {% block checkout_com_components_credit_card_form_extra_expiry_date_label %}
+                        <label class="form-label" for="expiry-date">
+                            {{ "checkoutCom.components.card.cardExpiryDateLabel"|trans|striptags }}{{ "general.required"|trans|sw_sanitize }}
+                        </label>
+                    {% endblock %}
+                    {% block checkout_com_components_credit_card_form_extra_expiry_date_input %}
+                        <div class="expiry-date-frame form-control checkout-com-field__expiry-date"></div>
+                    {% endblock %}
+                    {% block checkout_com_components_credit_card_form_extra_expiry_date_input_error %}
+                        <div class="invalid-feedback">
+                            {{ "checkoutCom.messages.card.expiryDate"|trans|striptags }}
+                        </div>
+                    {% endblock %}
+                </div>
+                <div class="form-group col-6">
+                    {% block checkout_com_components_credit_card_form_extra_cvv_label %}
+                        <label class="form-label" for="cvv">
+                            {{ "checkoutCom.components.card.cardCvvLabel"|trans|striptags }}{{ "general.required"|trans|sw_sanitize }}
+                        </label>
+                    {% endblock %}
+                    {% block checkout_com_components_credit_card_form_extra_cvv_input %}
+                        <div class="cvv-frame form-control checkout-com-field__cvv"></div>
+                    {% endblock %}
+                    {% block checkout_com_components_credit_card_form_extra_cvv_input_error %}
+                        <div class="invalid-feedback">
+                            {{ "checkoutCom.messages.card.cvv"|trans|striptags }}
+                        </div>
+                    {% endblock %}
+                </div>
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}

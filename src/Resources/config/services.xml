@@ -5,6 +5,10 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <imports>
         <import resource="services/controllers.xml"/>
+        <import resource="services/twigs.xml"/>
+        <import resource="services/factories.xml"/>
+        <import resource="services/handlers.xml"/>
+        <import resource="services/subscribers.xml"/>
         <import resource="services/services.xml"/>
     </imports>
 </container>

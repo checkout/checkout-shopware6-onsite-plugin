@@ -1,0 +1,24 @@
+{
+  "checkoutCom": {
+    "messages": {
+      "card": {
+        "cardNumber": "Please enter a valid card number.",
+        "expiryDate": "Please enter a valid expiry date.",
+        "cvv": "Please enter a valid cvv code."
+      }
+    },
+    "components": {
+      "card": {
+        "cardholderNameLabel": "Cardholder name",
+        "cardNumberLabel": "Card number",
+        "cardExpiryDateLabel": "Expiry date",
+        "cardCvvLabel": "CVV",
+        "cardholderNamePlaceholder": "Cardholder name",
+        "cardNumberPlaceholder": "Card number",
+        "expiryMonthPlaceholder": "MM",
+        "expiryYearPlaceholder": "YY",
+        "cvvPlaceholder": "CVV"
+      }
+    }
+  }
+}

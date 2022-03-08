@@ -1,0 +1,24 @@
+{
+  "checkoutCom": {
+    "messages": {
+      "card": {
+        "cardNumber": "Bitte geben Sie eine gültige Kartennummer ein.",
+        "expiryDate": "Bitte geben Sie ein gültiges Verfallsdatum ein.",
+        "cvv": "Bitte geben Sie einen gültigen Lebenslaufcode ein."
+      }
+    },
+    "components": {
+      "card": {
+        "cardholderNameLabel": "Name des Karteninhabers",
+        "cardNumberLabel": "Kartennummer",
+        "cardExpiryDateLabel": "Verfallsdatum",
+        "cardCvvLabel": "CVV",
+        "cardholderNamePlaceholder": "Name des Karteninhabers",
+        "cardNumberPlaceholder": "Kartennummer",
+        "expiryMonthPlaceholder": "MM",
+        "expiryYearPlaceholder": "YY",
+        "cvvPlaceholder": "CVV"
+      }
+    }
+  }
+}

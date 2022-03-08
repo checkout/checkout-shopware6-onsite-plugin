@@ -5,16 +5,24 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="checkout_com.shopware6.factory.settings_factory"
-                 class="CheckoutCom\Shopware6\Factory\SettingsFactory"
-                 public="true">
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+        <service id="checkout_com.shopware6.logger" class="CheckoutCom\Shopware6\Service\LoggerService">
+            <call method="setLogger">
+                <argument type="service" id="session"/>
+                <argument>%kernel.logs_dir%/checkout_com_%kernel.environment%.log</argument>
+                <argument>20</argument>
+            </call>
         </service>
 
-        <service id="checkout_com.shopware6.factory.checkout_api_factory"
-                 class="CheckoutCom\Shopware6\Factory\CheckoutApiFactory"
+        <service id="CheckoutCom\Shopware6\Service\PaymentMethodService"
                  public="true">
-            <argument type="service" id="checkout_com.shopware6.factory.settings_factory"/>
+            <argument type="service" id="payment_method.repository"/>
+            <argument type="service" id="Shopware\Core\Framework\Plugin\Util\PluginIdProvider"/>
+        </service>
+
+        <service id="CheckoutCom\Shopware6\Service\CustomerService">
+            <argument type="service" id="checkout_com.shopware6.logger"/>
+            <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="customer.repository"/>
         </service>
     </services>
 </container>
