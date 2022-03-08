@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutcomShopware;
+namespace CheckoutCom;
 
 use Shopware\Core\Framework\Plugin;
 
-class CheckoutcomShopware extends Plugin
+class CheckoutCom extends Plugin
 {
 }
