@@ -15,7 +15,7 @@
     "CKO"
   ],
   "extra": {
-    "shopware-plugin-class": "CheckoutcomShopware\\CheckoutcomShopware",
+    "shopware-plugin-class": "CheckoutCom\\Shopware6\\CheckoutCom",
     "copyright": "(c) by Checkout.com",
     "label": {
       "de-DE": "Checkout.com Zahlungen",
@@ -31,13 +31,13 @@
   ],
   "autoload": {
     "psr-4": {
-      "CheckoutcomShopware\\": "src/"
+      "CheckoutCom\\Shopware6\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "CheckoutcomShopware\\Tests\\": "tests/PHPUnit/",
-      "CheckoutcomShopware\\PHPStan\\": "tests/PHPStan/"
+      "CheckoutCom\\Shopware6\\Tests\\": "tests/PHPUnit/",
+      "CheckoutCom\\Shopware6\\PHPStan\\": "tests/PHPStan/"
     }
   },
   "minimum-stability": "dev",

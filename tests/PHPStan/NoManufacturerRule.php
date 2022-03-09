@@ -1,12 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutcomShopware\PHPStan\Rules;
+namespace CheckoutCom\Shopware6\PHPStan;
 
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\Rules\Rule;
 
-final class NoManufacturerRule implements \PHPStan\Rules\Rule
+final class NoManufacturerRule implements Rule
 {
     /**
      * @var array
