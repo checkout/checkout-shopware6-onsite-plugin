@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Tests\Services;
+namespace CheckoutCom\Shopware6\Tests\Services;
 
 use PHPUnit\Framework\TestCase;
 

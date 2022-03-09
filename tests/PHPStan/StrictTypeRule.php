@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\PHPStan\Rules;
+namespace CheckoutCom\Shopware6\PHPStan;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
