@@ -1,0 +1,18 @@
+{% block checkout_plugin_config_api %}
+    <sw-container gap="16px" columns="1fr 2fr">
+        {% block checkout_plugin_config_api_test_button %}
+            <sw-button @click="onTestButtonClicked" ref="testApiButton" :is-loading="isLoading">
+                {{ $tc('checkout-payments.config.api.testButton') }}
+            </sw-button>
+        {% endblock %}
+        {% block checkout_plugin_config_api_link_button %}
+            <sw-external-link
+                :small="false" icon="small-arrow-small-external" rel="noopener"
+                class="checkout-plugin-config-payments-link"
+                :href="apiLink"
+                target="_blank">
+                {{ $tc('checkout-payments.config.api.apiLinkButton') }}
+            </sw-external-link>
+        {% endblock %}
+    </sw-container>
+{% endblock %}

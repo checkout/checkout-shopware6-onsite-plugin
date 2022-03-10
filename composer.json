@@ -31,7 +31,8 @@
   ],
   "autoload": {
     "psr-4": {
-      "CheckoutCom\\Shopware6\\": "src/"
+      "CheckoutCom\\Shopware6\\": "src/",
+      "Checkout\\": "vendor/checkout/checkout-sdk-php/lib/Checkout"
     }
   },
   "autoload-dev": {
