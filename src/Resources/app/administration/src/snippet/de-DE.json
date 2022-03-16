@@ -2,6 +2,10 @@
   "checkout-payments": {
     "config": {
       "api": {
+        "secretKeyLabel" : "Secret Key",
+        "publicKeyLabel" : "Public Key",
+        "sandboxModeLabel" : "Sandbox Modus",
+        "sandboxModeHelpText": "Aktiviert den Testmodus mit der Checkout.com Sandbox Zahlungsseite.",
         "testButton": "API-Schlüssel testen",
         "apiLinkButton": "Erhalten Sie Ihre API Keys vom Checkout Dashboard",
         "testApiKeys": {

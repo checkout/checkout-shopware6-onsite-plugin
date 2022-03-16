@@ -5,29 +5,6 @@
         <title>API Keys</title>
         <title lang="de-DE">API Keys</title>
 
-        <input-field type="password">
-            <name>secretKey</name>
-            <copyable>true</copyable>
-            <label>Secret Key</label>
-            <label lang="de-DE">Secret Key</label>
-        </input-field>
-
-        <input-field type="password">
-            <name>publicKey</name>
-            <copyable>true</copyable>
-            <label>Public Key</label>
-            <label lang="de-DE">Public Key</label>
-        </input-field>
-
-        <input-field type="bool">
-            <name>sandboxMode</name>
-            <label>Sandbox Mode</label>
-            <label lang="de-DE">Sandbox Modus</label>
-            <defaultValue>true</defaultValue>
-            <helpText>Enables the test mode with the Checkout.com Sandbox payment page.</helpText>
-            <helpText lang="de-DE">Aktiviert den Testmodus mit der Checkout.com Sandbox Zahlungsseite.</helpText>
-        </input-field>
-
         <component name="checkout-plugin-config-section-api">
             <name>checkoutPluginConfigSectionApi</name>
         </component>

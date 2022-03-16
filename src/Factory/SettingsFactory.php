@@ -2,12 +2,15 @@
 
 namespace CheckoutCom\Shopware6\Factory;
 
-use CheckoutcomShopware\Struct\SettingStruct;
+use CheckoutCom\Shopware6\Struct\SettingStruct;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class SettingsFactory
 {
     public const SYSTEM_CONFIG_DOMAIN = 'CheckoutCom.config.';
+    public const SYSTEM_COMPONENT_GROUP = [
+        'checkoutPluginConfigSectionApi',
+    ];
 
     private SystemConfigService $systemConfigService;
 
@@ -30,7 +33,15 @@ class SettingsFactory
             }
 
             // We only add the keys that are included in the domain.
-            $structData[substr($key, \strlen(self::SYSTEM_CONFIG_DOMAIN))] = $value;
+            $configKey = substr($key, \strlen(self::SYSTEM_CONFIG_DOMAIN));
+
+            // If the config key is in the component group & it is an array, we merge it to the struct.
+            // otherwise, we just add it to the struct.
+            if (\in_array($configKey, self::SYSTEM_COMPONENT_GROUP, true) && \is_array($value)) {
+                $structData = array_merge($structData, $value);
+            } else {
+                $structData[$configKey] = $value;
+            }
         }
 
         return (new SettingStruct())->assign($structData);

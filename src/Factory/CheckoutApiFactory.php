@@ -5,7 +5,7 @@ namespace CheckoutCom\Shopware6\Factory;
 use Checkout\CheckoutApi;
 use Checkout\CheckoutDefaultSdk;
 use Checkout\Environment;
-use CheckoutcomShopware\Struct\SettingStruct;
+use CheckoutCom\Shopware6\Struct\SettingStruct;
 
 class CheckoutApiFactory
 {

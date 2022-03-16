@@ -11,8 +11,24 @@ Component.register("checkout-plugin-config-section-api", {
 
     mixins: [Mixin.getByName("notification")],
 
+    props: {
+        value: {
+            type: Object,
+            required: false,
+        },
+    },
+
     data() {
         return {
+            config: {
+                secretKey: this.getConfigPropsValue("secretKey", ""),
+                publicKey: this.getConfigPropsValue("publicKey", ""),
+                sandboxMode: this.getConfigPropsValue("sandboxMode", true),
+            },
+            error: {
+                secretKey: false,
+                publicKey: false,
+            },
             isLoading: false,
             testModeInput: null,
             isSandbox: false,
@@ -21,87 +37,62 @@ Component.register("checkout-plugin-config-section-api", {
 
     computed: {
         apiLink() {
-            return this.isSandbox
-                ? DASHBOARD_LINK.SANDBOX
-                : DASHBOARD_LINK.LIVE;
+            const { sandboxMode } = this.config;
+
+            return sandboxMode ? DASHBOARD_LINK.SANDBOX : DASHBOARD_LINK.LIVE;
         },
     },
 
-    mounted() {
-        this.createdComponent();
-    },
-
-    destroyed() {
-        this.destroyedComponent();
+    watch: {
+        config: {
+            handler(configValue) {
+                this.$emit("change", configValue);
+            },
+            deep: true,
+        },
     },
 
     methods: {
-        createdComponent() {
-            this.testModeInput = document.querySelector(
-                'input[name="CheckoutCom.config.sandboxMode"]'
-            );
-            if (!this.testModeInput) {
-                return;
+        // We need to use the getConfigPropsValue function to get the value from the config props.
+        getConfigPropsValue(field, defaultValue = null) {
+            if (!this.value) {
+                return defaultValue;
             }
 
-            this.testModeInput.addEventListener(
-                "change",
-                this.onTestModeInputChange
-            );
-            this.isSandbox = this.testModeInput.checked;
-        },
-
-        destroyedComponent() {
-            this.testModeInput.removeEventListener(
-                "change",
-                this.onTestModeInputChange
-            );
-        },
-
-        onTestModeInputChange(e) {
-            this.isSandbox = e.target.checked;
+            return this.value[field] ?? defaultValue;
         },
 
         async onTestButtonClicked() {
             this.isLoading = true;
-            const secretKeyInput = document.querySelector(
-                'input[name="CheckoutCom.config.secretKey"]'
-            );
-            const publicKeyInput = document.querySelector(
-                'input[name="CheckoutCom.config.publicKey"]'
-            );
+            const { secretKey, publicKey, sandboxMode } = this.config;
 
-            const secretKey = secretKeyInput ? secretKeyInput.value : null;
-            const publicKey = publicKeyInput ? publicKeyInput.value : null;
+            // We reset the error state
+            this.error = {
+                secretKey: false,
+                publicKey: false,
+            };
 
             try {
                 const results = await this.checkoutConfigService.testApiKey(
                     secretKey,
                     publicKey,
-                    this.isSandbox
+                    sandboxMode
                 );
 
-                results.forEach((result) => {
-                    const input = result.isSecretKey
-                        ? secretKeyInput
-                        : publicKeyInput;
-
-                    this._showMessageResult(input, result);
-                });
+                results.forEach(this._showMessageResult);
             } catch {}
 
             this.isLoading = false;
         },
 
-        _showMessageResult(input, result) {
+        _showMessageResult(result) {
             const { isSecretKey, key, valid } = result;
 
-            const keyTypeMessage = this.$tc(
-                `checkout-payments.config.api.testApiKeys.${
-                    isSecretKey ? "secretKey" : "publicKey"
-                }`
-            );
+            const inputError = isSecretKey ? "secretKey" : "publicKey";
 
+            const keyTypeMessage = this.$tc(
+                `checkout-payments.config.api.testApiKeys.${inputError}`
+            );
             const validMessage = this.$tc(
                 `checkout-payments.config.api.testApiKeys.${
                     valid ? "isValid" : "isInvalid"
@@ -115,24 +106,11 @@ Component.register("checkout-plugin-config-section-api", {
                 message: `${keyTypeMessage} "${key}" ${validMessage}.`,
             };
 
-            // We remove the error class from the input
-            if (input) {
-                input.parentNode.parentNode.parentNode.classList.remove(
-                    "has--error"
-                );
-            }
-
             if (valid) {
                 this.createNotificationSuccess(messageData);
             } else {
                 this.createNotificationError(messageData);
-
-                // We add the error class from the input
-                if (input) {
-                    input.parentNode.parentNode.parentNode.classList.add(
-                        "has--error"
-                    );
-                }
+                this.error[inputError] = true;
             }
         },
     },
