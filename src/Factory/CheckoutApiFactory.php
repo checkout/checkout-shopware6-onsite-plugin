@@ -19,7 +19,7 @@ class CheckoutApiFactory
     /**
      * Returns a new instance of the Checkout API client.
      */
-    public function getClient(?string $salesChannelId = null): CheckoutApi
+    public function getClient(string $salesChannelId): CheckoutApi
     {
         $settings = $this->settingFactory->getSettings($salesChannelId);
 

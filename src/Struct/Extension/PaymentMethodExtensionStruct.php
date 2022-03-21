@@ -8,9 +8,9 @@ class PaymentMethodExtensionStruct extends Struct
 {
     protected bool $isCheckout;
 
-    protected string $methodType;
+    protected ?string $methodType;
 
-    public function __construct(bool $isCheckout = false, string $methodType = '')
+    public function __construct(bool $isCheckout = false, ?string $methodType = null)
     {
         $this->isCheckout = $isCheckout;
         $this->methodType = $methodType;
@@ -26,12 +26,12 @@ class PaymentMethodExtensionStruct extends Struct
         $this->isCheckout = $isCheckout;
     }
 
-    public function getMethodType(): string
+    public function getMethodType(): ?string
     {
         return $this->methodType;
     }
 
-    public function setMethodType(string $methodType): void
+    public function setMethodType(?string $methodType): void
     {
         $this->methodType = $methodType;
     }

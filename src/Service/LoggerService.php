@@ -2,27 +2,20 @@
 
 namespace CheckoutCom\Shopware6\Service;
 
-use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 class LoggerService implements LoggerInterface
 {
-    public const CHANNEL = 'CheckoutCom';
-
     private string $sessionId;
 
     private Logger $logger;
 
-    public function setLogger(Session $session, string $filename, string $retentionDays): void
+    public function __construct(Session $session, Logger $logger)
     {
         $this->sessionId = $session->getId();
-
-        // Create handler for create file every day
-        $fileHandler = new RotatingFileHandler($filename, (int) $retentionDays, LogLevel::INFO);
-        $this->logger = new Logger(self::CHANNEL, [$fileHandler]);
+        $this->logger = $logger;
     }
 
     public function log($level, $message, array $context = []): void

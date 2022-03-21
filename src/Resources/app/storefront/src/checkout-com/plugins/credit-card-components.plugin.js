@@ -51,6 +51,7 @@ export default class CheckoutComCreditCardComponents extends Plugin {
                     name: cardholderNameInput.value,
                 };
             }
+
             // We submit the card, to get the token instead of submitting the payment form
             Frames.submitCard();
             this.disableForm();

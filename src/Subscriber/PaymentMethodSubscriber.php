@@ -5,7 +5,6 @@ namespace CheckoutCom\Shopware6\Subscriber;
 use CheckoutCom\Shopware6\CheckoutCom;
 use CheckoutCom\Shopware6\Helper\Util;
 use CheckoutCom\Shopware6\Struct\Extension\PaymentMethodExtensionStruct;
-use Exception;
 use ReflectionClass;
 use Shopware\Core\Checkout\Payment\PaymentEvents;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
@@ -49,12 +48,8 @@ class PaymentMethodSubscriber implements EventSubscriberInterface
         $isCheckoutComPaymentMethod = strpos($paymentMethod->getHandlerIdentifier(), $checkoutComNamespace) !== false;
         $paymentMethodExtension = new PaymentMethodExtensionStruct($isCheckoutComPaymentMethod);
         if ($isCheckoutComPaymentMethod) {
-            try {
-                $paymentMethodType = Util::handleCallUserFunc($paymentMethod->getHandlerIdentifier() . '::getPaymentMethodType');
-                $paymentMethodExtension->setMethodType($paymentMethodType);
-            } catch (Exception $e) {
-                // Ignore this payment method
-            }
+            $paymentMethodType = Util::handleCallUserFunc($paymentMethod->getHandlerIdentifier() . '::getPaymentMethodType', false);
+            $paymentMethodExtension->setMethodType($paymentMethodType);
         }
 
         $paymentMethod->addExtension(self::PAYMENT_METHOD_EXTENSION, $paymentMethodExtension);

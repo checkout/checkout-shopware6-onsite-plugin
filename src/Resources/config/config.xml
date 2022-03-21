@@ -9,4 +9,13 @@
             <name>checkoutPluginConfigSectionApi</name>
         </component>
     </card>
+
+    <card>
+        <title>Order State Automation</title>
+        <title lang="de-DE">Auftragsstatus Automatisierung</title>
+
+        <component name="checkout-plugin-config-section-order-state">
+            <name>checkoutPluginConfigSectionOrderState</name>
+        </component>
+    </card>
 </config>

@@ -2,28 +2,42 @@
 
 namespace CheckoutCom\Shopware6\Handler;
 
+use Checkout\Payments\PaymentRequest;
+use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
+use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
+use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
+use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Throwable;
 
 abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
 {
     protected LoggerInterface $logger;
 
-    public function __construct(LoggerInterface $logger)
+    protected PaymentPayFacade $paymentPayFacade;
+
+    protected PaymentFinalizeFacade $paymentFinalizeFacade;
+
+    public function __construct(LoggerInterface $logger, PaymentPayFacade $paymentPayFacade, PaymentFinalizeFacade $paymentFinalizeFacade)
     {
         $this->logger = $logger;
+        $this->paymentPayFacade = $paymentPayFacade;
+        $this->paymentFinalizeFacade = $paymentFinalizeFacade;
     }
 
     /**
      * Get display name for the payment method at shopware website
      */
-    abstract public static function getPaymentMethodDisplayName(): DisplayNameTranslationCollection;
+    abstract public function getPaymentMethodDisplayName(): DisplayNameTranslationCollection;
 
     /**
      * Get checkout.com payment method type
@@ -31,8 +45,18 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
     abstract public static function getPaymentMethodType(): string;
 
     /**
-     * The pay method will be called after customer completed the order.
-     * We will create payment at the checkout.com API and store data in the custom fields of the order
+     * Each payment methods has to implement this method to prepare data for the checkout.com payment request
+     */
+    abstract public function prepareDataForPay(PaymentRequest $paymentRequest, OrderEntity $order, CustomerEntity $customer, SalesChannelContext $context): PaymentRequest;
+
+    public function getClassName(): string
+    {
+        return static::class;
+    }
+
+    /**
+     * The pay method will be called after a customer has completed the order.
+     * We will create a payment via the checkout.com API and store the data in the custom fields of the order
      * Maybe we will redirect to external payment (Checkout.com) and redirect back to our the shopware @finalize method.
      *
      * @throw AsyncPaymentProcessException
@@ -40,10 +64,10 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
     public function pay(AsyncPaymentTransactionStruct $transaction, RequestDataBag $dataBag, SalesChannelContext $salesChannelContext): RedirectResponse
     {
         $this->logger->info(
-            sprintf('Starting pay with order: %s', $transaction->getOrder()->getOrderNumber()),
+            sprintf('Starting pay with order number: %s', $transaction->getOrder()->getOrderNumber()),
             [
-                'order' => $transaction->getOrder()->getOrderNumber(),
-                'methodType' => $this->getPaymentMethodType(),
+                'orderNumber' => $transaction->getOrder()->getOrderNumber(),
+                'methodType' => static::getPaymentMethodType(),
                 'salesChannelName' => $salesChannelContext->getSalesChannel()->getName(),
                 'salesChannelId' => $salesChannelContext->getSalesChannel()->getId(),
                 'cart' => [
@@ -52,7 +76,24 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
             ]
         );
 
-        return new RedirectResponse($transaction->getReturnUrl());
+        try {
+            $payment = $this->paymentPayFacade->pay(
+                $this,
+                $transaction,
+                $salesChannelContext,
+            );
+        } catch (Throwable $exception) {
+            $this->logger->error(
+                sprintf('Error when starting payment: %s', $exception->getMessage()),
+                [
+                    'function' => 'pay',
+                ]
+            );
+
+            throw new AsyncPaymentProcessException($transaction->getOrderTransaction()->getId(), $exception->getMessage());
+        }
+
+        return new RedirectResponse($payment->getRedirectUrl());
     }
 
     /**
@@ -61,6 +102,25 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
      */
     public function finalize(AsyncPaymentTransactionStruct $transaction, Request $request, SalesChannelContext $salesChannelContext): void
     {
-        // @TODO: CC-8: Credit Card integration backend
+        try {
+            $this->paymentFinalizeFacade->finalize($transaction, $salesChannelContext);
+        } catch (AsyncPaymentFinalizeException $ex) {
+            // We catch AsyncPaymentFinalizeException, log and throw it again
+            $this->logger->error(
+                sprintf('Error finalizing with order %s, Error: %s', $transaction->getOrder()->getOrderNumber(), $ex->getMessage())
+            );
+
+            throw $ex;
+        } catch (Throwable $ex) {
+            // We catch all other exceptions and throw AsyncPaymentFinalizeException
+            $this->logger->error(
+                sprintf('Unknown Error when finalizing order number %s, Error: %s', $transaction->getOrder()->getOrderNumber(), $ex->getMessage())
+            );
+
+            throw new AsyncPaymentFinalizeException(
+                $transaction->getOrderTransaction()->getId(),
+                'Internal error exception, view the log for more information'
+            );
+        }
     }
 }

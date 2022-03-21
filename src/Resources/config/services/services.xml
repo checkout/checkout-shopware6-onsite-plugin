@@ -3,18 +3,15 @@
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
-
     <services>
         <service id="checkout_com.shopware6.logger" class="CheckoutCom\Shopware6\Service\LoggerService">
-            <call method="setLogger">
-                <argument type="service" id="session"/>
-                <argument>%kernel.logs_dir%/checkout_com_%kernel.environment%.log</argument>
-                <argument>20</argument>
-            </call>
+            <argument type="service" id="session"/>
+            <argument type="service" id="monolog.logger.checkout_com"/>
         </service>
 
         <service id="CheckoutCom\Shopware6\Service\PaymentMethodService"
                  public="true">
+            <argument type="tagged" tag="checkout_com.shopware6.payment_handler"/>
             <argument type="service" id="payment_method.repository"/>
             <argument type="service" id="Shopware\Core\Framework\Plugin\Util\PluginIdProvider"/>
         </service>
@@ -23,6 +20,52 @@
             <argument type="service" id="checkout_com.shopware6.logger"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="customer.repository"/>
+        </service>
+
+        <service id="CheckoutCom\Shopware6\Service\Order\OrderService">
+            <argument type="service" id="checkout_com.shopware6.logger"/>
+            <argument type="service" id="order.repository"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Transition\OrderTransitionService"/>
+        </service>
+
+        <service id="CheckoutCom\Shopware6\Service\Order\OrderTransactionService">
+            <argument type="service" id="checkout_com.shopware6.logger"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Transition\OrderTransactionTransitionService"/>
+        </service>
+
+        <!--    TRANSITION    -->
+        <service id="CheckoutCom\Shopware6\Service\Transition\TransitionService">
+            <argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+        </service>
+
+        <service id="CheckoutCom\Shopware6\Service\Transition\OrderTransitionService">
+            <argument type="service" id="checkout_com.shopware6.logger"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Transition\TransitionService"/>
+        </service>
+
+        <service id="CheckoutCom\Shopware6\Service\Transition\OrderTransactionTransitionService">
+            <argument type="service" id="checkout_com.shopware6.logger"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Transition\TransitionService"/>
+        </service>
+
+        <!--    CHECKOUT API    -->
+        <service id="checkout_com.shopware6.service.checkout_api.abstract_checkout_service"
+                class="CheckoutCom\Shopware6\Service\CheckoutApi\AbstractCheckoutService"
+                 abstract="true"
+        >
+            <argument type="service" id="checkout_com.shopware6.logger"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Factory\CheckoutApiFactory"/>
+        </service>
+
+        <service id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService"
+                 parent="checkout_com.shopware6.service.checkout_api.abstract_checkout_service"
+        />
+
+        <!--   EXTRACTOR    -->
+        <service id="CheckoutCom\Shopware6\Service\Extractor\OrderExtractor">
+            <argument type="service" id="checkout_com.shopware6.logger"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\CustomerService"/>
         </service>
     </services>
 </container>

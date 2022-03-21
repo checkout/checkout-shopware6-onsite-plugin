@@ -3,6 +3,7 @@
 namespace CheckoutCom\Shopware6\Service;
 
 use CheckoutCom\Shopware6\Event\CustomerSaveCardTokenEvent;
+use CheckoutCom\Shopware6\Struct\CustomFields\CustomerCustomFieldsStruct;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\Exception\CustomerNotFoundByIdException;
@@ -14,8 +15,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class CustomerService
 {
-    public const CUSTOM_FIELDS_KEY_CHECKOUT_PAYMENTS = 'checkoutPayments';
-    public const CUSTOM_FIELDS_KEY_CARD_TOKEN = 'cardToken';
+    public const CHECKOUT_CUSTOM_FIELDS = 'checkoutPayments';
 
     private LoggerInterface $logger;
 
@@ -36,36 +36,63 @@ class CustomerService
     public function setCardToken(CustomerEntity $customer, string $cardToken, SalesChannelContext $context): EntityWrittenContainerEvent
     {
         // Get existing custom fields
-        $customFields = $customer->getCustomFields() ?? [];
-
-        // Store the card token in the custom fields
-        $customFields[self::CUSTOM_FIELDS_KEY_CHECKOUT_PAYMENTS][self::CUSTOM_FIELDS_KEY_CARD_TOKEN] = $cardToken;
-
-        // We update the customer with the new custom fields
-        $customer->setCustomFields($customFields);
+        $checkoutCustomerCustomFields = CustomerService::getCheckoutCustomerCustomFields($customer);
+        $checkoutCustomerCustomFields->setCardToken($cardToken);
 
         // Dispatch event before update to repository
-        $this->eventDispatcher->dispatch(new CustomerSaveCardTokenEvent($customer, $cardToken, $context));
+        $this->eventDispatcher->dispatch(new CustomerSaveCardTokenEvent($checkoutCustomerCustomFields, $cardToken, $context));
 
         $this->logger->debug('Setting Card Token', [
             'customerId' => $customer->getId(),
-            'customFields' => $customFields,
+            'customFields' => [
+                self::CHECKOUT_CUSTOM_FIELDS => $checkoutCustomerCustomFields->jsonSerialize(),
+            ],
         ]);
 
         return $this->customerRepository->update([[
             'id' => $customer->getId(),
-            'customFields' => $customer->getCustomFields(),
+            'customFields' => [
+                self::CHECKOUT_CUSTOM_FIELDS => $checkoutCustomerCustomFields->jsonSerialize(),
+            ],
         ]], $context->getContext());
     }
 
+    /**
+     * Get custom fields of the customer for checkout.com
+     */
+    public static function getCheckoutCustomerCustomFields(CustomerEntity $customer): CustomerCustomFieldsStruct
+    {
+        $customFields = $customer->getCustomFields() ?? [];
+
+        $checkoutCustomerCustomFields = new CustomerCustomFieldsStruct();
+        $checkoutCustomerCustomFields->assign($customFields[self::CHECKOUT_CUSTOM_FIELDS] ?? []);
+
+        return $checkoutCustomerCustomFields;
+    }
+
+    /**
+     * Return a customer entity with address associations.
+     */
     public function getCustomer(string $customerId, SalesChannelContext $context): CustomerEntity
     {
         $criteria = new Criteria([$customerId]);
+        $criteria->addAssociations([
+            'defaultBillingAddress.country',
+            'defaultBillingAddress.countryState',
+            'defaultShippingAddress.country',
+            'defaultShippingAddress.countryState',
+            'activeShippingAddress.country',
+            'activeShippingAddress.countryState',
+        ]);
 
         /** @var CustomerEntity|null $customer */
         $customer = $this->customerRepository->search($criteria, $context->getContext())->first();
 
         if (!$customer instanceof CustomerEntity) {
+            $this->logger->critical(
+                sprintf('Could not fetch customer with ID %s', $customerId)
+            );
+
             throw new CustomerNotFoundByIdException($customerId);
         }
 

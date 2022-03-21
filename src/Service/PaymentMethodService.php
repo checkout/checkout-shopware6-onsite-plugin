@@ -3,8 +3,8 @@
 namespace CheckoutCom\Shopware6\Service;
 
 use CheckoutCom\Shopware6\CheckoutCom;
-use CheckoutCom\Shopware6\Handler\Method\CreditCardHandler;
-use CheckoutCom\Shopware6\Helper\Util;
+use CheckoutCom\Shopware6\Handler\PaymentHandler;
+use CheckoutCom\Shopware6\Struct\PaymentHandler\PaymentHandlerCollection;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\InstallablePaymentMethodCollection;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\InstallablePaymentMethodStruct;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\InstalledPaymentMethodCollection;
@@ -18,12 +18,15 @@ use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 
 class PaymentMethodService
 {
+    private PaymentHandlerCollection $installablePaymentHandlers;
+
     private EntityRepositoryInterface $paymentMethodRepository;
 
     private PluginIdProvider $pluginIdProvider;
 
-    public function __construct(EntityRepositoryInterface $paymentMethodRepository, PluginIdProvider $pluginIdProvider)
+    public function __construct(iterable $paymentHandlers, EntityRepositoryInterface $paymentMethodRepository, PluginIdProvider $pluginIdProvider)
     {
+        $this->installablePaymentHandlers = new PaymentHandlerCollection($paymentHandlers);
         $this->paymentMethodRepository = $paymentMethodRepository;
         $this->pluginIdProvider = $pluginIdProvider;
     }
@@ -33,6 +36,10 @@ class PaymentMethodService
      */
     public function installPaymentMethods(Context $context): void
     {
+        if ($this->installablePaymentHandlers->count() === 0) {
+            return;
+        }
+
         // Get installable payment methods
         $installablePaymentMethods = $this->getInstallablePaymentMethods();
         if ($installablePaymentMethods->count() === 0) {
@@ -49,6 +56,10 @@ class PaymentMethodService
      */
     public function setActivateInstalledPaymentMethods(Context $context, bool $isActive = true): void
     {
+        if ($this->installablePaymentHandlers->count() === 0) {
+            return;
+        }
+
         // Get installable payment methods
         $installablePaymentMethods = $this->getInstallablePaymentMethods();
         if ($installablePaymentMethods->count() === 0) {
@@ -58,7 +69,7 @@ class PaymentMethodService
         $pluginId = $this->pluginIdProvider->getPluginIdByBaseClass(CheckoutCom::class, $context);
 
         // Get installed payment methods in the shop
-        $installedPaymentMethodHandlers = $this->getInstalledPaymentMethodHandlers($this->getPaymentHandlers(), $pluginId, $context);
+        $installedPaymentMethodHandlers = $this->getInstalledPaymentMethodHandlers($pluginId, $context);
 
         // Toggle activate newly installed payment methods
         $this->setActivatePaymentMethods(
@@ -75,28 +86,18 @@ class PaymentMethodService
     private function getInstallablePaymentMethods(): InstallablePaymentMethodCollection
     {
         $paymentMethods = new InstallablePaymentMethodCollection();
-        $installablePaymentMethods = $this->getPaymentHandlers();
 
-        foreach ($installablePaymentMethods as $installablePaymentMethod) {
+        /** @var PaymentHandler $paymentHandler */
+        foreach ($this->installablePaymentHandlers->getElements() as $paymentHandler) {
             $paymentMethods->add(
                 new InstallablePaymentMethodStruct(
-                    Util::handleCallUserFunc($installablePaymentMethod . '::getPaymentMethodDisplayName'),
-                    $installablePaymentMethod
+                    $paymentHandler->getPaymentMethodDisplayName(),
+                    $paymentHandler->getClassName()
                 )
             );
         }
 
         return $paymentMethods;
-    }
-
-    /**
-     * Returns an array of payment handlers.
-     */
-    private function getPaymentHandlers(): array
-    {
-        return [
-            CreditCardHandler::class,
-        ];
     }
 
     /**
@@ -154,7 +155,7 @@ class PaymentMethodService
     /**
      * Get a collection of installed payment methods base on installable payment methods
      */
-    private function getInstalledPaymentMethodHandlers(array $installableHandlers, string $pluginId, Context $context): InstalledPaymentMethodCollection
+    private function getInstalledPaymentMethodHandlers(string $pluginId, Context $context): InstalledPaymentMethodCollection
     {
         $paymentCriteria = new Criteria();
         $paymentCriteria->addFilter(new EqualsFilter('pluginId', $pluginId));
@@ -164,13 +165,13 @@ class PaymentMethodService
 
         /** @var PaymentMethodEntity $paymentMethod */
         foreach ($paymentMethods->getEntities() as $paymentMethod) {
-            if (!\in_array($paymentMethod->getHandlerIdentifier(), $installableHandlers, true)) {
-                // Skip if it is not in the installable handlers
+            // Skip if it is not in the installable handlers
+            if (!$this->installablePaymentHandlers->hasHandlerIdentifier($paymentMethod->getHandlerIdentifier())) {
                 continue;
             }
 
+            // Skip if it is already in the installed handlers
             if ($installedHandlers->has($paymentMethod->getHandlerIdentifier())) {
-                // Skip if it is already in the installed handlers
                 continue;
             }
 
@@ -197,7 +198,9 @@ class PaymentMethodService
         /** @var InstallablePaymentMethodStruct $paymentMethod */
         foreach ($paymentMethods->getElements() as $paymentMethod) {
             $paymentMethodHandler = $paymentMethod->getHandler();
-            if (empty($paymentMethodHandler)) {
+
+            // We skip if empty payment method handler or if it is not in the installed payment methods
+            if (empty($paymentMethodHandler) || !$installedPaymentMethods->has($paymentMethodHandler)) {
                 continue;
             }
 
