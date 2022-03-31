@@ -17,27 +17,45 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Throwable;
 
 abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
 {
     protected LoggerInterface $logger;
 
+    protected TranslatorInterface $translator;
+
     protected PaymentPayFacade $paymentPayFacade;
 
     protected PaymentFinalizeFacade $paymentFinalizeFacade;
 
-    public function __construct(LoggerInterface $logger, PaymentPayFacade $paymentPayFacade, PaymentFinalizeFacade $paymentFinalizeFacade)
+    public function __construct(LoggerInterface $logger, TranslatorInterface $translator, PaymentPayFacade $paymentPayFacade, PaymentFinalizeFacade $paymentFinalizeFacade)
     {
         $this->logger = $logger;
+        $this->translator = $translator;
         $this->paymentPayFacade = $paymentPayFacade;
         $this->paymentFinalizeFacade = $paymentFinalizeFacade;
     }
 
+    public function getPaymentMethodDisplayName(): DisplayNameTranslationCollection
+    {
+        $displayNameCollection = new DisplayNameTranslationCollection();
+
+        // Support languages
+        $languages = ['de-DE', 'en-GB'];
+
+        foreach ($languages as $lang) {
+            $displayNameCollection->addLangData($lang, $this->translator->trans($this->getSnippetKey(), [], null, $lang));
+        }
+
+        return $displayNameCollection;
+    }
+
     /**
-     * Get display name for the payment method at shopware website
+     * Get snippet lang key
      */
-    abstract public function getPaymentMethodDisplayName(): DisplayNameTranslationCollection;
+    abstract public function getSnippetKey(): string;
 
     /**
      * Get checkout.com payment method type
