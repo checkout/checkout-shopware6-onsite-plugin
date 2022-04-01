@@ -18,6 +18,9 @@ use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 
 class PaymentMethodService
 {
+    public const PRIVILEGES_VIEWER = 'payment.viewer';
+    public const PRIVILEGES_DELETER = 'payment.deleter';
+
     private PaymentHandlerCollection $installablePaymentHandlers;
 
     private EntityRepositoryInterface $paymentMethodRepository;

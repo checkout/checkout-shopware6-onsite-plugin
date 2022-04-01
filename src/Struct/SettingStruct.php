@@ -22,6 +22,14 @@ class SettingStruct extends Struct
 
     protected string $orderStateForVoidedPayment = self::ORDER_STATE_SKIP;
 
+    protected ?string $applePayMerchantId = null;
+
+    protected ?string $applePayDomainMediaId = null;
+
+    protected ?string $applePayKeyMediaId = null;
+
+    protected ?string $applePayPemMediaId = null;
+
     public function getSecretKey(): string
     {
         return $this->secretKey;
@@ -90,5 +98,45 @@ class SettingStruct extends Struct
     public function setOrderStateForVoidedPayment(string $orderStateForVoidedPayment): void
     {
         $this->orderStateForVoidedPayment = $orderStateForVoidedPayment;
+    }
+
+    public function getApplePayMerchantId(): ?string
+    {
+        return $this->applePayMerchantId;
+    }
+
+    public function setApplePayMerchantId(?string $applePayMerchantId): void
+    {
+        $this->applePayMerchantId = $applePayMerchantId;
+    }
+
+    public function getApplePayDomainMediaId(): ?string
+    {
+        return $this->applePayDomainMediaId;
+    }
+
+    public function setApplePayDomainMediaId(?string $applePayDomainMediaId): void
+    {
+        $this->applePayDomainMediaId = $applePayDomainMediaId;
+    }
+
+    public function getApplePayKeyMediaId(): ?string
+    {
+        return $this->applePayKeyMediaId;
+    }
+
+    public function setApplePayKeyMediaId(?string $applePayKeyMediaId): void
+    {
+        $this->applePayKeyMediaId = $applePayKeyMediaId;
+    }
+
+    public function getApplePayPemMediaId(): ?string
+    {
+        return $this->applePayPemMediaId;
+    }
+
+    public function setApplePayPemMediaId(?string $applePayPemMediaId): void
+    {
+        $this->applePayPemMediaId = $applePayPemMediaId;
     }
 }

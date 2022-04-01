@@ -1,10 +1,13 @@
 {
   "checkout-payments": {
+    "general": {
+      "permissionDeny": "You do not have permission to do this action"
+    },
     "config": {
       "api": {
-        "secretKeyLabel" : "Secret Key",
-        "publicKeyLabel" : "Public Key",
-        "sandboxModeLabel" : "Sandbox Modus",
+        "secretKeyLabel": "Secret Key",
+        "publicKeyLabel": "Public Key",
+        "sandboxModeLabel": "Sandbox Modus",
         "sandboxModeHelpText": "Aktiviert den Testmodus mit der Checkout.com Sandbox Zahlungsseite.",
         "testButton": "API-Schlüssel testen",
         "apiLinkButton": "Erhalten Sie Ihre API Keys vom Checkout Dashboard",
@@ -22,6 +25,19 @@
         "orderStateForFailedPaymentLabel": "Auftragsstatus bei fehlgeschlagener Zahlung",
         "orderStateForAuthorizedPaymentLabel": "Auftragsstatus für autorisierte Zahlungen",
         "orderStateForVoidedPaymentLabel": "Auftragsstatus für entwertete Zahlung"
+      }
+    },
+    "paymentMethod": {
+      "applePay": {
+        "configuration": {
+          "title": "Konfiguration",
+          "externalLinkLabel": "Erfahren Sie, wie Sie Apple Pay einrichten",
+          "appleMerchantIdLabel": "Apple-Händler-ID",
+          "appleMerchantIdHelpText": "Diese finden Sie in Ihrem Apple-Entwicklerkonto",
+          "domainUploadLabel": "Laden Sie Ihre Apple Merchant Domains Datei hoch (.txt)",
+          "keyUploadLabel": "Laden Sie Ihre Apple-Schlüsselzertifikatsdatei hoch (.key)",
+          "pemUploadLabel": "Laden Sie Ihre Apple PEM-Zertifikatsdatei hoch (.pem)"
+        }
       }
     }
   }

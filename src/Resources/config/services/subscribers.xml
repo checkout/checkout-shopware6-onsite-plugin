@@ -13,6 +13,10 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <service id="CheckoutCom\Shopware6\Subscriber\MediaSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <service id="CheckoutCom\Shopware6\Subscriber\OrderStateMachineSubscriber">
             <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>

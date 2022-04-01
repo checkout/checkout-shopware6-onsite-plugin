@@ -18,6 +18,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * This controller handles all tasks related to plugin configuration.
+ *
  * @RouteScope(scopes={"api"})
  */
 class ConfigController extends AbstractController
@@ -31,7 +33,7 @@ class ConfigController extends AbstractController
     /**
      * Api for test api keys
      *
-     * @Route("/api/_action/checkout/config/test-api-key", name="api.action.checkout.config.test-api-key", methods={"POST"})
+     * @Route("/api/_action/checkout-com/config/test-api-key", name="api.action.checkout-com.config.test-api-key", methods={"POST"})
      */
     public function testApiKeys(Request $request): JsonResponse
     {

@@ -2,8 +2,11 @@
 
 namespace CheckoutCom\Shopware6\Storefront\Controller;
 
+use CheckoutCom\Shopware6\Handler\Method\ApplePayHandler;
 use CheckoutCom\Shopware6\Service\CustomerService;
+use CheckoutCom\Shopware6\Service\PaymentMethodService;
 use Shopware\Core\Checkout\Customer\Exception\CustomerNotFoundByIdException;
+use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -18,9 +21,12 @@ class ComponentsController extends StorefrontController
 {
     private CustomerService $customerService;
 
-    public function __construct(CustomerService $customerService)
+    private PaymentMethodService $paymentMethodService;
+
+    public function __construct(CustomerService $customerService, PaymentMethodService $paymentMethodService)
     {
         $this->customerService = $customerService;
+        $this->paymentMethodService = $paymentMethodService;
     }
 
     /**
@@ -48,6 +54,24 @@ class ComponentsController extends StorefrontController
         return new JsonResponse([
             'success' => (bool) $result,
             'result' => $result->getErrors(),
+        ]);
+    }
+
+    /**
+     * Get apple pay payment method id
+     *
+     * @Route("/widgets/checkout-com/apple-pay-id", name="frontend.checkout-com.apple-pay-id", options={"seo"="false"}, methods={"GET"}, defaults={"XmlHttpRequest"=true})
+     */
+    public function getApplePayId(SalesChannelContext $context): JsonResponse
+    {
+        $applePay = $this->paymentMethodService->getPaymentMethodByHandlerIdentifier(
+            $context->getContext(),
+            ApplePayHandler::class,
+            true
+        );
+
+        return new JsonResponse([
+            'id' => $applePay instanceof PaymentMethodEntity ? $applePay->getId() : null,
         ]);
     }
 }

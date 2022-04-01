@@ -10,8 +10,26 @@
             </call>
         </service>
 
+        <service id="CheckoutCom\Shopware6\Controller\MediaController" public="true">
+            <argument type="service" id="CheckoutCom\Shopware6\Service\MediaService"/>
+
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
         <service id="CheckoutCom\Shopware6\Storefront\Controller\ComponentsController" public="true">
             <argument type="service" id="CheckoutCom\Shopware6\Service\CustomerService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\PaymentMethodService"/>
+
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <service id="CheckoutCom\Shopware6\Storefront\Controller\MediaController" public="true">
+            <argument type="service" id="CheckoutCom\Shopware6\Service\MediaService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\ApplePay\ApplePayService"/>
 
             <call method="setContainer">
                 <argument type="service" id="service_container"/>

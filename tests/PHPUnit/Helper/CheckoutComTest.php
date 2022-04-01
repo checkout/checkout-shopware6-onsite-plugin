@@ -8,12 +8,19 @@ use Checkout\Common\CustomerRequest;
 use Checkout\Payments\ShippingDetails;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 
 class CheckoutComTest extends TestCase
 {
     use OrderTrait;
+
+    public function testBuildAddressExpectThrowException(): void
+    {
+        static::expectException(Exception::class);
+        CheckoutComUtil::buildAddress(null);
+    }
 
     /**
      * @dataProvider customerAddressDataProvider

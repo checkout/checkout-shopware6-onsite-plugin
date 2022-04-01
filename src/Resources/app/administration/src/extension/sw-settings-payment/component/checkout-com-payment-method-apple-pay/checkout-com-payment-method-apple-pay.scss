@@ -1,0 +1,28 @@
+@import "~scss/variables";
+
+.checkout-com-payment-method-apple-pay {
+    // The media is private; it won't show on the media browser, so we don't need to use the browse media button
+    .sw-media-compact-upload-v2__browse-button {
+        display: none;
+    }
+
+    .checkout-com-payment-method-apple-pay-external-link {
+        margin-bottom: 40px;
+    }
+
+    .checkout-com-payment-method-apple-pay_upload-label {
+        display: flex;
+        line-height: 16px;
+        font-size: 14px;
+        margin-bottom: 8px;
+        color: $color-darkgray-200;
+    }
+
+    .checkout-com-payment-method-apple-pay-domain {
+        margin-bottom: 32px;
+    }
+
+    .checkout-com-payment-method-apple-pay-key {
+        margin-bottom: 32px;
+    }
+}

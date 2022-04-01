@@ -1,15 +1,15 @@
-import template from "./checkout-plugin-config-section-api.html.twig";
-import "./checkout-plugin-config-section-api.scss";
-import { DASHBOARD_LINK } from "../../../../constant/settings";
+import template from './checkout-plugin-config-section-api.html.twig';
+import './checkout-plugin-config-section-api.scss';
+import { DASHBOARD_LINK } from '../../../../constant/settings';
 
 const { Component, Mixin } = Shopware;
 
-Component.register("checkout-plugin-config-section-api", {
+Component.register('checkout-plugin-config-section-api', {
     template,
 
-    inject: ["checkoutConfigService"],
+    inject: ['checkoutConfigService'],
 
-    mixins: [Mixin.getByName("notification")],
+    mixins: [Mixin.getByName('notification')],
 
     props: {
         value: {
@@ -21,9 +21,9 @@ Component.register("checkout-plugin-config-section-api", {
     data() {
         return {
             config: {
-                secretKey: this.getConfigPropsValue("secretKey", ""),
-                publicKey: this.getConfigPropsValue("publicKey", ""),
-                sandboxMode: this.getConfigPropsValue("sandboxMode", true),
+                secretKey: this.getConfigPropsValue('secretKey', ''),
+                publicKey: this.getConfigPropsValue('publicKey', ''),
+                sandboxMode: this.getConfigPropsValue('sandboxMode', true),
             },
             error: {
                 secretKey: false,
@@ -46,7 +46,7 @@ Component.register("checkout-plugin-config-section-api", {
     watch: {
         config: {
             handler(configValue) {
-                this.$emit("change", configValue);
+                this.$emit('change', configValue);
             },
             deep: true,
         },
@@ -80,7 +80,11 @@ Component.register("checkout-plugin-config-section-api", {
                 );
 
                 results.forEach(this._showMessageResult);
-            } catch {}
+            } catch {
+                this.createNotificationError({
+                    message: this.$tc('global.notification.unspecifiedSaveErrorMessage'),
+                });
+            }
 
             this.isLoading = false;
         },
@@ -88,20 +92,20 @@ Component.register("checkout-plugin-config-section-api", {
         _showMessageResult(result) {
             const { isSecretKey, key, valid } = result;
 
-            const inputError = isSecretKey ? "secretKey" : "publicKey";
+            const inputError = isSecretKey ? 'secretKey' : 'publicKey';
 
             const keyTypeMessage = this.$tc(
                 `checkout-payments.config.api.testApiKeys.${inputError}`
             );
             const validMessage = this.$tc(
                 `checkout-payments.config.api.testApiKeys.${
-                    valid ? "isValid" : "isInvalid"
+                    valid ? 'isValid' : 'isInvalid'
                 }`
             );
 
             const messageData = {
                 title: this.$tc(
-                    "checkout-payments.config.api.testApiKeys.title"
+                    'checkout-payments.config.api.testApiKeys.title'
                 ),
                 message: `${keyTypeMessage} "${key}" ${validMessage}.`,
             };
