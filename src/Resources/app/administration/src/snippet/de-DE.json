@@ -15,6 +15,13 @@
           "isValid": "ist gültig",
           "isInvalid": "ist ungültig"
         }
+      },
+      "orderState": {
+        "skipOptionOrder": "Diese Option überspringen",
+        "orderStateForPaidPaymentLabel": "Auftragsstatus für bezahlte Zahlung",
+        "orderStateForFailedPaymentLabel": "Auftragsstatus bei fehlgeschlagener Zahlung",
+        "orderStateForAuthorizedPaymentLabel": "Auftragsstatus für autorisierte Zahlungen",
+        "orderStateForVoidedPaymentLabel": "Auftragsstatus für entwertete Zahlung"
       }
     }
   }

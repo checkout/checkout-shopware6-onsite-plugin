@@ -10,6 +10,7 @@ class SettingsFactory
     public const SYSTEM_CONFIG_DOMAIN = 'CheckoutCom.config.';
     public const SYSTEM_COMPONENT_GROUP = [
         'checkoutPluginConfigSectionApi',
+        'checkoutPluginConfigSectionOrderState',
     ];
 
     private SystemConfigService $systemConfigService;
@@ -22,7 +23,7 @@ class SettingsFactory
     /**
      * Get Checkout settings from configuration.
      */
-    public function getSettings(?string $salesChannelId = null): SettingStruct
+    public function getSettings(string $salesChannelId): SettingStruct
     {
         $structData = [];
         $systemConfigData = $this->systemConfigService->getDomain(self::SYSTEM_CONFIG_DOMAIN, $salesChannelId, true);

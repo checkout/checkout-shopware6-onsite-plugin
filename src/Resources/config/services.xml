@@ -4,8 +4,10 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <imports>
+        <import resource="services/monologs.xml"/>
         <import resource="services/controllers.xml"/>
         <import resource="services/twigs.xml"/>
+        <import resource="services/facades.xml"/>
         <import resource="services/factories.xml"/>
         <import resource="services/handlers.xml"/>
         <import resource="services/subscribers.xml"/>

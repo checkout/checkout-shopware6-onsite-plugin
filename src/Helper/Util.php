@@ -3,6 +3,7 @@
 namespace CheckoutCom\Shopware6\Helper;
 
 use Exception;
+use Shopware\Core\System\StateMachine\Event\StateMachineStateChangeEvent;
 
 class Util
 {
@@ -22,5 +23,14 @@ class Util
         }
 
         return $default;
+    }
+
+    public static function buildSideEnterStateEventName(string $technicalName, string $stateName): string
+    {
+        return implode('.', [
+            StateMachineStateChangeEvent::STATE_MACHINE_TRANSITION_SIDE_ENTER,
+            $technicalName,
+            $stateName,
+        ]);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace CheckoutCom\Shopware6\Event;
 
+use CheckoutCom\Shopware6\Struct\CustomFields\CustomerCustomFieldsStruct;
 use Shopware\Core\Checkout\Customer\CustomerDefinition;
-use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\Event\EventData\EntityType;
 use Shopware\Core\Framework\Event\EventData\EventDataCollection;
 use Shopware\Core\Framework\Event\EventData\ScalarValueType;
@@ -12,22 +12,22 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class CustomerSaveCardTokenEvent extends Event
 {
-    private CustomerEntity $customer;
+    private CustomerCustomFieldsStruct $customerCustomFields;
 
     private string $cardToken;
 
     private SalesChannelContext $context;
 
-    public function __construct(CustomerEntity $customer, string $cardToken, SalesChannelContext $context)
+    public function __construct(CustomerCustomFieldsStruct $customerCustomFields, string $cardToken, SalesChannelContext $context)
     {
-        $this->customer = $customer;
+        $this->customerCustomFields = $customerCustomFields;
         $this->cardToken = $cardToken;
         $this->context = $context;
     }
 
-    public function getCustomer(): CustomerEntity
+    public function getCustomerCustomFields(): CustomerCustomFieldsStruct
     {
-        return $this->customer;
+        return $this->customerCustomFields;
     }
 
     public function getCardToken(): string

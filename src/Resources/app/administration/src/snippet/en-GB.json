@@ -15,6 +15,13 @@
           "isValid": "is valid",
           "isInvalid": "is invalid"
         }
+      },
+      "orderState": {
+        "skipOptionOrder": "Skip this option",
+        "orderStateForPaidPaymentLabel": "Order state for paid payment",
+        "orderStateForFailedPaymentLabel": "Order state for failed payment",
+        "orderStateForAuthorizedPaymentLabel": "Order state for authorized payment",
+        "orderStateForVoidedPaymentLabel": "Order state for voided payment"
       }
     }
   }

@@ -117,11 +117,9 @@ class ConfigController extends AbstractController
         try {
             $apiClient->getSourcesClient()->createSepaSource(new SepaSourceRequest());
         } catch (CheckoutApiException $exception) {
-            foreach (self::KEYS_VALID_RESPONSE as $validResponse) {
-                // We check if the message include response status is valid
-                if (stripos($exception->getMessage(), (string) $validResponse) !== false) {
-                    return true;
-                }
+            // We check if the http_status_code response status is valid
+            if (\in_array($exception->http_status_code, self::KEYS_VALID_RESPONSE, true)) {
+                return true;
             }
         }
 
@@ -136,11 +134,9 @@ class ConfigController extends AbstractController
         try {
             $apiClient->getTokensClient()->requestCardToken(new CardTokenRequest());
         } catch (CheckoutApiException $exception) {
-            foreach (self::KEYS_VALID_RESPONSE as $validResponse) {
-                // We check if the message include response status is valid
-                if (stripos($exception->getMessage(), (string) $validResponse) !== false) {
-                    return true;
-                }
+            // We check if the http_status_code response status is valid
+            if (\in_array($exception->http_status_code, self::KEYS_VALID_RESPONSE, true)) {
+                return true;
             }
         }
 
