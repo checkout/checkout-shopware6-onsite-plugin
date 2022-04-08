@@ -8,25 +8,20 @@ use Checkout\Payments\Source\RequestTokenSource;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use CheckoutCom\Shopware6\Service\CustomerService;
-use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class CreditCardHandler extends PaymentHandler
 {
+    public function getSnippetKey(): string
+    {
+        return 'checkoutCom.paymentMethod.creditCardLabel';
+    }
+
     public static function getPaymentMethodType(): string
     {
         return PaymentSourceType::$card;
-    }
-
-    public function getPaymentMethodDisplayName(): DisplayNameTranslationCollection
-    {
-        $displayNameCollection = new DisplayNameTranslationCollection();
-        $displayNameCollection->addLangData('de-DE', 'Kreditkarte');
-        $displayNameCollection->addLangData('en-GB', 'Credit card');
-
-        return $displayNameCollection;
     }
 
     public function prepareDataForPay(PaymentRequest $paymentRequest, OrderEntity $order, CustomerEntity $customer, SalesChannelContext $context): PaymentRequest

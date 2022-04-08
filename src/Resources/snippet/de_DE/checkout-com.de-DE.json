@@ -1,5 +1,9 @@
 {
   "checkoutCom": {
+    "paymentMethod": {
+      "applePayLabel": "Apple Pay",
+      "creditCardLabel": "Kreditkarte"
+    },
     "messages": {
       "card": {
         "cardNumber": "Bitte geben Sie eine gültige Kartennummer ein.",
