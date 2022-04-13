@@ -8,6 +8,7 @@ use CheckoutCom\Shopware6\Handler\Method\CreditCardHandler;
 use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Service\PaymentMethodService;
 use CheckoutCom\Shopware6\Struct\PaymentHandler\PaymentHandlerCollection;
+use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
@@ -19,6 +20,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PaymentMethodServiceTest extends TestCase
 {
@@ -137,6 +139,7 @@ class PaymentMethodServiceTest extends TestCase
                 'paymentMethods' => [
                     $this->createConfiguredMock(CreditCardHandler::class, [
                         'getClassName' => CreditCardHandler::class,
+                        'getPaymentMethodDisplayName' => new DisplayNameTranslationCollection(),
                     ]),
                 ],
                 'existsPaymentMethods' => [
@@ -149,6 +152,7 @@ class PaymentMethodServiceTest extends TestCase
                 'paymentMethods' => [
                     $this->createConfiguredMock(CreditCardHandler::class, [
                         'getClassName' => CreditCardHandler::class,
+                        'getPaymentMethodDisplayName' => new DisplayNameTranslationCollection(),
                     ]),
                 ],
                 'existsPaymentMethods' => [
@@ -162,6 +166,7 @@ class PaymentMethodServiceTest extends TestCase
                 'paymentMethods' => [
                     $this->createConfiguredMock(CreditCardHandler::class, [
                         'getClassName' => CreditCardHandler::class,
+                        'getPaymentMethodDisplayName' => new DisplayNameTranslationCollection(),
                     ]),
                 ],
                 'existsPaymentMethods' => [
@@ -176,6 +181,7 @@ class PaymentMethodServiceTest extends TestCase
                 'paymentMethods' => [
                     $this->createConfiguredMock(CreditCardHandler::class, [
                         'getClassName' => CreditCardHandler::class,
+                        'getPaymentMethodDisplayName' => new DisplayNameTranslationCollection(),
                     ]),
                 ],
                 'existsPaymentMethods' => [
@@ -189,6 +195,7 @@ class PaymentMethodServiceTest extends TestCase
                 'paymentMethods' => [
                     $this->createConfiguredMock(CreditCardHandler::class, [
                         'getClassName' => 'Wrong class name',
+                        'getPaymentMethodDisplayName' => new DisplayNameTranslationCollection(),
                     ]),
                 ],
                 'existsPaymentMethods' => [
@@ -202,6 +209,9 @@ class PaymentMethodServiceTest extends TestCase
                 'paymentMethods' => [
                     new CreditCardHandler(
                         $this->createMock(LoggerService::class),
+                        $this->createConfiguredMock(TranslatorInterface::class, [
+                            'trans' => 'Foo',
+                        ]),
                         $this->createMock(PaymentPayFacade::class),
                         $this->createMock(PaymentFinalizeFacade::class),
                     ),

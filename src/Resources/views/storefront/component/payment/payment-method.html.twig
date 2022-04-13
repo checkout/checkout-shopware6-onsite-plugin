@@ -1,17 +1,30 @@
 {% sw_extends '@Storefront/storefront/component/payment/payment-method.html.twig' %}
 
 {% set METHOD_TYPE_CREDIT_CARD = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\CreditCardHandler::getPaymentMethodType') %}
+{% set METHOD_TYPE_APPLE_PAY = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\ApplePayHandler::getPaymentMethodType') %}
 
 {% block component_payment_method_description %}
     {{ parent() }}
 
-    {% if (payment.id is same as(selectedPaymentMethodId)) %}
-        {% block checkout_com_components_credit_card_condition %}
-            {% if payment.extensions.checkoutConfig.methodType == METHOD_TYPE_CREDIT_CARD %}
-                {% block checkout_com_components_credit_card_condition_included %}
-                    {% sw_include '@CheckoutCom/storefront/component/payment/component/credit-card-fields.html.twig' %}
-                {% endblock %}
+    {% block checkout_com_payment_method %}
+        <div id="checkoutComPaymentMethod{{ payment.id }}"
+             class="checkout-com-payment-method"
+             data-payment-method-id="{{ payment.id }}"
+            {% if payment.extensions.checkoutConfig.methodType == METHOD_TYPE_APPLE_PAY %}
+                data-apple-pay="true"
             {% endif %}
-        {% endblock %}
-    {% endif %}
+        ></div>
+    {% endblock %}
+
+    {% block checkout_com_payment_method_selected %}
+        {% if (payment.id is same as(selectedPaymentMethodId)) %}
+            {% block checkout_com_credit_card_condition %}
+                {% if payment.extensions.checkoutConfig.methodType == METHOD_TYPE_CREDIT_CARD %}
+                    {% block checkout_com_credit_card_condition_included %}
+                        {% sw_include '@CheckoutCom/storefront/component/payment/component/credit-card-fields.html.twig' %}
+                    {% endblock %}
+                {% endif %}
+            {% endblock %}
+        {% endif %}
+    {% endblock %}
 {% endblock %}

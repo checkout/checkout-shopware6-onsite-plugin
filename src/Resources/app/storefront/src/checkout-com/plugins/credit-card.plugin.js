@@ -2,7 +2,10 @@ import Plugin from "src/plugin-system/plugin.class";
 import HttpClient from "src/service/http-client.service";
 import DomAccess from "src/helper/dom-access.helper";
 
-export default class CheckoutComCreditCardComponents extends Plugin {
+/**
+ * This Class is responsible for the Credit Card integration
+ */
+export default class CheckoutComCreditCard extends Plugin {
     static options = {
         localization: {
             cardNumberPlaceholder: "",
@@ -43,7 +46,10 @@ export default class CheckoutComCreditCardComponents extends Plugin {
         this.submitPaymentEle.addEventListener("click", (event) => {
             event.preventDefault();
 
-            const cardholderNameInput = this.getElement(this.el, cardholderNameId);
+            const cardholderNameInput = this.getElement(
+                this.el,
+                cardholderNameId
+            );
 
             // We add the cardholder name to the form data (iframe checkout.com)
             if (cardholderNameInput) {

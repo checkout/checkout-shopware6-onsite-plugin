@@ -3,22 +3,21 @@
 namespace CheckoutCom\Shopware6\Tests\Handler\Method;
 
 use Checkout\Payments\PaymentRequest;
-use Checkout\Payments\Source\RequestTokenSource;
-use CheckoutCom\Shopware6\Handler\Method\CreditCardHandler;
+use CheckoutCom\Shopware6\Handler\Method\ApplePayHandler;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class CreditCardHandlerTest extends AbstractPaymentHandlerTest
+class ApplePayHandlerTest extends AbstractPaymentHandlerTest
 {
     protected PaymentHandler $paymentHandler;
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->paymentHandler = new CreditCardHandler(
+        $this->paymentHandler = new ApplePayHandler(
             $this->createMock(LoggerService::class),
             $this->createMock(TranslatorInterface::class),
             $this->paymentPayFacade,
@@ -36,6 +35,5 @@ class CreditCardHandlerTest extends AbstractPaymentHandlerTest
         );
 
         static::assertInstanceOf(PaymentRequest::class, $paymentRequest);
-        static::assertInstanceOf(RequestTokenSource::class, $paymentRequest->source);
     }
 }

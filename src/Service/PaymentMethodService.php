@@ -81,6 +81,21 @@ class PaymentMethodService
     }
 
     /**
+     * Get payment method by handler identifier.
+     */
+    public function getPaymentMethodByHandlerIdentifier(Context $context, string $handlerIdentifier, ?bool $active = null): ?PaymentMethodEntity
+    {
+        $paymentCriteria = new Criteria();
+        $paymentCriteria->addFilter(new EqualsFilter('handlerIdentifier', $handlerIdentifier));
+
+        if (!empty($active)) {
+            $paymentCriteria->addFilter(new EqualsFilter('active', $active));
+        }
+
+        return $this->paymentMethodRepository->search($paymentCriteria, $context)->first();
+    }
+
+    /**
      * Get an array of installable payment methods
      */
     private function getInstallablePaymentMethods(): InstallablePaymentMethodCollection
@@ -118,8 +133,8 @@ class PaymentMethodService
             ];
 
             $existingPaymentMethod = $this->getPaymentMethodByHandlerIdentifier(
+                $context,
                 $paymentMethodData['handlerIdentifier'],
-                $context
             );
 
             // We update the payment method data if it already exists
@@ -139,17 +154,6 @@ class PaymentMethodService
         }
 
         $this->paymentMethodRepository->upsert($paymentData, $context);
-    }
-
-    /**
-     * Get payment method by handler identifier.
-     */
-    private function getPaymentMethodByHandlerIdentifier(string $handlerIdentifier, Context $context): ?PaymentMethodEntity
-    {
-        $paymentCriteria = new Criteria();
-        $paymentCriteria->addFilter(new EqualsFilter('handlerIdentifier', $handlerIdentifier));
-
-        return $this->paymentMethodRepository->search($paymentCriteria, $context)->first();
     }
 
     /**
@@ -210,7 +214,7 @@ class PaymentMethodService
                 continue;
             }
 
-            $existingPaymentMethod = $this->getPaymentMethodByHandlerIdentifier($paymentMethodHandler, $context);
+            $existingPaymentMethod = $this->getPaymentMethodByHandlerIdentifier($context, $paymentMethodHandler);
             if (!$existingPaymentMethod instanceof PaymentMethodEntity) {
                 continue;
             }
