@@ -1,22 +1,10 @@
-# This is an example Starter pipeline configuration
-# Use a skeleton to build, test and deploy using manual and parallel steps
-# -----
-# You can specify a custom docker image from Docker Hub as your build environment.
-
-image: atlassian/default-image:3
-
 pipelines:
   default:
-    - parallel:
-      - step:
-          name: 'PHP Syntax Check'
-          script:
-            - echo "make phpunit -B"
-      - step:
-          name: 'PHP ESC Check'
-          script:
-            - echo "make ecs -B"
-      - step:
-          name: 'PHP Stan Check'
-          script:
-            - echo "make stan -B"
+    - step:
+        name: phpstan/csfixer/phpunit
+        image: dockware/flex:latest
+        script:
+          - make dev -B
+          - make ecs -B
+          - make stan -B
+          - make phpunit -B
