@@ -47,8 +47,13 @@ export default class CheckoutPaymentHandler extends Plugin {
 
     registerEvents() {
         // Submit payment form handler
-        this.paymentForm.addEventListener('submit', (event) => {
+        this.submitPaymentButton.addEventListener('click', (event) => {
             event.preventDefault();
+
+            // checks form validity before submit
+            if (!this.paymentForm.checkValidity()) {
+                return;
+            }
 
             this.createLoading();
             this.onConfirmFormSubmit(event);
@@ -84,30 +89,16 @@ export default class CheckoutPaymentHandler extends Plugin {
             },
         });
 
-        // Call the backend to process the payment
-        // Need to call the backend without the `X-Requested-With` header
-        // Because the URL is a regular form action
-        this.withoutHttpClient.post(formAction, data, (result) => {
-            if (!result) {
-                return;
-            }
+        return new Promise((resolve) => {
+            this.withoutHttpClient.post(formAction, data, (result) => {
+                if (!result) {
+                    resolve(null);
+                    return;
+                }
 
-            const {
-                success,
-                redirectUrl,
-            } = JSON.parse(result);
-            this.onPaymentResponse(success, redirectUrl);
+                resolve(JSON.parse(result));
+            });
         });
-    }
-
-    /**
-     * This method is called when the payment is processed.
-     * We need to redirect the user to the payment response page.
-     */
-    onPaymentResponse(success, redirectUrl) {
-        throw new Error(
-            `The "onPaymentResponse" method for the plugin "${this._pluginName}" is not defined.`,
-        );
     }
 
     /**

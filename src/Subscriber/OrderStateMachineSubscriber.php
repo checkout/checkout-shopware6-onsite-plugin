@@ -5,6 +5,7 @@ namespace CheckoutCom\Shopware6\Subscriber;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Helper\Util;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
+use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
 use CheckoutCom\Shopware6\Service\Order\OrderTransactionService;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
@@ -17,7 +18,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class OrderStateMachineSubscriber implements EventSubscriberInterface
 {
-    private OrderService $orderService;
+    private AbstractOrderService $orderService;
 
     private SettingsFactory $settingsFactory;
 
@@ -25,7 +26,7 @@ class OrderStateMachineSubscriber implements EventSubscriberInterface
 
     private CheckoutPaymentService $checkoutPaymentService;
 
-    public function __construct(OrderService $orderService, SettingsFactory $settingsFactory, OrderTransactionService $orderTransactionService, CheckoutPaymentService $checkoutPaymentService)
+    public function __construct(AbstractOrderService $orderService, SettingsFactory $settingsFactory, OrderTransactionService $orderTransactionService, CheckoutPaymentService $checkoutPaymentService)
     {
         $this->orderService = $orderService;
         $this->settingsFactory = $settingsFactory;

@@ -2,15 +2,15 @@
 
 namespace CheckoutCom\Shopware6\Subscriber;
 
-use CheckoutCom\Shopware6\Service\Order\OrderService;
+use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
 use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class CheckoutOrderPlacedEventSubscriber implements EventSubscriberInterface
 {
-    private OrderService $orderService;
+    private AbstractOrderService $orderService;
 
-    public function __construct(OrderService $orderService)
+    public function __construct(AbstractOrderService $orderService)
     {
         $this->orderService = $orderService;
     }

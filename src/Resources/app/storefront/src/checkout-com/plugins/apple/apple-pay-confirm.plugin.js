@@ -1,23 +1,13 @@
 import deepmerge from 'deepmerge';
 import StoreApiClient from 'src/service/store-api-client.service';
-import CheckoutPaymentHandler from '../core/checkout-payment-handler';
+import CheckoutPaymentHandler from '../../core/checkout-payment-handler';
+import { APPLE_PAY } from '../../helper/constants';
 
 /**
  * This Class is responsible for the Apple Pay payment
  * It will handle the payment process on the checkout page when the user clicks on the `Confirm` button
  */
 export default class CheckoutComApplePayConfirm extends CheckoutPaymentHandler {
-    APPLE_PAY_VERSION = 3;
-    MERCHANT_CAPABILITIES = [
-        'supports3DS',
-    ];
-    SUPPORTED_NETWORKS = [
-        'visa',
-        'masterCard',
-        'amex',
-        'discover',
-    ];
-
     static options = deepmerge(CheckoutPaymentHandler.options, {
         amount: null,
         currencyCode: null,
@@ -40,11 +30,11 @@ export default class CheckoutComApplePayConfirm extends CheckoutPaymentHandler {
             shopName,
         } = this.options;
 
-        const session = new ApplePaySession(this.APPLE_PAY_VERSION, {
+        const session = new ApplePaySession(APPLE_PAY.APPLE_PAY_VERSION, {
             countryCode,
             currencyCode,
-            merchantCapabilities: this.MERCHANT_CAPABILITIES,
-            supportedNetworks: this.SUPPORTED_NETWORKS,
+            merchantCapabilities: APPLE_PAY.MERCHANT_CAPABILITIES,
+            supportedNetworks: APPLE_PAY.SUPPORTED_NETWORKS,
             total: {
                 label: shopName,
                 amount,
@@ -88,10 +78,23 @@ export default class CheckoutComApplePayConfirm extends CheckoutPaymentHandler {
         const { token } = payment;
 
         // Submit the token to the server to process the payment
-        this.submitPaymentForm(token);
+        this.submitPaymentForm(token).then(this.onPaymentResponse.bind(this));
     }
 
-    onPaymentResponse(success, redirectUrl) {
+    /**
+     * Hande payment result and redirect users to the corresponding result page.
+     */
+    onPaymentResponse(result) {
+        if (!result) {
+            this.onApplePayCancel();
+            return;
+        }
+
+        const {
+            success,
+            redirectUrl,
+        } = result;
+
         if (success) {
             this.appleSession.completePayment(ApplePaySession.STATUS_SUCCESS);
         } else {

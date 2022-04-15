@@ -7,10 +7,10 @@ use Checkout\Payments\ThreeDsRequest;
 use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
+use CheckoutCom\Shopware6\Service\Extractor\AbstractOrderExtractor;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
@@ -33,6 +33,8 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
 
     protected DataValidator $dataValidator;
 
+    protected AbstractOrderExtractor $orderExtractor;
+
     protected CheckoutTokenService $checkoutTokenService;
 
     protected PaymentPayFacade $paymentPayFacade;
@@ -43,6 +45,7 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
         LoggerInterface $logger,
         TranslatorInterface $translator,
         DataValidator $dataValidator,
+        AbstractOrderExtractor $orderExtractor,
         CheckoutTokenService $checkoutTokenService,
         PaymentPayFacade $paymentPayFacade,
         PaymentFinalizeFacade $paymentFinalizeFacade
@@ -50,6 +53,7 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
         $this->logger = $logger;
         $this->translator = $translator;
         $this->dataValidator = $dataValidator;
+        $this->orderExtractor = $orderExtractor;
         $this->checkoutTokenService = $checkoutTokenService;
         $this->paymentPayFacade = $paymentPayFacade;
         $this->paymentFinalizeFacade = $paymentFinalizeFacade;
@@ -91,7 +95,6 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
         PaymentRequest $paymentRequest,
         RequestDataBag $dataBag,
         OrderEntity $order,
-        CustomerEntity $customer,
         SalesChannelContext $context
     ): PaymentRequest;
 

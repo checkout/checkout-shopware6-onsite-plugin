@@ -18,7 +18,7 @@ use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
-use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
@@ -260,18 +260,12 @@ class PaymentPayFacadeTest extends TestCase
         ];
     }
 
-    private function setUpCustomer(): CustomerEntity
+    private function setUpCustomer(): OrderCustomerEntity
     {
         $firstName = 'Foo';
         $lastName = 'Bar';
         $email = 'email@email.com';
-        $street = 'Street';
-        $city = 'City';
-        $zip = 'Zip';
-        $customer = $this->getCustomerEntity($firstName, $lastName, $email);
-        $customerAddress = $this->getCustomerAddressEntity($firstName, $lastName, $street, $city, $zip);
-
-        $customer->setActiveShippingAddress($customerAddress);
+        $customer = $this->getOrderCustomerEntity($firstName, $lastName, $email);
 
         return $customer;
     }

@@ -8,19 +8,12 @@ use Checkout\Common\CustomerRequest;
 use Checkout\Payments\ShippingDetails;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
-use Exception;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 
 class CheckoutComTest extends TestCase
 {
     use OrderTrait;
-
-    public function testBuildAddressExpectThrowException(): void
-    {
-        static::expectException(Exception::class);
-        CheckoutComUtil::buildAddress(null);
-    }
 
     /**
      * @dataProvider customerAddressDataProvider
@@ -57,8 +50,8 @@ class CheckoutComTest extends TestCase
         $lastName = 'LastName';
         $email = 'email@test.com';
         $fullName = sprintf('%s %s', $firstName, $lastName);
-        $customer = $this->getCustomerEntity($firstName, $lastName, $email);
-        $checkoutCustomer = CheckoutComUtil::buildCustomer($customer);
+        $orderCustomer = $this->getOrderCustomerEntity($firstName, $lastName, $email);
+        $checkoutCustomer = CheckoutComUtil::buildCustomer($orderCustomer);
 
         static::assertInstanceOf(CustomerRequest::class, $checkoutCustomer);
         static::assertSame($fullName, $checkoutCustomer->name);
@@ -228,10 +221,10 @@ class CheckoutComTest extends TestCase
         ];
     }
 
-    protected function testBuildShipDetail(CustomerAddressEntity $customerAddress): void
+    protected function testBuildShipDetail(OrderAddressEntity $orderAddress): void
     {
-        $checkoutShipDetail = CheckoutComUtil::buildShipDetail($customerAddress);
-        $expectedAddress = CheckoutComUtil::buildAddress($customerAddress);
+        $checkoutShipDetail = CheckoutComUtil::buildShipDetail($orderAddress);
+        $expectedAddress = CheckoutComUtil::buildAddress($orderAddress);
 
         static::assertInstanceOf(ShippingDetails::class, $checkoutShipDetail);
         static::assertInstanceOf(Address::class, $checkoutShipDetail->address);

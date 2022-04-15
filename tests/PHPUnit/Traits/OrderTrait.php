@@ -4,8 +4,8 @@ namespace CheckoutCom\Shopware6\Tests\Traits;
 
 use CheckoutCom\Shopware6\Service\Order\OrderService;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
-use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
-use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -29,8 +29,8 @@ trait OrderTrait
         ?string $stateName = null,
         ?string $countryISO = null,
         ?string $salutationName = null
-    ): CustomerAddressEntity {
-        $customerAddress = new CustomerAddressEntity();
+    ): OrderAddressEntity {
+        $customerAddress = new OrderAddressEntity();
         $customerAddress->setId(Uuid::randomHex());
 
         if (!empty($salutationName)) {
@@ -70,12 +70,12 @@ trait OrderTrait
         return $customerAddress;
     }
 
-    public function getCustomerEntity(
+    public function getOrderCustomerEntity(
         string $firstName,
         string $lastName,
         string $email
-    ): CustomerEntity {
-        $customer = new CustomerEntity();
+    ): OrderCustomerEntity {
+        $customer = new OrderCustomerEntity();
         $customer->setId(Uuid::randomHex());
 
         $customer->setFirstName($firstName);

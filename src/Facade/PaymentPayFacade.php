@@ -9,9 +9,10 @@ use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
-use CheckoutCom\Shopware6\Service\Extractor\OrderExtractor;
+use CheckoutCom\Shopware6\Service\Extractor\AbstractOrderExtractor;
+use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
+use CheckoutCom\Shopware6\Service\Order\AbstractOrderTransactionService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
-use CheckoutCom\Shopware6\Service\Order\OrderTransactionService;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
 use CheckoutCom\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
 use CheckoutCom\Shopware6\Struct\PaymentHandler\HandlerPrepareProcessStruct;
@@ -40,11 +41,11 @@ class PaymentPayFacade
 
     private CheckoutPaymentService $checkoutPaymentService;
 
-    private OrderExtractor $orderExtractor;
+    private AbstractOrderExtractor $orderExtractor;
 
-    private OrderService $orderService;
+    private AbstractOrderService $orderService;
 
-    private OrderTransactionService $orderTransactionService;
+    private AbstractOrderTransactionService $orderTransactionService;
 
     private RouterInterface $router;
 
@@ -53,9 +54,9 @@ class PaymentPayFacade
         EventDispatcherInterface $eventDispatcher,
         SettingsFactory $settingsFactory,
         CheckoutPaymentService $checkoutPaymentService,
-        OrderExtractor $orderExtractor,
-        OrderService $orderService,
-        OrderTransactionService $orderTransactionService,
+        AbstractOrderExtractor $orderExtractor,
+        AbstractOrderService $orderService,
+        AbstractOrderTransactionService $orderTransactionService,
         RouterInterface $router
     ) {
         $this->logger = $logger;
@@ -194,32 +195,14 @@ class PaymentPayFacade
      * @throws Exception
      */
     private function getCheckoutPaymentRequest(
-        AsyncPaymentTransactionStruct $transaction,
         RequestDataBag $dataBag,
         PaymentHandler $paymentHandler,
         OrderEntity $order,
         SalesChannelContext $context
     ): PaymentRequest {
-        $currency = $this->orderExtractor->extractCurrency($order);
-        $customer = $this->orderExtractor->extractCustomer($order, $context);
-
-        $orderNumber = $order->getOrderNumber();
-        if ($orderNumber === null) {
-            $this->logger->error(sprintf('Order number is null with order ID: %s', $order->getId()), [
-                'orderId' => $order->getId(),
-            ]);
-
-            throw new Exception('Order number is null');
-        }
-
-        $activeShippingAddress = $customer->getActiveShippingAddress();
-        if ($activeShippingAddress === null) {
-            $this->logger->error(sprintf('No active shipping address found with order ID: %s', $order->getId()), [
-                'function' => 'getCheckoutPaymentRequest',
-            ]);
-
-            throw new Exception('No active shipping address found');
-        }
+        $orderCurrency = $this->orderExtractor->extractCurrency($order);
+        $orderCustomer = $this->orderExtractor->extractCustomer($order);
+        $shippingAddress = $this->orderExtractor->extractShippingAddress($order, $context);
 
         $paymentRequest = new PaymentRequest();
 
@@ -228,32 +211,33 @@ class PaymentPayFacade
         $returnUrl = $this->generateReturnUrl($order->getId(), $context);
         $paymentRequest->success_url = $returnUrl;
         $paymentRequest->failure_url = $returnUrl;
-        $paymentRequest->shipping = CheckoutComUtil::buildShipDetail($activeShippingAddress);
+        $paymentRequest->shipping = CheckoutComUtil::buildShipDetail($shippingAddress);
 
         if ($order->getTaxStatus() === CartPrice::TAX_STATE_FREE) {
-            $paymentRequest->amount = CheckoutComUtil::formatPriceCheckout($order->getAmountNet(), $currency->getIsoCode());
+            $paymentRequest->amount = CheckoutComUtil::formatPriceCheckout($order->getAmountNet(), $orderCurrency->getIsoCode());
         } else {
-            $paymentRequest->amount = CheckoutComUtil::formatPriceCheckout($order->getAmountTotal(), $currency->getIsoCode());
+            $paymentRequest->amount = CheckoutComUtil::formatPriceCheckout($order->getAmountTotal(), $orderCurrency->getIsoCode());
         }
 
         // We uppercase the ISO code to avoid errors with checkout.com
-        $paymentRequest->currency = strtoupper($currency->getIsoCode());
+        $paymentRequest->currency = strtoupper($orderCurrency->getIsoCode());
 
         // We disable auto `Capture` for the payment
         // We will `Capture` this payment in @finalize function
         $paymentRequest->capture = false;
-        $paymentRequest->reference = $orderNumber;
-        $paymentRequest->customer = CheckoutComUtil::buildCustomer($customer);
+        $paymentRequest->reference = $this->orderExtractor->extractOrderNumber($order);
+        $paymentRequest->customer = CheckoutComUtil::buildCustomer($orderCustomer);
 
         // Prepare data for the payment depending on the payment method
         // Each method will have its own data
-        return $paymentHandler->prepareDataForPay($paymentRequest, $dataBag, $order, $customer, $context);
+        return $paymentHandler->prepareDataForPay($paymentRequest, $dataBag, $order, $context);
     }
 
     /**
      * Create checkout payment by calling Checkout API
      *
      * @throws CheckoutApiException
+     * @throws Exception
      */
     private function createCheckoutPayment(
         PaymentHandler $paymentHandler,
@@ -263,7 +247,7 @@ class PaymentPayFacade
         SalesChannelContext $salesChannelContext
     ): Payment {
         // Get the payment request, to call the Checkout API
-        $paymentRequest = $this->getCheckoutPaymentRequest($transaction, $dataBag, $paymentHandler, $order, $salesChannelContext);
+        $paymentRequest = $this->getCheckoutPaymentRequest($dataBag, $paymentHandler, $order, $salesChannelContext);
 
         $this->eventDispatcher->dispatch(new CheckoutRequestPaymentEvent($paymentRequest, $paymentHandler, $transaction, $salesChannelContext));
 
