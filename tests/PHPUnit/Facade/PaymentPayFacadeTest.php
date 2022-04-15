@@ -125,6 +125,23 @@ class PaymentPayFacadeTest extends TestCase
             $this->checkoutPaymentService->expects(static::once())
                 ->method('getPaymentDetails')
                 ->willReturn($payment);
+
+            if ($checkoutPaymentStatus === CheckoutPaymentService::STATUS_DECLINED) {
+                $currency = $this->getCurrency();
+                $customer = $this->setUpCustomer();
+
+                $this->orderExtractor->expects(static::once())
+                    ->method('extractCustomer')
+                    ->willReturn($customer);
+
+                $this->orderExtractor->expects(static::once())
+                    ->method('extractCurrency')
+                    ->willReturn($currency);
+
+                $this->checkoutPaymentService->expects(static::once())
+                    ->method('requestPayment')
+                    ->willReturn($payment);
+            }
         }
 
         $this->orderService->expects(static::exactly($approved ? 1 : 0))
@@ -190,6 +207,12 @@ class PaymentPayFacadeTest extends TestCase
                 true,
                 false,
                 'expect any checkout status',
+            ],
+            'Test has checkout payment id, request get payment detail and payment is not approved, status is declined' => [
+                'checkout id',
+                false,
+                false,
+                CheckoutPaymentService::STATUS_DECLINED,
             ],
         ];
     }

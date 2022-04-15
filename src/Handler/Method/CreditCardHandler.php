@@ -36,6 +36,8 @@ class CreditCardHandler extends PaymentHandler
         CustomerEntity $customer,
         SalesChannelContext $context
     ): PaymentRequest {
+        $this->enableThreeDsRequest($paymentRequest);
+
         $paymentRequest->source = $this->buildTokenSource($dataBag, $customer);
 
         return $paymentRequest;

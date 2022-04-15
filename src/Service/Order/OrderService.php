@@ -100,6 +100,11 @@ class OrderService extends AbstractOrderService
                 $this->orderTransitionService->setTransitionState($order, OrderStates::STATE_CANCELLED, $context);
 
                 break;
+            case CheckoutPaymentService::STATUS_PENDING:
+                $this->orderTransitionService->setTransitionState($order, OrderStates::STATE_OPEN, $context);
+
+                break;
+
             default:
                 $this->logger->critical('Unknown order status', [
                     'orderId' => $order->getId(),

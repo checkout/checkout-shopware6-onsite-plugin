@@ -142,6 +142,10 @@ class OrderServiceTest extends TestCase
                 false,
                 CheckoutPaymentService::STATUS_REFUNDED,
             ],
+            'Test transition order success with checkout status is pending' => [
+                false,
+                CheckoutPaymentService::STATUS_PENDING,
+            ],
         ];
     }
 }
