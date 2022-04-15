@@ -2,6 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Service\Transition;
 
+use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
@@ -30,6 +31,8 @@ class OrderTransactionTransitionService extends AbstractOrderTransactionTransiti
 
     /**
      * Transition the order transaction to `open` state
+     *
+     * @throws Exception
      */
     public function openTransaction(OrderTransactionEntity $transaction, Context $context): void
     {
@@ -37,7 +40,9 @@ class OrderTransactionTransitionService extends AbstractOrderTransactionTransiti
             OrderTransactionStates::STATE_OPEN,
         ];
 
-        if ($this->isFinalOrTargetStatus($transaction->getStateMachineState(), $targetStatuses)) {
+        $stateMachineState = $transaction->getStateMachineState();
+
+        if ($this->isFinalOrTargetStatus($stateMachineState, $targetStatuses)) {
             return;
         }
 
@@ -45,7 +50,9 @@ class OrderTransactionTransitionService extends AbstractOrderTransactionTransiti
             $this->logger->error(
                 sprintf(
                     'It is not allowed to change status to open from %s. Aborting reopen transition',
-                    $transaction->getStateMachineState()->getName()
+                    $stateMachineState ? $stateMachineState->getName() : ''
+                    // Actually, $stateMachineState never not null because of the check above in isFinalOrTargetStatus method
+                    // But still need to check it to avoid errors and php stan lints
                 )
             );
 
@@ -57,6 +64,8 @@ class OrderTransactionTransitionService extends AbstractOrderTransactionTransiti
 
     /**
      * Transition the order transaction to `paid` state
+     *
+     * @throws Exception
      */
     public function processTransaction(OrderTransactionEntity $transaction, Context $context): void
     {
@@ -77,6 +86,8 @@ class OrderTransactionTransitionService extends AbstractOrderTransactionTransiti
 
     /**
      * Transition the order transaction to `in-process` state
+     *
+     * @throws Exception
      */
     public function payTransaction(OrderTransactionEntity $transaction, Context $context): void
     {
@@ -97,6 +108,8 @@ class OrderTransactionTransitionService extends AbstractOrderTransactionTransiti
 
     /**
      * Transition the order transaction to `cancelled` state
+     *
+     * @throws Exception
      */
     public function cancelTransaction(OrderTransactionEntity $transaction, Context $context): void
     {
@@ -117,6 +130,8 @@ class OrderTransactionTransitionService extends AbstractOrderTransactionTransiti
 
     /**
      * Transition the order transaction to `failed` state
+     *
+     * @throws Exception
      */
     public function failTransaction(OrderTransactionEntity $transaction, Context $context): void
     {
@@ -138,6 +153,8 @@ class OrderTransactionTransitionService extends AbstractOrderTransactionTransiti
 
     /**
      * Transition the order transaction to `authorized` state
+     *
+     * @throws Exception
      */
     public function authorizeTransaction(OrderTransactionEntity $transaction, Context $context): void
     {
@@ -159,6 +176,8 @@ class OrderTransactionTransitionService extends AbstractOrderTransactionTransiti
 
     /**
      * Transition the order transaction to `paid` state
+     *
+     * @throws Exception
      */
     public function refundTransaction(OrderTransactionEntity $transaction, Context $context): void
     {
@@ -179,6 +198,8 @@ class OrderTransactionTransitionService extends AbstractOrderTransactionTransiti
 
     /**
      * Transition the order transaction to `refunded_partially` state
+     *
+     * @throws Exception
      */
     public function partialRefundTransaction(OrderTransactionEntity $transaction, Context $context): void
     {
@@ -197,8 +218,18 @@ class OrderTransactionTransitionService extends AbstractOrderTransactionTransiti
         $this->transition($transaction, StateMachineTransitionActions::ACTION_REFUND_PARTIALLY, $context);
     }
 
-    private function isFinalOrTargetStatus(StateMachineStateEntity $stateMachineState, array $targetStatus): bool
+    /**
+     * @throws Exception
+     */
+    private function isFinalOrTargetStatus(?StateMachineStateEntity $stateMachineState, array $targetStatus): bool
     {
+        if (!$stateMachineState instanceof StateMachineStateEntity) {
+            throw new Exception(sprintf(
+                'State machine state is not an instance of StateMachineStateEntity, method: %s',
+                __METHOD__
+            ));
+        }
+
         if ($this->isFinalStatus($stateMachineState)) {
             return true;
         }

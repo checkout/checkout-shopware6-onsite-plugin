@@ -174,6 +174,8 @@ class PaymentPayFacade
 
     /**
      * Get checkout payment request
+     *
+     * @throws Exception
      */
     private function getCheckoutPaymentRequest(
         AsyncPaymentTransactionStruct $transaction,
@@ -184,11 +186,29 @@ class PaymentPayFacade
         $currency = $this->orderExtractor->extractCurrency($order);
         $customer = $this->orderExtractor->extractCustomer($order, $context);
 
+        $orderNumber = $order->getOrderNumber();
+        if ($orderNumber === null) {
+            $this->logger->error(sprintf('Order number is null with order ID: %s', $order->getId()), [
+                'orderId' => $order->getId(),
+            ]);
+
+            throw new Exception('Order number is null');
+        }
+
+        $activeShippingAddress = $customer->getActiveShippingAddress();
+        if ($activeShippingAddress === null) {
+            $this->logger->error(sprintf('No active shipping address found with order ID: %s', $order->getId()), [
+                'function' => 'getCheckoutPaymentRequest',
+            ]);
+
+            throw new Exception('No active shipping address found');
+        }
+
         $paymentRequest = new PaymentRequest();
 
         // We add a success URL to the payment request, so we can redirect to Shopware after the payment
         $paymentRequest->success_url = $transaction->getReturnUrl();
-        $paymentRequest->shipping = CheckoutComUtil::buildShipDetail($customer->getActiveShippingAddress());
+        $paymentRequest->shipping = CheckoutComUtil::buildShipDetail($activeShippingAddress);
 
         if ($order->getTaxStatus() === CartPrice::TAX_STATE_FREE) {
             $paymentRequest->amount = CheckoutComUtil::formatPriceCheckout($order->getAmountNet(), $currency->getIsoCode());
@@ -202,7 +222,7 @@ class PaymentPayFacade
         // We disable auto `Capture` for the payment
         // We will `Capture` this payment in @finalize function
         $paymentRequest->capture = false;
-        $paymentRequest->reference = $order->getOrderNumber();
+        $paymentRequest->reference = $orderNumber;
         $paymentRequest->customer = CheckoutComUtil::buildCustomer($customer);
 
         // Prepare data for the payment depending on the payment method

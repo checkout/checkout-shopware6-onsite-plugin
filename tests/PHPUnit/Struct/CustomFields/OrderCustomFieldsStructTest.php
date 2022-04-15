@@ -10,7 +10,7 @@ class OrderCustomFieldsStructTest extends TestCase
     /**
      * @dataProvider getCheckoutReturnUrlProvider
      */
-    public function testGetCheckoutReturnUrl(?string $checkoutReturnUrl, ?string $transactionReturnUrl, $expected): void
+    public function testGetCheckoutReturnUrl(?string $checkoutReturnUrl, string $transactionReturnUrl, $expected): void
     {
         $orderCustomFieldsStruct = new OrderCustomFieldsStruct();
         $orderCustomFieldsStruct->setCheckoutReturnUrl($checkoutReturnUrl);
@@ -22,10 +22,10 @@ class OrderCustomFieldsStructTest extends TestCase
     public function getCheckoutReturnUrlProvider(): array
     {
         return [
-            'Test empty checkoutReturnUrl & transactionReturnUrl, it has to return null' => [
+            'Test empty checkoutReturnUrl & transactionReturnUrl, it has to return empty' => [
                 null,
-                null,
-                null,
+                '',
+                '',
             ],
             'Test empty checkoutReturnUrl but transactionReturnUrl has value, it has to return transactionReturnUrl' => [
                 null,

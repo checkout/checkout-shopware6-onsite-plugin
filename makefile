@@ -31,7 +31,7 @@ phpunit: ## Starts all PHPUnit Tests
 	php ./vendor/bin/phpunit --configuration=./phpunit.xml
 
 stan: ## Starts the PHPStan Analyser
-	php ./vendor/bin/phpstan --memory-limit=1G analyse .
+	php ./vendor/bin/phpstan --memory-limit=1G analyse -c ./.phpstan.neon
 
 ecs: ## Starts the ESC checker
 	php ./vendor/bin/ecs check . --config easy-coding-standard.php

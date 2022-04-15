@@ -70,7 +70,7 @@ class OrderTransactionService extends AbstractOrderTransactionService
      *
      * @throws Exception
      */
-    public function processTransition(OrderTransactionEntity $transaction, string $checkoutPaymentStatus, Context $context): void
+    public function processTransition(OrderTransactionEntity $transaction, ?string $checkoutPaymentStatus, Context $context): void
     {
         switch ($checkoutPaymentStatus) {
             case CheckoutPaymentService::STATUS_DECLINED:

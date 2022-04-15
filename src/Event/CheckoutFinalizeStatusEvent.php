@@ -16,9 +16,9 @@ class CheckoutFinalizeStatusEvent extends Event
 
     private Payment $payment;
 
-    private string $paymentStatus;
+    private ?string $paymentStatus;
 
-    public function __construct(OrderEntity $order, Payment $payment, string $paymentStatus)
+    public function __construct(OrderEntity $order, Payment $payment, ?string $paymentStatus)
     {
         $this->order = $order;
         $this->payment = $payment;
@@ -35,7 +35,7 @@ class CheckoutFinalizeStatusEvent extends Event
         return $this->payment;
     }
 
-    public function getPaymentStatus(): string
+    public function getPaymentStatus(): ?string
     {
         return $this->paymentStatus;
     }

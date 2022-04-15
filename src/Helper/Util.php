@@ -8,9 +8,12 @@ use Shopware\Core\System\StateMachine\Event\StateMachineStateChangeEvent;
 class Util
 {
     /**
-     * @param callable|string $callback
+     * @param callable|string   $callback
+     * @param mixed|string|null $default
      *
      * @throws Exception
+     *
+     * @return mixed|string|null
      */
     public static function handleCallUserFunc($callback, bool $throwable = true, $default = null)
     {

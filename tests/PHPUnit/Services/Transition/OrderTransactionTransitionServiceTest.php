@@ -7,6 +7,7 @@ use CheckoutCom\Shopware6\Service\Transition\OrderTransactionTransitionService;
 use CheckoutCom\Shopware6\Service\Transition\TransitionService;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
+use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
@@ -48,9 +49,14 @@ class OrderTransactionTransitionServiceTest extends TestCase
     /**
      * @dataProvider openTransactionProvider
      */
-    public function testOpenTransaction(int $expectedTransition, string $currentState, bool $isTargetStatus, bool $allowTransition): void
-    {
-        $orderTransaction = $this->handleTwoTimeTransition($expectedTransition, $currentState, $isTargetStatus, $allowTransition, false);
+    public function testOpenTransaction(
+        int $expectedTransition,
+        string $currentState,
+        bool $hasStateMachineState,
+        bool $isTargetStatus,
+        bool $allowTransition
+    ): void {
+        $orderTransaction = $this->handleTwoTimeTransition($expectedTransition, $currentState, $hasStateMachineState, $isTargetStatus, $allowTransition, false);
 
         $this->orderTransactionTransition->openTransaction($orderTransaction, $this->context);
     }
@@ -58,9 +64,22 @@ class OrderTransactionTransitionServiceTest extends TestCase
     /**
      * @dataProvider processTransactionProvider
      */
-    public function testProcessTransaction(int $expectedTransition, string $currentState, bool $isTargetStatus, bool $allowTransition, bool $isBridgeTargetStatus): void
-    {
-        $orderTransaction = $this->handleTwoTimeTransition($expectedTransition, $currentState, $isTargetStatus, $allowTransition, $isBridgeTargetStatus);
+    public function testProcessTransaction(
+        int $expectedTransition,
+        string $currentState,
+        bool $hasStateMachineState,
+        bool $isTargetStatus,
+        bool $allowTransition,
+        bool $isBridgeTargetStatus
+    ): void {
+        $orderTransaction = $this->handleTwoTimeTransition(
+            $expectedTransition,
+            $currentState,
+            $hasStateMachineState,
+            $isTargetStatus,
+            $allowTransition,
+            $isBridgeTargetStatus
+        );
 
         $this->orderTransactionTransition->processTransaction($orderTransaction, $this->context);
     }
@@ -68,9 +87,22 @@ class OrderTransactionTransitionServiceTest extends TestCase
     /**
      * @dataProvider payTransactionProvider
      */
-    public function testPayTransaction(int $expectedTransition, string $currentState, bool $isTargetStatus, bool $allowTransition, bool $isBridgeTargetStatus): void
-    {
-        $orderTransaction = $this->handleTwoTimeTransition($expectedTransition, $currentState, $isTargetStatus, $allowTransition, $isBridgeTargetStatus);
+    public function testPayTransaction(
+        int $expectedTransition,
+        string $currentState,
+        bool $hasStateMachineState,
+        bool $isTargetStatus,
+        bool $allowTransition,
+        bool $isBridgeTargetStatus
+    ): void {
+        $orderTransaction = $this->handleTwoTimeTransition(
+            $expectedTransition,
+            $currentState,
+            $hasStateMachineState,
+            $isTargetStatus,
+            $allowTransition,
+            $isBridgeTargetStatus
+        );
 
         $this->orderTransactionTransition->payTransaction($orderTransaction, $this->context);
     }
@@ -78,9 +110,22 @@ class OrderTransactionTransitionServiceTest extends TestCase
     /**
      * @dataProvider cancelTransactionProvider
      */
-    public function testCancelTransaction(int $expectedTransition, string $currentState, bool $isTargetStatus, bool $allowTransition, bool $isBridgeTargetStatus): void
-    {
-        $orderTransaction = $this->handleTwoTimeTransition($expectedTransition, $currentState, $isTargetStatus, $allowTransition, $isBridgeTargetStatus);
+    public function testCancelTransaction(
+        int $expectedTransition,
+        string $currentState,
+        bool $hasStateMachineState,
+        bool $isTargetStatus,
+        bool $allowTransition,
+        bool $isBridgeTargetStatus
+    ): void {
+        $orderTransaction = $this->handleTwoTimeTransition(
+            $expectedTransition,
+            $currentState,
+            $hasStateMachineState,
+            $isTargetStatus,
+            $allowTransition,
+            $isBridgeTargetStatus
+        );
 
         $this->orderTransactionTransition->cancelTransaction($orderTransaction, $this->context);
     }
@@ -88,9 +133,22 @@ class OrderTransactionTransitionServiceTest extends TestCase
     /**
      * @dataProvider failTransactionProvider
      */
-    public function testFailTransaction(int $expectedTransition, string $currentState, bool $isTargetStatus, bool $allowTransition, bool $isBridgeTargetStatus): void
-    {
-        $orderTransaction = $this->handleTwoTimeTransition($expectedTransition, $currentState, $isTargetStatus, $allowTransition, $isBridgeTargetStatus);
+    public function testFailTransaction(
+        int $expectedTransition,
+        string $currentState,
+        bool $hasStateMachineState,
+        bool $isTargetStatus,
+        bool $allowTransition,
+        bool $isBridgeTargetStatus
+    ): void {
+        $orderTransaction = $this->handleTwoTimeTransition(
+            $expectedTransition,
+            $currentState,
+            $hasStateMachineState,
+            $isTargetStatus,
+            $allowTransition,
+            $isBridgeTargetStatus
+        );
 
         $this->orderTransactionTransition->failTransaction($orderTransaction, $this->context);
     }
@@ -98,9 +156,22 @@ class OrderTransactionTransitionServiceTest extends TestCase
     /**
      * @dataProvider authorizeTransactionProvider
      */
-    public function testAuthorizeTransaction(int $expectedTransition, string $currentState, bool $isTargetStatus, bool $allowTransition, bool $isBridgeTargetStatus): void
-    {
-        $orderTransaction = $this->handleTwoTimeTransition($expectedTransition, $currentState, $isTargetStatus, $allowTransition, $isBridgeTargetStatus);
+    public function testAuthorizeTransaction(
+        int $expectedTransition,
+        string $currentState,
+        bool $hasStateMachineState,
+        bool $isTargetStatus,
+        bool $allowTransition,
+        bool $isBridgeTargetStatus
+    ): void {
+        $orderTransaction = $this->handleTwoTimeTransition(
+            $expectedTransition,
+            $currentState,
+            $hasStateMachineState,
+            $isTargetStatus,
+            $allowTransition,
+            $isBridgeTargetStatus
+        );
 
         $this->orderTransactionTransition->authorizeTransaction($orderTransaction, $this->context);
     }
@@ -108,9 +179,22 @@ class OrderTransactionTransitionServiceTest extends TestCase
     /**
      * @dataProvider refundTransactionProvider
      */
-    public function testRefundTransaction(int $expectedTransition, string $currentState, bool $isTargetStatus, bool $allowTransition, bool $isBridgeTargetStatus): void
-    {
-        $orderTransaction = $this->handleTwoTimeTransition($expectedTransition, $currentState, $isTargetStatus, $allowTransition, $isBridgeTargetStatus);
+    public function testRefundTransaction(
+        int $expectedTransition,
+        string $currentState,
+        bool $hasStateMachineState,
+        bool $isTargetStatus,
+        bool $allowTransition,
+        bool $isBridgeTargetStatus
+    ): void {
+        $orderTransaction = $this->handleTwoTimeTransition(
+            $expectedTransition,
+            $currentState,
+            $hasStateMachineState,
+            $isTargetStatus,
+            $allowTransition,
+            $isBridgeTargetStatus
+        );
 
         $this->orderTransactionTransition->refundTransaction($orderTransaction, $this->context);
     }
@@ -118,9 +202,22 @@ class OrderTransactionTransitionServiceTest extends TestCase
     /**
      * @dataProvider partialRefundTransactionProvider
      */
-    public function testPartialRefundTransaction(int $expectedTransition, string $currentState, bool $isTargetStatus, bool $allowTransition, bool $isBridgeTargetStatus): void
-    {
-        $orderTransaction = $this->handleTwoTimeTransition($expectedTransition, $currentState, $isTargetStatus, $allowTransition, $isBridgeTargetStatus);
+    public function testPartialRefundTransaction(
+        int $expectedTransition,
+        string $currentState,
+        bool $hasStateMachineState,
+        bool $isTargetStatus,
+        bool $allowTransition,
+        bool $isBridgeTargetStatus
+    ): void {
+        $orderTransaction = $this->handleTwoTimeTransition(
+            $expectedTransition,
+            $currentState,
+            $hasStateMachineState,
+            $isTargetStatus,
+            $allowTransition,
+            $isBridgeTargetStatus
+        );
 
         $this->orderTransactionTransition->partialRefundTransaction($orderTransaction, $this->context);
     }
@@ -128,9 +225,17 @@ class OrderTransactionTransitionServiceTest extends TestCase
     public function openTransactionProvider(): array
     {
         return [
+            'Test has not state machine state' => [
+                0,
+                OrderTransactionStates::STATE_REFUNDED,
+                false,
+                false,
+                false,
+            ],
             'Test is final state' => [
                 0,
                 OrderTransactionStates::STATE_REFUNDED,
+                true,
                 false,
                 false,
             ],
@@ -138,17 +243,20 @@ class OrderTransactionTransitionServiceTest extends TestCase
                 0,
                 OrderTransactionStates::STATE_OPEN,
                 true,
+                true,
                 false,
             ],
             'Test allow transition' => [
                 1,
                 OrderTransactionStates::STATE_IN_PROGRESS,
+                true,
                 false,
                 true,
             ],
             'Test does not allow transition' => [
                 0,
                 OrderTransactionStates::STATE_IN_PROGRESS,
+                true,
                 false,
                 false,
             ],
@@ -193,31 +301,35 @@ class OrderTransactionTransitionServiceTest extends TestCase
     private function handleTwoTimeTransition(
         int $expectedTransition,
         string $currentState,
+        bool $hasStateMachineState,
         bool $isTargetStatus,
         bool $allowTransition,
         bool $isBridgeTargetStatus
     ): OrderTransactionEntity {
-        $stateMachineState = new StateMachineStateEntity();
-        $stateMachineState->setId('stateId');
-        $stateMachineState->setName('foo');
-        $stateMachineState->setTechnicalName($currentState);
-
         $orderTransaction = $this->getOrderTransaction();
-        $orderTransaction->setStateMachineState($stateMachineState);
+        if ($hasStateMachineState) {
+            $stateMachineState = new StateMachineStateEntity();
+            $stateMachineState->setId('stateId');
+            $stateMachineState->setName('foo');
+            $stateMachineState->setTechnicalName($currentState);
+            $orderTransaction->setStateMachineState($stateMachineState);
 
-        $isFinal = $currentState === OrderTransactionStates::STATE_REFUNDED;
-        $passThrowFinalOrTargetStatus = !$isFinal && !$isTargetStatus;
+            $isFinal = $currentState === OrderTransactionStates::STATE_REFUNDED;
+            $passThrowFinalOrTargetStatus = !$isFinal && !$isTargetStatus;
 
-        $this->transitionService->expects(static::exactly($isFinal ? 0 : ($isBridgeTargetStatus ? 2 : 1)))
-            ->method('inStates')
-            ->willReturnOnConsecutiveCalls($isTargetStatus, $isBridgeTargetStatus);
+            $this->transitionService->expects(static::exactly($isFinal ? 0 : ($isBridgeTargetStatus ? 2 : 1)))
+                ->method('inStates')
+                ->willReturnOnConsecutiveCalls($isTargetStatus, $isBridgeTargetStatus);
 
-        $this->transitionService->expects(static::exactly($passThrowFinalOrTargetStatus ? 1 : 0))
-            ->method('allowedTransition')
-            ->willReturn($allowTransition);
+            $this->transitionService->expects(static::exactly($passThrowFinalOrTargetStatus ? 1 : 0))
+                ->method('allowedTransition')
+                ->willReturn($allowTransition);
 
-        $this->transitionService->expects(static::exactly($expectedTransition))
-            ->method('transition');
+            $this->transitionService->expects(static::exactly($expectedTransition))
+                ->method('transition');
+        } else {
+            static::expectException(Exception::class);
+        }
 
         return $orderTransaction;
     }
@@ -225,9 +337,18 @@ class OrderTransactionTransitionServiceTest extends TestCase
     private function getTwoTimeTransitionProvider(string $inTargetStatus, string $bridgeStatus = OrderTransactionStates::STATE_OPEN): array
     {
         return [
+            'Test has not state machine state' => [
+                0,
+                OrderTransactionStates::STATE_REFUNDED,
+                false,
+                false,
+                false,
+                false,
+            ],
             'Test is final state' => [
                 0,
                 OrderTransactionStates::STATE_REFUNDED,
+                true,
                 false,
                 false,
                 false,
@@ -236,12 +357,14 @@ class OrderTransactionTransitionServiceTest extends TestCase
                 0,
                 $inTargetStatus,
                 true,
+                true,
                 false,
                 false,
             ],
             'Test does not allow transition' => [
                 1,
                 OrderTransactionStates::STATE_OPEN,
+                true,
                 false,
                 true,
                 false,
@@ -249,6 +372,7 @@ class OrderTransactionTransitionServiceTest extends TestCase
             'Test does not allow transition so it will handle bridge transition but the status is already set to bridge status so it will be ignored' => [
                 1,
                 $bridgeStatus,
+                true,
                 false,
                 false,
                 true,
