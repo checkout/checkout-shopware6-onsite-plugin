@@ -6,6 +6,7 @@ use Checkout\Common\Address;
 use Checkout\Common\Currency;
 use Checkout\Common\CustomerRequest;
 use Checkout\Payments\ShippingDetails;
+use Exception;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 
@@ -13,16 +14,22 @@ class CheckoutComUtil
 {
     /**
      * Build address request checkout.com from customer address entity shopware
+     *
+     * @throws Exception
      */
-    public static function buildAddress(CustomerAddressEntity $customerAddress): Address
+    public static function buildAddress(?CustomerAddressEntity $customerAddress): Address
     {
+        if (!$customerAddress instanceof CustomerAddressEntity) {
+            throw new Exception('Customer address is not instance of CustomerAddressEntity');
+        }
+
         $address = new Address();
         $address->address_line1 = $customerAddress->getStreet();
         $address->address_line2 = $customerAddress->getAdditionalAddressLine1() ?? $customerAddress->getAdditionalAddressLine2() ?? '';
         $address->city = $customerAddress->getCity();
-        $address->state = $customerAddress->getCountryState() !== null ? $customerAddress->getCountryState()->getName() : '';
+        $address->state = $customerAddress->getCountryState() !== null ? ($customerAddress->getCountryState()->getName() ?? '') : '';
         $address->zip = $customerAddress->getZipcode();
-        $address->country = $customerAddress->getCountry() !== null ? $customerAddress->getCountry()->getIso() : '';
+        $address->country = $customerAddress->getCountry() !== null ? ($customerAddress->getCountry()->getIso() ?? '') : '';
 
         return $address;
     }

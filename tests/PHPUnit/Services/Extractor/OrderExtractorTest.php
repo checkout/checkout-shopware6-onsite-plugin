@@ -42,19 +42,23 @@ class OrderExtractorTest extends TestCase
     /**
      * @dataProvider extractCustomerProvider
      */
-    public function testExtractCustomer(bool $hasOrderCustomer): void
+    public function testExtractCustomer(bool $hasOrderCustomer, bool $hasCustomerId): void
     {
         $order = $this->getOrder();
         if ($hasOrderCustomer) {
             $orderCustomer = $this->createConfiguredMock(OrderCustomerEntity::class, [
-                'getCustomerId' => 'foo',
+                'getCustomerId' => $hasCustomerId ? 'foo' : null,
             ]);
             $order->setOrderCustomer($orderCustomer);
+
+            if (!$hasCustomerId) {
+                static::expectException(EntityNotFoundException::class);
+            }
         } else {
             static::expectException(EntityNotFoundException::class);
         }
 
-        $this->customerService->expects(static::exactly($hasOrderCustomer ? 1 : 0))
+        $this->customerService->expects(static::exactly($hasOrderCustomer && $hasCustomerId ? 1 : 0))
             ->method('getCustomer');
 
         $this->orderExtractor->extractCustomer($order, $this->salesChannelContext);
@@ -83,8 +87,14 @@ class OrderExtractorTest extends TestCase
         return [
             'Test could not find order customer' => [
                 false,
+                true,
+            ],
+            'Test could not found customer ID from Order Customer Entity' => [
+                true,
+                false,
             ],
             'Test found order order customer' => [
+                true,
                 true,
             ],
         ];

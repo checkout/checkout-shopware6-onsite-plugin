@@ -6,9 +6,9 @@ class HandlerPrepareProcessStruct
 {
     private string $redirectUrl;
 
-    private string $checkoutComPaymentId;
+    private ?string $checkoutComPaymentId;
 
-    public function __construct(string $redirectUrl, string $checkoutComPaymentId)
+    public function __construct(string $redirectUrl, ?string $checkoutComPaymentId)
     {
         $this->redirectUrl = $redirectUrl;
         $this->checkoutComPaymentId = $checkoutComPaymentId;
@@ -24,12 +24,12 @@ class HandlerPrepareProcessStruct
         $this->redirectUrl = $redirectUrl;
     }
 
-    public function getCheckoutComPaymentId(): string
+    public function getCheckoutComPaymentId(): ?string
     {
         return $this->checkoutComPaymentId;
     }
 
-    public function setCheckoutComPaymentId(string $checkoutComPaymentId): void
+    public function setCheckoutComPaymentId(?string $checkoutComPaymentId): void
     {
         $this->checkoutComPaymentId = $checkoutComPaymentId;
     }

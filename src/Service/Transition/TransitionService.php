@@ -2,6 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Service\Transition;
 
+use Exception;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionEntity;
@@ -17,8 +18,18 @@ class TransitionService
         $this->stateMachineRegistry = $stateMachineRegistry;
     }
 
-    public function inStates(StateMachineStateEntity $stateMachineState, array $targetStates): bool
+    /**
+     * @throws Exception
+     */
+    public function inStates(?StateMachineStateEntity $stateMachineState, array $targetStates): bool
     {
+        if (!$stateMachineState instanceof StateMachineStateEntity) {
+            throw new Exception(sprintf(
+                'State machine state is not an instance of StateMachineStateEntity, method: %s',
+                __METHOD__
+            ));
+        }
+
         return \in_array($stateMachineState->getTechnicalName(), $targetStates, true);
     }
 

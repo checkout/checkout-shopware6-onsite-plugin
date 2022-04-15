@@ -34,8 +34,17 @@ class OrderExtractor
             throw new EntityNotFoundException('Customer of Order', $order->getId());
         }
 
+        $customerId = $customer->getCustomerId();
+        if ($customerId === null) {
+            $this->logger->critical(
+                sprintf('Could not found customer ID from Order Customer Entity with order ID %s', $order->getId())
+            );
+
+            throw new EntityNotFoundException('Customer of OrderCustomer', $order->getId());
+        }
+
         return $this->customerService->getCustomer(
-            $customer->getCustomerId(),
+            $customerId,
             $context
         );
     }

@@ -4,6 +4,7 @@ namespace CheckoutCom\Shopware6\Service;
 
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
+use Stringable;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 class LoggerService implements LoggerInterface
@@ -91,6 +92,9 @@ class LoggerService implements LoggerInterface
         );
     }
 
+    /**
+     * @param string|Stringable $message
+     */
     private function modifyMessage($message): string
     {
         return sprintf('%s (Session: %s)', $message, $this->sessionId);

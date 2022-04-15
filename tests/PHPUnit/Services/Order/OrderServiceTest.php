@@ -56,7 +56,7 @@ class OrderServiceTest extends TestCase
     /**
      * @dataProvider updateCheckoutCustomFieldsProvider
      */
-    public function testUpdateCheckoutCustomFields(?string $checkoutReturnUrl, ?string $transactionReturnUrl, ?string $paymentId): void
+    public function testUpdateCheckoutCustomFields(string $checkoutReturnUrl, ?string $transactionReturnUrl, ?string $paymentId): void
     {
         $order = $this->getOrder();
 
@@ -98,13 +98,13 @@ class OrderServiceTest extends TestCase
     {
         return [
             'Test null checkout return url' => [
-                null,
+                '',
                 'https://www.example.com/return',
                 'payment_id',
             ],
             'Test null transaction return url' => [
                 'https://www.example.com/return',
-                null,
+                '',
                 'payment_id',
             ],
             'Test null payment id' => [

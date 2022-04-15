@@ -61,7 +61,7 @@ class PaymentFinalizeFacade
                 'orderTransactionId' => $orderTransaction->getId(),
             ]);
 
-            throw new CheckoutPaymentIdNotFoundException($order->getOrderNumber());
+            throw new CheckoutPaymentIdNotFoundException($order);
         }
 
         // Get the payment from the checkout.com API

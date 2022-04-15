@@ -68,6 +68,8 @@ class OrderTransitionService extends AbstractOrderTransitionService
 
     /**
      * Transition the order to `open` state
+     *
+     * @throws Exception
      */
     public function openOrder(OrderEntity $order, Context $context): void
     {
@@ -84,6 +86,8 @@ class OrderTransitionService extends AbstractOrderTransitionService
 
     /**
      * Transition the order to `in_progress` state
+     *
+     * @throws Exception
      */
     public function progressOrder(OrderEntity $order, Context $context): void
     {
@@ -100,6 +104,8 @@ class OrderTransitionService extends AbstractOrderTransitionService
 
     /**
      * Transition the order to `completed` state
+     *
+     * @throws Exception
      */
     public function completeOrder(OrderEntity $order, Context $context): void
     {
@@ -116,6 +122,8 @@ class OrderTransitionService extends AbstractOrderTransitionService
 
     /**
      * Transition the order to `cancelled` state
+     *
+     * @throws Exception
      */
     public function cancelOrder(OrderEntity $order, Context $context): void
     {

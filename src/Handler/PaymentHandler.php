@@ -6,6 +6,7 @@ use Checkout\Payments\PaymentRequest;
 use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -64,6 +65,8 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
 
     /**
      * Each payment methods has to implement this method to prepare data for the checkout.com payment request
+     *
+     * @throws Exception
      */
     abstract public function prepareDataForPay(PaymentRequest $paymentRequest, OrderEntity $order, CustomerEntity $customer, SalesChannelContext $context): PaymentRequest;
 

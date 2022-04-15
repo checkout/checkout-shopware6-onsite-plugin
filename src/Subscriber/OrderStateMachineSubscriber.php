@@ -76,6 +76,8 @@ class OrderStateMachineSubscriber implements EventSubscriberInterface
     private function handleOrderTransactionRefunded(StateMachineStateChangeEvent $event): void
     {
         $orderTransaction = $this->orderTransactionService->getTransaction($event->getTransition()->getEntityId(), $event->getContext());
+
+        /** @var OrderEntity $order */
         $order = $orderTransaction->getOrder();
 
         // Get plugin settings

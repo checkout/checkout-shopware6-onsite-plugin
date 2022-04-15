@@ -38,7 +38,7 @@ class CheckoutConfirmPageSubscriber implements EventSubscriberInterface
         $this->addCheckoutSettingsToConfirmPage($event);
     }
 
-    public function onAccountEditOrderPageLoaded($event): void
+    public function onAccountEditOrderPageLoaded(AccountEditOrderPageLoadedEvent $event): void
     {
         $this->settings = $this->settingFactory->getSettings($event->getSalesChannelContext()->getSalesChannel()->getId());
         $this->addCheckoutSettingsToConfirmPage($event);

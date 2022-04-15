@@ -2,14 +2,19 @@
 
 namespace CheckoutCom\Shopware6\Exception;
 
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckoutPaymentIdNotFoundException extends ShopwareHttpException
 {
-    public function __construct(string $orderNumber, array $parameters = [])
+    public function __construct(OrderEntity $order, array $parameters = [])
     {
-        $message = sprintf('The payment ID from checkout.com could not be found within the order number: %s', $orderNumber);
+        $message = sprintf(
+            'The payment ID from checkout.com could not be found within the order ID: %s, order number: %s',
+            $order->getId(),
+            $order->getOrderNumber()
+        );
         parent::__construct($message, $parameters);
     }
 

@@ -5,6 +5,7 @@ namespace CheckoutCom\Shopware6\Tests\Services\Transition;
 use CheckoutCom\Shopware6\Service\Transition\TransitionService;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
+use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\OrderDefinition;
@@ -38,11 +39,16 @@ class TransitionServiceTest extends TestCase
     /**
      * @dataProvider getInStateProvider
      */
-    public function testInStates(string $technicalName, array $targetStates, $expected): void
+    public function testInStates(?string $stateMachineStateId, string $technicalName, array $targetStates, $expected): void
     {
-        $stateMachine = new StateMachineStateEntity();
-        $stateMachine->setId('foo');
-        $stateMachine->setTechnicalName($technicalName);
+        $stateMachine = null;
+        if ($stateMachineStateId) {
+            $stateMachine = new StateMachineStateEntity();
+            $stateMachine->setId($stateMachineStateId);
+            $stateMachine->setTechnicalName($technicalName);
+        } else {
+            static::expectException(Exception::class);
+        }
 
         $result = $this->transitionService->inStates($stateMachine, $targetStates);
         static::assertSame($expected, $result);
@@ -102,12 +108,20 @@ class TransitionServiceTest extends TestCase
     public function getInStateProvider(): array
     {
         return [
+            'Test State machine state is not an instance of StateMachineStateEntity' => [
+                null,
+                'technicalName' => 'state_1',
+                'targetStates' => ['state_1', 'state_2'],
+                'expected' => false,
+            ],
             'Test in states' => [
+                '123',
                 'technicalName' => 'state_1',
                 'targetStates' => ['state_1', 'state_2'],
                 'expected' => true,
             ],
             'test not instates' => [
+                '123',
                 'technicalName' => 'state_1',
                 'targetStates' => ['state_3', 'state_2'],
                 'expected' => false,
