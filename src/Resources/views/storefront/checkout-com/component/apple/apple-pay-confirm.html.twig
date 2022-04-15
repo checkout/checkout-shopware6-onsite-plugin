@@ -5,7 +5,7 @@
         "currencyCode": context.currency.translated.shortName,
         "countryCode": context.shippingLocation.country.iso,
         "shopName": config('core.basicInformation.shopName'),
-        "validateMerchantPath": path('store-api.checkout-com.validate-merchant'),
+        "validateMerchantEndpoint": path('store-api.checkout-com.validate-merchant'),
     } %}
 
     {% block checkout_com_apple_pay_confirm_element %}

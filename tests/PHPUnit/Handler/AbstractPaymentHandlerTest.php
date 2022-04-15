@@ -6,7 +6,9 @@ use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\RequestUtil;
+use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
 use CheckoutCom\Shopware6\Service\Extractor\AbstractOrderExtractor;
+use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Struct\PaymentHandler\HandlerPrepareProcessStruct;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
@@ -55,6 +57,17 @@ abstract class AbstractPaymentHandlerTest extends TestCase
         $this->orderExtractor = $this->createMock(AbstractOrderExtractor::class);
         $this->paymentPayFacade = $this->createMock(PaymentPayFacade::class);
         $this->paymentFinalizeFacade = $this->createMock(PaymentFinalizeFacade::class);
+    }
+
+    public function setServices(): void
+    {
+        $this->paymentHandler->setServices(
+            $this->createMock(LoggerService::class),
+            $this->orderExtractor,
+            $this->createMock(CheckoutTokenService::class),
+            $this->paymentPayFacade,
+            $this->paymentFinalizeFacade
+        );
     }
 
     /**

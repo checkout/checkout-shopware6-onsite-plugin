@@ -15,12 +15,12 @@ export default class ApplePayService {
     /**
      * This will be called when the Apple Pay session is starting to validate the merchant.
      */
-    validateMerchant(swValidateMerchantPath, validationURL, callback) {
+    validateMerchant(validateMerchantEndpoint, validationURL, callback) {
         const data = JSON.stringify({
             validationURL,
         });
 
-        this.storeApiClient.post(swValidateMerchantPath, data, (result) => {
+        this.storeApiClient.post(validateMerchantEndpoint, data, (result) => {
             if (!result) {
                 callback(null);
 

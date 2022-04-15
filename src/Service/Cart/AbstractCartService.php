@@ -11,5 +11,15 @@ abstract class AbstractCartService
 
     abstract public function addProductToCart(string $productId, int $quantity, Cart $directCart, SalesChannelContext $context): Cart;
 
+    abstract public function recalculateCart(SalesChannelContext $context): Cart;
+
     abstract public function getCart(string $token, SalesChannelContext $context): Cart;
+
+    abstract public function getShippingCostsPrice(Cart $cart): float;
+
+    abstract public function updateContextCountry(SalesChannelContext $context, string $countryID): SalesChannelContext;
+
+    abstract public function updateContextShippingMethod(SalesChannelContext $context, string $shippingMethodID): SalesChannelContext;
+
+    abstract public function updateContextPaymentMethod(SalesChannelContext $context, string $paymentMethodId): SalesChannelContext;
 }

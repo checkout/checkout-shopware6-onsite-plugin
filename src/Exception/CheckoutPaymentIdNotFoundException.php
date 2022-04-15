@@ -8,12 +8,11 @@ class CheckoutPaymentIdNotFoundException extends CheckoutComException
 {
     public function __construct(OrderEntity $order, array $parameters = [])
     {
-        $message = sprintf(
+        parent::__construct(sprintf(
             'The payment ID from checkout.com could not be found within the order ID: %s, order number: %s',
             $order->getId(),
             $order->getOrderNumber()
-        );
-        parent::__construct($message, $parameters);
+        ), $parameters);
     }
 
     public function getErrorCode(): string

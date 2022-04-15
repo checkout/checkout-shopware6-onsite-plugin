@@ -7,13 +7,11 @@ use Checkout\Payments\PaymentRequest;
 use CheckoutCom\Shopware6\Handler\Method\Przelewy24Handler;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Handler\Source\RequestPrzelewy24Source;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
-use CheckoutCom\Shopware6\Service\Extractor\OrderExtractor;
-use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataValidator;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class Przelewy24HandlerTest extends AbstractPaymentHandlerTest
@@ -25,14 +23,12 @@ class Przelewy24HandlerTest extends AbstractPaymentHandlerTest
         parent::setUp();
 
         $this->paymentHandler = new Przelewy24Handler(
-            $this->createMock(LoggerService::class),
             $this->createMock(TranslatorInterface::class),
             $this->createMock(DataValidator::class),
-            $this->createMock(OrderExtractor::class),
-            $this->createMock(CheckoutTokenService::class),
-            $this->paymentPayFacade,
-            $this->paymentFinalizeFacade
+            $this->createMock(SystemConfigService::class),
         );
+
+        $this->setServices();
     }
 
     public function testSnippetKey(): void

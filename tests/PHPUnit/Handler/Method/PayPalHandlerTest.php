@@ -7,11 +7,10 @@ use Checkout\Payments\PaymentRequest;
 use CheckoutCom\Shopware6\Handler\Method\PayPalHandler;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Handler\Source\RequestPayPalSource;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
-use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataValidator;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PayPalHandlerTest extends AbstractPaymentHandlerTest
@@ -23,14 +22,12 @@ class PayPalHandlerTest extends AbstractPaymentHandlerTest
         parent::setUp();
 
         $this->paymentHandler = new PayPalHandler(
-            $this->createMock(LoggerService::class),
             $this->createMock(TranslatorInterface::class),
             $this->createMock(DataValidator::class),
-            $this->orderExtractor,
-            $this->createMock(CheckoutTokenService::class),
-            $this->paymentPayFacade,
-            $this->paymentFinalizeFacade
+            $this->createMock(SystemConfigService::class),
         );
+
+        $this->setServices();
     }
 
     public function testSnippetKey(): void

@@ -25,8 +25,17 @@
         </service>
 
         <service id="CheckoutCom\Shopware6\Facade\DirectPayFacade">
+            <argument type="service" id="router"/>
+            <argument type="service" id="Shopware\Core\Checkout\Payment\PaymentService"/>
+            <argument type="service" id="checkout_com.shopware6.logger"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\ContextService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\Cart\CartService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\Cart\CartBackupService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\ShippingMethodService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\PaymentMethodService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\CountryService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\CustomerService"/>
         </service>
     </services>
 </container>

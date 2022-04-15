@@ -2,16 +2,14 @@
 
 namespace CheckoutCom\Shopware6\Tests\Services;
 
-use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
-use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
 use CheckoutCom\Shopware6\Handler\Method\CreditCardHandler;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
-use CheckoutCom\Shopware6\Service\Extractor\AbstractOrderExtractor;
-use CheckoutCom\Shopware6\Service\LoggerService;
+use CheckoutCom\Shopware6\Handler\Method\GooglePayHandler;
+use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Service\PaymentMethodService;
 use CheckoutCom\Shopware6\Struct\PaymentHandler\PaymentHandlerCollection;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
@@ -23,6 +21,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataValidator;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PaymentMethodServiceTest extends TestCase
@@ -34,6 +33,30 @@ class PaymentMethodServiceTest extends TestCase
     public function setUp(): void
     {
         $this->context = $this->getContext($this);
+    }
+
+    /**
+     * @dataProvider getPaymentHandlersByTypeProvider
+     */
+    public function testGetPaymentHandlersByType(array $paymentMethods, string $paymentMethodType, bool $expectedFound): void
+    {
+        $installablePaymentHandlers = new PaymentHandlerCollection($paymentMethods);
+
+        $paymentMethodRepository = $this->createMock(EntityRepository::class);
+        $pluginIdProvider = $this->createMock(PluginIdProvider::class);
+        $paymentMethodService = new PaymentMethodService(
+            $installablePaymentHandlers,
+            $paymentMethodRepository,
+            $pluginIdProvider
+        );
+
+        if (!$expectedFound) {
+            static::expectException(Exception::class);
+        }
+
+        $paymentHandler = $paymentMethodService->getPaymentHandlersByType($paymentMethodType);
+
+        static::assertInstanceOf(PaymentHandler::class, $paymentHandler);
     }
 
     /**
@@ -96,6 +119,30 @@ class PaymentMethodServiceTest extends TestCase
             ->method('upsert');
 
         $paymentMethodService->setActivateInstalledPaymentMethods($this->context, $targetActive);
+    }
+
+    public function getPaymentHandlersByTypeProvider(): array
+    {
+        return [
+            'Test did not find payment handler' => [
+                'paymentMethods' => [
+                    $this->createConfiguredMock(CreditCardHandler::class, [
+                        'getClassName' => CreditCardHandler::class,
+                    ]),
+                ],
+                'paymentMethodType' => GooglePayHandler::getPaymentMethodType(),
+                false,
+            ],
+            'Test found payment handler' => [
+                'paymentMethods' => [
+                    $this->createConfiguredMock(CreditCardHandler::class, [
+                        'getClassName' => CreditCardHandler::class,
+                    ]),
+                ],
+                'paymentMethodType' => CreditCardHandler::getPaymentMethodType(),
+                true,
+            ],
+        ];
     }
 
     public function installPaymentMethodsProvider(): array
@@ -211,15 +258,11 @@ class PaymentMethodServiceTest extends TestCase
                 true,
                 'paymentMethods' => [
                     new CreditCardHandler(
-                        $this->createMock(LoggerService::class),
                         $this->createConfiguredMock(TranslatorInterface::class, [
                             'trans' => 'Foo',
                         ]),
                         $this->createMock(DataValidator::class),
-                        $this->createMock(AbstractOrderExtractor::class),
-                        $this->createMock(CheckoutTokenService::class),
-                        $this->createMock(PaymentPayFacade::class),
-                        $this->createMock(PaymentFinalizeFacade::class),
+                        $this->createMock(SystemConfigService::class),
                     ),
                 ],
                 'existsPaymentMethods' => [

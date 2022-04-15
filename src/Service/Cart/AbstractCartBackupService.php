@@ -13,6 +13,10 @@ abstract class AbstractCartBackupService
 
     abstract public function createNewDirectTokenCart(SalesChannelContext $context): Cart;
 
+    abstract public function copyOriginCartToCartContext(SalesChannelContext $context): Cart;
+
+    abstract public function copyDirectCartToCartContext(string $directCartToken, SalesChannelContext $context): Cart;
+
     abstract public function deleteCart(string $token, SalesChannelContext $context): void;
 
     abstract public function getBackupCartTokenKey(SalesChannelContext $context): string;

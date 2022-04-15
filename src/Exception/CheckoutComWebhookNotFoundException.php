@@ -2,10 +2,9 @@
 
 namespace CheckoutCom\Shopware6\Exception;
 
-use Shopware\Core\Framework\ShopwareHttpException;
 use Symfony\Component\HttpFoundation\Response;
 
-class CheckoutComWebhookNotFoundException extends ShopwareHttpException
+class CheckoutComWebhookNotFoundException extends CheckoutComException
 {
     public function __construct(string $webhookId)
     {

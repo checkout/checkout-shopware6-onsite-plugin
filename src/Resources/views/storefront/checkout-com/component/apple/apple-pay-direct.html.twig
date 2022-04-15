@@ -1,9 +1,13 @@
 {% block checkout_com_apple_pay_direct %}
     {% set applePayDirectOptions = {
+        "paymentMethodType": staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\ApplePayHandler::getPaymentMethodType'),
         "shopName": config('core.basicInformation.shopName'),
-        "validateMerchantPath": path('store-api.checkout-com.validate-merchant'),
-        "addProductToCartPath": path('store-api.checkout-com.direct.add-product-to-cart'),
-        "removeBackupPath": path('store-api.checkout-com.direct.remove-backup'),
+        "validateMerchantEndpoint": path('store-api.checkout-com.validate-merchant'),
+        "addProductToCartEndpoint": path('store-api.checkout-com.direct.add-product-to-cart'),
+        "removeBackupEndpoint": path('store-api.checkout-com.direct.remove-backup'),
+        "getShippingMethodsEndpoint": path('store-api.checkout-com.direct.get-shipping-methods'),
+        "updateShippingPayloadEndpoint": path('store-api.checkout-com.direct.update-shipping-payload'),
+        "processPaymentEndpoint": path('store-api.checkout-com.direct.process-payment'),
     } %}
 
     <div id="checkoutComApplePayDirect"

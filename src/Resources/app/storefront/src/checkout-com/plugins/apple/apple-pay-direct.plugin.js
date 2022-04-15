@@ -8,7 +8,7 @@ import CheckoutComDirectPaymentHandler from '../../core/checkout-com-direct-paym
  */
 export default class CheckoutComApplePayDirect extends CheckoutComDirectPaymentHandler {
     static options = deepmerge(CheckoutComDirectPaymentHandler.options, {
-        validateMerchantPath: null,
+        validateMerchantEndpoint: null,
         directButtonClass: '.checkout-com-direct-apple-pay',
     });
 
@@ -73,6 +73,7 @@ export default class CheckoutComApplePayDirect extends CheckoutComDirectPaymentH
             },
         });
         session.onshippingcontactselected = this.onShippingContactSelected.bind(this);
+        session.onshippingmethodselected = this.onShippingMethodSelected.bind(this);
         session.onvalidatemerchant = this.onValidateMerchant.bind(this);
         session.onpaymentauthorized = this.onPaymentAuthorized.bind(this);
         session.oncancel = this.cancelDirectPayment.bind(this);
@@ -81,9 +82,9 @@ export default class CheckoutComApplePayDirect extends CheckoutComDirectPaymentH
     }
 
     onValidateMerchant({ validationURL }) {
-        const { validateMerchantPath } = this.options;
+        const { validateMerchantEndpoint } = this.options;
 
-        this.applePayService.validateMerchant(validateMerchantPath, validationURL, (merchant) => {
+        this.applePayService.validateMerchant(validateMerchantEndpoint, validationURL, (merchant) => {
             if (!merchant) {
                 this.abortApplePay();
                 return;
@@ -93,12 +94,85 @@ export default class CheckoutComApplePayDirect extends CheckoutComDirectPaymentH
         });
     }
 
-    onShippingContactSelected(event) {
-        // @TODO: implement shipping contact selected for direct Apple Pay
+    onShippingContactSelected({ shippingContact }) {
+        this.getShippingMethods(shippingContact.countryCode)
+            .then((result) => {
+                const {
+                    success,
+                    shippingPayload,
+                } = result;
+
+                if (!success || !shippingPayload) {
+                    this.abortApplePay();
+                    return;
+                }
+
+                this.appleSession.completeShippingContactSelection(
+                    ApplePaySession.STATUS_SUCCESS,
+                    shippingPayload.newShippingMethods,
+                    shippingPayload.newTotal,
+                    shippingPayload.newLineItems,
+                );
+            });
+    }
+
+    onShippingMethodSelected({ shippingMethod }) {
+        this.updateShippingPayload(shippingMethod.identifier)
+            .then((result) => {
+                const {
+                    success,
+                    shippingPayload,
+                } = result;
+
+                if (!success || !shippingPayload) {
+                    this.abortApplePay();
+                    return;
+                }
+
+                this.appleSession.completeShippingMethodSelection(
+                    ApplePaySession.STATUS_SUCCESS,
+                    shippingPayload.newTotal,
+                    shippingPayload.newLineItems,
+                );
+            });
     }
 
     onPaymentAuthorized({ payment }) {
-        // @TODO: implement payment authorized for direct Apple Pay
+        const {
+            token,
+            shippingContact,
+        } = payment;
+        const requestShippingContact = {
+            email: shippingContact.emailAddress,
+            firstName: shippingContact.givenName,
+            lastName: shippingContact.familyName,
+            phoneNumber: shippingContact.phoneNumber,
+            street: shippingContact.addressLines[0] || '',
+            additionalAddressLine1: shippingContact.addressLines[1] || '',
+            zipCode: shippingContact.postalCode,
+            countryStateCode: shippingContact.administrativeArea,
+            city: shippingContact.locality,
+            countryCode: shippingContact.countryCode,
+        };
+
+        this.paymentAuthorized(token, requestShippingContact).then((result) => {
+            const {
+                redirectUrl,
+                success,
+            } = result;
+
+            if (redirectUrl) {
+                if (success) {
+                    this.appleSession.completePayment(ApplePaySession.STATUS_SUCCESS);
+                } else {
+                    this.appleSession.completePayment(ApplePaySession.STATUS_FAILURE);
+                }
+
+                window.location.href = redirectUrl;
+            } else {
+                this.abortApplePay();
+            }
+        });
     }
 
     abortApplePay() {

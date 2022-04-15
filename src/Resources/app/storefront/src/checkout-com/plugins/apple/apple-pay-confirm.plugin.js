@@ -13,7 +13,7 @@ export default class CheckoutComApplePayConfirm extends CheckoutComConfirmPaymen
         currencyCode: null,
         countryCode: null,
         shopName: null,
-        validateMerchantPath: null,
+        validateMerchantEndpoint: null,
     });
 
     init() {
@@ -49,9 +49,9 @@ export default class CheckoutComApplePayConfirm extends CheckoutComConfirmPaymen
     }
 
     onValidateMerchant({ validationURL }) {
-        const { validateMerchantPath } = this.options;
+        const { validateMerchantEndpoint } = this.options;
 
-        this.applePayService.validateMerchant(validateMerchantPath, validationURL, (merchant) => {
+        this.applePayService.validateMerchant(validateMerchantEndpoint, validationURL, (merchant) => {
             if (!merchant) {
                 this.abortApplePay();
                 return;

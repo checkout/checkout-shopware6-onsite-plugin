@@ -6,7 +6,11 @@ use Checkout\Common\Address;
 use Checkout\Common\Currency;
 use Checkout\Common\CustomerRequest;
 use Checkout\Payments\ShippingDetails;
+use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartItemCollection;
+use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
 use Exception;
+use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 
@@ -53,6 +57,49 @@ class CheckoutComUtil
         $customerRequest->email = $customer->getEmail();
 
         return $customerRequest;
+    }
+
+    /**
+     * Build our direct cart struct from the Shopware cart
+     */
+    public static function buildDirectPayCart(Cart $cart): DirectPayCartStruct
+    {
+        $directPayCart = new DirectPayCartStruct(
+            new DirectPayCartItemCollection(),
+            new DirectPayCartItemCollection()
+        );
+
+        foreach ($cart->getLineItems() as $item) {
+            $itemPrice = $item->getPrice();
+            if (!$itemPrice instanceof CalculatedPrice) {
+                continue;
+            }
+
+            $directPayCart->addLineItem(
+                $item->getLabel(),
+                $item->getQuantity(),
+                $itemPrice->getUnitPrice()
+            );
+        }
+
+        foreach ($cart->getDeliveries() as $delivery) {
+            $grossPrice = $delivery->getShippingCosts()->getUnitPrice();
+            if ($grossPrice <= 0) {
+                continue;
+            }
+
+            $directPayCart->addShipping(
+                $delivery->getShippingMethod()->getName(),
+                $grossPrice
+            );
+        }
+
+        $taxAmount = $cart->getPrice()->getCalculatedTaxes()->getAmount();
+        if ($taxAmount > 0) {
+            $directPayCart->setTax($taxAmount);
+        }
+
+        return $directPayCart;
     }
 
     /**

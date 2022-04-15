@@ -9,14 +9,19 @@ use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
+use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\OrderStates;
+use Shopware\Core\Checkout\Order\SalesChannel\OrderService as CoreOrderService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
+use Shopware\Core\Framework\Validation\DataBag\DataBag;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class OrderService extends AbstractOrderService
@@ -36,12 +41,23 @@ class OrderService extends AbstractOrderService
 
     private EntityRepositoryInterface $orderRepository;
 
+    private EntityRepositoryInterface $orderAddressRepository;
+
+    private CoreOrderService $coreOrderService;
+
     private OrderTransitionService $orderTransitionService;
 
-    public function __construct(LoggerInterface $logger, EntityRepositoryInterface $orderRepository, OrderTransitionService $orderTransitionService)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        EntityRepositoryInterface $orderRepository,
+        EntityRepositoryInterface $orderAddressRepository,
+        CoreOrderService $coreOrderService,
+        OrderTransitionService $orderTransitionService
+    ) {
         $this->logger = $logger;
         $this->orderRepository = $orderRepository;
+        $this->orderAddressRepository = $orderAddressRepository;
+        $this->coreOrderService = $coreOrderService;
         $this->orderTransitionService = $orderTransitionService;
     }
 
@@ -60,10 +76,47 @@ class OrderService extends AbstractOrderService
         return $this->requestLastOrderId;
     }
 
+    /**
+     * @throws Exception
+     */
+    public function createOrder(
+        CountryEntity $country,
+        RequestDataBag $shippingContact,
+        DataBag $data,
+        SalesChannelContext $context
+    ): OrderEntity {
+        $orderId = $this->coreOrderService->createOrder($data, $context);
+
+        $order = $this->getOrder($orderId, $context->getContext());
+
+        $orderAddresses = $order->getAddresses();
+
+        if (!$orderAddresses instanceof OrderAddressCollection) {
+            throw new Exception(sprintf('Order dress did not find with order ID: %s', $orderId));
+        }
+
+        // Always make sure use the data from request
+        foreach ($orderAddresses as $address) {
+            $this->updateOrderAddress(
+                $address->getId(),
+                $shippingContact->get('firstName'),
+                $shippingContact->get('lastName'),
+                $shippingContact->get('street'),
+                $shippingContact->get('zipCode'),
+                $shippingContact->get('city'),
+                $country->getId(),
+                $context->getContext()
+            );
+        }
+
+        return $order;
+    }
+
     public function getOrder(string $orderId, Context $context): OrderEntity
     {
         $criteria = new Criteria([$orderId]);
         $criteria->setLimit(1);
+        $criteria->addAssociation('addresses');
 
         $order = $this->orderRepository->search($criteria, $context)->first();
         if (!$order instanceof OrderEntity) {
@@ -75,6 +128,29 @@ class OrderService extends AbstractOrderService
         }
 
         return $order;
+    }
+
+    public function updateOrderAddress(
+        string $orderAddressId,
+        string $firstname,
+        string $lastname,
+        string $street,
+        string $zipcode,
+        string $city,
+        string $countryId,
+        Context $context
+    ): void {
+        $this->orderAddressRepository->update([
+            [
+                'id' => $orderAddressId,
+                'firstName' => $firstname,
+                'lastName' => $lastname,
+                'street' => $street,
+                'zipcode' => $zipcode,
+                'city' => $city,
+                'countryId' => $countryId,
+            ],
+        ], $context);
     }
 
     /**
