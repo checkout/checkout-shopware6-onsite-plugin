@@ -7,10 +7,11 @@ use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\Source\RequestTokenSource;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
-use CheckoutCom\Shopware6\Service\CustomerService;
+use CheckoutCom\Shopware6\Helper\RequestUtil;
 use Exception;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class CreditCardHandler extends PaymentHandler
@@ -28,9 +29,14 @@ class CreditCardHandler extends PaymentHandler
     /**
      * @throws Exception
      */
-    public function prepareDataForPay(PaymentRequest $paymentRequest, OrderEntity $order, CustomerEntity $customer, SalesChannelContext $context): PaymentRequest
-    {
-        $paymentRequest->source = $this->buildTokenSource($customer);
+    public function prepareDataForPay(
+        PaymentRequest $paymentRequest,
+        RequestDataBag $dataBag,
+        OrderEntity $order,
+        CustomerEntity $customer,
+        SalesChannelContext $context
+    ): PaymentRequest {
+        $paymentRequest->source = $this->buildTokenSource($dataBag, $customer);
 
         return $paymentRequest;
     }
@@ -40,12 +46,11 @@ class CreditCardHandler extends PaymentHandler
      *
      * @throws Exception
      */
-    private function buildTokenSource(CustomerEntity $customer): RequestTokenSource
+    private function buildTokenSource(RequestDataBag $dataBag, CustomerEntity $customer): RequestTokenSource
     {
-        $checkoutCustomerCustomFields = CustomerService::getCheckoutCustomerCustomFields($customer);
-        $token = $checkoutCustomerCustomFields->getCardToken();
-        if ($token === null) {
-            throw new Exception('No card token found for Credit Card payment method');
+        $token = RequestUtil::getTokenPayment($dataBag);
+        if (!\is_string($token)) {
+            throw new Exception('Invalid credit card token');
         }
 
         $requestTokenSource = new RequestTokenSource();
