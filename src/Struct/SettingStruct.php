@@ -30,6 +30,8 @@ class SettingStruct extends Struct
 
     protected ?string $applePayPemMediaId = null;
 
+    protected ?string $googlePayMerchantId = null;
+
     public function getSecretKey(): string
     {
         return $this->secretKey;
@@ -138,5 +140,15 @@ class SettingStruct extends Struct
     public function setApplePayPemMediaId(?string $applePayPemMediaId): void
     {
         $this->applePayPemMediaId = $applePayPemMediaId;
+    }
+
+    public function getGooglePayMerchantId(): ?string
+    {
+        return $this->googlePayMerchantId;
+    }
+
+    public function setGooglePayMerchantId(?string $googlePayMerchantId): void
+    {
+        $this->googlePayMerchantId = $googlePayMerchantId;
     }
 }

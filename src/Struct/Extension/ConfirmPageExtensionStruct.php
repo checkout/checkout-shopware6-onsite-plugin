@@ -12,6 +12,8 @@ class ConfirmPageExtensionStruct extends Struct
 
     protected bool $sandboxMode = true;
 
+    protected ?string $googlePayMerchantId = null;
+
     public function getFrameUrl(): string
     {
         return $this->frameUrl;
@@ -40,5 +42,15 @@ class ConfirmPageExtensionStruct extends Struct
     public function setSandboxMode(bool $sandboxMode): void
     {
         $this->sandboxMode = $sandboxMode;
+    }
+
+    public function getGooglePayMerchantId(): ?string
+    {
+        return $this->googlePayMerchantId;
+    }
+
+    public function setGooglePayMerchantId(?string $googlePayMerchantId): void
+    {
+        $this->googlePayMerchantId = $googlePayMerchantId;
     }
 }

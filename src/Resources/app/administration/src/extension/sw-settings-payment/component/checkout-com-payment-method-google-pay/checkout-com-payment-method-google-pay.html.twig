@@ -1,0 +1,19 @@
+{% block checkout_com_payment_method_google_pay %}
+    <sw-card
+        class="checkout-com-payment-method-google-pay"
+        position-identifier="sw-settings-payment-detail-google-pay"
+        :title="$tc('checkout-payments.paymentMethod.general.configurationTitle')"
+    >
+        {% block checkout_com_payment_method_google_pay_merchant_id %}
+            <sw-field
+                type="text"
+                :disabled="!acl.can('payment.editor')"
+                :value="getCheckoutConfigValue('googlePayMerchantId')"
+                :label="$tc('checkout-payments.paymentMethod.googlePay.configuration.googleMerchantIdLabel')"
+                :placeholder="$tc('checkout-payments.paymentMethod.googlePay.configuration.googleMerchantIdLabel')"
+                :help-text="$tc('checkout-payments.paymentMethod.googlePay.configuration.googleMerchantIdHelpText')"
+                @change="onInputChange('googlePayMerchantId', $event)"
+            ></sw-field>
+        {% endblock %}
+    </sw-card>
+{% endblock %}

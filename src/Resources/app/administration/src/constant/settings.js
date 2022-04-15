@@ -15,4 +15,5 @@ export const SETUP_LINK = {
  */
 export const PAYMENT_METHOD_IDENTIFIER = {
     APPLE_PAY: 'handler_checkoutcom_applepayhandler',
+    GOOGLE_PAY: 'handler_checkoutcom_googlepayhandler',
 };

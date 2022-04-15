@@ -14,6 +14,7 @@ export default class CheckoutComGooglePayConfirm extends CheckoutPaymentHandler 
         countryCode: null,
         shopName: null,
         publicKey: null,
+        merchantId: null,
     });
 
     init() {
@@ -53,7 +54,8 @@ export default class CheckoutComGooglePayConfirm extends CheckoutPaymentHandler 
     getCardPaymentMethod() {
         const { publicKey } = this.options;
 
-        return Object.assign({}, GOOGLE_PAY.BASE_CARD_PAYMENT_METHOD, {
+        return {
+            ...GOOGLE_PAY.BASE_CARD_PAYMENT_METHOD,
             tokenizationSpecification: {
                 type: GOOGLE_PAY.PAYMENT_GATEWAY,
                 parameters: {
@@ -61,7 +63,7 @@ export default class CheckoutComGooglePayConfirm extends CheckoutPaymentHandler 
                     gatewayMerchantId: publicKey,
                 },
             },
-        });
+        };
     }
 
     getGooglePaymentDataRequest() {
@@ -70,6 +72,7 @@ export default class CheckoutComGooglePayConfirm extends CheckoutPaymentHandler 
             currencyCode,
             countryCode,
             shopName,
+            merchantId,
         } = this.options;
 
         return {
@@ -83,7 +86,7 @@ export default class CheckoutComGooglePayConfirm extends CheckoutPaymentHandler 
                 totalPrice: amount,
             },
             merchantInfo: {
-                merchantId: '123456789012345678903213', // @TODO: Setup it on our plugin configuration
+                merchantId,
                 merchantName: shopName,
             },
         };

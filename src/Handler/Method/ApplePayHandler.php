@@ -7,6 +7,7 @@ use Checkout\Payments\Source\RequestTokenSource;
 use Checkout\Tokens\ApplePayTokenData;
 use Checkout\Tokens\ApplePayTokenRequest;
 use Checkout\Tokens\TokenType;
+use CheckoutCom\Shopware6\Exception\CheckoutInvalidTokenException;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\RequestUtil;
 use Exception;
@@ -53,7 +54,7 @@ class ApplePayHandler extends PaymentHandler
     {
         $tokenRequest = RequestUtil::getTokenPayment($dataBag);
         if (!$tokenRequest instanceof RequestDataBag) {
-            throw new Exception('Invalid Apple Pay token');
+            throw new CheckoutInvalidTokenException(static::getPaymentMethodType());
         }
 
         $token = $this->getTokenFromRequest($tokenRequest->all(), $context);
@@ -65,7 +66,7 @@ class ApplePayHandler extends PaymentHandler
     }
 
     /**
-     * Get the Apple Pay token string to create the checkout.com payment
+     * Get the token string to create the checkout.com payment
      *
      * @throws ConstraintViolationException
      * @throws Exception

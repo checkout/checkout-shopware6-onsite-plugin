@@ -50,6 +50,7 @@ class CheckoutConfirmPageSubscriber implements EventSubscriberInterface
         $checkoutConfirmPageExtension->setFrameUrl(Url::IFRAME_URL);
         $checkoutConfirmPageExtension->setPublicKey($this->settings->getPublicKey());
         $checkoutConfirmPageExtension->setSandboxMode($this->settings->isSandboxMode());
+        $checkoutConfirmPageExtension->setGooglePayMerchantId($this->settings->getGooglePayMerchantId());
 
         $event->getPage()->addExtension(self::CONFIRM_PAGE_EXTENSION, $checkoutConfirmPageExtension);
     }
