@@ -11,7 +11,7 @@ class CheckoutPaymentService extends AbstractCheckoutService
     public const STATUS_AUTHORIZED = 'Authorized';
     public const STATUS_VOID = 'Voided';
     public const STATUS_PENDING = 'Pending';
-    public const STATUS_CARD_VERIFIED = 'Card Verified"';
+    public const STATUS_CARD_VERIFIED = 'Card Verified';
     public const STATUS_CAPTURED = 'Captured';
     public const STATUS_DECLINED = 'Declined';
     public const STATUS_REFUNDED = 'Refunded';

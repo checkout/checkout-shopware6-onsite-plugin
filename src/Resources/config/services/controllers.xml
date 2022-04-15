@@ -35,5 +35,10 @@
                 <argument type="service" id="service_container"/>
             </call>
         </service>
+
+        <service id="CheckoutCom\Shopware6\Storefront\Api\ApplePayController" public="true">
+            <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\ApplePay\ApplePayService"/>
+        </service>
     </services>
 </container>

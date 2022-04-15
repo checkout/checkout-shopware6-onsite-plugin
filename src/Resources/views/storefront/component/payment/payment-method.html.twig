@@ -16,12 +16,24 @@
         ></div>
     {% endblock %}
 
-    {% block checkout_com_payment_method_selected %}
+    {% block checkout_com_payment_method_included %}
+        {% if payment.extensions.checkoutConfig.methodType == METHOD_TYPE_APPLE_PAY %}
+            {% block checkout_com_payment_method_apple_pay_display_included %}
+                {% sw_include '@CheckoutCom/storefront/component/payment/component/apple-pay-display.html.twig' %}
+            {% endblock %}
+        {% endif %}
+    {% endblock %}
+
+    {% block checkout_com_payment_method_selected_included %}
         {% if (payment.id is same as(selectedPaymentMethodId)) %}
-            {% block checkout_com_credit_card_condition %}
+            {% block checkout_com_payment_method_credit_card_condition %}
                 {% if payment.extensions.checkoutConfig.methodType == METHOD_TYPE_CREDIT_CARD %}
-                    {% block checkout_com_credit_card_condition_included %}
+                    {% block checkout_com_payment_method_credit_card_selected_included %}
                         {% sw_include '@CheckoutCom/storefront/component/payment/component/credit-card-fields.html.twig' %}
+                    {% endblock %}
+                {% elseif payment.extensions.checkoutConfig.methodType == METHOD_TYPE_APPLE_PAY %}
+                    {% block checkout_com_payment_method_apple_pay_confirm_selected_included %}
+                        {% sw_include '@CheckoutCom/storefront/component/payment/component/apple-pay-confirm.html.twig' %}
                     {% endblock %}
                 {% endif %}
             {% endblock %}

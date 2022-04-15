@@ -5,15 +5,17 @@ namespace CheckoutCom\Shopware6\Helper;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 
 /**
- * This Util Class is used to get special the request data
- * Only contains the data that are used in the plugin
+ * Get data from payment request with checkoutComDetails key
  */
 class RequestUtil
 {
     public const DATA_BAG_KEY = 'checkoutComDetails';
     public const DATA_TOKEN = 'token';
 
-    public static function getTokenPayment(RequestDataBag $dataBag): ?string
+    /**
+     * @return string|RequestDataBag|null
+     */
+    public static function getTokenPayment(RequestDataBag $dataBag)
     {
         $paymentData = static::getPaymentData($dataBag);
 
@@ -26,7 +28,7 @@ class RequestUtil
 
     /**
      * Get payment data from a request data bag
-     * These data will send from StoreFront or StoreApi
+     * These data is coming from StoreFront or StoreApi
      */
     public static function getPaymentData(RequestDataBag $dataBag): ?RequestDataBag
     {

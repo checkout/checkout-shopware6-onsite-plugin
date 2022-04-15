@@ -24,15 +24,23 @@ export default class CheckoutComCreditCard extends Plugin {
 
     init() {
         this.client = new HttpClient();
-        const { submitPaymentButtonId } = this.options;
+        const {
+            submitPaymentButtonId,
+            paymentFormId,
+        } = this.options;
 
         this.submitPaymentButton = this.getElement(
             document,
-            submitPaymentButtonId
+            submitPaymentButtonId,
         );
 
         this.submitButtonLoader = new ButtonLoadingIndicator(
-            this.submitPaymentButton
+            this.submitPaymentButton,
+        );
+
+        this.paymentForm = this.getElement(
+            document,
+            paymentFormId,
         );
 
         // We disable the form before the Frame is loaded
@@ -45,15 +53,19 @@ export default class CheckoutComCreditCard extends Plugin {
     }
 
     registerEvents() {
-        const { localization, publicKey, cardholderNameId } = this.options;
+        const {
+            localization,
+            publicKey,
+            cardholderNameId,
+        } = this.options;
 
         // Submit payment form handler
-        this.submitPaymentButton.addEventListener('click', (event) => {
+        this.paymentForm.addEventListener('submit', (event) => {
             event.preventDefault();
 
             const cardholderNameInput = this.getElement(
                 this.el,
-                cardholderNameId
+                cardholderNameId,
             );
 
             // We add the cardholder name to the form data (iframe checkout.com)
@@ -87,12 +99,15 @@ export default class CheckoutComCreditCard extends Plugin {
     }
 
     /**
-     * Card validation user input change
-     * @param element {string}
-     * @param isValid {boolean}
-     * @param isEmpty {boolean}
+     * Card validation upon user input change
+     * @param event {Object}
      */
-    onFrameValidationChanged({ element, isValid, isEmpty }) {
+    onFrameValidationChanged(event) {
+        const {
+            element,
+            isValid,
+            isEmpty,
+        } = event;
         if (isValid || isEmpty) {
             this.clearErrorMessage(element);
         } else {

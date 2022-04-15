@@ -8,10 +8,11 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\EntityNotFoundException;
+use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
-class OrderExtractor
+class OrderExtractor extends AbstractOrderExtractor
 {
     private LoggerInterface $logger;
 
@@ -21,6 +22,11 @@ class OrderExtractor
     {
         $this->logger = $loggerService;
         $this->customerService = $customerService;
+    }
+
+    public function getDecorated(): AbstractOrderExtractor
+    {
+        throw new DecorationPatternException(self::class);
     }
 
     public function extractCustomer(OrderEntity $order, SalesChannelContext $context): CustomerEntity
