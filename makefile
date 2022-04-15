@@ -36,9 +36,11 @@ stan: ## Starts the PHPStan Analyser
 ecs: ## Starts the ESC checker
 	php ./vendor/bin/ecs check . --config easy-coding-standard.php
 
+csfix: ## Starts the PHP CS Fixer
+	php ./vendor/bin/ecs check . --config easy-coding-standard.php --fix
 # ------------------------------------------------------------------------------------------------------------
 
 review: ## Starts the full review pipeline
-	make phpunit -B
 	make ecs -B
 	make stan -B
+	make phpunit -B
