@@ -40,7 +40,6 @@ class CustomerServiceTest extends TestCase
      * @dataProvider checkoutCustomerCustomFieldsProvider
      */
     public function testCheckoutCustomerCustomFields(
-        ?string $expectedCardToken,
         string $customerId,
         ?array $customFields = null
     ): void {
@@ -81,25 +80,21 @@ class CustomerServiceTest extends TestCase
     {
         return [
             'Test Customer null checkout custom fields' => [
-                'expectedCardToken' => null,
                 '234',
                 'customFields' => [
                     'test' => 'anyCustomFields',
                 ],
             ],
             'Test Customer empty custom fields' => [
-                'expectedCardToken' => null,
                 '345',
                 'customFields' => [
                 ],
             ],
             'Test Customer null custom fields' => [
-                'expectedCardToken' => null,
                 '456',
                 'customFields' => null,
             ],
             'Test Customer not exists custom fields' => [
-                'expectedCardToken' => null,
                 '567',
             ],
         ];

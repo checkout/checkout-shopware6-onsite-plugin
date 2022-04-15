@@ -9,5 +9,7 @@ abstract class AbstractOrderTransactionService
 {
     abstract public function getDecorated(): AbstractOrderTransactionService;
 
+    abstract public function getTransaction(string $orderTransactionId, Context $context): OrderTransactionEntity;
+
     abstract public function processTransition(OrderTransactionEntity $transaction, string $checkoutPaymentStatus, Context $context): void;
 }

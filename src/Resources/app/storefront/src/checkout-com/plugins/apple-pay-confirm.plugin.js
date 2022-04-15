@@ -92,9 +92,15 @@ export default class CheckoutComApplePayConfirm extends CheckoutPaymentHandler {
     }
 
     onPaymentResponse(success, redirectUrl) {
-        // @TODO Will implement this in the future to complete the payment
-        this.appleSession.completePayment(ApplePaySession.STATUS_FAILURE);
-        this.onApplePayCancel();
+        if (success) {
+            this.appleSession.completePayment(ApplePaySession.STATUS_SUCCESS);
+        } else {
+            this.appleSession.completePayment(ApplePaySession.STATUS_FAILURE);
+            this.onApplePayCancel();
+        }
+
+        // Redirect to the payment result page for both success and failure
+        window.location.href = redirectUrl;
     }
 
     abortApplePay() {

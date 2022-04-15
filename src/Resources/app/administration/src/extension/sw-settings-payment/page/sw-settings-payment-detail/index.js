@@ -72,6 +72,11 @@ Component.override('sw-settings-payment-detail', {
 
         setCheckoutConfigs(suffixField, data) {
             const applePayField = getCheckoutConfig(suffixField);
+            if (typeof data === 'string') {
+                // Trim the string to remove whitespace from both sides of a string.
+                data = `${data}`.trim();
+            }
+
             this.checkoutConfigs[applePayField] = data;
         },
 
