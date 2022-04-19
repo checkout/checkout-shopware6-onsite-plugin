@@ -6,7 +6,8 @@
       "creditCardLabel": "Kreditkarte",
       "giropayLabel": "Giropay",
       "p24Label": "Przelewy24",
-      "sofortLabel": "Sofort"
+      "sofortLabel": "Sofort",
+      "payPalLabel": "PayPal"
     },
     "messages": {
       "card": {

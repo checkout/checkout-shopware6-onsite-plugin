@@ -71,7 +71,7 @@ abstract class AbstractCheckoutTest extends TestCase
     ): void {
         $checkoutApiException = new CheckoutApiException('test');
         $checkoutApiException->http_status_code = $code;
-
+        $checkoutApiException->error_details = [];
         $this->apiClient
             ->method($requestMethod)
             ->willReturn($expectThrowException ? static::throwException($checkoutApiException) : $result);
