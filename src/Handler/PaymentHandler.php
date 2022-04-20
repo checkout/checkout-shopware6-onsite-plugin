@@ -64,11 +64,19 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
     abstract public static function getPaymentMethodType(): string;
 
     /**
-     * Each payment methods has to implement this method to prepare data for the checkout.com payment request
+     * Each payment method has to implement this method to prepare data for the checkout.com payment request
+     * Each payment method will have different source request data
+     * Can modify the Checkout.com PaymentRequest object here
      *
      * @throws Exception
      */
-    abstract public function prepareDataForPay(PaymentRequest $paymentRequest, OrderEntity $order, CustomerEntity $customer, SalesChannelContext $context): PaymentRequest;
+    abstract public function prepareDataForPay(
+        PaymentRequest $paymentRequest,
+        RequestDataBag $dataBag,
+        OrderEntity $order,
+        CustomerEntity $customer,
+        SalesChannelContext $context
+    ): PaymentRequest;
 
     public function getClassName(): string
     {
@@ -82,8 +90,11 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
      *
      * @throw AsyncPaymentProcessException
      */
-    public function pay(AsyncPaymentTransactionStruct $transaction, RequestDataBag $dataBag, SalesChannelContext $salesChannelContext): RedirectResponse
-    {
+    public function pay(
+        AsyncPaymentTransactionStruct $transaction,
+        RequestDataBag $dataBag,
+        SalesChannelContext $salesChannelContext
+    ): RedirectResponse {
         $this->logger->info(
             sprintf('Starting pay with order number: %s', $transaction->getOrder()->getOrderNumber()),
             [
@@ -101,6 +112,7 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
             $payment = $this->paymentPayFacade->pay(
                 $this,
                 $transaction,
+                $dataBag,
                 $salesChannelContext,
             );
         } catch (Throwable $exception) {
@@ -121,8 +133,11 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
      * This method will finalize the order
      * We will update order/order_transaction status depend on checkout.com payment status
      */
-    public function finalize(AsyncPaymentTransactionStruct $transaction, Request $request, SalesChannelContext $salesChannelContext): void
-    {
+    public function finalize(
+        AsyncPaymentTransactionStruct $transaction,
+        Request $request,
+        SalesChannelContext $salesChannelContext
+    ): void {
         try {
             $this->paymentFinalizeFacade->finalize($transaction, $salesChannelContext);
         } catch (AsyncPaymentFinalizeException $ex) {

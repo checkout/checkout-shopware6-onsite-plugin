@@ -18,7 +18,6 @@
 
         <service id="CheckoutCom\Shopware6\Service\CustomerService">
             <argument type="service" id="checkout_com.shopware6.logger"/>
-            <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="customer.repository"/>
         </service>
 

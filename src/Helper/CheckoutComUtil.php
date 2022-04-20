@@ -13,6 +13,19 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 class CheckoutComUtil
 {
     /**
+     * Build ship detail request checkout.com from customer address entity shopware
+     */
+    public static function buildShipDetail(CustomerAddressEntity $customerAddress): ShippingDetails
+    {
+        $shippingAddress = CheckoutComUtil::buildAddress($customerAddress);
+
+        $shippingDetails = new ShippingDetails();
+        $shippingDetails->address = $shippingAddress;
+
+        return $shippingDetails;
+    }
+
+    /**
      * Build address request checkout.com from customer address entity shopware
      *
      * @throws Exception
@@ -32,19 +45,6 @@ class CheckoutComUtil
         $address->country = $customerAddress->getCountry() !== null ? ($customerAddress->getCountry()->getIso() ?? '') : '';
 
         return $address;
-    }
-
-    /**
-     * Build ship detail request checkout.com from customer address entity shopware
-     */
-    public static function buildShipDetail(CustomerAddressEntity $customerAddress): ShippingDetails
-    {
-        $shippingAddress = CheckoutComUtil::buildAddress($customerAddress);
-
-        $shippingDetails = new ShippingDetails();
-        $shippingDetails->address = $shippingAddress;
-
-        return $shippingDetails;
     }
 
     /**

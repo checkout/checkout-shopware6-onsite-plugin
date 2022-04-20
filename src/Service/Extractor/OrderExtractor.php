@@ -45,7 +45,7 @@ class OrderExtractor
 
         return $this->customerService->getCustomer(
             $customerId,
-            $context
+            $context->getContext()
         );
     }
 

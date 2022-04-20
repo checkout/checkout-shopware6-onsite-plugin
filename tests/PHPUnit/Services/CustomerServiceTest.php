@@ -4,7 +4,6 @@ namespace CheckoutCom\Shopware6\Tests\Services;
 
 use CheckoutCom\Shopware6\Service\CustomerService;
 use CheckoutCom\Shopware6\Service\LoggerService;
-use CheckoutCom\Shopware6\Struct\CustomFields\CustomerCustomFieldsStruct;
 use CheckoutCom\Shopware6\Tests\Fakes\FakeEntityRepository;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
@@ -12,10 +11,8 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Customer\CustomerDefinition;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\Exception\CustomerNotFoundByIdException;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class CustomerServiceTest extends TestCase
 {
@@ -35,29 +32,8 @@ class CustomerServiceTest extends TestCase
 
         $this->customerService = new CustomerService(
             $this->createMock(LoggerService::class),
-            $this->createMock(EventDispatcherInterface::class),
             $this->customerRepository,
         );
-    }
-
-    public function testSetCardToken(): void
-    {
-        $cardToken = 'any card token string';
-        $customer = $this->getCustomerEntity('', '', '');
-
-        // Get existing custom fields
-        $checkoutCustomerCustomFields = CustomerService::getCheckoutCustomerCustomFields($customer);
-        $checkoutCustomerCustomFields->setCardToken($cardToken);
-
-        $event = $this->createMock(EntityWrittenContainerEvent::class);
-        $this->customerRepository->entityWrittenContainerEvents[] = $event;
-
-        $this->customerService->setCardToken($customer, $cardToken, $this->salesChannelContext);
-
-        static::assertNotEmpty($this->customerRepository->data);
-        static::assertArrayHasKey('customFields', $this->customerRepository->data[0][0]);
-        static::assertArrayHasKey(CustomerService::CHECKOUT_CUSTOM_FIELDS, $this->customerRepository->data[0][0]['customFields']);
-        static::assertSame($checkoutCustomerCustomFields->jsonSerialize(), $this->customerRepository->data[0][0]['customFields'][CustomerService::CHECKOUT_CUSTOM_FIELDS]);
     }
 
     /**
@@ -79,13 +55,10 @@ class CustomerServiceTest extends TestCase
 
         $this->customerRepository->entitySearchResults[] = $search;
 
-        $customer = $this->customerService->getCustomer($customerId, $this->salesChannelContext);
-        $checkoutCustomFields = CustomerService::getCheckoutCustomerCustomFields($customer);
+        $customer = $this->customerService->getCustomer($customerId, $this->salesChannelContext->getContext());
 
         static::assertSame($customerId, $customer->getId());
         static::assertSame($customFields, $customer->getCustomFields());
-        static::assertInstanceOf(CustomerCustomFieldsStruct::class, $checkoutCustomFields);
-        static::assertSame($expectedCardToken, $checkoutCustomFields->getCardToken());
     }
 
     /**
@@ -101,35 +74,17 @@ class CustomerServiceTest extends TestCase
 
         static::expectException(CustomerNotFoundByIdException::class);
 
-        $this->customerService->getCustomer('NotFound', $this->salesChannelContext);
+        $this->customerService->getCustomer('NotFound', $this->salesChannelContext->getContext());
     }
 
     public function checkoutCustomerCustomFieldsProvider(): array
     {
         return [
-            'Test Customer Full Fields' => [
-                'expectedCardToken' => 'card 123',
-                '123',
-                'customFields' => [
-                    CustomerService::CHECKOUT_CUSTOM_FIELDS => [
-                        'cardToken' => 'card 123',
-                        'anyOtherFields' => 'Other value',
-                    ],
-                ],
-            ],
-            'Test Customer empty checkout custom fields' => [
-                'expectedCardToken' => null,
-                '234',
-                'customFields' => [
-                    CustomerService::CHECKOUT_CUSTOM_FIELDS => [
-                    ],
-                ],
-            ],
             'Test Customer null checkout custom fields' => [
                 'expectedCardToken' => null,
                 '234',
                 'customFields' => [
-                    CustomerService::CHECKOUT_CUSTOM_FIELDS => null,
+                    'test' => 'anyCustomFields',
                 ],
             ],
             'Test Customer empty custom fields' => [

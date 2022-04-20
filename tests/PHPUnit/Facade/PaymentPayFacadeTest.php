@@ -22,6 +22,7 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -78,7 +79,7 @@ class PaymentPayFacadeTest extends TestCase
             $this->checkoutPaymentService,
             $this->orderExtractor,
             $this->orderService,
-            $this->orderTransactionService
+            $this->orderTransactionService,
         );
     }
 
@@ -148,7 +149,7 @@ class PaymentPayFacadeTest extends TestCase
         }
 
         $transaction = new AsyncPaymentTransactionStruct($orderTransaction, $order, 'foo url');
-        $payProcess = $this->paymentPayFacade->pay($paymentHandler, $transaction, $this->salesChannelContext);
+        $payProcess = $this->paymentPayFacade->pay($paymentHandler, $transaction, $this->createMock(RequestDataBag::class), $this->salesChannelContext);
 
         static::assertInstanceOf(HandlerPrepareProcessStruct::class, $payProcess);
     }

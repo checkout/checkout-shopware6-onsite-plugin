@@ -2,7 +2,6 @@
 
 namespace CheckoutCom\Shopware6\Tests\Traits;
 
-use CheckoutCom\Shopware6\Service\CustomerService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
@@ -74,8 +73,7 @@ trait OrderTrait
     public function getCustomerEntity(
         string $firstName,
         string $lastName,
-        string $email,
-        ?string $cardToken = null
+        string $email
     ): CustomerEntity {
         $customer = new CustomerEntity();
         $customer->setId(Uuid::randomHex());
@@ -83,12 +81,6 @@ trait OrderTrait
         $customer->setFirstName($firstName);
         $customer->setLastName($lastName);
         $customer->setEmail($email);
-
-        $checkoutCustomerCustomFields = CustomerService::getCheckoutCustomerCustomFields($customer);
-        $checkoutCustomerCustomFields->setCardToken($cardToken);
-        $customer->setCustomFields([
-            CustomerService::CHECKOUT_CUSTOM_FIELDS => $checkoutCustomerCustomFields->jsonSerialize(),
-        ]);
 
         return $customer;
     }

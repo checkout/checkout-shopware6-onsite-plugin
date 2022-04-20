@@ -21,6 +21,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEnti
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -67,6 +68,7 @@ class PaymentPayFacade
     public function pay(
         PaymentHandler $paymentHandler,
         AsyncPaymentTransactionStruct $transaction,
+        RequestDataBag $dataBag,
         SalesChannelContext $salesChannelContext
     ): HandlerPrepareProcessStruct {
         // Extract data from transaction
@@ -78,6 +80,7 @@ class PaymentPayFacade
             $checkoutOrderCustomFields = $this->handleCheckoutOrderPayment(
                 $paymentHandler,
                 $transaction,
+                $dataBag,
                 $settings,
                 $order,
                 $orderTransaction,
@@ -113,6 +116,7 @@ class PaymentPayFacade
     private function handleCheckoutOrderPayment(
         PaymentHandler $paymentHandler,
         AsyncPaymentTransactionStruct $transaction,
+        RequestDataBag $dataBag,
         SettingStruct $settings,
         OrderEntity $order,
         OrderTransactionEntity $orderTransaction,
@@ -127,7 +131,7 @@ class PaymentPayFacade
         // otherwise, we're getting the payment details from Checkout.com
         if (empty($checkoutPaymentId)) {
             // Get the payment request, to call the Checkout API
-            $paymentRequest = $this->getCheckoutPaymentRequest($transaction, $paymentHandler, $order, $salesChannelContext);
+            $paymentRequest = $this->getCheckoutPaymentRequest($transaction, $dataBag, $paymentHandler, $order, $salesChannelContext);
 
             $this->eventDispatcher->dispatch(new CheckoutRequestPaymentEvent($paymentRequest, $paymentHandler, $transaction, $salesChannelContext));
 
@@ -179,6 +183,7 @@ class PaymentPayFacade
      */
     private function getCheckoutPaymentRequest(
         AsyncPaymentTransactionStruct $transaction,
+        RequestDataBag $dataBag,
         PaymentHandler $paymentHandler,
         OrderEntity $order,
         SalesChannelContext $context
@@ -227,6 +232,6 @@ class PaymentPayFacade
 
         // Prepare data for the payment depending on the payment method
         // Each method will have its own data
-        return $paymentHandler->prepareDataForPay($paymentRequest, $order, $customer, $context);
+        return $paymentHandler->prepareDataForPay($paymentRequest, $dataBag, $order, $customer, $context);
     }
 }

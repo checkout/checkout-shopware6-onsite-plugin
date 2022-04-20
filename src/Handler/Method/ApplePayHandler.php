@@ -7,6 +7,7 @@ use Checkout\Tokens\TokenType;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class ApplePayHandler extends PaymentHandler
@@ -21,8 +22,13 @@ class ApplePayHandler extends PaymentHandler
         return TokenType::$applepay;
     }
 
-    public function prepareDataForPay(PaymentRequest $paymentRequest, OrderEntity $order, CustomerEntity $customer, SalesChannelContext $context): PaymentRequest
-    {
+    public function prepareDataForPay(
+        PaymentRequest $paymentRequest,
+        RequestDataBag $dataBag,
+        OrderEntity $order,
+        CustomerEntity $customer,
+        SalesChannelContext $context
+    ): PaymentRequest {
         // @TODO: Implement prepare data for apple pay or just return.
         return $paymentRequest;
     }
