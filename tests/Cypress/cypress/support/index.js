@@ -13,13 +13,12 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-// Import commands.js using ES2015 syntax:
-import './commands'
-
+import './commands';
+import '@shopware-ag/e2e-testsuite-platform/cypress/support';
 
 Cypress.on('uncaught:exception', (err, runnable) => {
     // returning false here prevents Cypress from
     // failing the test because some third party apps
     // cause an error in the console which stops the test
-    return false
+    return false;
 })

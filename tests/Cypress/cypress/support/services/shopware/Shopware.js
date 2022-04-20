@@ -1,4 +1,4 @@
-import Cookies from 'Services/utils/Cookies';
+import Cookies from '../utils/Cookies';
 
 class Shopware {
 

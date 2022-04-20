@@ -1,0 +1,10 @@
+{
+  "responseTimeout": 80000,
+  "chromeWebSecurity": false,
+  "env": {
+    "localUsage": "true",
+    "shopwareRoot": "../../../../..",
+    "secretKey": "",
+    "publicKey": ""
+  }
+}

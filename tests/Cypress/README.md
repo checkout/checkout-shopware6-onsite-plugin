@@ -6,12 +6,8 @@ Just install it by using the built in makefile commands
 and either open your tests in the Cypress UI, or run them directly from your CLI.
 
 ### Test environment & DB
-To separate dev DB and test DB, just change these inside your `.env` file:
-
 Follow these steps to setup the test environment ff you run E2E for the first time:
-```ruby 
-./psh.phar init-composer --DB_NAME=shopware_e2e
-./psh.phar init-database --DB_NAME=shopware_e2e
+```ruby
 bin/console system:install --basic-setup --force
 bin/console plugin:refresh
 bin/console plugin:install --activate CheckoutCom -c
@@ -19,21 +15,24 @@ bin/console plugin:install --activate CheckoutCom -c
 ./psh.phar administration:build --DB_NAME=shopware_e2e
 ```
 
-And if you are done with testing, switch back to dev DB for development:
+And if you are done with testing, to switch back to dev DB for development. go to your `.env` file and change this:
 ```ruby 
 DATABASE_URL=mysql://app:app@localhost:3306/shopware
 ```
 
-
 ### Installation
 
 This folder contains a `makefile` with all required commands.
-Run the installation command to install Cypress and all its dependencies on your machine
+Run the installation command to install Cypress and all its dependencies on your machine.
 
 ```ruby 
 make install
 ```
+After installing, you need to set all the necessary environment variables for Cypress to work. We have provided `cypress.example.json` to define all the environment variables our plugin needs in order to run.
 
+Create `cypress.json` inside `checkoutcomshopware/tests/Cypress` directory.
+
+Set your own `secretKey` and `publicKey` and you are good to go!
 
 ### Cypress UI
 If you want to run your Cypress UI, just open it with the following command.
