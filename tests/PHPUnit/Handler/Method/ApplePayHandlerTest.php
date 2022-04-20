@@ -27,8 +27,11 @@ class ApplePayHandlerTest extends AbstractPaymentHandlerTest
 
     public function testPrepareDataForPay(): void
     {
+        $dataBag = $this->getRequestBag('Foo');
+
         $paymentRequest = $this->paymentHandler->prepareDataForPay(
             $this->createMock(PaymentRequest::class),
+            $dataBag,
             $this->createMock(OrderEntity::class),
             $this->setUpCustomer(),
             $this->saleChannelContext

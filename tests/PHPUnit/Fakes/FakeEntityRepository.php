@@ -81,6 +81,13 @@ class FakeEntityRepository implements EntityRepositoryInterface
         return $this->definition;
     }
 
+    public function getFirstCriteria(): Criteria
+    {
+        $array = \array_slice($this->criteria, 0, 1);
+
+        return array_shift($array);
+    }
+
     public function aggregate(Criteria $criteria, Context $context): AggregationResultCollection
     {
         $this->criteria[] = $criteria;

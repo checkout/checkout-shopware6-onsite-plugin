@@ -1,16 +1,15 @@
-import template from "./checkout-plugin-config-section-order-state.html.twig";
-import {
-    ORDER_STATE_SKIP,
-    ORDER_TECHNICAL_NAME,
-} from "../../../../constant/state-machine";
+import template from './checkout-plugin-config-section-order-state.html.twig';
+import { ORDER_STATE_SKIP, ORDER_TECHNICAL_NAME, } from '../../../../constant/state-machine';
 
-const { Component, Data, Context } = Shopware;
+const { Component, Data, Context, Mixin } = Shopware;
 const { Criteria } = Data;
 
-Component.register("checkout-plugin-config-section-order-state", {
+Component.register('checkout-plugin-config-section-order-state', {
     template,
 
-    inject: ["repositoryFactory"],
+    inject: ['repositoryFactory'],
+
+    mixins: [Mixin.getByName('notification')],
 
     props: {
         value: {
@@ -23,10 +22,10 @@ Component.register("checkout-plugin-config-section-order-state", {
         return {
             isLoading: false,
             config: {
-                orderStateForPaidPayment: this.getConfigPropsValue("orderStateForPaidPayment", ORDER_STATE_SKIP),
-                orderStateForFailedPayment: this.getConfigPropsValue("orderStateForFailedPayment", ORDER_STATE_SKIP),
-                orderStateForAuthorizedPayment: this.getConfigPropsValue("orderStateForAuthorizedPayment", ORDER_STATE_SKIP),
-                orderStateForVoidedPayment: this.getConfigPropsValue("orderStateForVoidedPayment", ORDER_STATE_SKIP),
+                orderStateForPaidPayment: this.getConfigPropsValue('orderStateForPaidPayment', ORDER_STATE_SKIP),
+                orderStateForFailedPayment: this.getConfigPropsValue('orderStateForFailedPayment', ORDER_STATE_SKIP),
+                orderStateForAuthorizedPayment: this.getConfigPropsValue('orderStateForAuthorizedPayment', ORDER_STATE_SKIP),
+                orderStateForVoidedPayment: this.getConfigPropsValue('orderStateForVoidedPayment', ORDER_STATE_SKIP),
             },
             orderOptions: [],
         };
@@ -34,7 +33,7 @@ Component.register("checkout-plugin-config-section-order-state", {
 
     computed: {
         stateMachineStateRepository() {
-            return this.repositoryFactory.create("state_machine_state");
+            return this.repositoryFactory.create('state_machine_state');
         },
 
         stateMachineStateCriteria() {
@@ -42,7 +41,7 @@ Component.register("checkout-plugin-config-section-order-state", {
 
             criteria.addFilter(
                 Criteria.equals(
-                    "stateMachine.technicalName",
+                    'stateMachine.technicalName',
                     ORDER_TECHNICAL_NAME
                 )
             );
@@ -54,7 +53,7 @@ Component.register("checkout-plugin-config-section-order-state", {
     watch: {
         config: {
             handler(configValue) {
-                this.$emit("change", configValue);
+                this.$emit('change', configValue);
             },
             deep: true,
         },
@@ -85,7 +84,7 @@ Component.register("checkout-plugin-config-section-order-state", {
                 const orderOptions = [
                     {
                         label: this.$t(
-                            "checkout-payments.config.orderState.skipOptionOrder"
+                            'checkout-payments.config.orderState.skipOptionOrder'
                         ),
                         value: ORDER_STATE_SKIP,
                     },
@@ -104,7 +103,11 @@ Component.register("checkout-plugin-config-section-order-state", {
                 });
 
                 this.orderOptions = orderOptions;
-            } catch {}
+            } catch {
+                this.createNotificationError({
+                    message: this.$tc('global.notification.unspecifiedSaveErrorMessage'),
+                });
+            }
 
             this.isLoading = false;
         },

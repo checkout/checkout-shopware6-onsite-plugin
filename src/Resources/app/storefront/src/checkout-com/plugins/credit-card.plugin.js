@@ -1,6 +1,8 @@
-import Plugin from "src/plugin-system/plugin.class";
-import HttpClient from "src/service/http-client.service";
-import DomAccess from "src/helper/dom-access.helper";
+import Plugin from 'src/plugin-system/plugin.class';
+import ButtonLoadingIndicator from 'src/utility/loading-indicator/button-loading-indicator.util';
+import DomAccess from 'src/helper/dom-access.helper';
+import HttpClient from 'src/service/http-client.service';
+import { DATA_BAG_KEY } from '../helper/constants';
 
 /**
  * This Class is responsible for the Credit Card integration
@@ -8,26 +10,29 @@ import DomAccess from "src/helper/dom-access.helper";
 export default class CheckoutComCreditCard extends Plugin {
     static options = {
         localization: {
-            cardNumberPlaceholder: "",
-            expiryMonthPlaceholder: "",
-            expiryYearPlaceholder: "",
-            cvvPlaceholder: "",
+            cardNumberPlaceholder: '',
+            expiryMonthPlaceholder: '',
+            expiryYearPlaceholder: '',
+            cvvPlaceholder: '',
         },
         publicKey: null,
-        storeCardUrl: null,
-        csrfToken: null,
-        cardholderNameId: "#cardholder-name",
-        paymentFormId: "#confirmOrderForm",
+        cardholderNameId: '#cardholder-name',
+        paymentFormId: '#confirmOrderForm',
         submitPaymentButtonId: '#confirmOrderForm button[type="submit"]',
+        prefixFieldClass: '.checkout-com-field__',
     };
 
     init() {
         this.client = new HttpClient();
         const { submitPaymentButtonId } = this.options;
 
-        this.submitPaymentEle = this.getElement(
+        this.submitPaymentButton = this.getElement(
             document,
             submitPaymentButtonId
+        );
+
+        this.submitButtonLoader = new ButtonLoadingIndicator(
+            this.submitPaymentButton
         );
 
         // We disable the form before the Frame is loaded
@@ -43,7 +48,7 @@ export default class CheckoutComCreditCard extends Plugin {
         const { localization, publicKey, cardholderNameId } = this.options;
 
         // Submit payment form handler
-        this.submitPaymentEle.addEventListener("click", (event) => {
+        this.submitPaymentButton.addEventListener('click', (event) => {
             event.preventDefault();
 
             const cardholderNameInput = this.getElement(
@@ -58,9 +63,11 @@ export default class CheckoutComCreditCard extends Plugin {
                 };
             }
 
-            // We submit the card, to get the token instead of submitting the payment form
+            this.createLoading();
+
+            // Submit the credit card Frame, to get the token instead of submitting the payment form
+            // All the credit card data is submitted to the checkout.com server by the iframe
             Frames.submitCard();
-            this.disableForm();
         });
 
         Frames.init({
@@ -76,7 +83,7 @@ export default class CheckoutComCreditCard extends Plugin {
 
     onReadyFrames() {
         // Because we add `d-none` class to the credit card form, we need to remove it when the frame is ready
-        this.el.classList.remove("d-none");
+        this.el.classList.remove('d-none');
     }
 
     /**
@@ -109,63 +116,64 @@ export default class CheckoutComCreditCard extends Plugin {
      * Card tokenization failed
      */
     onCardTokenizationFailed() {
-        this.enableFormWithCard();
+        this.removeLoading();
+        Frames.enableSubmitForm();
     }
 
     /**
-     * Receive token from checkout.com
+     * When the card validation is successful, we need to get the card token
+     * And send it to the Shopware server
      * @param token {string}
      */
     onCardTokenized({ token }) {
-        const { csrfToken, storeCardUrl, paymentFormId } = this.options;
+        const { paymentFormId } = this.options;
 
-        const data = JSON.stringify({
-            _csrf_token: csrfToken,
-            cardToken: token,
-        });
+        const paymentForm = this.getElement(document, paymentFormId);
 
-        // We call the api to save the token
-        this.client.post(storeCardUrl, data, (response) => {
-            const { result } = JSON.parse(response);
+        const input = this.createTokenInput(token);
 
-            // If it fails, then we enable the form so the user can enter the details again.
-            if (!result) {
-                this.enableFormWithCard();
-                return;
-            }
+        // Add the token input to the form
+        // It will be sent to the server along with the form.
+        paymentForm.append(input);
 
-            // We continue to submit shopware payment form
-            const paymentForm = this.getElement(document, paymentFormId);
-            paymentForm.submit();
-        });
+        // Continue to submit shopware payment form
+        paymentForm.submit();
+    }
+
+    createTokenInput(token) {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'hidden');
+        input.setAttribute('name', `${DATA_BAG_KEY}[token]`);
+        input.setAttribute('value', token);
+
+        return input;
     }
 
     clearErrorMessage(element) {
-        const field = this.getElement(
-            this.el,
-            `.checkout-com-field__${element}`
-        );
-        field.classList.remove("is-invalid");
+        const { prefixFieldClass } = this.options;
+        const field = this.getElement(this.el, `${prefixFieldClass}${element}`);
+        field.classList.remove('is-invalid');
     }
 
     setErrorMessage(element) {
-        const field = this.getElement(
-            this.el,
-            `.checkout-com-field__${element}`
-        );
-        field.classList.add("is-invalid");
+        const { prefixFieldClass } = this.options;
+        const field = this.getElement(this.el, `${prefixFieldClass}${element}`);
+        field.classList.add('is-invalid');
     }
 
     disableForm() {
-        this.submitPaymentEle.disabled = true;
+        this.submitPaymentButton.disabled = true;
     }
 
     enableForm() {
-        this.submitPaymentEle.disabled = false;
+        this.submitPaymentButton.disabled = false;
     }
 
-    enableFormWithCard() {
-        this.enableForm();
-        Frames.enableSubmitForm();
+    createLoading() {
+        this.submitButtonLoader.create();
+    }
+
+    removeLoading() {
+        this.submitButtonLoader.remove();
     }
 }

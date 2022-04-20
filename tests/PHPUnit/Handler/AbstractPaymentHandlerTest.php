@@ -5,6 +5,7 @@ namespace CheckoutCom\Shopware6\Tests\Handler;
 use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
+use CheckoutCom\Shopware6\Helper\RequestUtil;
 use CheckoutCom\Shopware6\Struct\PaymentHandler\HandlerPrepareProcessStruct;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
@@ -134,11 +135,21 @@ abstract class AbstractPaymentHandlerTest extends TestCase
 
     protected function setUpCustomer(): CustomerEntity
     {
-        $customer = $this->getCustomerEntity('foo', 'bar', 'email@email.com', '123456789');
+        $customer = $this->getCustomerEntity('foo', 'bar', 'email@email.com');
         $customerAddress = $this->getCustomerAddressEntity('foo', 'bar', 'street', 'city', 'zip');
 
         $customer->setDefaultBillingAddress($customerAddress);
 
         return $customer;
+    }
+
+    protected function getRequestBag($token = null): RequestDataBag
+    {
+        $paymentDetails = new RequestDataBag();
+        $paymentDetails->set(RequestUtil::DATA_TOKEN, $token);
+        $requestBag = new RequestDataBag();
+        $requestBag->set(RequestUtil::DATA_BAG_KEY, $paymentDetails);
+
+        return $requestBag;
     }
 }

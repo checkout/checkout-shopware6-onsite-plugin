@@ -18,8 +18,14 @@
 
         <service id="CheckoutCom\Shopware6\Service\CustomerService">
             <argument type="service" id="checkout_com.shopware6.logger"/>
-            <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="customer.repository"/>
+        </service>
+
+        <service id="CheckoutCom\Shopware6\Service\MediaService">
+            <argument type="service" id="checkout_com.shopware6.logger"/>
+            <argument type="service" id="shopware.filesystem.public"/>
+            <argument type="service" id="media.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
         </service>
 
         <service id="CheckoutCom\Shopware6\Service\Order\OrderService">
@@ -32,6 +38,13 @@
             <argument type="service" id="checkout_com.shopware6.logger"/>
             <argument type="service" id="order_transaction.repository"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\Transition\OrderTransactionTransitionService"/>
+        </service>
+
+        <!--    APPLE PAY    -->
+        <service id="CheckoutCom\Shopware6\Service\ApplePay\ApplePayService">
+            <argument type="service" id="checkout_com.shopware6.logger"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\MediaService"/>
         </service>
 
         <!--    TRANSITION    -->

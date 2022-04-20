@@ -1,0 +1,135 @@
+{% block checkout_com_payment_method_apple_pay %}
+    <sw-card
+        class="checkout-com-payment-method-apple-pay"
+        position-identifier="sw-settings-payment-detail-apple-pay"
+        :title="$tc('checkout-payments.paymentMethod.applePay.configuration.title')"
+        :is-loading="isLoading"
+    >
+        {% block checkout_com_payment_method_apple_pay_external_link %}
+            <div class="checkout-com-payment-method-apple-pay-external-link">
+                <sw-external-link
+                    rel="noopener"
+                    icon="small-arrow-small-external"
+                    :href="setupLink"
+                    target="_blank"
+                >
+                    {{ $tc('checkout-payments.paymentMethod.applePay.configuration.externalLinkLabel') }}
+                </sw-external-link>
+            </div>
+        {% endblock %}
+
+        {% block checkout_com_payment_method_apple_pay_merchant_id %}
+            <sw-field
+                type="text"
+                :disabled="!acl.can('payment.editor')"
+                :value="getCheckoutConfigValue('applePayMerchantId')"
+                :label="$tc('checkout-payments.paymentMethod.applePay.configuration.appleMerchantIdLabel')"
+                :placeholder="$tc('checkout-payments.paymentMethod.applePay.configuration.appleMerchantIdLabel')"
+                :help-text="$tc('checkout-payments.paymentMethod.applePay.configuration.appleMerchantIdHelpText')"
+                @change="onInputChange('applePayMerchantId', $event)"
+            ></sw-field>
+        {% endblock %}
+
+        {% block checkout_com_payment_method_apple_pay_domain %}
+            <div class="checkout-com-payment-method-apple-pay-domain">
+                {% block checkout_com_payment_method_apple_pay_domain_label %}
+                    <label class="checkout-com-payment-method-apple-pay_upload-label">
+                        {{ $tc('checkout-payments.paymentMethod.applePay.configuration.domainUploadLabel') }}
+                    </label>
+                {% endblock %}
+
+                {% block checkout_com_payment_method_apple_pay_domain_upload_listener %}
+                    <sw-upload-listener
+                        auto-upload
+                        :upload-tag="applePayFiles.applePayDomainMediaId.tag"
+                        @media-upload-finish="uploadFinish('applePayDomainMediaId', $event)"
+                    >
+                    </sw-upload-listener>
+                {% endblock %}
+
+                {% block checkout_com_payment_method_apple_pay_domain_upload_media %}
+                    <checkout-com-media-compact-upload-v2
+                        variant="regular"
+                        :disabled="!acl.can('payment.editor')"
+                        :upload-tag="applePayFiles.applePayDomainMediaId.tag"
+                        :allow-multi-select="false"
+                        :source="applePayFiles.applePayDomainMediaId.preview"
+                        :file-accept="applePayFiles.applePayDomainMediaId.accept"
+                        :media-is-private="true"
+                        @media-drop="onMediaDropped('applePayDomainMediaId', $event)"
+                        @media-upload-remove-image="onRemoveMedia('applePayDomainMediaId')"
+                    >
+                    </checkout-com-media-compact-upload-v2>
+                {% endblock %}
+            </div>
+        {% endblock %}
+
+        {% block checkout_com_payment_method_apple_pay_key %}
+            <div class="checkout-com-payment-method-apple-pay-key">
+                {% block checkout_com_payment_method_apple_pay_key_label %}
+                    <label class="checkout-com-payment-method-apple-pay_upload-label">
+                        {{ $tc('checkout-payments.paymentMethod.applePay.configuration.keyUploadLabel') }}
+                    </label>
+                {% endblock %}
+
+                {% block checkout_com_payment_method_apple_pay_key_upload_listener %}
+                    <sw-upload-listener
+                        auto-upload
+                        :upload-tag="applePayFiles.applePayKeyMediaId.tag"
+                        @media-upload-finish="uploadFinish('applePayKeyMediaId', $event)"
+                    >
+                    </sw-upload-listener>
+                {% endblock %}
+
+                {% block checkout_com_payment_method_apple_pay_key_upload_media %}
+                    <checkout-com-media-compact-upload-v2
+                        variant="regular"
+                        :disabled="!acl.can('payment.editor')"
+                        :upload-tag="applePayFiles.applePayKeyMediaId.tag"
+                        :allow-multi-select="false"
+                        :source="applePayFiles.applePayKeyMediaId.preview"
+                        :file-accept="applePayFiles.applePayKeyMediaId.accept"
+                        :media-is-private="true"
+                        @media-drop="onMediaDropped('applePayKeyMediaId', $event)"
+                        @media-upload-remove-image="onRemoveMedia('applePayKeyMediaId')"
+                    >
+                    </checkout-com-media-compact-upload-v2>
+                {% endblock %}
+            </div>
+        {% endblock %}
+
+        {% block checkout_com_payment_method_apple_pay_pem %}
+            <div class="checkout-com-payment-method-apple-pay-pem">
+                {% block checkout_com_payment_method_apple_pay_pem_label %}
+                    <label class="checkout-com-payment-method-apple-pay_upload-label">
+                        {{ $tc('checkout-payments.paymentMethod.applePay.configuration.pemUploadLabel') }}
+                    </label>
+                {% endblock %}
+
+                {% block checkout_com_payment_method_apple_pay_pem_upload_listener %}
+                    <sw-upload-listener
+                        auto-upload
+                        :upload-tag="applePayFiles.applePayPemMediaId.tag"
+                        @media-upload-finish="uploadFinish('applePayPemMediaId', $event)"
+                    >
+                    </sw-upload-listener>
+                {% endblock %}
+
+                {% block checkout_com_payment_method_apple_pay_pem_upload_media %}
+                    <checkout-com-media-compact-upload-v2
+                        variant="regular"
+                        :disabled="!acl.can('payment.editor')"
+                        :upload-tag="applePayFiles.applePayPemMediaId.tag"
+                        :allow-multi-select="false"
+                        :source="applePayFiles.applePayPemMediaId.preview"
+                        :file-accept="applePayFiles.applePayPemMediaId.accept"
+                        :media-is-private="true"
+                        @media-drop="onMediaDropped('applePayPemMediaId', $event)"
+                        @media-upload-remove-image="onRemoveMedia('applePayPemMediaId')"
+                    >
+                    </checkout-com-media-compact-upload-v2>
+                {% endblock %}
+            </div>
+        {% endblock %}
+    </sw-card>
+{% endblock %}

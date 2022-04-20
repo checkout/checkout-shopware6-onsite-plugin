@@ -1,0 +1,16 @@
+{% block sw_settings_payment_detail_custom_field_sets %}
+    {% parent %}
+
+    {% block checkout_com_payment_method_condition_display_component %}
+        <template v-if="isDisplayComponent">
+            {% block checkout_com_payment_method_apple_pay_component %}
+                <checkout-com-payment-method-apple-pay
+                    v-if="isApplePay"
+                    :checkout-configs="checkoutConfigs"
+                    @save-system-config="saveSystemConfig"
+                    @set-checkout-config="setCheckoutConfigs"
+                ></checkout-com-payment-method-apple-pay>
+            {% endblock %}
+        </template>
+    {% endblock %}
+{% endblock %}
