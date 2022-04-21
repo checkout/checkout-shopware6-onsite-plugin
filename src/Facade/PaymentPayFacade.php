@@ -2,6 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Facade;
 
+use Checkout\CheckoutApiException;
 use Checkout\Payments\PaymentRequest;
 use CheckoutCom\Shopware6\Event\CheckoutRequestPaymentEvent;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
@@ -11,6 +12,7 @@ use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\Extractor\OrderExtractor;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
 use CheckoutCom\Shopware6\Service\Order\OrderTransactionService;
+use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
 use CheckoutCom\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
 use CheckoutCom\Shopware6\Struct\PaymentHandler\HandlerPrepareProcessStruct;
 use CheckoutCom\Shopware6\Struct\SettingStruct;
@@ -130,22 +132,22 @@ class PaymentPayFacade
         // In case of an empty checkout payment ID, we create a new payment at Checkout.com
         // otherwise, we're getting the payment details from Checkout.com
         if (empty($checkoutPaymentId)) {
-            // Get the payment request, to call the Checkout API
-            $paymentRequest = $this->getCheckoutPaymentRequest($transaction, $dataBag, $paymentHandler, $order, $salesChannelContext);
-
-            $this->eventDispatcher->dispatch(new CheckoutRequestPaymentEvent($paymentRequest, $paymentHandler, $transaction, $salesChannelContext));
-
-            // Call the API to create a payment at checkout.com
-            $payment = $this->checkoutPaymentService->requestPayment($paymentRequest, $salesChannelContext->getSalesChannelId());
+            $payment = $this->createCheckoutPayment($paymentHandler, $dataBag, $transaction, $order, $checkoutOrderCustomFields, $salesChannelContext);
 
             $checkoutOrderCustomFields->setCheckoutPaymentId($payment->getId());
             $checkoutOrderCustomFields->setCheckoutReturnUrl($payment->getRedirectUrl());
         } else {
             $payment = $this->checkoutPaymentService->getPaymentDetails($checkoutPaymentId, $salesChannelContext->getSalesChannelId());
+            if ($payment->getStatus() === CheckoutPaymentService::STATUS_DECLINED) {
+                $payment = $this->createCheckoutPayment($paymentHandler, $dataBag, $transaction, $order, $checkoutOrderCustomFields, $salesChannelContext);
+
+                $checkoutOrderCustomFields->setCheckoutPaymentId($payment->getId());
+                $checkoutOrderCustomFields->setCheckoutReturnUrl($payment->getRedirectUrl());
+            }
         }
 
-        // If the payment is not approved, throw an exception and log the error
-        if (!$payment->isApproved()) {
+        // If the payment is not approved and status is not pending, throw an exception and log the error
+        if (!$payment->isApproved() && $payment->getStatus() !== CheckoutPaymentService::STATUS_PENDING) {
             $this->logger->error('Checkout.com payment request failed', [
                 'checkoutCom' => [
                     'paymentId' => $payment->getId(),
@@ -212,7 +214,9 @@ class PaymentPayFacade
         $paymentRequest = new PaymentRequest();
 
         // We add a success URL to the payment request, so we can redirect to Shopware after the payment
+        // If the payment is failed, the page will redirect to complete payment page with error message
         $paymentRequest->success_url = $transaction->getReturnUrl();
+        $paymentRequest->failure_url = $transaction->getReturnUrl();
         $paymentRequest->shipping = CheckoutComUtil::buildShipDetail($activeShippingAddress);
 
         if ($order->getTaxStatus() === CartPrice::TAX_STATE_FREE) {
@@ -233,5 +237,27 @@ class PaymentPayFacade
         // Prepare data for the payment depending on the payment method
         // Each method will have its own data
         return $paymentHandler->prepareDataForPay($paymentRequest, $dataBag, $order, $customer, $context);
+    }
+
+    /**
+     * Create checkout payment by calling Checkout API
+     *
+     * @throws CheckoutApiException
+     */
+    private function createCheckoutPayment(
+        PaymentHandler $paymentHandler,
+        RequestDataBag $dataBag,
+        AsyncPaymentTransactionStruct $transaction,
+        OrderEntity $order,
+        OrderCustomFieldsStruct $checkoutOrderCustomFields,
+        SalesChannelContext $salesChannelContext
+    ): Payment {
+        // Get the payment request, to call the Checkout API
+        $paymentRequest = $this->getCheckoutPaymentRequest($transaction, $dataBag, $paymentHandler, $order, $salesChannelContext);
+
+        $this->eventDispatcher->dispatch(new CheckoutRequestPaymentEvent($paymentRequest, $paymentHandler, $transaction, $salesChannelContext));
+
+        // Call the API to create a payment at checkout.com
+        return $this->checkoutPaymentService->requestPayment($paymentRequest, $salesChannelContext->getSalesChannelId());
     }
 }

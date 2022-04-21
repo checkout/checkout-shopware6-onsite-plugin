@@ -3,6 +3,7 @@
 namespace CheckoutCom\Shopware6\Handler;
 
 use Checkout\Payments\PaymentRequest;
+use Checkout\Payments\ThreeDsRequest;
 use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
@@ -158,5 +159,15 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
                 'Internal error exception, view the log for more information'
             );
         }
+    }
+
+    /**
+     * Enable 3DS for payment request
+     */
+    public function enableThreeDsRequest(PaymentRequest $paymentRequest): void
+    {
+        $threeDs = new ThreeDsRequest();
+        $threeDs->enabled = true;
+        $paymentRequest->three_ds = $threeDs;
     }
 }

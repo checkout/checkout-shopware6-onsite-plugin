@@ -69,7 +69,7 @@ class PaymentFinalizeFacade
         $paymentStatus = $payment->getStatus();
 
         if ($paymentStatus === CheckoutPaymentService::STATUS_AUTHORIZED) {
-            // We capture the payment from the Checkout.com API
+            // We capture the payment from the Checkout.com API, the CheckoutApiException will be thrown if capturing is failed
             $this->checkoutPaymentService->capturePayment($checkoutPaymentId, $salesChannelContext->getSalesChannelId());
 
             // If we successfully capture the payment, we can mark the status as captured
