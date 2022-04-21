@@ -8,10 +8,12 @@ use CheckoutCom\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
 use CheckoutCom\Shopware6\Struct\SettingStruct;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\OrderStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
@@ -113,5 +115,19 @@ class OrderService extends AbstractOrderService
 
                 throw new Exception(sprintf('Updating Status of Order not possible for status: %s', $checkoutPaymentStatus));
         }
+    }
+
+    public function getOrderById(string $orderId, Context $context): OrderEntity
+    {
+        $criteria = new Criteria([$orderId]);
+        $criteria->setLimit(1);
+
+        $order = $this->orderRepository->search($criteria, $context)->first();
+
+        if (!$order instanceof OrderEntity) {
+            throw new OrderNotFoundException($orderId);
+        }
+
+        return $order;
     }
 }
