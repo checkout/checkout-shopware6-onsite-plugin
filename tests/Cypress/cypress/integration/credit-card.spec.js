@@ -4,7 +4,7 @@ import storefrontLoginAction from '../support/actions/storefront/LoginAction';
 
 import checkoutConfirmRepository from '../support/repositories/storefront/CheckoutConfirmRepository';
 
-describe('Credit card', () => {
+describe('Testing Storefront Credit Card Payment', () => {
     before(() => {
         cy.setToInitialState().then(() => {
             cy.loginViaApi();

@@ -8,14 +8,13 @@ and either open your tests in the Cypress UI, or run them directly from your CLI
 ### Test environment & DB
 Follow these steps to setup the test environment ff you run E2E for the first time:
 ```ruby
+./psh.phar init-database --DB_NAME=shopware_e2e --APP_ENV=e2e
 bin/console system:install --basic-setup --force
-bin/console plugin:refresh
 bin/console plugin:install --activate CheckoutCom -c
-./psh.phar storefront:build --DB_NAME=shopware_e2e
-./psh.phar administration:build --DB_NAME=shopware_e2e
+bin/console e2e:dump-db
 ```
 
-And if you are done with testing, to switch back to dev DB for development. go to your `.env` file and change this:
+And if you are done with testing, to switch back to dev DB for development, go to your `.env` file and change this:
 ```ruby 
 DATABASE_URL=mysql://app:app@localhost:3306/shopware
 ```

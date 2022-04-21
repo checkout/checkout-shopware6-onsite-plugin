@@ -4,6 +4,11 @@
   "env": {
     "localUsage": "true",
     "shopwareRoot": "../../../../..",
+    "user": "admin",
+    "pass": "shopware",
+    "salesChannelName": "Storefront",
+    "admin": "/admin",
+    "apiPath": "api",
     "secretKey": "",
     "publicKey": ""
   }
