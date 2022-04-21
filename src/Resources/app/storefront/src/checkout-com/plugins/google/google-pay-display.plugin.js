@@ -11,21 +11,31 @@ export default class CheckoutComGooglePayDisplay extends DisplayPaymentHandler {
     });
 
     init() {
-        super.init();
+        const active = super.init();
+        if (!active) {
+            return;
+        }
 
         const googlePayClient = window.googlePayClient;
 
         // If the Google Pay client is not defined, hide everything related to the payment method
         if (!googlePayClient) {
-            this.hideAllRelativeToPaymentMethod();
+            this.hideUnavailablePaymentMethod();
 
             return;
         }
 
         googlePayClient
             .isReadyToPay(this.getGoogleIsReadyToPayRequest())
+            .then(({ result }) => {
+                if (!result) {
+                    return;
+                }
+
+                this.showDirectButtons();
+            })
             .catch((_) => {
-                this.hideAllRelativeToPaymentMethod();
+                this.hideUnavailablePaymentMethod();
             });
     }
 

@@ -8,10 +8,12 @@
         "validateMerchantPath": path('store-api.checkout-com.validate-merchant'),
     } %}
 
-    <div id="checkoutComApplePayConfirm"
-         class="checkout-com-apple-pay-confirm d-none"
-         data-checkout-com-apple-pay-confirm
-         data-checkout-com-apple-pay-confirm-options='{{ applePayConfirmOptions|json_encode }}'
-    >
-    </div>
+    {% block checkout_com_apple_pay_confirm_element %}
+        <div id="checkoutComApplePayConfirm"
+             class="checkout-com-apple-pay-confirm d-none"
+             data-checkout-com-apple-pay-confirm
+             data-checkout-com-apple-pay-confirm-options='{{ applePayConfirmOptions|json_encode }}'
+        >
+        </div>
+    {% endblock %}
 {% endblock %}

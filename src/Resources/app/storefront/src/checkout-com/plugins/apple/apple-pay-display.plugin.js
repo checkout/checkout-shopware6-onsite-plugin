@@ -7,18 +7,22 @@ import DisplayPaymentHandler from '../../core/display-payment-handler';
 export default class CheckoutComApplePayDisplay extends DisplayPaymentHandler {
     static options = deepmerge(DisplayPaymentHandler.options, {
         paymentMethodIdentify: 'data-apple-pay',
-    })
+    });
 
     init() {
-        super.init();
+        const active = super.init();
+        if (!active) {
+            return;
+        }
+
         const applePaySession = window.ApplePaySession;
 
-        // If Apple Pay is available, we don't need to do anything
         if (applePaySession && applePaySession.canMakePayments()) {
+            this.showDirectButtons();
             return;
         }
 
         // Otherwise, we need to hide the Apple Pay payment method
-        this.hideAllRelativeToPaymentMethod();
+        this.hideUnavailablePaymentMethod();
     }
 }

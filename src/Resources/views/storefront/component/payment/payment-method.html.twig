@@ -1,11 +1,11 @@
 {% sw_extends '@Storefront/storefront/component/payment/payment-method.html.twig' %}
 
-{% set METHOD_TYPE_CREDIT_CARD = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\CreditCardHandler::getPaymentMethodType') %}
-{% set METHOD_TYPE_APPLE_PAY = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\ApplePayHandler::getPaymentMethodType') %}
-{% set METHOD_TYPE_GOOGLE_PAY = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\GooglePayHandler::getPaymentMethodType') %}
-
 {% block component_payment_method_description %}
     {{ parent() }}
+
+    {% set METHOD_TYPE_CREDIT_CARD = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\CreditCardHandler::getPaymentMethodType') %}
+    {% set METHOD_TYPE_APPLE_PAY = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\ApplePayHandler::getPaymentMethodType') %}
+    {% set METHOD_TYPE_GOOGLE_PAY = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\GooglePayHandler::getPaymentMethodType') %}
 
     {% block checkout_com_payment_method %}
         <div id="checkoutComPaymentMethod{{ payment.id }}"
@@ -19,32 +19,20 @@
         ></div>
     {% endblock %}
 
-    {% block checkout_com_payment_method_included %}
-        {% if payment.extensions.checkoutConfig.methodType == METHOD_TYPE_APPLE_PAY %}
-            {% block checkout_com_payment_method_apple_pay_display_included %}
-                {% sw_include '@CheckoutCom/storefront/component/payment/component/apple/apple-pay-display.html.twig' %}
-            {% endblock %}
-        {% elseif payment.extensions.checkoutConfig.methodType == METHOD_TYPE_GOOGLE_PAY %}
-            {% block checkout_com_payment_method_google_pay_display_included %}
-                {% sw_include '@CheckoutCom/storefront/component/payment/component/google/google-pay-display.html.twig' %}
-            {% endblock %}
-        {% endif %}
-    {% endblock %}
-
-    {% block checkout_com_payment_method_selected_included %}
+    {% block checkout_com_payment_method_selected %}
         {% if (payment.id is same as(selectedPaymentMethodId)) %}
             {% block checkout_com_payment_method_credit_card_condition %}
                 {% if payment.extensions.checkoutConfig.methodType == METHOD_TYPE_CREDIT_CARD %}
-                    {% block checkout_com_payment_method_credit_card_selected_included %}
-                        {% sw_include '@CheckoutCom/storefront/component/payment/component/credit-card-fields.html.twig' %}
+                    {% block checkout_com_payment_method_selected_credit_card %}
+                        {% sw_include '@CheckoutCom/storefront/checkout-com/component/credit-card-fields.html.twig' %}
                     {% endblock %}
                 {% elseif payment.extensions.checkoutConfig.methodType == METHOD_TYPE_APPLE_PAY %}
-                    {% block checkout_com_payment_method_apple_pay_confirm_selected_included %}
-                        {% sw_include '@CheckoutCom/storefront/component/payment/component/apple/apple-pay-confirm.html.twig' %}
+                    {% block checkout_com_payment_method_selected_apple_pay_confirm %}
+                        {% sw_include '@CheckoutCom/storefront/checkout-com/component/apple/apple-pay-confirm.html.twig' %}
                     {% endblock %}
                 {% elseif payment.extensions.checkoutConfig.methodType == METHOD_TYPE_GOOGLE_PAY %}
-                    {% block checkout_com_payment_method_google_pay_confirm_selected_included %}
-                        {% sw_include '@CheckoutCom/storefront/component/payment/component/google/google-pay-confirm.html.twig' %}
+                    {% block checkout_com_payment_method_selected_google_pay_confirm %}
+                        {% sw_include '@CheckoutCom/storefront/checkout-com/component/google/google-pay-confirm.html.twig' %}
                     {% endblock %}
                 {% endif %}
             {% endblock %}

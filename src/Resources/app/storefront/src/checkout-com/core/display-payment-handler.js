@@ -7,12 +7,16 @@ import DomAccess from 'src/helper/dom-access.helper';
  */
 export default class DisplayPaymentHandler extends Plugin {
     static options = {
+        active: null,
         selectedPaymentMethodId: null,
         paymentFormId: 'form#confirmOrderForm',
         paymentMethodClass: '.payment-method',
         checkoutPaymentMethodClass: '.checkout-com-payment-method',
+        checkoutDirectPayContainerClass: '.checkout-com-direct-pay-container',
+        checkoutDirectPayButtonClass: '.checkout-com-direct-pay',
         prefixCheckoutPaymentMethodId: '#checkoutComPaymentMethod',
         dataPaymentMethodId: 'data-payment-method-id',
+        hiddenClass: 'd-none',
     };
 
     init() {
@@ -24,17 +28,92 @@ export default class DisplayPaymentHandler extends Plugin {
         //       <div class="checkout-com-payment-method" data-apple-hide="true">
         //       <option>Apple</option>
         //   </div>
-        const { paymentMethodIdentify } = this.options;
+        const {
+            paymentMethodIdentify,
+            active,
+        } = this.options;
         if (!paymentMethodIdentify) {
-            throw new Error('paymentMethodIdentify is not defined');
+            throw new Error(`The "paymentMethodIdentify" option for the plugin "${this._pluginName}" is not defined.`);
         }
+
+        if (active === null) {
+            throw new Error(`The "active" option for the plugin "${this._pluginName}" is not defined.`);
+        }
+
+        if (!active) {
+            // If the Payment Method is not active, hide everything related to this Payment Method
+            this.hideUnavailablePaymentMethod();
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
+     * Hide the direct pay buttons
      * Hide the payment method option on the checkout page
      * Hide the `Submit button` on the payment form if the payment method is selected
      */
-    hideAllRelativeToPaymentMethod() {
+    hideUnavailablePaymentMethod() {
+        this._removePaymentOptions();
+        this.showDirectButtons(false);
+    }
+
+    /**
+     * Show/Remove all direct pay buttons
+     *
+     * @param {boolean} isShow
+     */
+    showDirectButtons(isShow = true) {
+        const {
+            paymentMethodIdentify,
+            checkoutDirectPayContainerClass,
+            checkoutDirectPayButtonClass,
+            hiddenClass,
+        } = this.options;
+
+        const checkoutDirectPayButtons = DomAccess.querySelectorAll(document, checkoutDirectPayButtonClass, false);
+
+        if (!checkoutDirectPayButtons) {
+            return;
+        }
+
+        checkoutDirectPayButtons.forEach((checkoutDirectPayButton) => {
+            const hasPaymentMethodIdentify = checkoutDirectPayButton.hasAttribute(paymentMethodIdentify);
+            if (!hasPaymentMethodIdentify) {
+                // If the payment method does not have the `hasPaymentMethodIdentify` attribute, we don't need to do anything
+                return;
+            }
+
+            const directPayContainer = checkoutDirectPayButton.closest(checkoutDirectPayContainerClass);
+
+            if (directPayContainer) {
+                if (!isShow) {
+                    directPayContainer.remove();
+
+                    // No need to do anything because the closest element has already been removed
+                    return;
+                }
+
+                // Because the container already has the `hiddenClass` class, we need to remove it
+                directPayContainer.classList.remove(hiddenClass);
+            }
+
+            if (isShow) {
+                // Because the button already has the `hiddenClass` class, we need to remove it
+                checkoutDirectPayButton.classList.remove(hiddenClass);
+                return;
+            }
+
+            checkoutDirectPayButton.remove();
+        });
+    }
+
+    /**
+     * Remove all payment options and disable the submit button depending on the selected payment method
+     */
+    _removePaymentOptions() {
         const {
             selectedPaymentMethodId,
             prefixCheckoutPaymentMethodId,
@@ -52,10 +131,10 @@ export default class DisplayPaymentHandler extends Plugin {
 
         checkoutPaymentMethods.forEach((paymentMethod) => {
             const id = paymentMethod.getAttribute(dataPaymentMethodId);
-            const isPaymentMethodHidden = paymentMethod.getAttribute(paymentMethodIdentify);
+            const hasPaymentMethodIdentify = paymentMethod.hasAttribute(paymentMethodIdentify);
 
-            if (!isPaymentMethodHidden || !id) {
-                // If the payment method does not have the `isPaymentMethodHidden` attribute or the `id` attribute, we don't need to do anything
+            if (!hasPaymentMethodIdentify || !id) {
+                // If the payment method does not have the `hasPaymentMethodIdentify` attribute or the `id` attribute, we don't need to do anything
                 return;
             }
 
