@@ -2,10 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Exception;
 
-use Shopware\Core\Framework\ShopwareHttpException;
-use Symfony\Component\HttpFoundation\Response;
-
-class CheckoutInvalidTokenException extends ShopwareHttpException
+class CheckoutInvalidTokenException extends CheckoutComException
 {
     public function __construct(string $paymentType = '', array $parameters = [])
     {
@@ -17,10 +14,5 @@ class CheckoutInvalidTokenException extends ShopwareHttpException
     public function getErrorCode(): string
     {
         return 'CHECKOUT_COM_INVALID_REQUEST_TOKEN_NOT_FOUND';
-    }
-
-    public function getStatusCode(): int
-    {
-        return Response::HTTP_BAD_REQUEST;
     }
 }

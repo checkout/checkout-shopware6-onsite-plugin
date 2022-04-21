@@ -7,7 +7,6 @@ use CheckoutCom\Shopware6\Struct\Response\MerchantSessionResponse;
 use GuzzleHttp\Exception\GuzzleException;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
-use Shopware\Core\Framework\Routing\Annotation\LoginRequired;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\DataValidationDefinition;
@@ -49,6 +48,7 @@ class ApplePayController extends AbstractApplePayController
      *      tags={"Store API", "CheckoutCom"},
      *      @OA\RequestBody(
      *          @OA\JsonContent(
+     *              required={"validationURL"},
      *              @OA\Property(
      *                  property="validationURL",
      *                  description="Apple validation URL return from Apple Pay on merchant validation",
@@ -58,10 +58,10 @@ class ApplePayController extends AbstractApplePayController
      *      ),
      *      @OA\Response(
      *          response="200",
-     *          description="Returns the object/null of the apple pay validated merchant"
+     *          description="Returns the object/null of the apple pay merchant",
+     *         @OA\JsonContent(ref="#/components/schemas/checkout_com_merchant_session_response")
      *     )
      * )
-     * @LoginRequired(allowGuest=true)
      * @Route("/store-api/checkout-com/validate-merchant", name="store-api.checkout-com.validate-merchant", methods={"POST"})
      *
      * @throws GuzzleException

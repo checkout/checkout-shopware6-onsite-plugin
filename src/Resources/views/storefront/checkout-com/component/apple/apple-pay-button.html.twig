@@ -1,0 +1,32 @@
+{% block checkout_com_apple_pay_button %}
+    <div class="checkout-com-direct-pay {{ cols }}" data-apple-pay="true">
+        {% block checkout_com_apple_pay_button_element %}
+            <button type="button"
+                    data-apple-pay="true"
+                    class="checkout-com-direct-pay checkout-com-direct-apple-pay btn btn-primary btn-block btn-buy checkout-com-apple-pay-button-with-text checkout-com-apple-pay-button-black w-100 d-none"
+            >
+                {% block checkout_com_apple_pay_button_element_product_id %}
+                    <input type="hidden"
+                           name="checkoutComProductId"
+                           value="{{ product.id }}"
+                    >
+                {% endblock %}
+
+                {% block checkout_com_apple_pay_button_element_currency_code %}
+                    <input type="hidden"
+                           name="checkoutComCurrencyCode"
+                           value="{{ context.currency.translated.shortName }}"
+                    >
+                {% endblock %}
+
+                {% block checkout_com_apple_pay_button_element_country_code %}
+                    <input type="hidden"
+                           name="checkoutComCountryCode"
+                           value="{{ context.shippingLocation.country.iso }}"
+                    >
+                {% endblock %}
+                &nbsp;
+            </button>
+        {% endblock %}
+    </div>
+{% endblock %}

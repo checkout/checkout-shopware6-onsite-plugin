@@ -1,11 +1,14 @@
-{% block checkout_com_direct_apple_pay %}
-    <div class="checkout-com-direct-apple-pay {{ cols }}">
-        {% block checkout_com_direct_apple_pay_button %}
-            <button type="button"
-                    data-apple-pay="true"
-                    class="btn btn-primary btn-block btn-buy checkout-com-direct-pay checkout-com-apple-pay-button-with-text checkout-com-apple-pay-button-black w-100 d-none">
-                &nbsp;
-            </button>
-        {% endblock %}
+{% block checkout_com_apple_pay_direct %}
+    {% set applePayDirectOptions = {
+        "shopName": config('core.basicInformation.shopName'),
+        "validateMerchantPath": path('store-api.checkout-com.validate-merchant'),
+        "addProductToCartPath": path('store-api.checkout-com.direct.add-product-to-cart'),
+        "removeBackupPath": path('store-api.checkout-com.direct.remove-backup'),
+    } %}
+
+    <div id="checkoutComApplePayDirect"
+         data-checkout-com-apple-pay-direct="true"
+         data-checkout-com-apple-pay-direct-options='{{ applePayDirectOptions|json_encode }}'
+    >
     </div>
 {% endblock %}

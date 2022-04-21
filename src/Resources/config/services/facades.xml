@@ -23,5 +23,10 @@
             <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderTransactionService"/>
         </service>
+
+        <service id="CheckoutCom\Shopware6\Facade\DirectPayFacade">
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Cart\CartService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Cart\CartBackupService"/>
+        </service>
     </services>
 </container>

@@ -11,7 +11,7 @@ import { DATA_BAG_KEY } from '../helper/constants';
  * We will redirect the user after the form is submitted.
  * We use a payment session to validate that the payment is successful.
  */
-export default class CheckoutPaymentHandler extends Plugin {
+export default class CheckoutComConfirmPaymentHandler extends Plugin {
     static options = {
         paymentFormId: '#confirmOrderForm',
         submitPaymentButtonId: '#confirmOrderForm button[type="submit"]',
