@@ -40,7 +40,7 @@ class ReturnUrlController extends AbstractController
     /**
      * This API is a replacement for payment.finalize.transaction to finalize the transaction
      *
-     * @Route("payment/replacement/finalize-transaction", name="payment.checkout-com.return.finalize.url", methods={"GET"}))
+     * @Route("/checkout-com/payment/redirect/finalize-transaction", name="checkout-com.payment.redirect.finalize.url", methods={"GET"}))
      */
     public function returnUrl(Request $request): Response
     {

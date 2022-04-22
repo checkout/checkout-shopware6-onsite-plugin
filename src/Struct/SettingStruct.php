@@ -2,6 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Struct;
 
+use CheckoutCom\Shopware6\Struct\CheckoutApi\Webhook;
 use Shopware\Core\Framework\Struct\Struct;
 
 class SettingStruct extends Struct
@@ -31,6 +32,8 @@ class SettingStruct extends Struct
     protected ?string $applePayPemMediaId = null;
 
     protected ?string $googlePayMerchantId = null;
+
+    protected ?Webhook $webhook = null;
 
     public function getSecretKey(): string
     {
@@ -150,5 +153,15 @@ class SettingStruct extends Struct
     public function setGooglePayMerchantId(?string $googlePayMerchantId): void
     {
         $this->googlePayMerchantId = $googlePayMerchantId;
+    }
+
+    public function getWebhook(): ?Webhook
+    {
+        return $this->webhook;
+    }
+
+    public function setWebhook(Webhook $webhook): void
+    {
+        $this->webhook = $webhook;
     }
 }

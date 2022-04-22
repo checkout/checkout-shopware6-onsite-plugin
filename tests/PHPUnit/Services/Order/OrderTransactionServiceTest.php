@@ -150,6 +150,11 @@ class OrderTransactionServiceTest extends TestCase
                 CheckoutPaymentService::STATUS_CAPTURED,
                 'payTransaction',
             ],
+            'Test transition order transaction success with checkout status is refunded' => [
+                false,
+                CheckoutPaymentService::STATUS_REFUNDED,
+                'refundTransaction',
+            ],
         ];
     }
 }

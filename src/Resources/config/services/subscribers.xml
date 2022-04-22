@@ -40,5 +40,12 @@
             <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService"/>
             <tag name="kernel.event_subscriber"/>
         </service>
+
+        <service id="CheckoutCom\Shopware6\Subscriber\SystemConfigSubscriber">
+            <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
     </services>
 </container>

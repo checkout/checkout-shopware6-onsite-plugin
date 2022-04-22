@@ -44,6 +44,13 @@
             <argument type="service" id="CheckoutCom\Shopware6\Service\Transition\OrderTransactionTransitionService"/>
         </service>
 
+        <service id="CheckoutCom\Shopware6\Service\Webhook\WebhookService">
+            <argument type="service" id="checkout_com.shopware6.logger"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderTransactionService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
+        </service>
+
         <!--    APPLE PAY    -->
         <service id="CheckoutCom\Shopware6\Service\ApplePay\ApplePayService">
             <argument type="service" id="checkout_com.shopware6.logger"/>
@@ -84,6 +91,11 @@
         <service id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService"
                  parent="checkout_com.shopware6.service.checkout_api.abstract_checkout_service"
         />
+
+        <service id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService"
+                 parent="checkout_com.shopware6.service.checkout_api.abstract_checkout_service">
+            <argument type="service" id="router"/>
+        </service>
 
         <!--   EXTRACTOR    -->
         <service id="CheckoutCom\Shopware6\Service\Extractor\OrderExtractor">

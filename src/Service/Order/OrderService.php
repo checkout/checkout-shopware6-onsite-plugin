@@ -14,6 +14,8 @@ use Shopware\Core\Checkout\Order\OrderStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
@@ -151,5 +153,24 @@ class OrderService extends AbstractOrderService
 
                 throw new Exception(sprintf('Updating Status of Order not possible for status: %s', $checkoutPaymentStatus));
         }
+    }
+
+    public function getOrderByOrderNumber(string $orderNumber, Context $context): OrderEntity
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('orderNumber', $orderNumber));
+        $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
+
+        $order = $this->orderRepository->search($criteria, $context)->first();
+
+        if (!$order instanceof OrderEntity) {
+            $this->logger->critical(
+                sprintf('Could not fetch order with order number %s', $orderNumber)
+            );
+
+            throw new OrderNotFoundException($orderNumber);
+        }
+
+        return $order;
     }
 }
