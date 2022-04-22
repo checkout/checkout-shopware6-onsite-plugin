@@ -11,27 +11,9 @@
 
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
-
-
-// promisified fs module
-const fs = require('fs-extra')
-const path = require('path')
-const webpack = require('@cypress/webpack-preprocessor')
-
-
-function getConfigurationByFile(file) {
-    const pathToConfigFile = path.resolve('cypress', 'config', `${file}.json`)
-    return fs.readJson(pathToConfigFile)
-}
-
+const configFile = require('@shopware-ag/e2e-testsuite-platform/cypress/plugins');
 
 module.exports = (on, config) => {
-
-    on('file:preprocessor', webpack({
-        webpackOptions: require('../../webpack.config'),
-        watchOptions: {},
-    }))
-
     on('before:browser:launch', (browser = {}, launchOptions) => {
         if (browser.name === 'chrome' || browser.name === 'edge') {
             launchOptions.args.push('--disable-features=SameSiteByDefaultCookies')
@@ -40,5 +22,5 @@ module.exports = (on, config) => {
     })
 
     // accept a configFile value or use development by default
-    return getConfigurationByFile(config.env.conf || 'dev')
+    return configFile(on, config);
 }
