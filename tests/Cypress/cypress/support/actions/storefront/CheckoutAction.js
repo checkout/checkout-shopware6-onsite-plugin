@@ -64,6 +64,14 @@ class CheckoutAction {
             });
         }
     }
+
+    /**
+     * Redirect to order management screen
+     */
+    goToOrderScreen() {
+        cy.get('.header-logo-main-link').click();
+        cy.visit('/account/order');
+    }
 }
 
 export default new CheckoutAction();

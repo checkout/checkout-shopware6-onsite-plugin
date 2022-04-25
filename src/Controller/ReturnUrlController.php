@@ -16,10 +16,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * This controller provides an API to replace route name payment.finalize.transaction to finalize the transaction,
- * because the return url from AsyncPaymentTransactionStruct::returnUrl contains the JWT token in query param, the JWT
- * token contains the encrypted data of Shopware\Core\Checkout\Payment\Cart\Token\TokenStruct that make the URL too long
- * and might get over the limit of browser URL character limitation
+ * This controller provides an API to replace the route name "payment.finalize.transaction"to finalize the transaction.
+ * The reason is that the URL returned from AsyncPaymentTransactionStruct::returnUrl contains the JWT token in its query
+ * parameters, but the JWT token contains the encrypted data of Shopware\Core\Checkout\Payment\Cart\Token\TokenStruct,
+ * making the URL too long and possibly exceeding the character limit of the browser.
  *
  * @RouteScope(scopes={"storefront"})
  */

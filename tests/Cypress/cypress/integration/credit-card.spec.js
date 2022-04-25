@@ -3,13 +3,17 @@ import checkoutAction from '../support/actions/storefront/CheckoutAction';
 import storefrontLoginAction from '../support/actions/storefront/LoginAction';
 
 import checkoutConfirmRepository from '../support/repositories/storefront/CheckoutConfirmRepository';
+import accountOrderRepository from '../support/repositories/storefront/AccountOrderRepository';
 
 describe('Testing Storefront Credit Card Payment', () => {
     before(() => {
-        cy.setToInitialState().then(() => {
-            cy.loginViaApi();
+        // Set the Shopware instance to initial state only on local environment
+        const promiseChain = Cypress.env('localUsage') ? cy.setToInitialState() : cy;
+
+        promiseChain.then(() => {
+            return cy.loginViaApi();
         }).then(() => {
-            cy.createProductFixture();
+            return cy.createProductFixture();
         }).then(() => {
             shopConfigurationAction.setupShop();
             cy.createCustomerFixtureStorefront();
@@ -59,27 +63,36 @@ describe('Testing Storefront Credit Card Payment', () => {
     it('Invalid CVV', () => {
         checkoutAction.fillCreditCard(null, '4242424242424242', '0224', '111');
 
-        checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled');
-        checkoutConfirmRepository.getConfirmSubmitButton().click();
+        checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
 
-        cy.intercept('POST', '/checkout/order').as('orderSubmit');
+        cy.url().should('include', '3ds2');
 
-        cy.wait('@orderSubmit');
+        // Wait until iframe is fully loaded
+        cy.wait(8000);
 
-        cy.url({ decode: true }).should('contain', 'CHECKOUT__ASYNC_PAYMENT_PROCESS_INTERRUPTED');
-        cy.get('.alert-content').should('exist');
+        cy.getIframeBody('iframe[name="cko-3ds2-iframe"]').find('#password').type('Checkout1!');
+        cy.getIframeBody('iframe[name="cko-3ds2-iframe"]').find('#txtButton').click();
+
+        checkoutAction.goToOrderScreen();
+
+        accountOrderRepository.getFirstOrderStatus().should('have.text', 'Failed');
     });
 
     it('Successful payment', () => {
         checkoutAction.fillCreditCard(null, '4242424242424242', '0224', '100');
 
-        checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled');
-        checkoutConfirmRepository.getConfirmSubmitButton().click();
+        checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
 
-        cy.intercept('POST', '/checkout/order').as('orderSubmit');
+        cy.url().should('include', '3ds2');
 
-        cy.wait('@orderSubmit');
+        // Wait until iframe is fully loaded
+        cy.wait(8000);
 
-        cy.location('href').should('include', '/checkout/finish');
+        cy.getIframeBody('iframe[name="cko-3ds2-iframe"]').find('#password').type('Checkout1!');
+        cy.getIframeBody('iframe[name="cko-3ds2-iframe"]').find('#txtButton').click();
+
+        checkoutAction.goToOrderScreen();
+
+        accountOrderRepository.getFirstOrderStatus().should('have.text', 'Paid');
     });
 });
