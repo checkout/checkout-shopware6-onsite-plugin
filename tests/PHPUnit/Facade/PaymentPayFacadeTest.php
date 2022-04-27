@@ -24,6 +24,7 @@ use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Storefront\Framework\Routing\Router;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class PaymentPayFacadeTest extends TestCase
@@ -61,6 +62,11 @@ class PaymentPayFacadeTest extends TestCase
      */
     protected $salesChannelContext;
 
+    /**
+     * @var MockObject|Router
+     */
+    protected $router;
+
     protected PaymentPayFacade $paymentPayFacade;
 
     public function setUp(): void
@@ -71,6 +77,7 @@ class PaymentPayFacadeTest extends TestCase
         $this->orderExtractor = $this->createMock(OrderExtractor::class);
         $this->orderService = $this->createMock(OrderService::class);
         $this->orderTransactionService = $this->createMock(OrderTransactionService::class);
+        $this->router = $this->createMock(Router::class);
 
         $this->paymentPayFacade = new PaymentPayFacade(
             $this->createMock(LoggerService::class),
@@ -80,6 +87,7 @@ class PaymentPayFacadeTest extends TestCase
             $this->orderExtractor,
             $this->orderService,
             $this->orderTransactionService,
+            $this->router
         );
     }
 
@@ -121,6 +129,10 @@ class PaymentPayFacadeTest extends TestCase
             $this->checkoutPaymentService->expects(static::once())
                 ->method('requestPayment')
                 ->willReturn($payment);
+
+            $this->router->expects(static::once())
+                ->method('generate')
+                ->willReturn('http://checkout.test');
         } else {
             $this->checkoutPaymentService->expects(static::once())
                 ->method('getPaymentDetails')
@@ -141,6 +153,10 @@ class PaymentPayFacadeTest extends TestCase
                 $this->checkoutPaymentService->expects(static::once())
                     ->method('requestPayment')
                     ->willReturn($payment);
+
+                $this->router->expects(static::once())
+                    ->method('generate')
+                    ->willReturn('http://checkout.test');
             }
         }
 

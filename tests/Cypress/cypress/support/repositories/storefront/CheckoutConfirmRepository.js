@@ -5,7 +5,7 @@ class CheckoutConfirmRepository {
      * @returns {Cypress.Chainable<JQuery<HTMLElement>>}
      */
     getConfirmSubmitButton() {
-        return cy.get('#confirmFormSubmit');
+        return cy.get('#confirmFormSubmit').scrollIntoView();
     }
 }
 

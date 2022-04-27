@@ -26,6 +26,8 @@ use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 class PaymentPayFacade
 {
@@ -43,6 +45,8 @@ class PaymentPayFacade
 
     private OrderTransactionService $orderTransactionService;
 
+    private RouterInterface $router;
+
     public function __construct(
         LoggerInterface $logger,
         EventDispatcherInterface $eventDispatcher,
@@ -50,7 +54,8 @@ class PaymentPayFacade
         CheckoutPaymentService $checkoutPaymentService,
         OrderExtractor $orderExtractor,
         OrderService $orderService,
-        OrderTransactionService $orderTransactionService
+        OrderTransactionService $orderTransactionService,
+        RouterInterface $router
     ) {
         $this->logger = $logger;
         $this->eventDispatcher = $eventDispatcher;
@@ -59,6 +64,7 @@ class PaymentPayFacade
         $this->orderExtractor = $orderExtractor;
         $this->orderService = $orderService;
         $this->orderTransactionService = $orderTransactionService;
+        $this->router = $router;
     }
 
     /**
@@ -132,14 +138,14 @@ class PaymentPayFacade
         // In case of an empty checkout payment ID, we create a new payment at Checkout.com
         // otherwise, we're getting the payment details from Checkout.com
         if (empty($checkoutPaymentId)) {
-            $payment = $this->createCheckoutPayment($paymentHandler, $dataBag, $transaction, $order, $checkoutOrderCustomFields, $salesChannelContext);
+            $payment = $this->createCheckoutPayment($paymentHandler, $dataBag, $transaction, $order, $salesChannelContext);
 
             $checkoutOrderCustomFields->setCheckoutPaymentId($payment->getId());
             $checkoutOrderCustomFields->setCheckoutReturnUrl($payment->getRedirectUrl());
         } else {
             $payment = $this->checkoutPaymentService->getPaymentDetails($checkoutPaymentId, $salesChannelContext->getSalesChannelId());
             if ($payment->getStatus() === CheckoutPaymentService::STATUS_DECLINED) {
-                $payment = $this->createCheckoutPayment($paymentHandler, $dataBag, $transaction, $order, $checkoutOrderCustomFields, $salesChannelContext);
+                $payment = $this->createCheckoutPayment($paymentHandler, $dataBag, $transaction, $order, $salesChannelContext);
 
                 $checkoutOrderCustomFields->setCheckoutPaymentId($payment->getId());
                 $checkoutOrderCustomFields->setCheckoutReturnUrl($payment->getRedirectUrl());
@@ -215,8 +221,9 @@ class PaymentPayFacade
 
         // We add a success URL to the payment request, so we can redirect to Shopware after the payment
         // If the payment is failed, the page will redirect to complete payment page with error message
-        $paymentRequest->success_url = $transaction->getReturnUrl();
-        $paymentRequest->failure_url = $transaction->getReturnUrl();
+        $returnUrl = $this->generateReturnUrl($order->getId(), $context);
+        $paymentRequest->success_url = $returnUrl;
+        $paymentRequest->failure_url = $returnUrl;
         $paymentRequest->shipping = CheckoutComUtil::buildShipDetail($activeShippingAddress);
 
         if ($order->getTaxStatus() === CartPrice::TAX_STATE_FREE) {
@@ -249,7 +256,6 @@ class PaymentPayFacade
         RequestDataBag $dataBag,
         AsyncPaymentTransactionStruct $transaction,
         OrderEntity $order,
-        OrderCustomFieldsStruct $checkoutOrderCustomFields,
         SalesChannelContext $salesChannelContext
     ): Payment {
         // Get the payment request, to call the Checkout API
@@ -259,5 +265,12 @@ class PaymentPayFacade
 
         // Call the API to create a payment at checkout.com
         return $this->checkoutPaymentService->requestPayment($paymentRequest, $salesChannelContext->getSalesChannelId());
+    }
+
+    private function generateReturnUrl(string $orderId, SalesChannelContext $context): string
+    {
+        $parameter = ['orderId' => $orderId];
+
+        return $this->router->generate('payment.checkout-com.return.finalize.url', $parameter, UrlGeneratorInterface::ABSOLUTE_URL);
     }
 }
