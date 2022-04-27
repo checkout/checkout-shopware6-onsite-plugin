@@ -5,6 +5,7 @@ namespace CheckoutCom\Shopware6\Tests\Services;
 use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
 use CheckoutCom\Shopware6\Handler\Method\CreditCardHandler;
+use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
 use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Service\PaymentMethodService;
 use CheckoutCom\Shopware6\Struct\PaymentHandler\PaymentHandlerCollection;
@@ -20,6 +21,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Framework\Validation\DataValidator;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PaymentMethodServiceTest extends TestCase
@@ -212,6 +214,8 @@ class PaymentMethodServiceTest extends TestCase
                         $this->createConfiguredMock(TranslatorInterface::class, [
                             'trans' => 'Foo',
                         ]),
+                        $this->createMock(DataValidator::class),
+                        $this->createMock(CheckoutTokenService::class),
                         $this->createMock(PaymentPayFacade::class),
                         $this->createMock(PaymentFinalizeFacade::class),
                     ),

@@ -77,6 +77,10 @@
                  parent="checkout_com.shopware6.service.checkout_api.abstract_checkout_service"
         />
 
+        <service id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService"
+                 parent="checkout_com.shopware6.service.checkout_api.abstract_checkout_service"
+        />
+
         <!--   EXTRACTOR    -->
         <service id="CheckoutCom\Shopware6\Service\Extractor\OrderExtractor">
             <argument type="service" id="checkout_com.shopware6.logger"/>

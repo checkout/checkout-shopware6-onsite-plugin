@@ -21,6 +21,15 @@ class OrderService extends AbstractOrderService
 {
     public const CHECKOUT_CUSTOM_FIELDS = 'checkoutComPayments';
 
+    /**
+     * This property tells us know the last order id that was increased to the DB
+     * It will be set whenever the order is created
+     * Do not change class to a Non-Shared class, otherwise it won't work
+     *
+     * @see \CheckoutCom\Shopware6\Subscriber\CheckoutOrderPlacedEventSubscriber::onCheckoutOrderPlaced
+     */
+    private ?string $requestLastOrderId = null;
+
     private LoggerInterface $logger;
 
     private EntityRepositoryInterface $orderRepository;
@@ -37,6 +46,16 @@ class OrderService extends AbstractOrderService
     public function getDecorated(): AbstractOrderService
     {
         throw new DecorationPatternException(self::class);
+    }
+
+    public function setRequestLastOrderId(string $lastOrderId): void
+    {
+        $this->requestLastOrderId = $lastOrderId;
+    }
+
+    public function getRequestLastOrderId(): ?string
+    {
+        return $this->requestLastOrderId;
     }
 
     public function getOrder(string $orderId, Context $context): OrderEntity

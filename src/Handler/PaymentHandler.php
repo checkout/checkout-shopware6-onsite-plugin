@@ -6,6 +6,7 @@ use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\ThreeDsRequest;
 use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
+use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -16,6 +17,8 @@ use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandle
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\Framework\Validation\DataValidator;
+use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,14 +31,26 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
 
     protected TranslatorInterface $translator;
 
+    protected DataValidator $dataValidator;
+
+    protected CheckoutTokenService $checkoutTokenService;
+
     protected PaymentPayFacade $paymentPayFacade;
 
     protected PaymentFinalizeFacade $paymentFinalizeFacade;
 
-    public function __construct(LoggerInterface $logger, TranslatorInterface $translator, PaymentPayFacade $paymentPayFacade, PaymentFinalizeFacade $paymentFinalizeFacade)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        TranslatorInterface $translator,
+        DataValidator $dataValidator,
+        CheckoutTokenService $checkoutTokenService,
+        PaymentPayFacade $paymentPayFacade,
+        PaymentFinalizeFacade $paymentFinalizeFacade
+    ) {
         $this->logger = $logger;
         $this->translator = $translator;
+        $this->dataValidator = $dataValidator;
+        $this->checkoutTokenService = $checkoutTokenService;
         $this->paymentPayFacade = $paymentPayFacade;
         $this->paymentFinalizeFacade = $paymentFinalizeFacade;
     }
@@ -69,6 +84,7 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
      * Each payment method will have different source request data
      * Can modify the Checkout.com PaymentRequest object here
      *
+     * @throws ConstraintViolationException
      * @throws Exception
      */
     abstract public function prepareDataForPay(
@@ -89,6 +105,7 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
      * We will create a payment via the checkout.com API and store the data in the custom fields of the order
      * Maybe we will redirect to external payment (Checkout.com) and redirect back to our the shopware @finalize method.
      *
+     * @throw ConstraintViolationException
      * @throw AsyncPaymentProcessException
      */
     public function pay(
@@ -116,6 +133,16 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
                 $dataBag,
                 $salesChannelContext,
             );
+        } catch (ConstraintViolationException $exception) {
+            // This case only happens when the data request is not valid.
+            // Actually, Headless support will throw this exception
+            // If Storefront throws this exception, it means the data we sent to the server is not valid
+            // need to check it manually on our side
+            $this->logger->error(sprintf('Error when starting payment with violation error:  %s', $exception->getMessage()), [
+                'function' => 'pay',
+            ]);
+
+            throw $exception;
         } catch (Throwable $exception) {
             $this->logger->error(
                 sprintf('Error when starting payment: %s', $exception->getMessage()),

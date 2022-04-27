@@ -10,6 +10,8 @@
         >
             <argument type="service" id="checkout_com.shopware6.logger"/>
             <argument type="service" id="translator"/>
+            <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Facade\PaymentPayFacade"/>
             <argument type="service" id="CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade"/>
         </service>

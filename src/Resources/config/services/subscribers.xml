@@ -21,6 +21,18 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <service id="CheckoutCom\Shopware6\Subscriber\CheckoutOrderPlacedEventSubscriber">
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="CheckoutCom\Shopware6\Subscriber\PaymentBeforeSendResponseEventSubscriber">
+            <argument type="service" id="router"/>
+            <argument type="service" id="checkout_com.shopware6.logger"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <service id="CheckoutCom\Shopware6\Subscriber\OrderStateMachineSubscriber">
             <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>

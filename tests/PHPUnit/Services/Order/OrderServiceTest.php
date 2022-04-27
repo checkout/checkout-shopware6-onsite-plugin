@@ -56,6 +56,13 @@ class OrderServiceTest extends TestCase
         $this->orderService->getDecorated();
     }
 
+    public function testLastOrderId(): void
+    {
+        $lastOrderId = 'foo';
+        $this->orderService->setRequestLastOrderId($lastOrderId);
+        static::assertSame($lastOrderId, $this->orderService->getRequestLastOrderId());
+    }
+
     /**
      * @dataProvider getOrderProvider
      */

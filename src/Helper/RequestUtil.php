@@ -10,6 +10,7 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 class RequestUtil
 {
     public const DATA_BAG_KEY = 'checkoutComDetails';
+    public const DATA_JSON = 'json';
     public const DATA_TOKEN = 'token';
 
     /**
@@ -28,6 +29,7 @@ class RequestUtil
 
     /**
      * Get payment data from a request data bag
+     * This data is our plugin's payment request data
      * These data is coming from StoreFront or StoreApi
      */
     public static function getPaymentData(RequestDataBag $dataBag): ?RequestDataBag

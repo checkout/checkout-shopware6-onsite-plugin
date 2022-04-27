@@ -23,9 +23,11 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Routing\Router;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Validator\ConstraintViolationList;
 
 class PaymentPayFacadeTest extends TestCase
 {
@@ -94,7 +96,7 @@ class PaymentPayFacadeTest extends TestCase
     /**
      * @dataProvider payProvider
      */
-    public function testPay(?string $checkoutPaymentId, bool $approved, bool $freeTax, ?string $checkoutPaymentStatus = null): void
+    public function testPay(?string $checkoutPaymentId, bool $hasValidateError, bool $approved, bool $freeTax, ?string $checkoutPaymentStatus = null): void
     {
         $order = $this->setUpOrder($checkoutPaymentId, $freeTax);
         $orderTransaction = $this->getOrderTransaction();
@@ -114,6 +116,16 @@ class PaymentPayFacadeTest extends TestCase
             ->method('getSettings')
             ->willReturn($settings);
 
+        if ($hasValidateError) {
+            $paymentHandler->expects(static::once())
+                ->method('prepareDataForPay')
+                ->willThrowException(new ConstraintViolationException(
+                    new ConstraintViolationList(),
+                    []
+                ));
+            static::expectException(ConstraintViolationException::class);
+        }
+
         if (empty($checkoutPaymentId)) {
             $currency = $this->getCurrency();
             $customer = $this->setUpCustomer();
@@ -126,7 +138,7 @@ class PaymentPayFacadeTest extends TestCase
                 ->method('extractCurrency')
                 ->willReturn($currency);
 
-            $this->checkoutPaymentService->expects(static::once())
+            $this->checkoutPaymentService->expects(static::exactly($hasValidateError ? 0 : 1))
                 ->method('requestPayment')
                 ->willReturn($payment);
 
@@ -134,7 +146,7 @@ class PaymentPayFacadeTest extends TestCase
                 ->method('generate')
                 ->willReturn('http://checkout.test');
         } else {
-            $this->checkoutPaymentService->expects(static::once())
+            $this->checkoutPaymentService->expects(static::exactly($hasValidateError ? 0 : 1))
                 ->method('getPaymentDetails')
                 ->willReturn($payment);
 
@@ -166,7 +178,7 @@ class PaymentPayFacadeTest extends TestCase
         $this->orderTransactionService->expects(static::exactly($approved ? 1 : 0))
             ->method('processTransition');
 
-        $this->orderService->expects(static::once())
+        $this->orderService->expects(static::exactly($hasValidateError ? 0 : 1))
             ->method('processTransition')
             ->withConsecutive(
                 [
@@ -177,7 +189,9 @@ class PaymentPayFacadeTest extends TestCase
                 ],
             );
 
-        if (!$approved) {
+        if ($hasValidateError) {
+            static::expectException(ConstraintViolationException::class);
+        } elseif (!$approved) {
             static::expectException(AsyncPaymentProcessException::class);
         }
 
@@ -193,16 +207,25 @@ class PaymentPayFacadeTest extends TestCase
             'Test empty checkout payment id and request create payment but it has not been approved' => [
                 null,
                 false,
+                false,
                 true,
+            ],
+            'Test has validate error' => [
+                null,
+                true,
+                false,
+                false,
             ],
             'Test empty checkout payment id and request create payment and it has been approved with free tax' => [
                 null,
+                false,
                 true,
                 true,
                 'expect any checkout status',
             ],
             'Test empty checkout payment id and request create payment and it has been approved without free tax' => [
                 null,
+                false,
                 true,
                 false,
                 'expect any checkout status',
@@ -210,16 +233,19 @@ class PaymentPayFacadeTest extends TestCase
             'Test has checkout payment id and request get payment detail but it has not been approved' => [
                 'checkout id',
                 false,
+                false,
                 true,
             ],
             'Test has checkout payment id and request get payment detail and it has been approved with free tax' => [
                 'checkout id',
+                false,
                 true,
                 true,
                 'expect any checkout status',
             ],
             'Test has checkout payment id and request get payment detail and it has been approved without free tax' => [
                 'checkout id',
+                false,
                 true,
                 false,
                 'expect any checkout status',
@@ -228,6 +254,7 @@ class PaymentPayFacadeTest extends TestCase
                 'checkout id',
                 false,
                 false,
+                true,
                 CheckoutPaymentService::STATUS_DECLINED,
             ],
         ];

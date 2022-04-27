@@ -24,6 +24,7 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -71,6 +72,7 @@ class PaymentPayFacade
      * Prepare the payment process for payment handler
      *
      * @throws Exception
+     * @throws ConstraintViolationException
      * @throws AsyncPaymentProcessException
      */
     public function pay(
@@ -119,6 +121,7 @@ class PaymentPayFacade
      * @note If the payment is failed at checkout.com, we have to throw AsyncPaymentProcessException exception
      *
      * @throws Exception
+     * @throws ConstraintViolationException
      * @throws AsyncPaymentProcessException
      */
     private function handleCheckoutOrderPayment(
@@ -172,14 +175,14 @@ class PaymentPayFacade
 
         $paymentStatus = $payment->getStatus();
 
-        // We update as many as we can from checkout.com response to the order entity of shopware
-        $this->orderService->updateCheckoutCustomFields($order, $checkoutOrderCustomFields, $salesChannelContext);
-
         // Update the order transaction of Shopware depending on checkout.com payment status
         $this->orderTransactionService->processTransition($orderTransaction, $paymentStatus, $salesChannelContext->getContext());
 
         // Update the order status of Shopware depending on checkout.com payment status
         $this->orderService->processTransition($order, $settings, $paymentStatus, $salesChannelContext->getContext());
+
+        // After receiving data from the checkout.com response, insert as much data as possible into our "order" custom fields
+        $this->orderService->updateCheckoutCustomFields($order, $checkoutOrderCustomFields, $salesChannelContext);
 
         return $checkoutOrderCustomFields;
     }
@@ -187,6 +190,7 @@ class PaymentPayFacade
     /**
      * Get checkout payment request
      *
+     * @throws ConstraintViolationException
      * @throws Exception
      */
     private function getCheckoutPaymentRequest(
