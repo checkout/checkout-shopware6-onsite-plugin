@@ -97,11 +97,11 @@ class MediaService
 
     public function getMedia(string $mediaId, Criteria $criteria, Context $context): MediaEntity
     {
+        $criteria->setLimit(1);
         $criteria->addFilter(
             new EqualsFilter('id', $mediaId)
         );
 
-        /** @var MediaEntity|null $media */
         $media = $context->scope(Context::SYSTEM_SCOPE, function ($context) use ($criteria) {
             return $this->mediaRepository->search($criteria, $context)->first();
         });

@@ -39,6 +39,23 @@ class OrderService extends AbstractOrderService
         throw new DecorationPatternException(self::class);
     }
 
+    public function getOrder(string $orderId, Context $context): OrderEntity
+    {
+        $criteria = new Criteria([$orderId]);
+        $criteria->setLimit(1);
+
+        $order = $this->orderRepository->search($criteria, $context)->first();
+        if (!$order instanceof OrderEntity) {
+            $this->logger->critical(
+                sprintf('Could not fetch order with ID %s', $orderId)
+            );
+
+            throw new OrderNotFoundException($orderId);
+        }
+
+        return $order;
+    }
+
     /**
      * Update order custom fields of the order for checkout.com payments
      */
@@ -115,19 +132,5 @@ class OrderService extends AbstractOrderService
 
                 throw new Exception(sprintf('Updating Status of Order not possible for status: %s', $checkoutPaymentStatus));
         }
-    }
-
-    public function getOrderById(string $orderId, Context $context): OrderEntity
-    {
-        $criteria = new Criteria([$orderId]);
-        $criteria->setLimit(1);
-
-        $order = $this->orderRepository->search($criteria, $context)->first();
-
-        if (!$order instanceof OrderEntity) {
-            throw new OrderNotFoundException($orderId);
-        }
-
-        return $order;
     }
 }

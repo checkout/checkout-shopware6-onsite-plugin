@@ -89,6 +89,7 @@ class PaymentMethodService
     public function getPaymentMethodByHandlerIdentifier(Context $context, string $handlerIdentifier, ?bool $active = null): ?PaymentMethodEntity
     {
         $paymentCriteria = new Criteria();
+        $paymentCriteria->setLimit(1);
         $paymentCriteria->addFilter(new EqualsFilter('handlerIdentifier', $handlerIdentifier));
 
         if (!empty($active)) {

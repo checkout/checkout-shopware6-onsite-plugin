@@ -1,0 +1,17 @@
+{% block checkout_com_apple_pay_confirm %}
+    {% set totalAmount = page.order is defined ? page.order.price.totalPrice : page.cart.price.totalPrice %}
+    {% set applePayConfirmOptions = {
+        "amount": totalAmount,
+        "currencyCode": context.currency.translated.shortName,
+        "countryCode": context.shippingLocation.country.iso,
+        "shopName": config('core.basicInformation.shopName'),
+        "validateMerchantPath": path('store-api.checkout-com.validate-merchant'),
+    } %}
+
+    <div id="checkoutComApplePayConfirm"
+         class="checkout-com-apple-pay-confirm d-none"
+         data-checkout-com-apple-pay-confirm
+         data-checkout-com-apple-pay-confirm-options='{{ applePayConfirmOptions|json_encode }}'
+    >
+    </div>
+{% endblock %}

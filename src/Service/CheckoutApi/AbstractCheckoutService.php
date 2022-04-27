@@ -25,7 +25,7 @@ abstract class AbstractCheckoutService
             array_merge(
                 $parameters,
                 [
-                    'details' => $e->error_details ?? [],
+                    'details' => $exception->error_details ?? [],
                     'function' => $functionName,
                 ]
             )

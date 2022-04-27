@@ -42,6 +42,7 @@ class OrderTransactionService extends AbstractOrderTransactionService
     {
         $criteria = new Criteria([$orderTransactionId]);
         $criteria->addAssociation('order');
+        $criteria->setLimit(1);
 
         /** @var OrderTransactionEntity|null $orderTransaction */
         $orderTransaction = $this->orderTransactionRepository->search($criteria, $context)->first();

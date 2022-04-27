@@ -43,6 +43,8 @@
         <!--    APPLE PAY    -->
         <service id="CheckoutCom\Shopware6\Service\ApplePay\ApplePayService">
             <argument type="service" id="checkout_com.shopware6.logger"/>
+            <argument type="service" id="shopware.update.http.client"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\MediaService"/>
         </service>

@@ -11,6 +11,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\EntityNotFoundException;
+use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
@@ -37,6 +38,12 @@ class OrderExtractorTest extends TestCase
             $this->createMock(LoggerService::class),
             $this->customerService
         );
+    }
+
+    public function testGetDecoratedThrowException(): void
+    {
+        static::expectException(DecorationPatternException::class);
+        $this->orderExtractor->getDecorated();
     }
 
     /**

@@ -44,7 +44,7 @@ class CreditCardHandler extends PaymentHandler
     }
 
     /**
-     * Build own credit card token source to call the Checkout.com API
+     * Build token source to call the Checkout.com API
      *
      * @throws Exception
      */

@@ -29,6 +29,7 @@ class CustomerService
     public function getCustomer(string $customerId, Context $context): CustomerEntity
     {
         $criteria = new Criteria([$customerId]);
+        $criteria->setLimit(1);
         $criteria->addAssociations([
             'defaultBillingAddress.country',
             'defaultBillingAddress.countryState',
@@ -38,7 +39,6 @@ class CustomerService
             'activeShippingAddress.countryState',
         ]);
 
-        /** @var CustomerEntity|null $customer */
         $customer = $this->customerRepository->search($criteria, $context)->first();
 
         if (!$customer instanceof CustomerEntity) {
