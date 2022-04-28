@@ -5,6 +5,7 @@
 {% block checkout_com_credit_card %}
     {% set cardOptions = {
         "publicKey": page.extensions.checkoutCom.publicKey,
+        "cardIconsPath": asset('static/img/card-icons', '@CheckoutCom'),
         "localization": {
             cardNumberPlaceholder: "checkoutCom.components.card.cardNumberPlaceholder"|trans|striptags,
             expiryMonthPlaceholder: "checkoutCom.components.card.expiryMonthPlaceholder"|trans|striptags,
@@ -44,7 +45,15 @@
                         </label>
                     {% endblock %}
                     {% block checkout_com_credit_card_form_card_number_input %}
-                        <div class="card-number-frame form-control checkout-com-field__card-number"></div>
+                        <div class="card-number-frame form-control checkout-com-field__card-number">
+                            <div class="checkout-com-field_icon-card-container">
+                                {% sw_thumbnails 'checkout-com-icon-payment-method' with {
+                                    attributes: {
+                                        'id': 'checkoutComIconPaymentMethod',
+                                    }
+                                } %}
+                            </div>
+                        </div>
                     {% endblock %}
                     {% block checkout_com_credit_card_form_card_number_input_error %}
                         <div class="invalid-feedback">
