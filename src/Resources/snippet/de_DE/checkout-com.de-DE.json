@@ -3,7 +3,8 @@
     "paymentMethod": {
       "applePayLabel": "Apple Pay",
       "googlePayLabel": "Google Pay",
-      "creditCardLabel": "Kreditkarte"
+      "creditCardLabel": "Kreditkarte",
+      "giropayLabel": "Giropay"
     },
     "messages": {
       "card": {
