@@ -4,6 +4,7 @@ namespace CheckoutCom\Shopware6\Subscriber;
 
 use CheckoutCom\Shopware6\Helper\RequestUtil;
 use CheckoutCom\Shopware6\Service\LoggerService;
+use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
 use Exception;
 use Shopware\Core\Framework\Context;
@@ -24,9 +25,9 @@ class PaymentBeforeSendResponseEventSubscriber implements EventSubscriberInterfa
 
     private LoggerService $logger;
 
-    private OrderService $orderService;
+    private AbstractOrderService $orderService;
 
-    public function __construct(RouterInterface $router, LoggerService $logger, OrderService $orderService)
+    public function __construct(RouterInterface $router, LoggerService $logger, AbstractOrderService $orderService)
     {
         $this->router = $router;
         $this->logger = $logger;

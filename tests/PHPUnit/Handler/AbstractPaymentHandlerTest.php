@@ -6,13 +6,13 @@ use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\RequestUtil;
+use CheckoutCom\Shopware6\Service\Extractor\AbstractOrderExtractor;
 use CheckoutCom\Shopware6\Struct\PaymentHandler\HandlerPrepareProcessStruct;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
-use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
@@ -26,6 +26,11 @@ abstract class AbstractPaymentHandlerTest extends TestCase
 {
     use OrderTrait;
     use ContextTrait;
+
+    /**
+     * @var AbstractOrderExtractor|MockObject
+     */
+    protected $orderExtractor;
 
     /**
      * @var PaymentPayFacade|MockObject
@@ -47,6 +52,7 @@ abstract class AbstractPaymentHandlerTest extends TestCase
     public function setUp(): void
     {
         $this->saleChannelContext = $this->getSaleChannelContext($this);
+        $this->orderExtractor = $this->createMock(AbstractOrderExtractor::class);
         $this->paymentPayFacade = $this->createMock(PaymentPayFacade::class);
         $this->paymentFinalizeFacade = $this->createMock(PaymentFinalizeFacade::class);
     }
@@ -131,16 +137,6 @@ abstract class AbstractPaymentHandlerTest extends TestCase
                 null,
             ],
         ];
-    }
-
-    protected function setUpCustomer(): CustomerEntity
-    {
-        $customer = $this->getCustomerEntity('foo', 'bar', 'email@email.com');
-        $customerAddress = $this->getCustomerAddressEntity('foo', 'bar', 'street', 'city', 'zip');
-
-        $customer->setDefaultBillingAddress($customerAddress);
-
-        return $customer;
     }
 
     protected function getRequestBag($token = null): RequestDataBag

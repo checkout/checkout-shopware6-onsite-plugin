@@ -16,6 +16,10 @@
             <argument type="service" id="Shopware\Core\Framework\Plugin\Util\PluginIdProvider"/>
         </service>
 
+        <service id="CheckoutCom\Shopware6\Service\AddressService">
+            <argument type="service" id="order_address.repository"/>
+        </service>
+
         <service id="CheckoutCom\Shopware6\Service\CustomerService">
             <argument type="service" id="checkout_com.shopware6.logger"/>
             <argument type="service" id="customer.repository"/>
@@ -84,7 +88,7 @@
         <!--   EXTRACTOR    -->
         <service id="CheckoutCom\Shopware6\Service\Extractor\OrderExtractor">
             <argument type="service" id="checkout_com.shopware6.logger"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\CustomerService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\AddressService"/>
         </service>
     </services>
 </container>

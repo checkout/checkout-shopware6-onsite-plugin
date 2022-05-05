@@ -22,6 +22,7 @@ class CreditCardHandlerTest extends AbstractPaymentHandlerTest
             $this->createMock(LoggerService::class),
             $this->createMock(TranslatorInterface::class),
             $this->createMock(DataValidator::class),
+            $this->orderExtractor,
             $this->createMock(CheckoutTokenService::class),
             $this->paymentPayFacade,
             $this->paymentFinalizeFacade
@@ -42,7 +43,6 @@ class CreditCardHandlerTest extends AbstractPaymentHandlerTest
             $this->createMock(PaymentRequest::class),
             $dataBag,
             $this->createMock(OrderEntity::class),
-            $this->setUpCustomer(),
             $this->saleChannelContext
         );
 

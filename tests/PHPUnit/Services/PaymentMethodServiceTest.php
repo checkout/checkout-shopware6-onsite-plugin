@@ -6,6 +6,7 @@ use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
 use CheckoutCom\Shopware6\Handler\Method\CreditCardHandler;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
+use CheckoutCom\Shopware6\Service\Extractor\AbstractOrderExtractor;
 use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Service\PaymentMethodService;
 use CheckoutCom\Shopware6\Struct\PaymentHandler\PaymentHandlerCollection;
@@ -215,6 +216,7 @@ class PaymentMethodServiceTest extends TestCase
                             'trans' => 'Foo',
                         ]),
                         $this->createMock(DataValidator::class),
+                        $this->createMock(AbstractOrderExtractor::class),
                         $this->createMock(CheckoutTokenService::class),
                         $this->createMock(PaymentPayFacade::class),
                         $this->createMock(PaymentFinalizeFacade::class),

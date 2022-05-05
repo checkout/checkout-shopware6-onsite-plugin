@@ -60,8 +60,13 @@ export default class CheckoutComCreditCard extends Plugin {
         } = this.options;
 
         // Submit payment form handler
-        this.paymentForm.addEventListener('submit', (event) => {
+        this.submitPaymentButton.addEventListener('click', (event) => {
             event.preventDefault();
+
+            // checks form validity before submit
+            if (!this.paymentForm.checkValidity()) {
+                return;
+            }
 
             const cardholderNameInput = this.getElement(
                 this.el,

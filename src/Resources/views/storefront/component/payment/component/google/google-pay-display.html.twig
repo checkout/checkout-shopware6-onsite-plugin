@@ -1,0 +1,37 @@
+{% block checkout_com_payment_fields_google_pay_display %}
+    {% block checkout_com_payment_fields_google_pay_display_import %}
+        <script defer
+                src="https://pay.google.com/gp/p/js/pay.js"
+                onload="onCheckoutComGooglePayLoaded()">
+        </script>
+    {% endblock %}
+
+    {% block checkout_com_payment_fields_google_pay_display_script_define %}
+        {% set ENV_TEST = constant('CheckoutCom\\Shopware6\\Handler\\Method\\GooglePayHandler::ENV_TEST') %}
+        {% set ENV_PRODUCTION = constant('CheckoutCom\\Shopware6\\Handler\\Method\\GooglePayHandler::ENV_PRODUCTION') %}
+
+        <script type="text/javascript">
+            // We have to register the window.googlePayClient to be able to use it in Shopware Plugin
+            function onCheckoutComGooglePayLoaded() {
+                if (typeof window.googlePayClient === 'undefined' || window.googlePayClient === null) {
+                    window.googlePayClient = new google.payments.api.PaymentsClient({
+                        environment: '{{ page.extensions.checkoutCom.sandboxMode ? ENV_TEST : ENV_PRODUCTION }}',
+                    });
+                }
+            }
+        </script>
+    {% endblock %}
+
+    {% block checkout_com_payment_fields_google_pay_display_component %}
+        {% set googlePayDisplayOptions = {
+            "selectedPaymentMethodId": selectedPaymentMethodId,
+        } %}
+
+        <div id="checkoutComGooglePayDisplay"
+             class="checkout-com-google-pay-display"
+             data-checkout-com-google-pay-display
+             data-checkout-com-google-pay-display-options='{{ googlePayDisplayOptions|json_encode }}'
+        >
+        </div>
+    {% endblock %}
+{% endblock %}

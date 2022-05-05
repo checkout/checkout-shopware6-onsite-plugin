@@ -2,10 +2,13 @@
 
 namespace CheckoutCom\Shopware6\Service\Extractor;
 
-use CheckoutCom\Shopware6\Service\CustomerService;
+use CheckoutCom\Shopware6\Service\AddressService;
+use Exception;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\EntityNotFoundException;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
@@ -16,12 +19,12 @@ class OrderExtractor extends AbstractOrderExtractor
 {
     private LoggerInterface $logger;
 
-    private CustomerService $customerService;
+    private AddressService $addressService;
 
-    public function __construct(LoggerInterface $loggerService, CustomerService $customerService)
+    public function __construct(LoggerInterface $loggerService, AddressService $addressService)
     {
         $this->logger = $loggerService;
-        $this->customerService = $customerService;
+        $this->addressService = $addressService;
     }
 
     public function getDecorated(): AbstractOrderExtractor
@@ -29,28 +32,95 @@ class OrderExtractor extends AbstractOrderExtractor
         throw new DecorationPatternException(self::class);
     }
 
-    public function extractCustomer(OrderEntity $order, SalesChannelContext $context): CustomerEntity
+    /**
+     * @throws Exception
+     */
+    public function extractOrderNumber(OrderEntity $order): string
+    {
+        $orderNumber = $order->getOrderNumber();
+        if ($orderNumber === null) {
+            $this->logger->critical(sprintf('Order number is null with order ID: %s', $order->getId()), [
+                'orderId' => $order->getId(),
+            ]);
+
+            throw new Exception('Order number is null');
+        }
+
+        return $orderNumber;
+    }
+
+    public function extractCustomer(OrderEntity $order): OrderCustomerEntity
     {
         $customer = $order->getOrderCustomer();
         if (!$customer instanceof OrderCustomerEntity) {
             $this->logger->critical(
-                sprintf('Could not extract customer from order with ID %s', $order->getId())
+                sprintf('Could not extract customer from order ID %s', $order->getId())
             );
 
             throw new EntityNotFoundException('Customer of Order', $order->getId());
         }
 
-        $customerId = $customer->getCustomerId();
-        if ($customerId === null) {
-            $this->logger->critical(
-                sprintf('Could not found customer ID from Order Customer Entity with order ID %s', $order->getId())
-            );
+        return $customer;
+    }
 
-            throw new EntityNotFoundException('Customer of OrderCustomer', $order->getId());
+    /**
+     * @throws Exception
+     */
+    public function extractBillingAddress(OrderEntity $order, SalesChannelContext $context): OrderAddressEntity
+    {
+        $billingAddress = $order->getBillingAddress();
+        if (!$billingAddress instanceof OrderAddressEntity) {
+            $message = sprintf('Could not extract billing from order ID: %s', $order->getId());
+            $this->logger->error($message, [
+                'function' => __FUNCTION__,
+            ]);
+
+            throw new Exception($message);
         }
 
-        return $this->customerService->getCustomer(
-            $customerId,
+        return $this->addressService->getOrderAddress(
+            $billingAddress->getId(),
+            $context->getContext()
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function extractShippingAddress(OrderEntity $order, SalesChannelContext $context): OrderAddressEntity
+    {
+        $deliveries = $order->getDeliveries();
+        if (!$deliveries instanceof OrderDeliveryCollection) {
+            $message = sprintf('Could not extract deliveries from order ID: %s', $order->getId());
+            $this->logger->error($message, [
+                'function' => __FUNCTION__,
+            ]);
+
+            throw new Exception($message);
+        }
+
+        $delivery = $deliveries->first();
+        if (!$delivery instanceof OrderDeliveryEntity) {
+            $message = sprintf('No order delivery found with order ID: %s', $order->getId());
+            $this->logger->error($message, [
+                'function' => __FUNCTION__,
+            ]);
+
+            throw new Exception($message);
+        }
+
+        $shippingAddress = $delivery->getShippingOrderAddress();
+        if (!$shippingAddress instanceof OrderAddressEntity) {
+            $message = sprintf('No order shipping address found with order ID: %s', $order->getId());
+            $this->logger->error($message, [
+                'function' => __FUNCTION__,
+            ]);
+
+            throw new Exception($message);
+        }
+
+        return $this->addressService->getOrderAddress(
+            $shippingAddress->getId(),
             $context->getContext()
         );
     }

@@ -9,7 +9,6 @@ use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use CheckoutCom\Shopware6\Helper\RequestUtil;
 use Exception;
-use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -33,12 +32,11 @@ class CreditCardHandler extends PaymentHandler
         PaymentRequest $paymentRequest,
         RequestDataBag $dataBag,
         OrderEntity $order,
-        CustomerEntity $customer,
         SalesChannelContext $context
     ): PaymentRequest {
         $this->enableThreeDsRequest($paymentRequest);
 
-        $paymentRequest->source = $this->buildTokenSource($dataBag, $customer);
+        $paymentRequest->source = $this->buildTokenSource($dataBag, $order, $context);
 
         return $paymentRequest;
     }
@@ -48,16 +46,18 @@ class CreditCardHandler extends PaymentHandler
      *
      * @throws Exception
      */
-    private function buildTokenSource(RequestDataBag $dataBag, CustomerEntity $customer): RequestTokenSource
+    private function buildTokenSource(RequestDataBag $dataBag, OrderEntity $order, SalesChannelContext $context): RequestTokenSource
     {
         $token = RequestUtil::getTokenPayment($dataBag);
         if (!\is_string($token)) {
             throw new Exception('Invalid credit card token');
         }
 
+        $billingAddress = $this->orderExtractor->extractBillingAddress($order, $context);
+
         $requestTokenSource = new RequestTokenSource();
         $requestTokenSource->token = $token;
-        $requestTokenSource->billing_address = CheckoutComUtil::buildAddress($customer->getDefaultBillingAddress());
+        $requestTokenSource->billing_address = CheckoutComUtil::buildAddress($billingAddress);
 
         return $requestTokenSource;
     }

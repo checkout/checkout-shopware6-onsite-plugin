@@ -7,17 +7,17 @@ use Checkout\Common\Currency;
 use Checkout\Common\CustomerRequest;
 use Checkout\Payments\ShippingDetails;
 use Exception;
-use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
-use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 
 class CheckoutComUtil
 {
     /**
-     * Build ship detail request checkout.com from customer address entity shopware
+     * Build ship detail request checkout.com from order address entity shopware
      */
-    public static function buildShipDetail(CustomerAddressEntity $customerAddress): ShippingDetails
+    public static function buildShipDetail(OrderAddressEntity $orderShippingAddress): ShippingDetails
     {
-        $shippingAddress = CheckoutComUtil::buildAddress($customerAddress);
+        $shippingAddress = CheckoutComUtil::buildAddress($orderShippingAddress);
 
         $shippingDetails = new ShippingDetails();
         $shippingDetails->address = $shippingAddress;
@@ -30,19 +30,15 @@ class CheckoutComUtil
      *
      * @throws Exception
      */
-    public static function buildAddress(?CustomerAddressEntity $customerAddress): Address
+    public static function buildAddress(OrderAddressEntity $addressEntity): Address
     {
-        if (!$customerAddress instanceof CustomerAddressEntity) {
-            throw new Exception('Customer address is not instance of CustomerAddressEntity');
-        }
-
         $address = new Address();
-        $address->address_line1 = $customerAddress->getStreet();
-        $address->address_line2 = $customerAddress->getAdditionalAddressLine1() ?? $customerAddress->getAdditionalAddressLine2() ?? '';
-        $address->city = $customerAddress->getCity();
-        $address->state = $customerAddress->getCountryState() !== null ? ($customerAddress->getCountryState()->getName() ?? '') : '';
-        $address->zip = $customerAddress->getZipcode();
-        $address->country = $customerAddress->getCountry() !== null ? ($customerAddress->getCountry()->getIso() ?? '') : '';
+        $address->address_line1 = $addressEntity->getStreet();
+        $address->address_line2 = $addressEntity->getAdditionalAddressLine1() ?? $addressEntity->getAdditionalAddressLine2() ?? '';
+        $address->city = $addressEntity->getCity();
+        $address->state = $addressEntity->getCountryState() !== null ? ($addressEntity->getCountryState()->getName() ?? '') : '';
+        $address->zip = $addressEntity->getZipcode();
+        $address->country = $addressEntity->getCountry() !== null ? ($addressEntity->getCountry()->getIso() ?? '') : '';
 
         return $address;
     }
@@ -50,7 +46,7 @@ class CheckoutComUtil
     /**
      * Build customer request checkout.com from customer entity shopware
      */
-    public static function buildCustomer(CustomerEntity $customer): CustomerRequest
+    public static function buildCustomer(OrderCustomerEntity $customer): CustomerRequest
     {
         $customerRequest = new CustomerRequest();
         $customerRequest->name = sprintf('%s %s', $customer->getFirstName(), $customer->getLastName());

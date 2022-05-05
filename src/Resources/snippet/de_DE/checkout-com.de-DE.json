@@ -2,6 +2,7 @@
   "checkoutCom": {
     "paymentMethod": {
       "applePayLabel": "Apple Pay",
+      "googlePayLabel": "Google Pay",
       "creditCardLabel": "Kreditkarte"
     },
     "messages": {

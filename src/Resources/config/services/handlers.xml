@@ -11,6 +11,7 @@
             <argument type="service" id="checkout_com.shopware6.logger"/>
             <argument type="service" id="translator"/>
             <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Extractor\OrderExtractor"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Facade\PaymentPayFacade"/>
             <argument type="service" id="CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade"/>
@@ -24,6 +25,12 @@
 
         <!-- Apple Pay PaymentHandler -->
         <service id="CheckoutCom\Shopware6\Handler\Method\ApplePayHandler" parent="checkout_com.shopware6.handler.payment_handler">
+            <tag name="shopware.payment.method.async"/>
+            <tag name="checkout_com.shopware6.payment_handler"/>
+        </service>
+
+        <!-- Google Pay PaymentHandler -->
+        <service id="CheckoutCom\Shopware6\Handler\Method\GooglePayHandler" parent="checkout_com.shopware6.handler.payment_handler">
             <tag name="shopware.payment.method.async"/>
             <tag name="checkout_com.shopware6.payment_handler"/>
         </service>

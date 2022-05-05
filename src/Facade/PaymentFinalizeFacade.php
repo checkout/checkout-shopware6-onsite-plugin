@@ -6,8 +6,9 @@ use CheckoutCom\Shopware6\Event\CheckoutFinalizeStatusEvent;
 use CheckoutCom\Shopware6\Exception\CheckoutPaymentIdNotFoundException;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
+use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
+use CheckoutCom\Shopware6\Service\Order\AbstractOrderTransactionService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
-use CheckoutCom\Shopware6\Service\Order\OrderTransactionService;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
@@ -24,17 +25,17 @@ class PaymentFinalizeFacade
 
     private SettingsFactory $settingsFactory;
 
-    private OrderService $orderService;
+    private AbstractOrderService $orderService;
 
-    private OrderTransactionService $orderTransactionService;
+    private AbstractOrderTransactionService $orderTransactionService;
 
     public function __construct(
         LoggerInterface $logger,
         EventDispatcherInterface $eventDispatcher,
         CheckoutPaymentService $checkoutPaymentService,
         SettingsFactory $settingsFactory,
-        OrderService $orderService,
-        OrderTransactionService $orderTransactionService
+        AbstractOrderService $orderService,
+        AbstractOrderTransactionService $orderTransactionService
     ) {
         $this->logger = $logger;
         $this->eventDispatcher = $eventDispatcher;
