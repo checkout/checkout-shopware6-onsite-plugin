@@ -117,5 +117,6 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         PhpCsFixer\Fixer\Phpdoc\NoSuperfluousPhpdocTagsFixer::class => [
             __DIR__ . '/.gitlab-ci/tools/src/Service/ProcessBuilder.php',
         ],
+        '**/node_modules',
     ]);
 };

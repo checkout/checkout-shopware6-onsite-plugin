@@ -38,9 +38,30 @@ ecs: ## Starts the ESC checker
 
 csfix: ## Starts the PHP CS Fixer
 	php ./vendor/bin/ecs check . --config easy-coding-standard.php --fix
+
+lint-js: ## Runs eslint
+	npm run --prefix src/Resources/app/administration/ lint
+
+lint-js-fix: ## Runs eslint and fix
+	npm run --prefix src/Resources/app/administration/ lint -- --fix
+
+lint-scss: ## Runs scss stylelint
+	npm run --prefix src/Resources/app/administration/ lint:scss
+
+lint-scss-fix: ## Runs scss stylelint and fix
+	npm run --prefix src/Resources/app/administration/ lint:scss-fix
+
+lint-twig: ## Runs twig lint
+	npm run --prefix src/Resources/app/administration/ lint:twig
+
+lint-twig-fix: ## Runs twig lint and fix
+	npm run --prefix src/Resources/app/administration/ lint:twig -- --fix
 # ------------------------------------------------------------------------------------------------------------
 
 review: ## Starts the full review pipeline
 	make ecs -B
 	make stan -B
 	make phpunit -B
+	make lint-js -B
+	make lint-scss -B
+	make lint-twig -B
