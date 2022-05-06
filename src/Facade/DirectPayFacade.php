@@ -202,7 +202,7 @@ class DirectPayFacade
 
             $shippingCostsPrice = $this->cartService->getShippingCostsPrice($tempCart);
 
-            $formattedShippingMethod = $paymentHandler->formatDirectShippingOption($shippingMethod, $shippingCostsPrice);
+            $formattedShippingMethod = $paymentHandler->formatDirectShippingOption($shippingMethod, $shippingCostsPrice, $context);
 
             if ($shippingMethod->getId() === $currentMethodID) {
                 $currentMethodFormatted = $formattedShippingMethod;
@@ -214,8 +214,8 @@ class DirectPayFacade
         // Restore our previously used shipping method
         $this->cartService->updateContextShippingMethod($context, $currentMethodID);
 
-        // our pre-selected method always needs
-        // to be the first item in the list
+        // Pre-selected method always needs to be the first item in the list
+        // because it will use to calculate the current direct cart
         if ($currentMethodFormatted !== null) {
             $directShippingOptions->unshift($currentMethodFormatted);
         }

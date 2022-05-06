@@ -1,0 +1,40 @@
+{% block checkout_com_google_pay_button %}
+    <div class="checkout-com-direct-pay d-none {{ cols }}" data-google-pay="true">
+        {% block checkout_com_google_pay_button_container %}
+            <div class="checkout-com-direct-google-pay-container">
+                {% block checkout_com_google_pay_button_container_element %}
+                    <div class="checkout-com-button-direct-pay checkout-com-direct-google-pay checkout-com-direct-google-pay-black btn btn-block w-100">
+                        {% block checkout_com_google_pay_button_element_product_id %}
+                            <input type="hidden"
+                                   name="checkoutComProductId"
+                                   value="{{ product.id }}"
+                            >
+                        {% endblock %}
+
+                        {% block checkout_com_google_pay_button_element_currency_code %}
+                            <input type="hidden"
+                                   name="checkoutComCurrencyCode"
+                                   value="{{ context.currency.translated.shortName }}"
+                            >
+                        {% endblock %}
+
+                        {% block checkout_com_google_pay_button_element_country_code %}
+                            <input type="hidden"
+                                   name="checkoutComCountryCode"
+                                   value="{{ context.shippingLocation.country.iso }}"
+                            >
+                        {% endblock %}
+
+                        {% block checkout_com_google_pay_button_element_button_color %}
+                            <input type="hidden"
+                                   name="checkoutComButtonColor"
+                                   value="{{ constant('CheckoutCom\\Shopware6\\Handler\\Method\\GooglePayHandler::BUTTON_BLACK') }}"
+                            >
+                        {% endblock %}
+                        &nbsp;
+                    </div>
+                {% endblock %}
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}

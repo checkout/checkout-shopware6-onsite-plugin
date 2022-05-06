@@ -6,14 +6,12 @@ use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Helper\Url;
 use CheckoutCom\Shopware6\Struct\Extension\ConfirmPageExtensionStruct;
 use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
-use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
-use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
-use Shopware\Storefront\Page\PageLoadedEvent;
+use Shopware\Storefront\Page\GenericPageLoadedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class CheckoutConfirmPageSubscriber implements EventSubscriberInterface
+class CheckoutSettingsGenericPageSubscriber implements EventSubscriberInterface
 {
-    public const CONFIRM_PAGE_EXTENSION = 'checkoutCom';
+    public const GENERIC_PAGE_EXTENSION = 'checkoutCom';
 
     private SettingsFactory $settingFactory;
 
@@ -27,28 +25,17 @@ class CheckoutConfirmPageSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            CheckoutConfirmPageLoadedEvent::class => 'onCheckoutConfirmPageLoaded',
-            AccountEditOrderPageLoadedEvent::class => 'onAccountEditOrderPageLoaded',
+            GenericPageLoadedEvent::class => 'onGenericPageLoaded',
         ];
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function onCheckoutConfirmPageLoaded(CheckoutConfirmPageLoadedEvent $event): void
-    {
-        $salesChannelId = $event->getSalesChannelContext()->getSalesChannel()->getId();
-        $this->settings = $this->settingFactory->getSettings($salesChannelId);
-        $this->addCheckoutSettingsToConfirmPage($event);
-    }
-
-    public function onAccountEditOrderPageLoaded(AccountEditOrderPageLoadedEvent $event): void
+    public function onGenericPageLoaded(GenericPageLoadedEvent $event): void
     {
         $this->settings = $this->settingFactory->getSettings($event->getSalesChannelContext()->getSalesChannel()->getId());
-        $this->addCheckoutSettingsToConfirmPage($event);
+        $this->addCheckoutSettingsToGenericPage($event);
     }
 
-    private function addCheckoutSettingsToConfirmPage(PageLoadedEvent $event): void
+    private function addCheckoutSettingsToGenericPage(GenericPageLoadedEvent $event): void
     {
         $googlePaySettings = $this->settings->getGooglePay();
         $checkoutConfirmPageExtension = new ConfirmPageExtensionStruct();
@@ -57,6 +44,6 @@ class CheckoutConfirmPageSubscriber implements EventSubscriberInterface
         $checkoutConfirmPageExtension->setSandboxMode($this->settings->isSandboxMode());
         $checkoutConfirmPageExtension->setGooglePayMerchantId($googlePaySettings->getMerchantId());
 
-        $event->getPage()->addExtension(self::CONFIRM_PAGE_EXTENSION, $checkoutConfirmPageExtension);
+        $event->getPage()->addExtension(self::GENERIC_PAGE_EXTENSION, $checkoutConfirmPageExtension);
     }
 }

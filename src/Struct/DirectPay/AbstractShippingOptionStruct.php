@@ -2,8 +2,8 @@
 
 namespace CheckoutCom\Shopware6\Struct\DirectPay;
 
-use Shopware\Core\Framework\Struct\Struct;
+use CheckoutCom\Shopware6\Struct\ApiStruct;
 
-abstract class AbstractShippingOptionStruct extends Struct
+abstract class AbstractShippingOptionStruct extends ApiStruct
 {
 }

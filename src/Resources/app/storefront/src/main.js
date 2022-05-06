@@ -5,6 +5,7 @@ import CheckoutComApplePayDirect from './checkout-com/plugins/apple/apple-pay-di
 import CheckoutComApplePayDisplay from './checkout-com/plugins/apple/apple-pay-display.plugin';
 
 import CheckoutComGooglePayConfirm from './checkout-com/plugins/google/google-pay-confirm.plugin';
+import CheckoutComGooglePayDirect from './checkout-com/plugins/google/google-pay-direct.plugin';
 import CheckoutComGooglePayDisplay from './checkout-com/plugins/google/google-pay-display.plugin';
 
 import CheckoutComCreditCard from './checkout-com/plugins/credit-card.plugin';
@@ -17,6 +18,7 @@ PluginManager.register('CheckoutComApplePayConfirm', CheckoutComApplePayConfirm,
 PluginManager.register('CheckoutComGooglePayConfirm', CheckoutComGooglePayConfirm, '[data-checkout-com-google-pay-confirm]');
 
 PluginManager.register('CheckoutComApplePayDirect', CheckoutComApplePayDirect, '[data-checkout-com-apple-pay-direct]');
+PluginManager.register('CheckoutComGooglePayDirect', CheckoutComGooglePayDirect, '[data-checkout-com-google-pay-direct]');
 
 // display the payment methods
 // -----------------------------------------------------------------------------

@@ -24,6 +24,7 @@ use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\DataValidator;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
+use Shopware\Core\System\Currency\CurrencyFormatter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -39,6 +40,8 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
 
     protected DataValidator $dataValidator;
 
+    protected CurrencyFormatter $currencyFormatter;
+
     protected SystemConfigService $systemConfigService;
 
     protected AbstractOrderExtractor $orderExtractor;
@@ -52,10 +55,12 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
     public function __construct(
         TranslatorInterface $translator,
         DataValidator $dataValidator,
+        CurrencyFormatter $currencyFormatter,
         SystemConfigService $systemConfigService
     ) {
         $this->translator = $translator;
         $this->dataValidator = $dataValidator;
+        $this->currencyFormatter = $currencyFormatter;
         $this->systemConfigService = $systemConfigService;
     }
 
@@ -222,7 +227,7 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
      */
     public function getDirectShippingOptions(): AbstractShippingOptionCollection
     {
-        throw new Exception(sprintf('Get direct shipping options are not supported by: %s', $this->getClassName()));
+        throw new Exception(sprintf('getDirectShippingOptions function are not supported by: %s', $this->getClassName()));
     }
 
     /**
@@ -230,9 +235,12 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
      *
      * @throws Exception
      */
-    public function formatDirectShippingOption(ShippingMethodEntity $shippingMethodEntity, float $shippingCostsPrice): AbstractShippingOptionStruct
-    {
-        throw new Exception(sprintf('Format Direct shipping option are not supported by: %s', $this->getClassName()));
+    public function formatDirectShippingOption(
+        ShippingMethodEntity $shippingMethodEntity,
+        float $shippingCostsPrice,
+        SalesChannelContext $context
+    ): AbstractShippingOptionStruct {
+        throw new Exception(sprintf('formatDirectShippingOption function are not supported by: %s', $this->getClassName()));
     }
 
     /**
@@ -245,7 +253,7 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
         DirectPayCartStruct $directPayCart,
         SalesChannelContext $context
     ): AbstractShippingPayloadStruct {
-        throw new Exception(sprintf('Get direct shipping payload are not supported by: %s', $this->getClassName()));
+        throw new Exception(sprintf('getDirectShippingPayload function are not supported by: %s', $this->getClassName()));
     }
 
     protected function getShopName(SalesChannelContext $context): string

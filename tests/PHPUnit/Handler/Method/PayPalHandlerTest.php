@@ -10,6 +10,7 @@ use CheckoutCom\Shopware6\Handler\Source\RequestPayPalSource;
 use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataValidator;
+use Shopware\Core\System\Currency\CurrencyFormatter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -24,6 +25,7 @@ class PayPalHandlerTest extends AbstractPaymentHandlerTest
         $this->paymentHandler = new PayPalHandler(
             $this->createMock(TranslatorInterface::class),
             $this->createMock(DataValidator::class),
+            $this->createMock(CurrencyFormatter::class),
             $this->createMock(SystemConfigService::class),
         );
 

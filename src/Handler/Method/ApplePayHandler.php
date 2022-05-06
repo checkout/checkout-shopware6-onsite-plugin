@@ -50,8 +50,11 @@ class ApplePayHandler extends PaymentHandler
         return new AppleShippingOptionCollection();
     }
 
-    public function formatDirectShippingOption(ShippingMethodEntity $shippingMethodEntity, float $shippingCostsPrice): AppleShippingOptionStruct
-    {
+    public function formatDirectShippingOption(
+        ShippingMethodEntity $shippingMethodEntity,
+        float $shippingCostsPrice,
+        SalesChannelContext $context
+    ): AppleShippingOptionStruct {
         $shippingMethodDetail = $shippingMethodEntity->getDescription();
         $shippingDeliveryTime = $shippingMethodEntity->getDeliveryTime();
         if ($shippingDeliveryTime instanceof DeliveryTimeEntity && !empty($shippingDeliveryTime->getName())) {
@@ -69,7 +72,7 @@ class ApplePayHandler extends PaymentHandler
     }
 
     /**
-     * Format shipping payload for Apple Pay
+     * Return shipping payload with all necessary information for Apple Pay
      *
      * @see https://developer.apple.com/documentation/apple_pay_on_the_web/applepaysession/1778008-completeshippingcontactselection
      */
@@ -80,30 +83,30 @@ class ApplePayHandler extends PaymentHandler
     ): AppleShippingPayloadStruct {
         $shippingPayLoad = new AppleShippingPayloadStruct();
 
-        // ==========================================================================================
-        // SHIPPING METHODS
-        // ==========================================================================================
+        /*
+         * SHIPPING METHODS
+         */
         if ($shippingMethods instanceof AbstractShippingOptionCollection) {
             $shippingPayLoad->setNewShippingMethods($shippingMethods);
         }
 
-        // ==========================================================================================
-        // NEW TOTAL
-        // ==========================================================================================
+        /*
+         * NEW TOTAL
+         */
         $shippingPayLoad->setNewTotal(new ApplePayLineItemStruct(
             $this->getShopName($context),
             $directPayCart->getTotalAmount(),
             self::LINE_ITEM_TYPE
         ));
 
-        // ==========================================================================================
-        // NEW LINE ITEMS
-        // ==========================================================================================
+        /**
+         * NEW LINE ITEMS
+         */
         $lineItems = new ApplePayLineItemCollection();
 
         // Sub total
         $lineItems->add(new ApplePayLineItemStruct(
-            $this->translator->trans('checkoutCom.payments.applePayDirect.subtotalLabel'),
+            $this->translator->trans('checkoutCom.payments.subtotalLabel'),
             $directPayCart->getLineItemAmount(),
             self::LINE_ITEM_TYPE
         ));
@@ -122,7 +125,7 @@ class ApplePayHandler extends PaymentHandler
         $directCartTax = $directPayCart->getTax();
         if ($directCartTax instanceof DirectPayCartItemStruct) {
             $lineItems->add(new ApplePayLineItemStruct(
-                $this->translator->trans('checkoutCom.payments.applePayDirect.taxesLabel'),
+                $this->translator->trans('checkoutCom.payments.taxesLabel'),
                 $directCartTax->getPrice(),
                 self::LINE_ITEM_TYPE
             ));
