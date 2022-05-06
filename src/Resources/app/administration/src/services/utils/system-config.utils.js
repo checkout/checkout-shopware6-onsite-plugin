@@ -9,3 +9,7 @@ import { CHECKOUT_DOMAIN } from '../../constant/settings';
 export const getCheckoutConfig = (field) => {
     return `${CHECKOUT_DOMAIN}.${field}`;
 };
+
+export default {
+    getCheckoutConfig,
+};

@@ -16,5 +16,5 @@ Component.extend(
                 default: false,
             },
         },
-    }
+    },
 );

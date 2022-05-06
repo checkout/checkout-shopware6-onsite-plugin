@@ -76,7 +76,7 @@ Component.register('checkout-plugin-config-section-api', {
                 const results = await this.checkoutConfigService.testApiKey(
                     secretKey,
                     publicKey,
-                    sandboxMode
+                    sandboxMode,
                 );
 
                 results.forEach(this._showMessageResult);
@@ -95,17 +95,17 @@ Component.register('checkout-plugin-config-section-api', {
             const inputError = isSecretKey ? 'secretKey' : 'publicKey';
 
             const keyTypeMessage = this.$tc(
-                `checkout-payments.config.api.testApiKeys.${inputError}`
+                `checkout-payments.config.api.testApiKeys.${inputError}`,
             );
             const validMessage = this.$tc(
                 `checkout-payments.config.api.testApiKeys.${
                     valid ? 'isValid' : 'isInvalid'
-                }`
+                }`,
             );
 
             const messageData = {
                 title: this.$tc(
-                    'checkout-payments.config.api.testApiKeys.title'
+                    'checkout-payments.config.api.testApiKeys.title',
                 ),
                 message: `${keyTypeMessage} "${key}" ${validMessage}.`,
             };
