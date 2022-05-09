@@ -2,7 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Storefront\Api;
 
-use CheckoutCom\Shopware6\Service\ApplePay\ApplePayService;
+use CheckoutCom\Shopware6\Service\ApplePay\AbstractApplePayService;
 use CheckoutCom\Shopware6\Struct\Response\MerchantSessionResponse;
 use GuzzleHttp\Exception\GuzzleException;
 use OpenApi\Annotations as OA;
@@ -25,9 +25,9 @@ class ApplePayController extends AbstractApplePayController
 {
     private DataValidator $dataValidator;
 
-    private ApplePayService $applePayService;
+    private AbstractApplePayService $applePayService;
 
-    public function __construct(DataValidator $dataValidator, ApplePayService $applePayService)
+    public function __construct(DataValidator $dataValidator, AbstractApplePayService $applePayService)
     {
         $this->dataValidator = $dataValidator;
         $this->applePayService = $applePayService;

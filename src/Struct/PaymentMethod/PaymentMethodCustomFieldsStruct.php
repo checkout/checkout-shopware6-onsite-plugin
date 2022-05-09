@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Struct\Extension;
+namespace CheckoutCom\Shopware6\Struct\PaymentMethod;
 
 use Shopware\Core\Framework\Struct\Struct;
 
-class PaymentMethodExtensionStruct extends Struct
+class PaymentMethodCustomFieldsStruct extends Struct
 {
     protected bool $isCheckout;
 

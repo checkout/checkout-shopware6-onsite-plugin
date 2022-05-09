@@ -7,7 +7,8 @@ use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Service\ApplePay\ApplePayService;
 use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Service\MediaService;
-use CheckoutCom\Shopware6\Struct\SettingStruct;
+use CheckoutCom\Shopware6\Struct\SystemConfig\ApplePaySettingStruct;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use Exception;
 use GuzzleHttp\Client;
@@ -80,10 +81,13 @@ class ApplePayServiceTest extends TestCase
             'getHost' => 'foo',
         ]);
 
+        $applePaySettings = new ApplePaySettingStruct();
+        $applePaySettings->setDomainMediaId('foo');
+        $applePaySettings->setPemMediaId('foo');
+        $applePaySettings->setKeyMediaId('foo');
+
         $settings = new SettingStruct();
-        $settings->setApplePayDomainMediaId('foo');
-        $settings->setApplePayPemMediaId('foo');
-        $settings->setApplePayKeyMediaId('foo');
+        $settings->setApplePay($applePaySettings);
 
         $this->settingFactory->method('getSettings')->willReturn(
             $settings
@@ -94,12 +98,14 @@ class ApplePayServiceTest extends TestCase
         );
 
         if ($throwException) {
+            static::expectException(CheckoutComException::class);
             $this->mediaService->method('getPathVideoMedia')->willThrowException(
                 new Exception()
             );
         }
 
         if ($throwClientException) {
+            static::expectException(CheckoutComException::class);
             $this->guzzleClient->method('post')->willThrowException(
                 new ClientException(
                     '',
@@ -126,8 +132,10 @@ class ApplePayServiceTest extends TestCase
      */
     public function testGetAppleKeyMedia(?string $mediaId): void
     {
+        $applePaySettings = new ApplePaySettingStruct();
+        $applePaySettings->setKeyMediaId($mediaId);
         $settings = new SettingStruct();
-        $settings->setApplePayKeyMediaId($mediaId);
+        $settings->setApplePay($applePaySettings);
 
         $this->settingFactory->method('getSettings')->willReturn(
             $settings
@@ -146,8 +154,10 @@ class ApplePayServiceTest extends TestCase
      */
     public function testGetAppleDomainMedia(?string $mediaId): void
     {
+        $applePaySettings = new ApplePaySettingStruct();
+        $applePaySettings->setDomainMediaId($mediaId);
         $settings = new SettingStruct();
-        $settings->setApplePayDomainMediaId($mediaId);
+        $settings->setApplePay($applePaySettings);
 
         $this->settingFactory->method('getSettings')->willReturn(
             $settings
@@ -166,8 +176,10 @@ class ApplePayServiceTest extends TestCase
      */
     public function testGetApplePemMedia(?string $mediaId): void
     {
+        $applePaySettings = new ApplePaySettingStruct();
+        $applePaySettings->setPemMediaId($mediaId);
         $settings = new SettingStruct();
-        $settings->setApplePayPemMediaId($mediaId);
+        $settings->setApplePay($applePaySettings);
 
         $this->settingFactory->method('getSettings')->willReturn(
             $settings

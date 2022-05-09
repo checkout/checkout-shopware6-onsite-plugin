@@ -36,7 +36,7 @@
     },
     "paymentMethod": {
       "general": {
-        "configurationTitle": "Configuration"
+        "configurationTitle": "Checkout.com Payments Configuration"
       },
       "applePay": {
         "configuration": {

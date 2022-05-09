@@ -6,7 +6,7 @@
                 :disabled="true"
                 :label="$tc('checkout-payments.config.api.webhookIdLabel')"
                 :help-text="$tc('checkout-payments.config.api.webhookHelpText')"
-            ></sw-field>
+            />
         {% endblock %}
 
         {% block checkout_plugin_config_webhook_section_public_key %}
@@ -14,7 +14,7 @@
                 v-model="config.authorization"
                 :disabled="true"
                 :label="$tc('checkout-payments.config.api.webhookAuthorizationKeyLabel')"
-            ></sw-field>
+            />
         {% endblock %}
     </div>
 {% endblock %}

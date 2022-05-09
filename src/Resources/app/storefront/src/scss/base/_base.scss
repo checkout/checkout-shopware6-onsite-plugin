@@ -1,0 +1,5 @@
+.checkout-com-field_icon-card-container {
+    img:not([src]) {
+        visibility: hidden;
+    }
+}

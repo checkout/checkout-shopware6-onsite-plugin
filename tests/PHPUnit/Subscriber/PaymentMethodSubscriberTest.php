@@ -3,7 +3,6 @@
 namespace CheckoutCom\Shopware6\Tests\Subscriber;
 
 use CheckoutCom\Shopware6\Handler\Method\CreditCardHandler;
-use CheckoutCom\Shopware6\Struct\Extension\PaymentMethodExtensionStruct;
 use CheckoutCom\Shopware6\Subscriber\PaymentMethodSubscriber;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use PHPUnit\Framework\TestCase;
@@ -59,9 +58,10 @@ class PaymentMethodSubscriberTest extends TestCase
         );
 
         $this->subscriber->onPaymentMethodLoaded($event);
+        $customFields = $paymentMethod->getCustomFields();
 
-        static::assertTrue($paymentMethod->hasExtension(PaymentMethodSubscriber::PAYMENT_METHOD_EXTENSION));
-        static::assertInstanceOf(PaymentMethodExtensionStruct::class, $paymentMethod->getExtension(PaymentMethodSubscriber::PAYMENT_METHOD_EXTENSION));
+        static::assertArrayHasKey(PaymentMethodSubscriber::PAYMENT_METHOD_CUSTOM_FIELDS, $customFields);
+        static::assertIsArray($customFields[PaymentMethodSubscriber::PAYMENT_METHOD_CUSTOM_FIELDS]);
     }
 
     public function testOnPaymentMethodSearchResultLoadedCorrect(): void
@@ -82,8 +82,9 @@ class PaymentMethodSubscriberTest extends TestCase
         );
 
         $this->subscriber->onPaymentMethodSearchResultLoaded($event);
+        $customFields = $paymentMethod->getCustomFields();
 
-        static::assertTrue($paymentMethod->hasExtension(PaymentMethodSubscriber::PAYMENT_METHOD_EXTENSION));
-        static::assertInstanceOf(PaymentMethodExtensionStruct::class, $paymentMethod->getExtension(PaymentMethodSubscriber::PAYMENT_METHOD_EXTENSION));
+        static::assertArrayHasKey(PaymentMethodSubscriber::PAYMENT_METHOD_CUSTOM_FIELDS, $paymentMethod->getCustomFields());
+        static::assertIsArray($customFields[PaymentMethodSubscriber::PAYMENT_METHOD_CUSTOM_FIELDS]);
     }
 }

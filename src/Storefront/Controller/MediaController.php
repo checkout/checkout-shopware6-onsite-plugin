@@ -2,7 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Storefront\Controller;
 
-use CheckoutCom\Shopware6\Service\ApplePay\ApplePayService;
+use CheckoutCom\Shopware6\Service\ApplePay\AbstractApplePayService;
 use CheckoutCom\Shopware6\Service\MediaService;
 use League\Flysystem\FileNotFoundException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
@@ -21,9 +21,9 @@ class MediaController extends StorefrontController
 {
     private MediaService $mediaService;
 
-    private ApplePayService $applePayService;
+    private AbstractApplePayService $applePayService;
 
-    public function __construct(MediaService $mediaService, ApplePayService $applePayService)
+    public function __construct(MediaService $mediaService, AbstractApplePayService $applePayService)
     {
         $this->mediaService = $mediaService;
         $this->applePayService = $applePayService;

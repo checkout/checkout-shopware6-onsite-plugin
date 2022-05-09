@@ -11,9 +11,9 @@
         {% set googlePayActive = false %}
 
         {% for payment in page.salesChannelPaymentMethods %}
-            {% if payment.extensions.checkoutConfig.methodType == METHOD_TYPE_APPLE_PAY %}
+            {% if payment.customFields.checkoutConfig.methodType == METHOD_TYPE_APPLE_PAY %}
                 {% set applePayActive = true %}
-            {% elseif payment.extensions.checkoutConfig.methodType == METHOD_TYPE_GOOGLE_PAY %}
+            {% elseif payment.customFields.checkoutConfig.methodType == METHOD_TYPE_GOOGLE_PAY %}
                 {% set googlePayActive = true %}
             {% endif %}
         {% endfor %}

@@ -8,7 +8,7 @@ use CheckoutCom\Shopware6\Service\Order\OrderService;
 use CheckoutCom\Shopware6\Service\Order\OrderTransactionService;
 use CheckoutCom\Shopware6\Service\Webhook\WebhookService;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Webhook;
-use CheckoutCom\Shopware6\Struct\SettingStruct;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use CheckoutCom\Shopware6\Struct\WebhookReceiveDataStruct;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;

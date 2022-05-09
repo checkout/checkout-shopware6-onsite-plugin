@@ -130,18 +130,18 @@ export default class CheckoutComCreditCard extends Plugin {
 
     onPaymentMethodChanged({ paymentMethod }) {
         const { iconPaymentMethodId } = this.options;
-        const cardIconsPath = this.getCardIconsPathWithoutVersion();
         const iconLogo = this.getElement(this.el, iconPaymentMethodId);
-        let src = '';
-        let alt = '';
 
         if (paymentMethod) {
-            alt = paymentMethod;
-            src = `${cardIconsPath}/${paymentMethod.toLowerCase()}.${this.LOGO_MIME_TYPE}?${new Date().getTime()}`;
-        }
+            const cardIconsPath = this.getCardIconsPathWithoutVersion();
+            const src = `${cardIconsPath}/${paymentMethod.toLowerCase()}.${this.LOGO_MIME_TYPE}?${new Date().getTime()}`;
 
-        iconLogo.setAttribute('alt', alt);
-        iconLogo.setAttribute('src', src);
+            iconLogo.setAttribute('alt', paymentMethod);
+            iconLogo.setAttribute('src', src);
+        } else {
+            iconLogo.removeAttribute('alt');
+            iconLogo.removeAttribute('src');
+        }
     }
 
     getCardIconsPathWithoutVersion() {

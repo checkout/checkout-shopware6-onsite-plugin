@@ -11,9 +11,9 @@
         <div id="checkoutComPaymentMethod{{ payment.id }}"
              class="checkout-com-payment-method"
              data-payment-method-id="{{ payment.id }}"
-            {% if payment.extensions.checkoutConfig.methodType == METHOD_TYPE_APPLE_PAY %}
+            {% if payment.customFields.checkoutConfig.methodType == METHOD_TYPE_APPLE_PAY %}
                 data-apple-pay="true"
-            {% elseif payment.extensions.checkoutConfig.methodType == METHOD_TYPE_GOOGLE_PAY %}
+            {% elseif payment.customFields.checkoutConfig.methodType == METHOD_TYPE_GOOGLE_PAY %}
                 data-google-pay="true"
             {% endif %}
         ></div>
@@ -22,15 +22,15 @@
     {% block checkout_com_payment_method_selected %}
         {% if (payment.id is same as(selectedPaymentMethodId)) %}
             {% block checkout_com_payment_method_credit_card_condition %}
-                {% if payment.extensions.checkoutConfig.methodType == METHOD_TYPE_CREDIT_CARD %}
+                {% if payment.customFields.checkoutConfig.methodType == METHOD_TYPE_CREDIT_CARD %}
                     {% block checkout_com_payment_method_selected_credit_card %}
                         {% sw_include '@CheckoutCom/storefront/checkout-com/component/credit-card-fields.html.twig' %}
                     {% endblock %}
-                {% elseif payment.extensions.checkoutConfig.methodType == METHOD_TYPE_APPLE_PAY %}
+                {% elseif payment.customFields.checkoutConfig.methodType == METHOD_TYPE_APPLE_PAY %}
                     {% block checkout_com_payment_method_selected_apple_pay_confirm %}
                         {% sw_include '@CheckoutCom/storefront/checkout-com/component/apple/apple-pay-confirm.html.twig' %}
                     {% endblock %}
-                {% elseif payment.extensions.checkoutConfig.methodType == METHOD_TYPE_GOOGLE_PAY %}
+                {% elseif payment.customFields.checkoutConfig.methodType == METHOD_TYPE_GOOGLE_PAY %}
                     {% block checkout_com_payment_method_selected_google_pay_confirm %}
                         {% sw_include '@CheckoutCom/storefront/checkout-com/component/google/google-pay-confirm.html.twig' %}
                     {% endblock %}

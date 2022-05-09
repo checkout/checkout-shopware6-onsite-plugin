@@ -2,23 +2,57 @@
     {% parent %}
 
     {% block checkout_com_payment_method_condition_display_component %}
-        <template v-if="isDisplayComponent">
-            {% block checkout_com_payment_method_apple_pay_component %}
-                <checkout-com-payment-method-apple-pay
-                    v-if="isApplePay"
-                    :checkout-configs="checkoutConfigs"
-                    @save-system-config="saveSystemConfig"
-                    @set-checkout-config="setCheckoutConfigs"
-                />
-            {% endblock %}
+        <template v-if="isCheckoutConfigDisplay">
+            {% block checkout_com_payment_method_card %}
+                <sw-card
+                    :is-loading="isLoadingComponent"
+                    :title="$tc('checkout-payments.paymentMethod.general.configurationTitle')"
+                    class="checkout-com-payment-method-configuration"
+                    position-identifier="sw-settings-payment-detail-configuration"
+                >
+                    {% block checkout_com_payment_method_sales_channel_select %}
+                        <sw-entity-single-select
+                            :placeholder="$tc('sw-sales-channel-switch.labelDefaultOption')"
+                            :label="$tc('sw-settings.system-config.labelSalesChannelSelect')"
+                            :search-placeholder="$tc('sw-sales-channel-switch.placeholderSelect')"
+                            :reset-option="$tc('sw-sales-channel-switch.labelDefaultOption')"
+                            :value="salesChannelId"
+                            entity="sales_channel"
+                            show-clearable-button
+                            @change="onSalesChannelChanged"
+                        >
+                            {% block checkout_com_payment_method_sales_channel_select_label %}
+                                <template #labelProperty="{item, labelProperty}">
+                                    {% block checkout_com_payment_method_sales_channel_select_label_span %}
+                                        <span v-if="item.translated">{{ item.translated[labelProperty] }}</span>
+                                    {% endblock %}
+                                </template>
+                            {% endblock %}
+                        </sw-entity-single-select>
+                    {% endblock %}
 
-            {% block checkout_com_payment_method_google_pay_component %}
-                <checkout-com-payment-method-google-pay
-                    v-else-if="isGooglePay"
-                    :checkout-configs="checkoutConfigs"
-                    @save-system-config="saveSystemConfig"
-                    @set-checkout-config="setCheckoutConfigs"
-                />
+                    {% block checkout_com_payment_method_apple_pay_component %}
+                        <checkout-com-payment-method-apple-pay
+                            v-if="isApplePay"
+                            :payment-method-configs="checkoutPaymentMethodConfig"
+                            :sales-channel-id="salesChannelId"
+                            @set-loading="setLoading"
+                            @save-system-config="saveSystemConfig"
+                            @set-checkout-payment-configs="setCheckoutPaymentConfigs"
+                        />
+                    {% endblock %}
+
+                    {% block checkout_com_payment_method_google_pay_component %}
+                        <checkout-com-payment-method-google-pay
+                            v-else-if="isGooglePay"
+                            :payment-method-configs="checkoutPaymentMethodConfig"
+                            :sales-channel-id="salesChannelId"
+                            @set-loading="setLoading"
+                            @save-system-config="saveSystemConfig"
+                            @set-checkout-payment-configs="setCheckoutPaymentConfigs"
+                        />
+                    {% endblock %}
+                </sw-card>
             {% endblock %}
         </template>
     {% endblock %}

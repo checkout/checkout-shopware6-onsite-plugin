@@ -6,7 +6,7 @@ use Checkout\CheckoutApi;
 use Checkout\CheckoutArgumentException;
 use CheckoutCom\Shopware6\Factory\CheckoutApiFactory;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
-use CheckoutCom\Shopware6\Struct\SettingStruct;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 

@@ -1,20 +1,20 @@
 {% block sw_media_upload_v2_regular_preview_file %}
-    <template v-if="source || preview">
+    <template v-if="source">
         {% block checkout_com_media_compact_upload_v2_condition %}
             {% block checkout_com_media_compact_upload_v2_condition_private %}
                 <sw-icon
-                    v-if="(source && source.private) || mediaIsPrivate"
+                    v-if="source.private"
                     class="checkout-com-media-compact-preview-v2__locked-icon"
                     name="default-lock-closed"
                     multicolor
                 />
             {% endblock %}
 
-            {% block checkout_com_media_compact_upload_v2_condition_preview_fallback %}
-                <sw-media-preview-v2
+            {% block checkout_com_media_compact_upload_v2_condition_private_preview_fallback %}
+                <sw-icon
                     v-else
-                    class="sw-media-upload-v2__preview"
-                    :source="source || preview"
+                    name="default-object-image"
+                    multicolor
                 />
             {% endblock %}
         {% endblock %}

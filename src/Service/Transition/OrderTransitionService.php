@@ -2,7 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Service\Transition;
 
-use CheckoutCom\Shopware6\Struct\SettingStruct;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\OrderDefinition;

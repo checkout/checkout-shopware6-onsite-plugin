@@ -1,6 +1,5 @@
 import template from './sw-settings-payment-detail.html.twig';
-import { CHECKOUT_DOMAIN, PAYMENT_METHOD_IDENTIFIER } from '../../../../constant/settings';
-import { getCheckoutConfig } from '../../../../services/utils/system-config.utils';
+import { CHECKOUT_DOMAIN, CHECKOUT_DOMAIN_PAYMENT_METHOD, PAYMENT_METHOD_TYPE } from '../../../../constant/settings';
 
 const { Component } = Shopware;
 
@@ -17,40 +16,75 @@ Component.override('sw-settings-payment-detail', {
 
     data() {
         return {
-            isDisplayComponent: false,
-            checkoutConfigs: null,
+            salesChannelId: null,
+            isCheckoutConfigDisplay: false,
+            checkoutPaymentMethodConfigs: null,
+            isLoadingComponent: false,
         };
     },
 
     computed: {
-        isApplePay() {
+        paymentMethodCheckoutConfig() {
             const { paymentMethod } = this;
 
-            return (paymentMethod && paymentMethod.formattedHandlerIdentifier === PAYMENT_METHOD_IDENTIFIER.APPLE_PAY);
+            if (!paymentMethod) {
+                return null;
+            }
+
+            if (!paymentMethod.customFields) {
+                return null;
+            }
+
+            return paymentMethod.customFields.checkoutConfig || null;
         },
-        isGooglePay() {
-            const { paymentMethod } = this;
 
-            return (paymentMethod && paymentMethod.formattedHandlerIdentifier === PAYMENT_METHOD_IDENTIFIER.GOOGLE_PAY);
+        isCheckout() {
+            return this.paymentMethodCheckoutConfig && this.paymentMethodCheckoutConfig.isCheckout;
+        },
+
+        isApplePay() {
+            if (!this.isCheckout) {
+                return false;
+            }
+
+            return this.paymentMethodCheckoutConfig.methodType === PAYMENT_METHOD_TYPE.APPLE_PAY;
+        },
+
+        isGooglePay() {
+            if (!this.isCheckout) {
+                return false;
+            }
+
+            return this.paymentMethodCheckoutConfig.methodType === PAYMENT_METHOD_TYPE.GOOGLE_PAY;
+        },
+
+        checkoutPaymentMethodConfig() {
+            if (!this.isCheckout) {
+                return {};
+            }
+
+            return this.checkoutPaymentMethodConfigs[this.paymentMethodCheckoutConfig.methodType] || {};
         },
     },
 
     watch: {
         'paymentMethod.id'() {
+            this.isDisplayComponent = false;
+
             if (!this.isApplePay && !this.isGooglePay) {
                 return;
             }
 
-            this.loadCheckoutConfigs().then(() => {
-                this.isDisplayComponent = true;
+            this.loadCheckoutConfigs(this.salesChannelId).then(() => {
+                this.isCheckoutConfigDisplay = true;
             });
         },
     },
 
     methods: {
         onSave() {
-            // If the checkoutConfigs is not set, we handle regular onSave
-            if (!this.checkoutConfigs) {
+            // If the checkoutPaymentMethodConfigs is not set, we handle regular onSave
+            if (!this.checkoutPaymentMethodConfigs) {
                 return this.$super('onSave');
             }
 
@@ -64,29 +98,52 @@ Component.override('sw-settings-payment-detail', {
 
             this.isLoading = true;
             return Promise.all([
-                this.saveSystemConfig(this.checkoutConfigs),
+                this.saveSystemConfig(this.checkoutPaymentMethodConfigs),
                 this.$super('onSave'),
             ]).finally(() => {
                 this.isLoading = false;
             });
         },
 
-        async loadCheckoutConfigs() {
-            this.checkoutConfigs = await this.systemConfigApiService.getValues(CHECKOUT_DOMAIN);
+        async loadCheckoutConfigs(salesChannelId) {
+            this.setLoading(true);
+            try {
+                const checkoutConfigs = await this.systemConfigApiService.getValues(CHECKOUT_DOMAIN, salesChannelId);
+                this.checkoutPaymentMethodConfigs = checkoutConfigs[CHECKOUT_DOMAIN_PAYMENT_METHOD] || {};
+            } finally {
+                this.setLoading(false);
+            }
         },
 
-        setCheckoutConfigs(suffixField, data) {
-            const applePayField = getCheckoutConfig(suffixField);
+        async onSalesChannelChanged(salesChannelId) {
+            await this.loadCheckoutConfigs(salesChannelId);
+            this.salesChannelId = salesChannelId;
+        },
+
+        setCheckoutPaymentConfigs(paymentConfigProperty, data) {
             if (typeof data === 'string') {
                 // Trim the string to remove whitespace from both sides of a string.
                 data = `${data}`.trim();
             }
 
-            this.checkoutConfigs[applePayField] = data;
+            this.$set(
+                this.checkoutPaymentMethodConfigs,
+                this.paymentMethodCheckoutConfig.methodType,
+                {
+                    ...this.checkoutPaymentMethodConfig,
+                    [paymentConfigProperty]: data,
+                },
+            );
         },
 
         saveSystemConfig() {
-            return this.systemConfigApiService.saveValues(this.checkoutConfigs);
+            return this.systemConfigApiService.saveValues({
+                [CHECKOUT_DOMAIN_PAYMENT_METHOD]: this.checkoutPaymentMethodConfigs,
+            }, this.salesChannelId);
+        },
+
+        setLoading(value) {
+            this.isLoadingComponent = value;
         },
     },
 });

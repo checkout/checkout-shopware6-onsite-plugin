@@ -6,7 +6,7 @@ use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
 use CheckoutCom\Shopware6\Service\Transition\OrderTransitionService;
-use CheckoutCom\Shopware6\Struct\SettingStruct;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use CheckoutCom\Shopware6\Tests\Fakes\FakeEntityRepository;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;

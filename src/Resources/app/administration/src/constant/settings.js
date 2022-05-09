@@ -4,16 +4,16 @@ export const DASHBOARD_LINK = {
 };
 
 export const CHECKOUT_DOMAIN = 'CheckoutCom.config';
+export const CHECKOUT_DOMAIN_PAYMENT_METHOD = `${CHECKOUT_DOMAIN}.paymentMethod`;
 
 export const SETUP_LINK = {
     APPLE_PAY: 'https://www.checkout.com/docs/payments/payment-methods/wallets/apple-pay/set-up-apple-pay',
 };
 
 /**
- * @see Shopware\Core\Checkout\Payment\DataAbstractionLayer\PaymentHandlerIdentifierSubscriber
- * @description It will be handler_checkoutcom_{%s} with %s is lower string of classname
+ * @see CheckoutCom\Shopware6\Handler\PaymentHandler::getPaymentMethodType()
  */
-export const PAYMENT_METHOD_IDENTIFIER = {
-    APPLE_PAY: 'handler_checkoutcom_applepayhandler',
-    GOOGLE_PAY: 'handler_checkoutcom_googlepayhandler',
+export const PAYMENT_METHOD_TYPE = {
+    APPLE_PAY: 'applepay',
+    GOOGLE_PAY: 'googlepay',
 };

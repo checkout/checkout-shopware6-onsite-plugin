@@ -3,7 +3,8 @@
 namespace CheckoutCom\Shopware6\Tests\Factory;
 
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
-use CheckoutCom\Shopware6\Struct\SettingStruct;
+use CheckoutCom\Shopware6\Handler\Method\ApplePayHandler;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -60,6 +61,24 @@ class SettingsFactoryTest extends TestCase
                 [
                     SettingsFactory::SYSTEM_CONFIG_DOMAIN . SettingsFactory::SYSTEM_COMPONENT_GROUP[0] => [
                         'test key' => 'test value',
+                    ],
+                ],
+            ],
+            'Test data add success with wrong payment method type' => [
+                [
+                    SettingsFactory::SYSTEM_CONFIG_DOMAIN . SettingsFactory::SYSTEM_COMPONENT_PAYMENT_METHOD => [
+                        'wrong type' => [
+                            'merchantId' => 'foo',
+                        ],
+                    ],
+                ],
+            ],
+            'Test data add success with apple pay data' => [
+                [
+                    SettingsFactory::SYSTEM_CONFIG_DOMAIN . SettingsFactory::SYSTEM_COMPONENT_PAYMENT_METHOD => [
+                        ApplePayHandler::getPaymentMethodType() => [
+                            'merchantId' => 'foo',
+                        ],
                     ],
                 ],
             ],

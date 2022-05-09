@@ -1,6 +1,5 @@
 import template from './checkout-com-payment-method-apple-pay.html.twig';
 import { SETUP_LINK } from '../../../../constant/settings';
-import { getCheckoutConfig } from '../../../../services/utils/system-config.utils';
 import './checkout-com-payment-method-apple-pay.scss';
 
 const {
@@ -8,6 +7,12 @@ const {
     Context,
     Mixin,
 } = Shopware;
+
+const applePayConfigs = [
+    'domainMediaId',
+    'keyMediaId',
+    'pemMediaId',
+];
 
 /**
  * This component is used to handle the configuration of the Apple Pay payment method.
@@ -25,7 +30,11 @@ Component.register('checkout-com-payment-method-apple-pay', {
     mixins: [Mixin.getByName('notification')],
 
     props: {
-        checkoutConfigs: {
+        salesChannelId: {
+            type: String,
+            required: false,
+        },
+        paymentMethodConfigs: {
             type: Object,
             required: false,
         },
@@ -42,17 +51,17 @@ Component.register('checkout-com-payment-method-apple-pay', {
             isLoading: false,
             setupLink: SETUP_LINK.APPLE_PAY,
             applePayFiles: {
-                applePayDomainMediaId: {
+                domainMediaId: {
                     tag: 'checkout-com-payment-method-apple-pay-domain',
                     accept: '.txt',
                     preview: null,
                 },
-                applePayKeyMediaId: {
+                keyMediaId: {
                     tag: 'checkout-com-payment-method-apple-pay-key',
                     accept: '.key',
                     preview: null,
                 },
-                applePayPemMediaId: {
+                pemMediaId: {
                     tag: 'checkout-com-payment-method-apple-pay-pem',
                     accept: '.pem',
                     preview: null,
@@ -61,17 +70,24 @@ Component.register('checkout-com-payment-method-apple-pay', {
         };
     },
 
+    watch: {
+        salesChannelId() {
+            // Reset the files when the sales channel is changed
+            applePayConfigs.forEach((applePaySuffixField) => {
+                this.setApplePayFilesPreview(applePaySuffixField, null);
+            });
+
+            this.loadMediaPreviews();
+        },
+    },
+
     created() {
         this.createdComponent();
     },
 
     methods: {
         createdComponent() {
-            this.isLoading = true;
-
-            this.loadMediaPreviews().finally(() => {
-                this.isLoading = false;
-            });
+            this.loadMediaPreviews();
         },
 
         /**
@@ -79,65 +95,63 @@ Component.register('checkout-com-payment-method-apple-pay', {
          * Then, Load the media entity from the media ID
          * And map the media entity to the preview property of the applePayFiles object.
          */
-        loadMediaPreviews() {
-            if (!this.checkoutConfigs) {
+        async loadMediaPreviews() {
+            if (!this.paymentMethodConfigs) {
                 return Promise.resolve();
             }
 
-            const applePayConfigs = [
-                'applePayDomainMediaId',
-                'applePayKeyMediaId',
-                'applePayPemMediaId',
-            ];
+            try {
+                this.emitLoading(true);
 
-            return Promise.all(
-                Object.keys(this.checkoutConfigs).map((key) => {
-                    const applePaySuffixField = applePayConfigs.find((config) => key.includes(config));
+                return await Promise.all(
+                    Object.keys(this.paymentMethodConfigs).map((propertyKey) => {
+                        if (!applePayConfigs.includes(propertyKey)) {
+                            return Promise.resolve();
+                        }
 
-                    if (!applePaySuffixField) {
-                        return Promise.resolve();
-                    }
+                        const mediaId = this.paymentMethodConfigs[propertyKey];
 
-                    const mediaId = this.checkoutConfigs[key];
+                        if (!mediaId) {
+                            return Promise.resolve();
+                        }
 
-                    return this.checkoutMediaService
-                        .getSystemMedia(mediaId)
-                        .then((media) => {
-                            // We have to get private media from media service
-                            this.setApplePayFilesPreview(
-                                applePaySuffixField,
-                                media,
-                            );
-                        });
-                }),
-            );
+                        return this.checkoutMediaService
+                            .getSystemMedia(mediaId)
+                            .then((media) => {
+                                // We have to get private media from media service
+                                this.setApplePayFilesPreview(
+                                    propertyKey,
+                                    media,
+                                );
+                            });
+                    }),
+                );
+            } finally {
+                this.emitLoading(false);
+            }
         },
 
         onInputChange(field, value) {
             this.setCheckoutConfigs(field, value);
         },
 
-        getCheckoutConfigValue(field) {
-            return this.checkoutConfigs[getCheckoutConfig(field)];
-        },
-
         /**
          * Set preview property for applePayFiles
          */
-        setApplePayFilesPreview(applePaySuffixField, media) {
-            if (!this.applePayFiles.hasOwnProperty(applePaySuffixField)) {
+        setApplePayFilesPreview(propertyKey, media) {
+            if (!this.applePayFiles.hasOwnProperty(propertyKey)) {
                 return;
             }
 
-            this.applePayFiles[applePaySuffixField].preview = media;
+            this.applePayFiles[propertyKey].preview = media;
         },
 
-        setCheckoutConfigs(applePaySuffixField, data) {
-            this.$emit('set-checkout-config', applePaySuffixField, data);
+        setCheckoutConfigs(propertyKey, data) {
+            this.$emit('set-checkout-payment-configs', propertyKey, data);
         },
 
-        async uploadFinish(applePaySuffixField, { targetId }) {
-            this.isLoading = true;
+        async uploadFinish(propertyKey, { targetId }) {
+            this.emitLoading(true);
 
             try {
                 // We have to get the upload media from the repository
@@ -146,8 +160,8 @@ Component.register('checkout-com-payment-method-apple-pay', {
                 // We update the media id in the checkout config with private media storage
                 await this.updatePrivateMedia(media);
 
-                this.setApplePayFilesPreview(applePaySuffixField, media);
-                this.setCheckoutConfigs(applePaySuffixField, media.id);
+                this.setApplePayFilesPreview(propertyKey, media);
+                this.setCheckoutConfigs(propertyKey, media.id);
 
                 this.$emit('save-system-config');
             } catch {
@@ -156,10 +170,10 @@ Component.register('checkout-com-payment-method-apple-pay', {
                 });
             }
 
-            this.isLoading = false;
+            this.emitLoading(false);
         },
 
-        async onRemoveMedia(applePaySuffixField) {
+        async onRemoveMedia(propertyKey) {
             if (!this.acl.can('payment.deleter')) {
                 this.createNotificationError({
                     message: this.$tc('checkout-payments.general.permissionDeny'),
@@ -167,16 +181,20 @@ Component.register('checkout-com-payment-method-apple-pay', {
                 return;
             }
 
-            this.isLoading = true;
+            const mediaId = this.paymentMethodConfigs[propertyKey];
+            if (!mediaId) {
+                // The mediaId in the checkout config is not set, so we also remove the media preview
+                this.setApplePayFilesPreview(propertyKey, null);
+                return;
+            }
 
-            const mediaId = this.getCheckoutConfigValue(applePaySuffixField);
-
+            this.emitLoading(true);
             try {
                 await this.removeSystemMedia(mediaId);
 
                 // After removing the media, we need to update the checkout configs
-                this.setCheckoutConfigs(applePaySuffixField, null);
-                this.setApplePayFilesPreview(applePaySuffixField, null);
+                this.setCheckoutConfigs(propertyKey, null);
+                this.setApplePayFilesPreview(propertyKey, null);
                 this.$emit('save-system-config');
             } catch {
                 this.createNotificationError({
@@ -184,7 +202,11 @@ Component.register('checkout-com-payment-method-apple-pay', {
                 });
             }
 
-            this.isLoading = false;
+            this.emitLoading(false);
+        },
+
+        emitLoading(isLoading) {
+            this.$emit('set-loading', isLoading);
         },
 
         updatePrivateMedia(mediaItem) {
@@ -196,8 +218,8 @@ Component.register('checkout-com-payment-method-apple-pay', {
             this.checkoutMediaService.removeSystemMedia(mediaId);
         },
 
-        onMediaDropped(checkoutSuffixField, dropItem) {
-            this.uploadFinish(checkoutSuffixField, { targetId: dropItem.id });
+        onMediaDropped(propertyKey, dropItem) {
+            this.uploadFinish(propertyKey, { targetId: dropItem.id });
         },
     },
 });

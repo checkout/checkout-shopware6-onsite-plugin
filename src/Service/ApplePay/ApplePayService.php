@@ -5,6 +5,7 @@ namespace CheckoutCom\Shopware6\Service\ApplePay;
 use CheckoutCom\Shopware6\Exception\CheckoutComException;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Service\MediaService;
+use CheckoutCom\Shopware6\Struct\SystemConfig\ApplePaySettingStruct;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -58,11 +59,12 @@ class ApplePayService extends AbstractApplePayService
      */
     public function validateMerchant(string $appleValidateUrl, Request $request, SalesChannelContext $context): ?array
     {
+        $applePayKeyMedia = $this->getAppleKeyMedia($context);
+        $applePayPemMedia = $this->getApplePemMedia($context);
+
         try {
-            $applePayKeyMedia = $this->getAppleKeyMedia($context);
-            $applePayPemMedia = $this->getApplePemMedia($context);
             $shopName = $this->systemConfigService->getString('core.basicInformation.shopName', $context->getSalesChannelId());
-            $settings = $this->settingsFactory->getSettings($context->getSalesChannelId());
+            $applePaySettings = $this->getApplePaySettings($context);
 
             $response = $this->guzzleClient->post(
                 $appleValidateUrl,
@@ -71,7 +73,7 @@ class ApplePayService extends AbstractApplePayService
                     RequestOptions::CERT => $this->mediaService->getPathVideoMedia($applePayPemMedia),
                     RequestOptions::BODY => json_encode([
                         'displayName' => $shopName,
-                        'merchantIdentifier' => $settings->getApplePayMerchantId(),
+                        'merchantIdentifier' => $applePaySettings->getMerchantId(),
                         'initiative' => self::MERCHANT_INITIATIVE,
                         'initiativeContext' => $request->getHost(),
                     ]),
@@ -83,28 +85,32 @@ class ApplePayService extends AbstractApplePayService
             $this->logger->error(
                 'Apple Pay merchant validation failed',
                 [
-                    'exception' => $exception->getMessage(),
                     'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
                     'response' => $exception->getResponse()->getBody()->getContents(),
                 ]
+            );
+
+            throw new CheckoutComException(
+                sprintf('Apple Pay merchant validation failed, code: %s', $exception->getCode())
             );
         } catch (Exception $exception) {
             $this->logger->error(
                 'Unknown Error when validating merchant',
                 [
-                    'exception' => $exception->getMessage(),
                     'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
                 ]
             );
-        }
 
-        return null;
+            throw new CheckoutComException('Unknown Error when validating merchant');
+        }
     }
 
     public function getAppleKeyMedia(SalesChannelContext $context): MediaEntity
     {
-        $settings = $this->settingsFactory->getSettings($context->getSalesChannelId());
-        if ($settings->getApplePayKeyMediaId() === null) {
+        $applePaySettings = $this->getApplePaySettings($context);
+        if ($applePaySettings->getKeyMediaId() === null) {
             $message = 'Apple Pay Key Certificate Media ID not found';
             $this->logger->error($message);
 
@@ -112,7 +118,7 @@ class ApplePayService extends AbstractApplePayService
         }
 
         return $this->mediaService->getMedia(
-            $settings->getApplePayKeyMediaId(),
+            $applePaySettings->getKeyMediaId(),
             new Criteria(),
             $context->getContext()
         );
@@ -120,8 +126,8 @@ class ApplePayService extends AbstractApplePayService
 
     public function getApplePemMedia(SalesChannelContext $context): MediaEntity
     {
-        $settings = $this->settingsFactory->getSettings($context->getSalesChannelId());
-        if ($settings->getApplePayPemMediaId() === null) {
+        $applePaySettings = $this->getApplePaySettings($context);
+        if ($applePaySettings->getPemMediaId() === null) {
             $message = 'Apple Pay Pem Certificate Media ID not found';
             $this->logger->error($message);
 
@@ -129,7 +135,7 @@ class ApplePayService extends AbstractApplePayService
         }
 
         return $this->mediaService->getMedia(
-            $settings->getApplePayPemMediaId(),
+            $applePaySettings->getPemMediaId(),
             new Criteria(),
             $context->getContext()
         );
@@ -137,8 +143,8 @@ class ApplePayService extends AbstractApplePayService
 
     public function getAppleDomainMedia(SalesChannelContext $context): MediaEntity
     {
-        $settings = $this->settingsFactory->getSettings($context->getSalesChannelId());
-        if ($settings->getApplePayDomainMediaId() === null) {
+        $applePaySettings = $this->getApplePaySettings($context);
+        if ($applePaySettings->getDomainMediaId() === null) {
             $message = 'Apple Pay Domain Media ID not found';
             $this->logger->error($message);
 
@@ -146,9 +152,16 @@ class ApplePayService extends AbstractApplePayService
         }
 
         return $this->mediaService->getMedia(
-            $settings->getApplePayDomainMediaId(),
+            $applePaySettings->getDomainMediaId(),
             new Criteria(),
             $context->getContext()
         );
+    }
+
+    private function getApplePaySettings(SalesChannelContext $context): ApplePaySettingStruct
+    {
+        $settings = $this->settingsFactory->getSettings($context->getSalesChannelId());
+
+        return $settings->getApplePay();
     }
 }

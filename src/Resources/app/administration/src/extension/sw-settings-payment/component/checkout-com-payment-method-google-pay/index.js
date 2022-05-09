@@ -1,5 +1,4 @@
 import template from './checkout-com-payment-method-google-pay.html.twig';
-import { getCheckoutConfig } from '../../../../services/utils/system-config.utils';
 
 const { Component } = Shopware;
 
@@ -13,7 +12,7 @@ Component.register('checkout-com-payment-method-google-pay', {
     inject: ['acl'],
 
     props: {
-        checkoutConfigs: {
+        paymentMethodConfigs: {
             type: Object,
             required: false,
         },
@@ -21,11 +20,7 @@ Component.register('checkout-com-payment-method-google-pay', {
 
     methods: {
         onInputChange(field, value) {
-            this.$emit('set-checkout-config', field, value);
-        },
-
-        getCheckoutConfigValue(field) {
-            return this.checkoutConfigs[getCheckoutConfig(field)];
+            this.$emit('set-checkout-payment-configs', field, value);
         },
     },
 });
