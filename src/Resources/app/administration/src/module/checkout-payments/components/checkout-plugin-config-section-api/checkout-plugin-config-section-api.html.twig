@@ -36,15 +36,15 @@
 
         {% block checkout_plugin_config_section_api_extra_component %}
             <sw-container
-gap="16px"
-columns="1fr 2fr"
->
+                gap="16px"
+                columns="1fr 2fr"
+            >
                 {% block checkout_plugin_config_section_api_extra_component_test_button %}
                     <sw-button
-ref="testApiButton"
-:is-loading="isLoading"
-@click="onTestButtonClicked"
->
+                        ref="testApiButton"
+                        :is-loading="isLoading"
+                        @click="onTestButtonClicked"
+                    >
                         {{ $tc('checkout-payments.config.api.testButton') }}
                     </sw-button>
                 {% endblock %}
@@ -52,11 +52,11 @@ ref="testApiButton"
                     <sw-external-link
                         class="checkout-plugin-config-payments-link"
                         :small="false"
-icon="small-arrow-small-external"
-rel="noopener"
+                        icon="small-arrow-small-external"
+                        rel="noopener"
                         :href="apiLink"
                         target="_blank"
->
+                    >
                         {{ $tc('checkout-payments.config.api.apiLinkButton') }}
                     </sw-external-link>
                 {% endblock %}
