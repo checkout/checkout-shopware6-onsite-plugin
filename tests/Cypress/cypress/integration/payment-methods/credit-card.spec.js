@@ -1,9 +1,9 @@
-import shopConfigurationAction from '../support/actions/admin/ShopConfigurationAction';
-import checkoutAction from '../support/actions/storefront/CheckoutAction';
-import storefrontLoginAction from '../support/actions/storefront/LoginAction';
+import shopConfigurationAction from '../../support/actions/admin/ShopConfigurationAction';
+import checkoutAction from '../../support/actions/storefront/CheckoutAction';
+import storefrontLoginAction from '../../support/actions/storefront/LoginAction';
 
-import checkoutConfirmRepository from '../support/repositories/storefront/CheckoutConfirmRepository';
-import accountOrderRepository from '../support/repositories/storefront/AccountOrderRepository';
+import checkoutConfirmRepository from '../../support/repositories/storefront/CheckoutConfirmRepository';
+import accountOrderRepository from '../../support/repositories/storefront/AccountOrderRepository';
 
 describe('Testing Storefront Credit Card Payment', () => {
     before(() => {

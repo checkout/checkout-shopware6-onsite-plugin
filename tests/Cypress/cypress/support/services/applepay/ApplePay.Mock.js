@@ -50,7 +50,6 @@ class ApplePaySessionMock {
     }
 }
 
-
 /**
  *
  */
@@ -86,7 +85,10 @@ class ApplePaySessionMockFactory {
     }
 }
 
-export default {
-    applePaySessionMock: new ApplePaySessionMock(),
-    applePaySessionMockFactory: new ApplePaySessionMockFactory()
+const applePaySessionMock = new ApplePaySessionMock();
+const applePaySessionMockFactory = new ApplePaySessionMockFactory();
+
+export {
+    applePaySessionMock,
+    applePaySessionMockFactory,
 };
