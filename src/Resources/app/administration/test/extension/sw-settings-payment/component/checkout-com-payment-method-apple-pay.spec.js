@@ -7,12 +7,17 @@ function createWrapper(customOptions = {}) {
     const options = {
         localVue,
         propsData: {
-            paymentMethodConfigs: {}
+            salesChannelId: '',
+            paymentMethodConfigs: {},
+            parentPaymentMethodConfigs: {},
+            parentCheckoutMediaPreviews: {}
         },
         stubs: {
             'sw-field': true,
             'sw-external-link': true,
             'sw-upload-listener': true,
+            'sw-inherit-wrapper': true,
+            'checkout-com-inherit-media-upload': true,
             'checkout-com-media-compact-upload-v2': true,
         },
         provide: {

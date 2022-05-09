@@ -12,9 +12,23 @@ Component.register('checkout-com-payment-method-google-pay', {
     inject: ['acl'],
 
     props: {
+        salesChannelId: {
+            type: String,
+            required: false,
+        },
         paymentMethodConfigs: {
             type: Object,
             required: false,
+        },
+        parentPaymentMethodConfigs: {
+            type: Object,
+            required: false,
+        },
+    },
+
+    computed: {
+        isNotDefaultSalesChannel() {
+            return this.salesChannelId !== null;
         },
     },
 

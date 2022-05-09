@@ -1,15 +1,27 @@
 {% block checkout_com_payment_method_google_pay %}
     <div class="checkout-com-payment-method-google-pay">
         {% block checkout_com_payment_method_google_pay_merchant_id %}
-            <sw-field
-                type="text"
-                :disabled="!acl.can('payment.editor')"
+            <sw-inherit-wrapper
                 :value="paymentMethodConfigs.merchantId"
-                :label="$tc('checkout-payments.paymentMethod.googlePay.configuration.googleMerchantIdLabel')"
-                :placeholder="$tc('checkout-payments.paymentMethod.googlePay.configuration.googleMerchantIdLabel')"
-                :help-text="$tc('checkout-payments.paymentMethod.googlePay.configuration.googleMerchantIdHelpText')"
-                @change="onInputChange('merchantId', $event)"
-            />
+                :inherited-value="parentPaymentMethodConfigs.merchantId"
+                :has-parent="isNotDefaultSalesChannel"
+                @input="onInputChange('merchantId', $event)"
+            >
+                <template #content="props">
+                    {% block checkout_com_payment_method_google_pay_merchant_id_field %}
+                        <sw-field
+                            type="text"
+                            :map-inheritance="props"
+                            :disabled="!acl.can('payment.editor') || props.isInherited"
+                            :value="props.currentValue"
+                            :label="$tc('checkout-payments.paymentMethod.googlePay.configuration.googleMerchantIdLabel')"
+                            :placeholder="$tc('checkout-payments.paymentMethod.googlePay.configuration.googleMerchantIdLabel')"
+                            :help-text="$tc('checkout-payments.paymentMethod.googlePay.configuration.googleMerchantIdHelpText')"
+                            @change="props.updateCurrentValue"
+                        />
+                    {% endblock %}
+                </template>
+            </sw-inherit-wrapper>
         {% endblock %}
     </div>
 {% endblock %}

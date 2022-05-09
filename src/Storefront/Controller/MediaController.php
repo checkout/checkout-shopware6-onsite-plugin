@@ -3,6 +3,7 @@
 namespace CheckoutCom\Shopware6\Storefront\Controller;
 
 use CheckoutCom\Shopware6\Service\ApplePay\AbstractApplePayService;
+use CheckoutCom\Shopware6\Service\ContextService;
 use CheckoutCom\Shopware6\Service\MediaService;
 use League\Flysystem\FileNotFoundException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
@@ -19,12 +20,15 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class MediaController extends StorefrontController
 {
+    private ContextService $contextService;
+
     private MediaService $mediaService;
 
     private AbstractApplePayService $applePayService;
 
-    public function __construct(MediaService $mediaService, AbstractApplePayService $applePayService)
+    public function __construct(ContextService $contextService, MediaService $mediaService, AbstractApplePayService $applePayService)
     {
+        $this->contextService = $contextService;
         $this->mediaService = $mediaService;
         $this->applePayService = $applePayService;
     }
@@ -37,7 +41,9 @@ class MediaController extends StorefrontController
      */
     public function publicMerchantDomainFile(SalesChannelContext $context): Response
     {
-        $media = $this->applePayService->getAppleDomainMedia($context);
+        $domain = $this->contextService->getSalesChannelDomain($context->getDomainId(), $context);
+
+        $media = $this->applePayService->getAppleDomainMedia($domain, $context);
         $path = $this->mediaService->getPathVideoMedia($media);
         $response = $this->mediaService->getStreamResponse($path);
 

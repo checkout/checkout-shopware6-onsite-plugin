@@ -2,11 +2,16 @@
 
 namespace CheckoutCom\Shopware6\Struct\SystemConfig;
 
-use Shopware\Core\Framework\Struct\Struct;
+use CheckoutCom\Shopware6\Handler\Method\GooglePayHandler;
 
-class GooglePaySettingStruct extends Struct
+class GooglePaySettingStruct extends AbstractPaymentMethodSettingStruct
 {
     protected ?string $merchantId = null;
+
+    public function getPaymentMethodType(): string
+    {
+        return GooglePayHandler::getPaymentMethodType();
+    }
 
     public function getMerchantId(): ?string
     {

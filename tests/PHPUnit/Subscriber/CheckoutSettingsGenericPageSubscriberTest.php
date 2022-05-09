@@ -5,6 +5,7 @@ namespace CheckoutCom\Shopware6\Tests\Subscriber;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Helper\Url;
 use CheckoutCom\Shopware6\Struct\Extension\ConfirmPageExtensionStruct;
+use CheckoutCom\Shopware6\Struct\SystemConfig\GooglePaySettingStruct;
 use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use CheckoutCom\Shopware6\Subscriber\CheckoutSettingsGenericPageSubscriber;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
@@ -41,7 +42,11 @@ class CheckoutSettingsGenericPageSubscriberTest extends TestCase
         $settings->setSandboxMode($sandbox);
         $settings->setPublicKey($publicKey);
 
+        $googlePaySettings = new GooglePaySettingStruct();
+        $googlePaySettings->setMerchantId('foo');
+
         $this->settingFactory->method('getSettings')->willReturn($settings);
+        $this->settingFactory->method('getPaymentMethodSettings')->willReturn($googlePaySettings);
     }
 
     public function testListeningOnCorrectEvent(): void

@@ -1,7 +1,7 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import '@core/src/app/component/media/sw-media-upload-v2';
 import '@core/src/app/component/media/sw-media-compact-upload-v2';
-import '../../../src/module/component/checkout-com-media-compact-upload-v2';
+import '../../../src/component/checkout-com-media-compact-upload-v2';
 
 function createWrapper(customOptions = {}) {
     const localVue = createLocalVue();

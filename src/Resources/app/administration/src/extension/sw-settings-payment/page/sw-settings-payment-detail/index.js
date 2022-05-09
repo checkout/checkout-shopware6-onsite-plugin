@@ -1,7 +1,11 @@
 import template from './sw-settings-payment-detail.html.twig';
-import { CHECKOUT_DOMAIN, CHECKOUT_DOMAIN_PAYMENT_METHOD, PAYMENT_METHOD_TYPE } from '../../../../constant/settings';
+import { CHECKOUT_DOMAIN_PAYMENT_METHOD, PAYMENT_METHOD_TYPE } from '../../../../constant/settings';
 
-const { Component } = Shopware;
+const {
+    Component,
+    Utils,
+} = Shopware;
+const { isEmpty } = Utils.types;
 
 /**
  * Overwrite the default payment method component to
@@ -18,8 +22,9 @@ Component.override('sw-settings-payment-detail', {
         return {
             salesChannelId: null,
             isCheckoutConfigDisplay: false,
-            checkoutPaymentMethodConfigs: null,
+            checkoutConfigs: {},
             isLoadingComponent: false,
+            parentCheckoutMediaPreviews: {},
         };
     },
 
@@ -59,11 +64,19 @@ Component.override('sw-settings-payment-detail', {
         },
 
         checkoutPaymentMethodConfig() {
-            if (!this.isCheckout) {
-                return {};
+            return this.getCheckoutPaymentMethodConfig(this.salesChannelId);
+        },
+
+        parentCheckoutPaymentMethodConfig() {
+            return this.getCheckoutPaymentMethodConfig(null);
+        },
+
+        checkoutDomainPaymentMethod() {
+            if (!this.paymentMethodCheckoutConfig) {
+                return '';
             }
 
-            return this.checkoutPaymentMethodConfigs[this.paymentMethodCheckoutConfig.methodType] || {};
+            return `${CHECKOUT_DOMAIN_PAYMENT_METHOD}.${this.paymentMethodCheckoutConfig.methodType}`;
         },
     },
 
@@ -83,8 +96,8 @@ Component.override('sw-settings-payment-detail', {
 
     methods: {
         onSave() {
-            // If the checkoutPaymentMethodConfigs is not set, we handle regular onSave
-            if (!this.checkoutPaymentMethodConfigs) {
+            // If the checkoutConfigs is not set, we handle regular onSave
+            if (isEmpty(this.checkoutConfigs)) {
                 return this.$super('onSave');
             }
 
@@ -98,18 +111,33 @@ Component.override('sw-settings-payment-detail', {
 
             this.isLoading = true;
             return Promise.all([
-                this.saveSystemConfig(this.checkoutPaymentMethodConfigs),
+                this.saveSystemConfig(),
                 this.$super('onSave'),
             ]).finally(() => {
                 this.isLoading = false;
             });
         },
 
+        readAll(salesChannelId) {
+            this.isLoading = true;
+            // Return when data for this salesChannel was already loaded
+            if (this.checkoutConfigs.hasOwnProperty(this.salesChannelId)) {
+                this.isLoading = false;
+                return Promise.resolve();
+            }
+
+            return this.loadCheckoutConfigs(salesChannelId);
+        },
+
         async loadCheckoutConfigs(salesChannelId) {
             this.setLoading(true);
             try {
-                const checkoutConfigs = await this.systemConfigApiService.getValues(CHECKOUT_DOMAIN, salesChannelId);
-                this.checkoutPaymentMethodConfigs = checkoutConfigs[CHECKOUT_DOMAIN_PAYMENT_METHOD] || {};
+                const checkoutConfigs = await this.systemConfigApiService.getValues(
+                    this.checkoutDomainPaymentMethod,
+                    salesChannelId,
+                );
+
+                this.setCheckoutConfigs(salesChannelId, checkoutConfigs);
             } finally {
                 this.setLoading(false);
             }
@@ -126,20 +154,48 @@ Component.override('sw-settings-payment-detail', {
                 data = `${data}`.trim();
             }
 
-            this.$set(
-                this.checkoutPaymentMethodConfigs,
-                this.paymentMethodCheckoutConfig.methodType,
+            this.setCheckoutConfigs(
+                this.salesChannelId,
                 {
-                    ...this.checkoutPaymentMethodConfig,
-                    [paymentConfigProperty]: data,
+                    ...this.checkoutConfigs[this.salesChannelId],
+                    [`${this.checkoutDomainPaymentMethod}.${paymentConfigProperty}`]: data,
                 },
             );
         },
 
+        setParentCheckoutMediaPreview(propertyKey, media) {
+            this.$set(this.parentCheckoutMediaPreviews, propertyKey, media);
+        },
+
+        setCheckoutConfigs(salesChannelId, data) {
+            this.$set(
+                this.checkoutConfigs,
+                salesChannelId,
+                data,
+            );
+        },
+
+        getCheckoutPaymentMethodConfig(salesChannelId) {
+            const configs = {};
+            if (!this.isCheckout) {
+                return configs;
+            }
+
+            const salesChannelConfigs = this.checkoutConfigs[salesChannelId];
+            if (!salesChannelConfigs) {
+                return configs;
+            }
+
+            Object.keys(salesChannelConfigs).forEach((checkoutConfigKey) => {
+                const propertyKey = checkoutConfigKey.replace(`${this.checkoutDomainPaymentMethod}.`, '');
+                configs[propertyKey] = salesChannelConfigs[checkoutConfigKey];
+            });
+
+            return configs;
+        },
+
         saveSystemConfig() {
-            return this.systemConfigApiService.saveValues({
-                [CHECKOUT_DOMAIN_PAYMENT_METHOD]: this.checkoutPaymentMethodConfigs,
-            }, this.salesChannelId);
+            return this.systemConfigApiService.batchSave(this.checkoutConfigs);
         },
 
         setLoading(value) {

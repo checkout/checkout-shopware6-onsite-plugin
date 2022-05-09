@@ -15,6 +15,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpFoundation\Request;
@@ -141,18 +142,39 @@ class ApplePayService extends AbstractApplePayService
         );
     }
 
-    public function getAppleDomainMedia(SalesChannelContext $context): MediaEntity
+    public function getAppleDomainMedia(SalesChannelDomainEntity $salesChannelDomain, SalesChannelContext $context): MediaEntity
     {
         $applePaySettings = $this->getApplePaySettings($context);
-        if ($applePaySettings->getDomainMediaId() === null) {
+        $domainMedias = $applePaySettings->getDomainMedias();
+        if (empty($domainMedias)) {
+            $message = 'Apple Pay Settings Domain empty';
+            $this->logger->error($message);
+
+            throw new CheckoutComException($message);
+        }
+
+        $mediaIdKey = array_search(
+            $salesChannelDomain->getId(),
+            array_column($domainMedias, 'domainId'),
+            true
+        );
+        if ($mediaIdKey === false) {
             $message = 'Apple Pay Domain Media ID not found';
             $this->logger->error($message);
 
             throw new CheckoutComException($message);
         }
 
+        $mediaId = $domainMedias[$mediaIdKey]['mediaId'] ?? null;
+        if ($mediaId === null) {
+            $message = 'Apple Pay Domain Media ID is empty';
+            $this->logger->error($message);
+
+            throw new CheckoutComException($message);
+        }
+
         return $this->mediaService->getMedia(
-            $applePaySettings->getDomainMediaId(),
+            $mediaId,
             new Criteria(),
             $context->getContext()
         );
@@ -160,8 +182,18 @@ class ApplePayService extends AbstractApplePayService
 
     private function getApplePaySettings(SalesChannelContext $context): ApplePaySettingStruct
     {
-        $settings = $this->settingsFactory->getSettings($context->getSalesChannelId());
+        $settings = $this->settingsFactory->getPaymentMethodSettings(
+            ApplePaySettingStruct::class,
+            $context->getSalesChannelId()
+        );
 
-        return $settings->getApplePay();
+        if (!$settings instanceof ApplePaySettingStruct) {
+            $message = 'Apple Pay settings not found';
+            $this->logger->error($message);
+
+            throw new CheckoutComException($message);
+        }
+
+        return $settings;
     }
 }

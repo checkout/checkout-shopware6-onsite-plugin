@@ -23,8 +23,138 @@
         <title>Order State Automation</title>
         <title lang="de-DE">Auftragsstatus Automatisierung</title>
 
-        <component name="checkout-plugin-config-section-order-state">
-            <name>checkoutPluginConfigSectionOrderState</name>
-        </component>
+        <input-field type="single-select">
+            <name>orderStateForPaidPayment</name>
+            <label>Order state for paid payment</label>
+            <label lang="de-DE">Auftragsstatus für bezahlte Zahlung</label>
+            <options>
+                <option>
+                    <id>checkout_com.skip</id>
+                    <name>Skip this status</name>
+                    <name lang="de-DE">nichts machen</name>
+                </option>
+                <option>
+                    <id>open</id>
+                    <name>Open</name>
+                    <name lang="de-DE">Offen</name>
+                </option>
+                <option>
+                    <id>in_progress</id>
+                    <name>In progress</name>
+                    <name lang="de-DE">In Bearbeitung</name>
+                </option>
+                <option>
+                    <id>completed</id>
+                    <name>Completed</name>
+                    <name lang="de-DE">Komplett</name>
+                </option>
+                <option>
+                    <id>cancelled</id>
+                    <name>Cancelled</name>
+                    <name lang="de-DE">Abgebrochen</name>
+                </option>
+            </options>
+        </input-field>
+
+        <input-field type="single-select">
+            <name>orderStateForFailedPayment</name>
+            <label>Order state for failed payment</label>
+            <label lang="de-DE">Auftragsstatus bei fehlgeschlagener Zahlung</label>
+            <options>
+                <option>
+                    <id>checkout_com.skip</id>
+                    <name>Skip this status</name>
+                    <name lang="de-DE">nichts machen</name>
+                </option>
+                <option>
+                    <id>open</id>
+                    <name>Open</name>
+                    <name lang="de-DE">Offen</name>
+                </option>
+                <option>
+                    <id>in_progress</id>
+                    <name>In progress</name>
+                    <name lang="de-DE">In Bearbeitung</name>
+                </option>
+                <option>
+                    <id>completed</id>
+                    <name>Completed</name>
+                    <name lang="de-DE">Komplett</name>
+                </option>
+                <option>
+                    <id>cancelled</id>
+                    <name>Cancelled</name>
+                    <name lang="de-DE">Abgebrochen</name>
+                </option>
+            </options>
+        </input-field>
+
+        <input-field type="single-select">
+            <name>orderStateForAuthorizedPayment</name>
+            <label>Order state for authorized payment</label>
+            <label lang="de-DE">Auftragsstatus für autorisierte Zahlungen</label>
+            <defaultValue>checkout_com.skip</defaultValue>
+            <options>
+                <option>
+                    <id>checkout_com.skip</id>
+                    <name>Skip this status</name>
+                    <name lang="de-DE">nichts machen</name>
+                </option>
+                <option>
+                    <id>open</id>
+                    <name>Open</name>
+                    <name lang="de-DE">Offen</name>
+                </option>
+                <option>
+                    <id>in_progress</id>
+                    <name>In progress</name>
+                    <name lang="de-DE">In Bearbeitung</name>
+                </option>
+                <option>
+                    <id>completed</id>
+                    <name>Completed</name>
+                    <name lang="de-DE">Komplett</name>
+                </option>
+                <option>
+                    <id>cancelled</id>
+                    <name>Cancelled</name>
+                    <name lang="de-DE">Abgebrochen</name>
+                </option>
+            </options>
+        </input-field>
+
+        <input-field type="single-select">
+            <name>orderStateForVoidedPayment</name>
+            <label>Order state for voided payment</label>
+            <label lang="de-DE">Auftragsstatus für entwertete Zahlung</label>
+            <defaultValue>checkout_com.skip</defaultValue>
+            <options>
+                <option>
+                    <id>checkout_com.skip</id>
+                    <name>Skip this status</name>
+                    <name lang="de-DE">nichts machen</name>
+                </option>
+                <option>
+                    <id>open</id>
+                    <name>Open</name>
+                    <name lang="de-DE">Offen</name>
+                </option>
+                <option>
+                    <id>in_progress</id>
+                    <name>In progress</name>
+                    <name lang="de-DE">In Bearbeitung</name>
+                </option>
+                <option>
+                    <id>completed</id>
+                    <name>Completed</name>
+                    <name lang="de-DE">Komplett</name>
+                </option>
+                <option>
+                    <id>cancelled</id>
+                    <name>Cancelled</name>
+                    <name lang="de-DE">Abgebrochen</name>
+                </option>
+            </options>
+        </input-field>
     </card>
 </config>

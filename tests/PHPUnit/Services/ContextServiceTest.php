@@ -3,6 +3,7 @@
 namespace CheckoutCom\Shopware6\Tests\Services;
 
 use CheckoutCom\Shopware6\Service\ContextService;
+use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -28,6 +29,7 @@ class ContextServiceTest extends TestCase
         $this->salesChannelContext = $this->getSaleChannelContext($this);
 
         $this->contextService = new ContextService(
+            $this->createMock(LoggerService::class),
             $this->salesChannelContextService
         );
     }

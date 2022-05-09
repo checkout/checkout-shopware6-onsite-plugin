@@ -25,5 +25,17 @@ Component.override('sw-system-config', {
 
             return saveAllResponse;
         },
+
+        getElementBind(element, mapInheritance) {
+            const bind = this.$super('getElementBind', element, mapInheritance);
+
+            if (this.isCheckoutDomain && bind && bind.hasOwnProperty('config')) {
+                bind.config.inheritedValue = this.getInheritedValue(element);
+                bind.config.actualConfigData = this.actualConfigData[this.currentSalesChannelId][element.name];
+                bind.config.isNotDefaultSalesChannel = this.isNotDefaultSalesChannel;
+            }
+
+            return bind;
+        },
     },
 });
