@@ -4,7 +4,8 @@
       "applePayLabel": "Apple Pay",
       "googlePayLabel": "Google Pay",
       "creditCardLabel": "Kreditkarte",
-      "giropayLabel": "Giropay"
+      "giropayLabel": "Giropay",
+      "p24Label": "Przelewy24"
     },
     "messages": {
       "card": {
