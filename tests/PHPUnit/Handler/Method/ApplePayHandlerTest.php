@@ -36,6 +36,11 @@ class ApplePayHandlerTest extends AbstractPaymentHandlerTest
         );
     }
 
+    public function testSnippetKey(): void
+    {
+        static::assertSame('checkoutCom.paymentMethod.applePayLabel', $this->paymentHandler->getSnippetKey());
+    }
+
     public function testPrepareDataForPay(): void
     {
         $requestToken = new RequestDataBag();
