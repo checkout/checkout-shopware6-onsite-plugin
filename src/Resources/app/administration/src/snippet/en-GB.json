@@ -28,15 +28,23 @@
       }
     },
     "paymentMethod": {
+      "general": {
+        "configurationTitle": "Configuration"
+      },
       "applePay": {
         "configuration": {
-          "title": "Configuration",
           "externalLinkLabel": "Learn how to Set up Apple Pay",
           "appleMerchantIdLabel": "Apple Merchant ID",
           "appleMerchantIdHelpText": "This is found in your Apple developer account",
           "domainUploadLabel": "Upload your Apple Merchant Domains file (.txt)",
           "keyUploadLabel": "Upload your Apple Key Certificate file (.key)",
           "pemUploadLabel": "Upload your Apple PEM Certificate file (.pem)"
+        }
+      },
+      "googlePay": {
+        "configuration": {
+          "googleMerchantIdLabel": "Google Merchant ID",
+          "googleMerchantIdHelpText": "This is found in your Google Pay developer account"
         }
       }
     }

@@ -7,7 +7,7 @@ const { Component, Context, Mixin } = Shopware;
 
 /**
  * This component is used to handle the configuration of the Apple Pay payment method.
- * It will save the configuration and use it to validate Merchant at Apple Pay.
+ * It will save the configuration and use it to validate the merchant within Apple Pay.
  */
 Component.register('checkout-com-payment-method-apple-pay', {
     template,

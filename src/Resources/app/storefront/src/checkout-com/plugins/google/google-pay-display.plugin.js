@@ -30,15 +30,10 @@ export default class CheckoutComGooglePayDisplay extends DisplayPaymentHandler {
     }
 
     getGoogleIsReadyToPayRequest() {
-        return Object.assign(
-            {},
-            {
-                apiVersion: GOOGLE_PAY.API_VERSION,
-                apiVersionMinor: GOOGLE_PAY.API_VERSION_MINOR,
-            },
-            {
-                allowedPaymentMethods: [GOOGLE_PAY.BASE_CARD_PAYMENT_METHOD],
-            },
-        );
+        return {
+            apiVersion: GOOGLE_PAY.API_VERSION,
+            apiVersionMinor: GOOGLE_PAY.API_VERSION_MINOR,
+            allowedPaymentMethods: [GOOGLE_PAY.BASE_CARD_PAYMENT_METHOD],
+        };
     }
 }

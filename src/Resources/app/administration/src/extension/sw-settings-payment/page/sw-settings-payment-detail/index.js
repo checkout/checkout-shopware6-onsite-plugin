@@ -28,11 +28,16 @@ Component.override('sw-settings-payment-detail', {
 
             return (paymentMethod && paymentMethod.formattedHandlerIdentifier === PAYMENT_METHOD_IDENTIFIER.APPLE_PAY);
         },
+        isGooglePay() {
+            const { paymentMethod } = this;
+
+            return (paymentMethod && paymentMethod.formattedHandlerIdentifier === PAYMENT_METHOD_IDENTIFIER.GOOGLE_PAY);
+        },
     },
 
     watch: {
         'paymentMethod.id'() {
-            if (!this.isApplePay) {
+            if (!this.isApplePay && !this.isGooglePay) {
                 return;
             }
 

@@ -5,6 +5,7 @@ namespace CheckoutCom\Shopware6\Handler\Method;
 use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\Source\RequestTokenSource;
+use CheckoutCom\Shopware6\Exception\CheckoutInvalidTokenException;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use CheckoutCom\Shopware6\Helper\RequestUtil;
@@ -50,7 +51,7 @@ class CreditCardHandler extends PaymentHandler
     {
         $token = RequestUtil::getTokenPayment($dataBag);
         if (!\is_string($token)) {
-            throw new Exception('Invalid credit card token');
+            throw new CheckoutInvalidTokenException(static::getPaymentMethodType());
         }
 
         $billingAddress = $this->orderExtractor->extractBillingAddress($order, $context);

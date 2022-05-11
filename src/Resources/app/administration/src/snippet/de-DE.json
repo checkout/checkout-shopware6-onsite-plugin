@@ -28,15 +28,23 @@
       }
     },
     "paymentMethod": {
+      "general": {
+        "configurationTitle": "Konfiguration"
+      },
       "applePay": {
         "configuration": {
-          "title": "Konfiguration",
           "externalLinkLabel": "Erfahren Sie, wie Sie Apple Pay einrichten",
           "appleMerchantIdLabel": "Apple-Händler-ID",
           "appleMerchantIdHelpText": "Diese finden Sie in Ihrem Apple-Entwicklerkonto",
           "domainUploadLabel": "Laden Sie Ihre Apple Merchant Domains Datei hoch (.txt)",
           "keyUploadLabel": "Laden Sie Ihre Apple-Schlüsselzertifikatsdatei hoch (.key)",
           "pemUploadLabel": "Laden Sie Ihre Apple PEM-Zertifikatsdatei hoch (.pem)"
+        }
+      },
+      "googlePay": {
+        "configuration": {
+          "googleMerchantIdLabel": "Google-Händler-ID",
+          "googleMerchantIdHelpText": "Diese finden Sie in Ihrem Google Pay-Entwicklerkonto"
         }
       }
     }
