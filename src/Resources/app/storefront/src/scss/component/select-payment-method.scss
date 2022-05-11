@@ -30,3 +30,17 @@ input {
         }
     }
 }
+
+.checkout-com-field__card-number {
+    position: relative;
+    .checkout-com-field_icon-card-container {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        display: flex;
+        height: 60%;
+        margin: 0 7px;
+        justify-content: center;
+    }
+}

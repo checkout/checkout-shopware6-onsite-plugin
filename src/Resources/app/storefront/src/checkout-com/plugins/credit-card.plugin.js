@@ -8,6 +8,9 @@ import { DATA_BAG_KEY } from '../helper/constants';
  * This Class is responsible for the Credit Card integration
  */
 export default class CheckoutComCreditCard extends Plugin {
+    // The card logo MIME type is always svg
+    LOGO_MIME_TYPE = 'svg';
+
     static options = {
         localization: {
             cardNumberPlaceholder: '',
@@ -15,7 +18,10 @@ export default class CheckoutComCreditCard extends Plugin {
             expiryYearPlaceholder: '',
             cvvPlaceholder: '',
         },
+        cardIconsPathMatch: 'img/card-icons',
+        cardIconsPath: null,
         publicKey: null,
+        iconPaymentMethodId: '#checkoutComIconPaymentMethod',
         cardholderNameId: '#cardholder-name',
         paymentFormId: '#confirmOrderForm',
         submitPaymentButtonId: '#confirmOrderForm button[type="submit"]',
@@ -29,19 +35,11 @@ export default class CheckoutComCreditCard extends Plugin {
             paymentFormId,
         } = this.options;
 
-        this.submitPaymentButton = this.getElement(
-            document,
-            submitPaymentButtonId,
-        );
+        this.submitPaymentButton = this.getElement(document, submitPaymentButtonId);
 
-        this.submitButtonLoader = new ButtonLoadingIndicator(
-            this.submitPaymentButton,
-        );
+        this.submitButtonLoader = new ButtonLoadingIndicator(this.submitPaymentButton);
 
-        this.paymentForm = this.getElement(
-            document,
-            paymentFormId,
-        );
+        this.paymentForm = this.getElement(document, paymentFormId);
 
         // We disable the form before the Frame is loaded
         this.disableForm();
@@ -68,10 +66,7 @@ export default class CheckoutComCreditCard extends Plugin {
                 return;
             }
 
-            const cardholderNameInput = this.getElement(
-                this.el,
-                cardholderNameId,
-            );
+            const cardholderNameInput = this.getElement(this.el, cardholderNameId);
 
             // We add the cardholder name to the form data (iframe checkout.com)
             if (cardholderNameInput) {
@@ -93,6 +88,7 @@ export default class CheckoutComCreditCard extends Plugin {
             ready: this.onReadyFrames.bind(this),
             frameValidationChanged: this.onFrameValidationChanged.bind(this),
             cardValidationChanged: this.onCardValidationChanged.bind(this),
+            paymentMethodChanged: this.onPaymentMethodChanged.bind(this),
             cardTokenizationFailed: this.onCardTokenizationFailed.bind(this),
             cardTokenized: this.onCardTokenized.bind(this),
         });
@@ -130,6 +126,33 @@ export default class CheckoutComCreditCard extends Plugin {
         } else {
             this.disableForm();
         }
+    }
+
+    onPaymentMethodChanged({ paymentMethod }) {
+        const { iconPaymentMethodId } = this.options;
+        const cardIconsPath = this.getCardIconsPathWithoutVersion();
+        const iconLogo = this.getElement(this.el, iconPaymentMethodId);
+        let src = '';
+        let alt = '';
+
+        if (paymentMethod) {
+            alt = paymentMethod;
+            src = `${cardIconsPath}/${paymentMethod.toLowerCase()}.${this.LOGO_MIME_TYPE}?${new Date().getTime()}`;
+        }
+
+        iconLogo.setAttribute('alt', alt);
+        iconLogo.setAttribute('src', src);
+    }
+
+    getCardIconsPathWithoutVersion() {
+        const {
+            cardIconsPath,
+            cardIconsPathMatch,
+        } = this.options;
+
+        // Remove string after the `cardIconsPathMatch` variable
+        // Example: ...../img/card-icons?v=123456789 => ...../img/card-icons
+        return cardIconsPath.split(cardIconsPathMatch)[0] + cardIconsPathMatch;
     }
 
     /**
