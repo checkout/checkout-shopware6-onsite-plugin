@@ -11,7 +11,7 @@ class SettingsFactory
     public const SYSTEM_CONFIG_DOMAIN = 'CheckoutCom.config.';
     public const CHECKOUT_PLUGIN_CONFIG_SECTION = 'checkoutPluginConfigSectionApi';
     public const CHECKOUT_PLUGIN_CONFIG_SECTION_ORDER_STATE = 'checkoutPluginConfigSectionOrderState';
-    public const CHECKOUT_PLUGIN_CONFIG_WEBHOOK = 'CheckoutCom.checkoutPluginConfigWebhook';
+    public const CHECKOUT_PLUGIN_CONFIG_WEBHOOK = 'checkoutPluginConfigWebhook';
     public const SYSTEM_COMPONENT_GROUP = [
         self::CHECKOUT_PLUGIN_CONFIG_SECTION,
         self::CHECKOUT_PLUGIN_CONFIG_SECTION_ORDER_STATE,
@@ -54,7 +54,7 @@ class SettingsFactory
 
     public function getWebhookConfig(?string $salesChannelId = null): Webhook
     {
-        $config = $this->systemConfigService->get(self::CHECKOUT_PLUGIN_CONFIG_WEBHOOK, $salesChannelId);
+        $config = $this->systemConfigService->get(self::SYSTEM_CONFIG_DOMAIN . self::CHECKOUT_PLUGIN_CONFIG_WEBHOOK, $salesChannelId);
 
         $webhook = new Webhook();
 

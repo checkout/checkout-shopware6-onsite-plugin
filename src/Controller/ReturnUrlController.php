@@ -21,7 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
  * parameters, but the JWT token contains the encrypted data of Shopware\Core\Checkout\Payment\Cart\Token\TokenStruct,
  * making the URL too long and possibly exceeding the character limit of the browser.
  *
- * @RouteScope(scopes={"storefront"})
+ * @RouteScope(scopes={"api"})
  */
 class ReturnUrlController extends AbstractController
 {
@@ -40,7 +40,7 @@ class ReturnUrlController extends AbstractController
     /**
      * This API is a replacement for payment.finalize.transaction to finalize the transaction
      *
-     * @Route("/checkout-com/payment/redirect/finalize-transaction", name="checkout-com.payment.redirect.finalize.url", methods={"GET"}))
+     * @Route("/api/_action/checkout-com/payment/redirect/finalize-transaction", defaults={"auth_required"=false}, name="api.action.checkout-com.payment.redirect.finalize.url", methods={"GET"}))
      */
     public function returnUrl(Request $request): Response
     {

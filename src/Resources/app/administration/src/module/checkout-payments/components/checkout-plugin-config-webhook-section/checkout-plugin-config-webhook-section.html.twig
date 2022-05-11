@@ -1,0 +1,20 @@
+{% block checkout_plugin_config_webhook_section %}
+    <div class="checkout-plugin-config-webhook-section">
+        {% block checkout_plugin_config_webhook_section_secret_key %}
+            <sw-field
+                v-model="config.id"
+                :disabled="true"
+                :label="$tc('checkout-payments.config.api.webhookIdLabel')"
+                :help-text="$tc('checkout-payments.config.api.webhookHelpText')"
+            ></sw-field>
+        {% endblock %}
+
+        {% block checkout_plugin_config_webhook_section_public_key %}
+            <sw-field
+                v-model="config.authorization"
+                :disabled="true"
+                :label="$tc('checkout-payments.config.api.webhookAuthorizationKeyLabel')"
+            ></sw-field>
+        {% endblock %}
+    </div>
+{% endblock %}

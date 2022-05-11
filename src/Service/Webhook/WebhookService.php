@@ -18,7 +18,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 
 /**
- * This service will handle all webhook request and update status of order and order transaction
+ * This service will handle all webhook requests and update status of order and order transaction
  */
 class WebhookService extends AbstractWebhookService
 {
@@ -58,7 +58,7 @@ class WebhookService extends AbstractWebhookService
     }
 
     /**
-     * Handling order and order transaction status base on Checkout event type
+     * Handling order and order transaction status based on the Checkout event type
      *
      * @throws Exception
      */

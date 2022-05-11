@@ -259,6 +259,6 @@ class PaymentPayFacade
     {
         $parameter = ['orderId' => $orderId];
 
-        return $this->router->generate('checkout-com.payment.redirect.finalize.url', $parameter, UrlGeneratorInterface::ABSOLUTE_URL);
+        return $this->router->generate('api.action.checkout-com.payment.redirect.finalize.url', $parameter, UrlGeneratorInterface::ABSOLUTE_URL);
     }
 }
