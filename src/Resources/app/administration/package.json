@@ -1,0 +1,56 @@
+{
+  "name": "administration",
+  "description": "CheckoutCom - Shopware administration",
+  "main": "./src/main.js",
+  "contributors": [
+    {
+      "name": "Shape & Shift",
+      "email": "hello@shapeandshift.dev"
+    }
+  ],
+  "scripts": {
+    "lint:all": "npm run lint:types && npm run lint",
+    "lint": "eslint --ext .js,.ts,.vue,.html.twig src",
+    "lint:fix": "npm run lint -- --fix",
+    "lint:types": "tsc",
+    "lint:twig": "eslint --ext .html.twig src",
+    "lint:junit": "eslint --ext .js,.ts,.vue,.html.twig --format junit src > eslint.junit.xml",
+    "lint-fix": "eslint --fix --ext .js,.vue,.html.twig src",
+    "lint:scss": "stylelint **/*.scss",
+    "lint:scss-fix": "npm run lint:scss -- --fix"
+  },
+  "devDependencies": {
+    "@shopware-ag/eslint-config-base": "^1.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.22.0",
+    "@typescript-eslint/parser": "^5.22.0",
+    "stylelint-junit-formatter": "0.2.2",
+    "babel-eslint": "10.1.0",
+    "eslint": "7.10.0",
+    "eslint-config-airbnb-base": "13.2.0",
+    "eslint-import-resolver-webpack": "0.11.1",
+    "eslint-plugin-html": "6.0.0",
+    "eslint-plugin-import": "2.22.1",
+    "eslint-plugin-inclusive-language": "2.1.1",
+    "eslint-plugin-jest": "22.14.0",
+    "eslint-plugin-plugin-rules": "file:eslint-rules/plugin-rules",
+    "eslint-plugin-promise": "4.2.1",
+    "eslint-plugin-twig-vue": "file:twigVuePlugin",
+    "eslint-plugin-vue": "7.9.0",
+    "eslint-plugin-vuejs-accessibility": "0.7.1",
+    "eslint-webpack-plugin": "3.0.1",
+    "eslint-friendly-formatter": "4.0.1",
+    "eslint-plugin-file-progress": "1.2.0",
+    "stylelint": "13.13.1",
+    "stylelint-config-standard": "18.3.0",
+    "stylelint-scss": "3.9.2",
+    "stylelint-webpack-plugin": "0.10.5",
+    "typescript": "^4.6.4",
+    "jest": "26.4.2",
+    "jest-fail-on-console": "2.0.4",
+    "jest-junit": "7.0.0"
+  },
+  "engines": {
+    "node": "^16.0.0",
+    "npm": "^8.0.0"
+  }
+}

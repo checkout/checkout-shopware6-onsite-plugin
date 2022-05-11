@@ -3,7 +3,11 @@ import { SETUP_LINK } from '../../../../constant/settings';
 import { getCheckoutConfig } from '../../../../services/utils/system-config.utils';
 import './checkout-com-payment-method-apple-pay.scss';
 
-const { Component, Context, Mixin } = Shopware;
+const {
+    Component,
+    Context,
+    Mixin,
+} = Shopware;
 
 /**
  * This component is used to handle the configuration of the Apple Pay payment method.
@@ -77,7 +81,7 @@ Component.register('checkout-com-payment-method-apple-pay', {
          */
         loadMediaPreviews() {
             if (!this.checkoutConfigs) {
-                return;
+                return Promise.resolve();
             }
 
             const applePayConfigs = [
@@ -88,9 +92,7 @@ Component.register('checkout-com-payment-method-apple-pay', {
 
             return Promise.all(
                 Object.keys(this.checkoutConfigs).map((key) => {
-                    const applePaySuffixField = applePayConfigs.find((config) =>
-                        key.includes(config),
-                    );
+                    const applePaySuffixField = applePayConfigs.find((config) => key.includes(config));
 
                     if (!applePaySuffixField) {
                         return Promise.resolve();
@@ -127,7 +129,7 @@ Component.register('checkout-com-payment-method-apple-pay', {
                 return;
             }
 
-            this.applePayFiles[applePaySuffixField]['preview'] = media;
+            this.applePayFiles[applePaySuffixField].preview = media;
         },
 
         setCheckoutConfigs(applePaySuffixField, data) {
@@ -139,10 +141,7 @@ Component.register('checkout-com-payment-method-apple-pay', {
 
             try {
                 // We have to get the upload media from the repository
-                let media = await this.mediaRepository.get(
-                    targetId,
-                    Context.api,
-                );
+                const media = await this.mediaRepository.get(targetId, Context.api);
 
                 // We update the media id in the checkout config with private media storage
                 await this.updatePrivateMedia(media);

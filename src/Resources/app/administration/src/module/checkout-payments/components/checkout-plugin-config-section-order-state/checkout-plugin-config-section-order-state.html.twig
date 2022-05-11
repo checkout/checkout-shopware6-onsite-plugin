@@ -1,7 +1,7 @@
 {% block checkout_plugin_config_section_order_state %}
     <div class="checkout-plugin-config-section-order-state">
         {% block checkout_plugin_config_section_order_state_loading %}
-            <sw-loader v-if="isLoading"></sw-loader>
+            <sw-loader v-if="isLoading" />
         {% endblock %}
 
         {% block checkout_plugin_config_section_order_state_content %}
@@ -11,7 +11,7 @@
                         v-model="config.orderStateForPaidPayment"
                         :options="orderOptions"
                         :label="$t('checkout-payments.config.orderState.orderStateForPaidPaymentLabel')"
-                    ></sw-single-select>
+                    />
                 {% endblock %}
 
                 {% block  checkout_plugin_config_section_order_state_content_failed_select %}
@@ -19,7 +19,7 @@
                         v-model="config.orderStateForFailedPayment"
                         :options="orderOptions"
                         :label="$t('checkout-payments.config.orderState.orderStateForFailedPaymentLabel')"
-                    ></sw-single-select>
+                    />
                 {% endblock %}
 
                 {% block  checkout_plugin_config_section_order_state_content_authorized_select %}
@@ -27,7 +27,7 @@
                         v-model="config.orderStateForAuthorizedPayment"
                         :options="orderOptions"
                         :label="$t('checkout-payments.config.orderState.orderStateForAuthorizedPaymentLabel')"
-                    ></sw-single-select>
+                    />
                 {% endblock %}
 
                 {% block  checkout_plugin_config_section_order_state_content_voided_select %}
@@ -35,7 +35,7 @@
                         v-model="config.orderStateForVoidedPayment"
                         :options="orderOptions"
                         :label="$t('checkout-payments.config.orderState.orderStateForVoidedPaymentLabel')"
-                    ></sw-single-select>
+                    />
                 {% endblock %}
             </template>
         {% endblock %}

@@ -59,7 +59,7 @@ Component.override('sw-settings-payment-detail', {
                     message: this.$tc('checkout-payments.general.permissionDeny'),
                 });
 
-                return;
+                return Promise.resolve();
             }
 
             this.isLoading = true;

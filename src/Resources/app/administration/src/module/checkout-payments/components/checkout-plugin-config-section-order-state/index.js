@@ -1,5 +1,5 @@
 import template from './checkout-plugin-config-section-order-state.html.twig';
-import { ORDER_STATE_SKIP, ORDER_TECHNICAL_NAME, } from '../../../../constant/state-machine';
+import { ORDER_STATE_SKIP, ORDER_TECHNICAL_NAME } from '../../../../constant/state-machine';
 
 const { Component, Data, Context, Mixin } = Shopware;
 const { Criteria } = Data;
@@ -42,8 +42,8 @@ Component.register('checkout-plugin-config-section-order-state', {
             criteria.addFilter(
                 Criteria.equals(
                     'stateMachine.technicalName',
-                    ORDER_TECHNICAL_NAME
-                )
+                    ORDER_TECHNICAL_NAME,
+                ),
             );
 
             return criteria;
@@ -84,7 +84,7 @@ Component.register('checkout-plugin-config-section-order-state', {
                 const orderOptions = [
                     {
                         label: this.$t(
-                            'checkout-payments.config.orderState.skipOptionOrder'
+                            'checkout-payments.config.orderState.skipOptionOrder',
                         ),
                         value: ORDER_STATE_SKIP,
                     },
@@ -92,7 +92,7 @@ Component.register('checkout-plugin-config-section-order-state', {
 
                 const states = await this.stateMachineStateRepository.search(
                     this.stateMachineStateCriteria,
-                    Context.api
+                    Context.api,
                 );
 
                 states.forEach((state) => {
