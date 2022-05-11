@@ -11,6 +11,15 @@
     </card>
 
     <card>
+        <title>Registered webhook</title>
+        <title lang="de-DE">Registrierter Webhaken</title>
+
+        <component name="checkout-plugin-config-webhook-section">
+            <name>checkoutPluginConfigWebhook</name>
+        </component>
+    </card>
+
+    <card>
         <title>Order State Automation</title>
         <title lang="de-DE">Auftragsstatus Automatisierung</title>
 

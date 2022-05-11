@@ -7,6 +7,7 @@ use Checkout\CheckoutApiException;
 use CheckoutCom\Shopware6\Exception\CheckoutComWebhookNotFoundException;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
+use Shopware\Core\System\SystemConfig\Event\BeforeSystemConfigChangedEvent;
 use Shopware\Core\System\SystemConfig\Event\SystemConfigChangedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -16,6 +17,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class SystemConfigSubscriber implements EventSubscriberInterface
 {
+    private array $webhookData = [];
+
     private CheckoutWebhookService $checkoutWebhookService;
 
     private SettingsFactory $settingsFactory;
@@ -32,7 +35,24 @@ class SystemConfigSubscriber implements EventSubscriberInterface
     {
         return [
             SystemConfigChangedEvent::class => 'onChangeConfig',
+            BeforeSystemConfigChangedEvent::class => 'onBeforeChangeConfig',
         ];
+    }
+
+    /**
+     * To ensure the webhook data won't be replaced by the old value
+     */
+    public function onBeforeChangeConfig(BeforeSystemConfigChangedEvent $event): void
+    {
+        if ($event->getKey() !== SettingsFactory::SYSTEM_CONFIG_DOMAIN . SettingsFactory::CHECKOUT_PLUGIN_CONFIG_WEBHOOK) {
+            return;
+        }
+
+        if (empty($this->webhookData)) {
+            return;
+        }
+
+        $event->setValue($this->webhookData);
     }
 
     /**
@@ -61,7 +81,7 @@ class SystemConfigSubscriber implements EventSubscriberInterface
 
             return;
         } catch (CheckoutComWebhookNotFoundException $e) {
-            // Registering new webhook when get webhook return status 404
+            // Register a new webhook when "retrieveWebhook" returns a 404 status
             $this->registerWebhook($salesChannelId);
         } catch (CheckoutApiException $e) {
             // do nothing to make sure this exception does not block any action behind
@@ -75,10 +95,12 @@ class SystemConfigSubscriber implements EventSubscriberInterface
 
             // save registered webhook data to system config
             $this->settingsFactory->set(
-                SettingsFactory::CHECKOUT_PLUGIN_CONFIG_WEBHOOK,
+                SettingsFactory::SYSTEM_CONFIG_DOMAIN . SettingsFactory::CHECKOUT_PLUGIN_CONFIG_WEBHOOK,
                 $webhook->getVars(),
                 $salesChannelId
             );
+
+            $this->webhookData = $webhook->getVars();
         } catch (CheckoutApiException $e) {
             // do nothing to make sure this exception does not block any action behind
         }
