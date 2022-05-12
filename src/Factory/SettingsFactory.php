@@ -2,15 +2,19 @@
 
 namespace CheckoutCom\Shopware6\Factory;
 
+use CheckoutCom\Shopware6\Struct\CheckoutApi\Webhook;
 use CheckoutCom\Shopware6\Struct\SettingStruct;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class SettingsFactory
 {
     public const SYSTEM_CONFIG_DOMAIN = 'CheckoutCom.config.';
+    public const CHECKOUT_PLUGIN_CONFIG_SECTION = 'checkoutPluginConfigSectionApi';
+    public const CHECKOUT_PLUGIN_CONFIG_SECTION_ORDER_STATE = 'checkoutPluginConfigSectionOrderState';
+    public const CHECKOUT_PLUGIN_CONFIG_WEBHOOK = 'checkoutPluginConfigWebhook';
     public const SYSTEM_COMPONENT_GROUP = [
-        'checkoutPluginConfigSectionApi',
-        'checkoutPluginConfigSectionOrderState',
+        self::CHECKOUT_PLUGIN_CONFIG_SECTION,
+        self::CHECKOUT_PLUGIN_CONFIG_SECTION_ORDER_STATE,
     ];
 
     private SystemConfigService $systemConfigService;
@@ -23,7 +27,7 @@ class SettingsFactory
     /**
      * Get Checkout settings from configuration.
      */
-    public function getSettings(string $salesChannelId): SettingStruct
+    public function getSettings(?string $salesChannelId = null): SettingStruct
     {
         $structData = [];
         $systemConfigData = $this->systemConfigService->getDomain(self::SYSTEM_CONFIG_DOMAIN, $salesChannelId, true);
@@ -46,5 +50,26 @@ class SettingsFactory
         }
 
         return (new SettingStruct())->assign($structData);
+    }
+
+    public function getWebhookConfig(?string $salesChannelId = null): Webhook
+    {
+        $config = $this->systemConfigService->get(self::SYSTEM_CONFIG_DOMAIN . self::CHECKOUT_PLUGIN_CONFIG_WEBHOOK, $salesChannelId);
+
+        $webhook = new Webhook();
+
+        if (\is_array($config)) {
+            $webhook->assign($config);
+        }
+
+        return $webhook;
+    }
+
+    /**
+     * @param array|bool|float|int|string|null $value
+     */
+    public function set(string $key, $value, ?string $salesChannelId = null): void
+    {
+        $this->systemConfigService->set($key, $value, $salesChannelId);
     }
 }

@@ -16,9 +16,14 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class OrderServiceTest extends TestCase
@@ -195,5 +200,58 @@ class OrderServiceTest extends TestCase
                 CheckoutPaymentService::STATUS_PENDING,
             ],
         ];
+    }
+
+    public function testGetOrderByOrderNumber(): void
+    {
+        $orderRepository = $this->createMock(EntityRepository::class);
+        $order = new OrderEntity();
+        $id = Uuid::randomHex();
+        $order->setId($id);
+        $orderRepository->expects(static::once())->method('search')->willReturn(
+            new EntitySearchResult(
+                'order',
+                1,
+                new EntityCollection([$order]),
+                null,
+                new Criteria(),
+                Context::createDefaultContext()
+            )
+        );
+
+        $orderService = new OrderService(
+            $this->createMock(LoggerService::class),
+            $orderRepository,
+            $this->orderTransitionService
+        );
+
+        $order = $orderService->getOrderByOrderNumber('test', Context::createDefaultContext());
+
+        static::assertSame($id, $order->getId());
+    }
+
+    public function testGetOrderByOrderNumberWithException(): void
+    {
+        static::expectException(OrderNotFoundException::class);
+
+        $orderRepository = $this->createMock(EntityRepository::class);
+        $orderRepository->expects(static::once())->method('search')->willReturn(
+            new EntitySearchResult(
+                'order',
+                1,
+                new EntityCollection([]),
+                null,
+                new Criteria(),
+                Context::createDefaultContext()
+            )
+        );
+
+        $orderService = new OrderService(
+            $this->createMock(LoggerService::class),
+            $orderRepository,
+            $this->orderTransitionService
+        );
+
+        $orderService->getOrderByOrderNumber('test', Context::createDefaultContext());
     }
 }

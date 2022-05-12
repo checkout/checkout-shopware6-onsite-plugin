@@ -94,6 +94,10 @@ class OrderTransactionService extends AbstractOrderTransactionService
                 $this->orderTransactionTransitionService->payTransaction($transaction, $context);
 
                 break;
+            case CheckoutPaymentService::STATUS_REFUNDED:
+                $this->orderTransactionTransitionService->refundTransaction($transaction, $context);
+
+                break;
             default:
                 $this->logger->critical('Unknown payment status', [
                     'transactionId' => $transaction->getId(),

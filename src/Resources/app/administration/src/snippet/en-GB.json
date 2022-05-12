@@ -11,6 +11,9 @@
         "sandboxModeHelpText": "Enables the test mode with the Checkout.com Sandbox payment page.",
         "testButton": "Test API Keys",
         "apiLinkButton": "Get your API keys from the Checkout Dashboard",
+        "webhookIdLabel": "Id",
+        "webhookAuthorizationKeyLabel": "Private shared key",
+        "webhookHelpText": "Webhook will be registered automatically when saving the API keys",
         "testApiKeys": {
           "title": "Checkout",
           "secretKey": "Secret key",

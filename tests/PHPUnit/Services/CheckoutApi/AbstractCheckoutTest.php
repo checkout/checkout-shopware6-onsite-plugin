@@ -63,12 +63,18 @@ abstract class AbstractCheckoutTest extends TestCase
         ]);
     }
 
-    protected function handleTestCheckoutRequest(bool $expectThrowException, string $requestMethod): void
-    {
+    protected function handleTestCheckoutRequest(
+        bool $expectThrowException,
+        string $requestMethod,
+        array $result = [],
+        int $code = 500
+    ): void {
         $checkoutApiException = new CheckoutApiException('test');
+        $checkoutApiException->http_status_code = $code;
+
         $this->apiClient
             ->method($requestMethod)
-            ->willReturn($expectThrowException ? static::throwException($checkoutApiException) : []);
+            ->willReturn($expectThrowException ? static::throwException($checkoutApiException) : $result);
 
         if ($expectThrowException) {
             static::expectException(CheckoutApiException::class);

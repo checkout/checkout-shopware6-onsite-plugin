@@ -65,4 +65,21 @@ class SettingsFactoryTest extends TestCase
             ],
         ];
     }
+
+    public function testSetFunction(): void
+    {
+        $this->systemConfigService->expects(static::once())->method('set');
+
+        $this->settingsFactory->set('test', 'test');
+    }
+
+    public function testGetWebhookConfig(): void
+    {
+        $result = ['id' => 'test'];
+        $this->systemConfigService->expects(static::once())->method('get')->willReturn($result);
+
+        $webhook = $this->settingsFactory->getWebhookConfig();
+
+        static::assertSame($result['id'], $webhook->getId());
+    }
 }
