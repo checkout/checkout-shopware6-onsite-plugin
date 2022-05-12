@@ -16,10 +16,14 @@
         "webhookHelpText": "Webhook wird beim Speichern der API-Schlüssel automatisch registriert",
         "testApiKeys": {
           "title": "Checkout",
-          "secretKey": "Secret key",
-          "publicKey": "Public key",
-          "isValid": "ist gültig",
-          "isInvalid": "ist ungültig"
+          "secretKey": {
+            "isValid": "Der geheime Schlüssel ist gültig",
+            "isInvalid": "Der öffentliche Schlüssel ist ungültig"
+          },
+          "publicKey": {
+            "isValid": "Der öffentliche Schlüssel ist gültig",
+            "isInvalid": "Der öffentliche Schlüssel ist ungültig"
+          }
         }
       },
       "orderState": {

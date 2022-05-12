@@ -90,24 +90,16 @@ Component.register('checkout-plugin-config-section-api', {
         },
 
         _showMessageResult(result) {
-            const { isSecretKey, key, valid } = result;
+            const { isSecretKey, valid } = result;
 
             const inputError = isSecretKey ? 'secretKey' : 'publicKey';
-
-            const keyTypeMessage = this.$tc(
-                `checkout-payments.config.api.testApiKeys.${inputError}`,
-            );
-            const validMessage = this.$tc(
-                `checkout-payments.config.api.testApiKeys.${
-                    valid ? 'isValid' : 'isInvalid'
-                }`,
-            );
+            const validKey = valid ? 'isValid' : 'isInvalid';
 
             const messageData = {
                 title: this.$tc(
                     'checkout-payments.config.api.testApiKeys.title',
                 ),
-                message: `${keyTypeMessage} "${key}" ${validMessage}.`,
+                message: this.$tc(`checkout-payments.config.api.testApiKeys.${inputError}.${validKey}`),
             };
 
             if (valid) {
