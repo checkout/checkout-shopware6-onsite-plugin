@@ -62,12 +62,10 @@ class ConfigController extends AbstractController
         return new JsonResponse([
             [
                 'isSecretKey' => true,
-                'key' => $secretKey,
                 'valid' => $secretKeyValid,
             ],
             [
                 'isSecretKey' => false,
-                'key' => $publicKey,
                 'valid' => $publicKeyValid,
             ],
         ]);

@@ -13,10 +13,14 @@
         "apiLinkButton": "Get your API keys from the Checkout Dashboard",
         "testApiKeys": {
           "title": "Checkout",
-          "secretKey": "Secret key",
-          "publicKey": "Public key",
-          "isValid": "is valid",
-          "isInvalid": "is invalid"
+          "secretKey": {
+            "isValid": "The secret key is valid",
+            "isInvalid": "The secret key is invalid"
+          },
+          "publicKey": {
+            "isValid": "The public key is valid",
+            "isInvalid": "The public key is invalid"
+          }
         }
       },
       "orderState": {
