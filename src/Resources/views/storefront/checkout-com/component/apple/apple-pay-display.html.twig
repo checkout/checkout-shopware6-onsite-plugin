@@ -1,0 +1,15 @@
+{% block checkout_com_apple_pay_display %}
+    {% set applePayDisplayOptions = {
+        "active" : active,
+        "selectedPaymentMethodId": context.paymentMethod.id ?? context.customer.defaultPaymentMethodId ?? null
+    } %}
+
+    {% block checkout_com_apple_pay_display_element %}
+        <div id="checkoutComApplePayDisplay"
+             class="checkout-com-apple-pay-display"
+             data-checkout-com-apple-pay-display
+             data-checkout-com-apple-pay-display-options='{{ applePayDisplayOptions|json_encode }}'
+        >
+        </div>
+    {% endblock %}
+{% endblock %}

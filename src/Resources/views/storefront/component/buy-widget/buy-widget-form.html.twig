@@ -1,0 +1,15 @@
+{% sw_extends '@Storefront/storefront/component/buy-widget/buy-widget-form.html.twig' %}
+
+{% block buy_widget_buy_container %}
+    {{ parent() }}
+
+    {% block checkout_com_buy_widget_buy_container_direct %}
+        {% if buyable %}
+            {% block checkout_com_buy_widget_buy_container_direct_apple_pay_component %}
+                <div class="form-row mt-3 justify-content-end checkout-com-direct-pay-container d-none">
+                    {% sw_include '@CheckoutCom/storefront/checkout-com/component/apple/apple-pay-direct.html.twig' with {cols: 'col-8'} %}
+                </div>
+            {% endblock %}
+        {% endif %}
+    {% endblock %}
+{% endblock %}

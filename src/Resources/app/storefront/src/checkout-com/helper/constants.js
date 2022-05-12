@@ -6,6 +6,11 @@ export const DATA_BAG_KEY = 'checkoutComDetails';
 export const APPLE_PAY = {
     APPLE_PAY_VERSION: 3,
     MERCHANT_CAPABILITIES: ['supports3DS'],
+    requiredShippingContactFields: [
+        'name',
+        'email',
+        'postalAddress',
+    ],
     SUPPORTED_NETWORKS: [
         'visa',
         'masterCard',

@@ -9,10 +9,12 @@
         "merchantId": page.extensions.checkoutCom.googlePayMerchantId,
     } %}
 
-    <div id="checkoutComGooglePayConfirm"
-         class="checkout-com-google-pay-confirm d-none"
-         data-checkout-com-google-pay-confirm
-         data-checkout-com-google-pay-confirm-options='{{ googlePayConfirmOptions|json_encode }}'
-    >
-    </div>
+    {% block checkout_com_google_pay_confirm_element %}
+        <div id="checkoutComGooglePayConfirm"
+             class="checkout-com-google-pay-confirm d-none"
+             data-checkout-com-google-pay-confirm
+             data-checkout-com-google-pay-confirm-options='{{ googlePayConfirmOptions|json_encode }}'
+        >
+        </div>
+    {% endblock %}
 {% endblock %}

@@ -1,0 +1,11 @@
+{% block checkout_com_direct_apple_pay %}
+    <div class="checkout-com-direct-apple-pay {{ cols }}">
+        {% block checkout_com_direct_apple_pay_button %}
+            <button type="button"
+                    data-apple-pay="true"
+                    class="btn btn-primary btn-block btn-buy checkout-com-direct-pay checkout-com-apple-pay-button-with-text checkout-com-apple-pay-button-black w-100 d-none">
+                &nbsp;
+            </button>
+        {% endblock %}
+    </div>
+{% endblock %}
