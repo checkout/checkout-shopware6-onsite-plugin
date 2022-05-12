@@ -5,7 +5,8 @@
       "googlePayLabel": "Google Pay",
       "creditCardLabel": "Credit card",
       "giropayLabel": "Giropay",
-      "p24Label": "Przelewy24"
+      "p24Label": "Przelewy24",
+      "sofortLabel": "Sofort"
     },
     "messages": {
       "card": {
