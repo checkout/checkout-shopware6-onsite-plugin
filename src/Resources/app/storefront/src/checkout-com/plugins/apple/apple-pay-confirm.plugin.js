@@ -1,14 +1,14 @@
 import deepmerge from 'deepmerge';
-import StoreApiClient from 'src/service/store-api-client.service';
-import CheckoutPaymentHandler from '../../core/checkout-payment-handler';
+import CheckoutComConfirmPaymentHandler from '../../core/checkout-com-confirm-payment-handler';
 import { APPLE_PAY } from '../../helper/constants';
+import ApplePayService from '../../services/apple-pay.service';
 
 /**
  * This Class is responsible for the Apple Pay payment
  * It will handle the payment process on the checkout page when the user clicks on the `Confirm` button
  */
-export default class CheckoutComApplePayConfirm extends CheckoutPaymentHandler {
-    static options = deepmerge(CheckoutPaymentHandler.options, {
+export default class CheckoutComApplePayConfirm extends CheckoutComConfirmPaymentHandler {
+    static options = deepmerge(CheckoutComConfirmPaymentHandler.options, {
         amount: null,
         currencyCode: null,
         countryCode: null,
@@ -17,7 +17,7 @@ export default class CheckoutComApplePayConfirm extends CheckoutPaymentHandler {
     });
 
     init() {
-        this.storeApiClient = new StoreApiClient();
+        this.applePayService = new ApplePayService();
         super.init();
     }
 
@@ -48,28 +48,15 @@ export default class CheckoutComApplePayConfirm extends CheckoutPaymentHandler {
         this.appleSession = session;
     }
 
-    /**
-     * This will be called when the Apple Pay session is starting to validate the merchant.
-     */
     onValidateMerchant({ validationURL }) {
         const { validateMerchantPath } = this.options;
-        const data = JSON.stringify({
-            validationURL,
-        });
 
-        this.storeApiClient.post(validateMerchantPath, data, (result) => {
-            if (!result) {
-                this.abortApplePay();
-                return;
-            }
-
-            let { merchant } = JSON.parse(result);
+        this.applePayService.validateMerchant(validateMerchantPath, validationURL, (merchant) => {
             if (!merchant) {
                 this.abortApplePay();
                 return;
             }
 
-            // Need to commit the merchant to the Apple Pay session to let it know that we are ready to process the payment
             this.appleSession.completeMerchantValidation(merchant);
         });
     }
@@ -108,11 +95,11 @@ export default class CheckoutComApplePayConfirm extends CheckoutPaymentHandler {
 
     abortApplePay() {
         this.appleSession.abort();
-        this.removeLoading();
+        this.onApplePayCancel();
     }
 
     onApplePayCancel() {
-        this.storeApiClient.abort();
+        this.applePayService.abortApiClient();
         this.removeLoading();
     }
 }

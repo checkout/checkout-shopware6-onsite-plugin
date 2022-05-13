@@ -1,14 +1,14 @@
 import deepmerge from 'deepmerge';
 import StoreApiClient from 'src/service/store-api-client.service';
-import CheckoutPaymentHandler from '../../core/checkout-payment-handler';
+import CheckoutComConfirmPaymentHandler from '../../core/checkout-com-confirm-payment-handler';
 import { GOOGLE_PAY } from '../../helper/constants';
 
 /**
  * This Class is responsible for the Google Pay payment
  * It will handle the payment process on the checkout page when the user clicks on the `Confirm` button
  */
-export default class CheckoutComGooglePayConfirm extends CheckoutPaymentHandler {
-    static options = deepmerge(CheckoutPaymentHandler.options, {
+export default class CheckoutComGooglePayConfirm extends CheckoutComConfirmPaymentHandler {
+    static options = deepmerge(CheckoutComConfirmPaymentHandler.options, {
         amount: null,
         currencyCode: null,
         countryCode: null,

@@ -49,5 +49,10 @@
             <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\ApplePay\ApplePayService"/>
         </service>
+
+        <service id="CheckoutCom\Shopware6\Storefront\Api\DirectPayController" public="true">
+            <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Facade\DirectPayFacade"/>
+        </service>
     </services>
 </container>

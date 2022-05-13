@@ -1,6 +1,7 @@
 import 'regenerator-runtime';
 
 import CheckoutComApplePayConfirm from './checkout-com/plugins/apple/apple-pay-confirm.plugin';
+import CheckoutComApplePayDirect from './checkout-com/plugins/apple/apple-pay-direct.plugin';
 import CheckoutComApplePayDisplay from './checkout-com/plugins/apple/apple-pay-display.plugin';
 
 import CheckoutComGooglePayConfirm from './checkout-com/plugins/google/google-pay-confirm.plugin';
@@ -14,6 +15,8 @@ const PluginManager = window.PluginManager;
 // -----------------------------------------------------------------------------
 PluginManager.register('CheckoutComApplePayConfirm', CheckoutComApplePayConfirm, '[data-checkout-com-apple-pay-confirm]');
 PluginManager.register('CheckoutComGooglePayConfirm', CheckoutComGooglePayConfirm, '[data-checkout-com-google-pay-confirm]');
+
+PluginManager.register('CheckoutComApplePayDirect', CheckoutComApplePayDirect, '[data-checkout-com-apple-pay-direct]');
 
 // display the payment methods
 // -----------------------------------------------------------------------------

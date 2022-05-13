@@ -13,6 +13,10 @@
         {% for payment in page.salesChannelPaymentMethods %}
             {% if payment.customFields.checkoutConfig.methodType == METHOD_TYPE_APPLE_PAY %}
                 {% set applePayActive = true %}
+
+                {% block checkout_com_base_main_sales_channel_apple_pay_direct %}
+                    {% sw_include '@CheckoutCom/storefront/checkout-com/component/apple/apple-pay-direct.html.twig' %}
+                {% endblock %}
             {% elseif payment.customFields.checkoutConfig.methodType == METHOD_TYPE_GOOGLE_PAY %}
                 {% set googlePayActive = true %}
             {% endif %}
