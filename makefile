@@ -39,7 +39,17 @@ ecs: ## Starts the ESC checker
 csfix: ## Starts the PHP CS Fixer
 	php ./vendor/bin/ecs check . --config easy-coding-standard.php --fix
 
-lint-js: ## Runs eslint
+lint: ## Runs eslint
+	make lint-js -B
+	make lint-scss -B
+	make lint-twig -B
+
+lint-fix: ## Runs eslint and fix
+	make lint-js-fix -B
+	make lint-scss-fix -B
+	make lint-twig-fix -B
+
+lint-js: ## Runs js eslint
 	npm run --prefix src/Resources/app/administration/ lint
 
 lint-js-fix: ## Runs eslint and fix

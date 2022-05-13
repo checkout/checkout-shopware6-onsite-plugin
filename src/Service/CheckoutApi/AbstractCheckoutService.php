@@ -26,6 +26,7 @@ abstract class AbstractCheckoutService
                 $parameters,
                 [
                     'details' => $exception->error_details ?? [],
+                    'code' => $exception->http_status_code,
                     'function' => $functionName,
                 ]
             )
