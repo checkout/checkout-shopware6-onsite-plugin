@@ -4,7 +4,7 @@ namespace CheckoutCom\Shopware6\Subscriber;
 
 use CheckoutCom\Shopware6\CheckoutCom;
 use CheckoutCom\Shopware6\Helper\Util;
-use CheckoutCom\Shopware6\Struct\Extension\PaymentMethodExtensionStruct;
+use CheckoutCom\Shopware6\Struct\PaymentMethod\PaymentMethodCustomFieldsStruct;
 use ReflectionClass;
 use Shopware\Core\Checkout\Payment\PaymentEvents;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
@@ -14,7 +14,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PaymentMethodSubscriber implements EventSubscriberInterface
 {
-    public const PAYMENT_METHOD_EXTENSION = 'checkoutConfig';
+    public const PAYMENT_METHOD_CUSTOM_FIELDS = 'checkoutConfig';
 
     public static function getSubscribedEvents(): array
     {
@@ -44,14 +44,18 @@ class PaymentMethodSubscriber implements EventSubscriberInterface
     {
         $checkoutComNamespace = (new ReflectionClass(CheckoutCom::class))->getNamespaceName();
 
+        $customFields = $paymentMethod->getCustomFields() ?? [];
+
         // We check is the payment method is a Checkout.com payment method
         $isCheckoutComPaymentMethod = strpos($paymentMethod->getHandlerIdentifier(), $checkoutComNamespace) !== false;
-        $paymentMethodExtension = new PaymentMethodExtensionStruct($isCheckoutComPaymentMethod);
+        $paymentMethodCustomFields = new PaymentMethodCustomFieldsStruct($isCheckoutComPaymentMethod);
         if ($isCheckoutComPaymentMethod) {
             $paymentMethodType = Util::handleCallUserFunc($paymentMethod->getHandlerIdentifier() . '::getPaymentMethodType', false);
-            $paymentMethodExtension->setMethodType($paymentMethodType);
+            $paymentMethodCustomFields->setMethodType($paymentMethodType);
         }
 
-        $paymentMethod->addExtension(self::PAYMENT_METHOD_EXTENSION, $paymentMethodExtension);
+        $customFields[self::PAYMENT_METHOD_CUSTOM_FIELDS] = $paymentMethodCustomFields->jsonSerialize();
+
+        $paymentMethod->setCustomFields($customFields);
     }
 }

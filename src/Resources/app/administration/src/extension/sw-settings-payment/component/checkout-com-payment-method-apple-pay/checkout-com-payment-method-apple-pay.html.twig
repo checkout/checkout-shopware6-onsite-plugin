@@ -1,10 +1,5 @@
 {% block checkout_com_payment_method_apple_pay %}
-    <sw-card
-        class="checkout-com-payment-method-apple-pay"
-        position-identifier="sw-settings-payment-detail-apple-pay"
-        :title="$tc('checkout-payments.paymentMethod.general.configurationTitle')"
-        :is-loading="isLoading"
-    >
+    <div class="checkout-com-payment-method-apple-pay">
         {% block checkout_com_payment_method_apple_pay_external_link %}
             <div class="checkout-com-payment-method-apple-pay-external-link">
                 <sw-external-link
@@ -22,11 +17,11 @@
             <sw-field
                 type="text"
                 :disabled="!acl.can('payment.editor')"
-                :value="getCheckoutConfigValue('applePayMerchantId')"
+                :value="paymentMethodConfigs.merchantId"
                 :label="$tc('checkout-payments.paymentMethod.applePay.configuration.appleMerchantIdLabel')"
                 :placeholder="$tc('checkout-payments.paymentMethod.applePay.configuration.appleMerchantIdLabel')"
                 :help-text="$tc('checkout-payments.paymentMethod.applePay.configuration.appleMerchantIdHelpText')"
-                @change="onInputChange('applePayMerchantId', $event)"
+                @change="onInputChange('merchantId', $event)"
             />
         {% endblock %}
 
@@ -42,8 +37,8 @@
                 {% block checkout_com_payment_method_apple_pay_domain_upload_listener %}
                     <sw-upload-listener
                         auto-upload
-                        :upload-tag="applePayFiles.applePayDomainMediaId.tag"
-                        @media-upload-finish="uploadFinish('applePayDomainMediaId', $event)"
+                        :upload-tag="applePayFiles.domainMediaId.tag"
+                        @media-upload-finish="uploadFinish('domainMediaId', $event)"
                     />
                 {% endblock %}
 
@@ -51,13 +46,13 @@
                     <checkout-com-media-compact-upload-v2
                         variant="regular"
                         :disabled="!acl.can('payment.editor')"
-                        :upload-tag="applePayFiles.applePayDomainMediaId.tag"
+                        :upload-tag="applePayFiles.domainMediaId.tag"
                         :allow-multi-select="false"
-                        :source="applePayFiles.applePayDomainMediaId.preview"
-                        :file-accept="applePayFiles.applePayDomainMediaId.accept"
+                        :source="applePayFiles.domainMediaId.preview"
+                        :file-accept="applePayFiles.domainMediaId.accept"
                         :media-is-private="true"
-                        @media-drop="onMediaDropped('applePayDomainMediaId', $event)"
-                        @media-upload-remove-image="onRemoveMedia('applePayDomainMediaId')"
+                        @media-drop="onMediaDropped('domainMediaId', $event)"
+                        @media-upload-remove-image="onRemoveMedia('domainMediaId')"
                     />
                 {% endblock %}
             </div>
@@ -75,8 +70,8 @@
                 {% block checkout_com_payment_method_apple_pay_key_upload_listener %}
                     <sw-upload-listener
                         auto-upload
-                        :upload-tag="applePayFiles.applePayKeyMediaId.tag"
-                        @media-upload-finish="uploadFinish('applePayKeyMediaId', $event)"
+                        :upload-tag="applePayFiles.keyMediaId.tag"
+                        @media-upload-finish="uploadFinish('keyMediaId', $event)"
                     />
                 {% endblock %}
 
@@ -84,13 +79,13 @@
                     <checkout-com-media-compact-upload-v2
                         variant="regular"
                         :disabled="!acl.can('payment.editor')"
-                        :upload-tag="applePayFiles.applePayKeyMediaId.tag"
+                        :upload-tag="applePayFiles.keyMediaId.tag"
                         :allow-multi-select="false"
-                        :source="applePayFiles.applePayKeyMediaId.preview"
-                        :file-accept="applePayFiles.applePayKeyMediaId.accept"
+                        :source="applePayFiles.keyMediaId.preview"
+                        :file-accept="applePayFiles.keyMediaId.accept"
                         :media-is-private="true"
-                        @media-drop="onMediaDropped('applePayKeyMediaId', $event)"
-                        @media-upload-remove-image="onRemoveMedia('applePayKeyMediaId')"
+                        @media-drop="onMediaDropped('keyMediaId', $event)"
+                        @media-upload-remove-image="onRemoveMedia('keyMediaId')"
                     />
                 {% endblock %}
             </div>
@@ -108,8 +103,8 @@
                 {% block checkout_com_payment_method_apple_pay_pem_upload_listener %}
                     <sw-upload-listener
                         auto-upload
-                        :upload-tag="applePayFiles.applePayPemMediaId.tag"
-                        @media-upload-finish="uploadFinish('applePayPemMediaId', $event)"
+                        :upload-tag="applePayFiles.pemMediaId.tag"
+                        @media-upload-finish="uploadFinish('pemMediaId', $event)"
                     />
                 {% endblock %}
 
@@ -117,16 +112,16 @@
                     <checkout-com-media-compact-upload-v2
                         variant="regular"
                         :disabled="!acl.can('payment.editor')"
-                        :upload-tag="applePayFiles.applePayPemMediaId.tag"
+                        :upload-tag="applePayFiles.pemMediaId.tag"
                         :allow-multi-select="false"
-                        :source="applePayFiles.applePayPemMediaId.preview"
-                        :file-accept="applePayFiles.applePayPemMediaId.accept"
+                        :source="applePayFiles.pemMediaId.preview"
+                        :file-accept="applePayFiles.pemMediaId.accept"
                         :media-is-private="true"
-                        @media-drop="onMediaDropped('applePayPemMediaId', $event)"
-                        @media-upload-remove-image="onRemoveMedia('applePayPemMediaId')"
+                        @media-drop="onMediaDropped('pemMediaId', $event)"
+                        @media-upload-remove-image="onRemoveMedia('pemMediaId')"
                     />
                 {% endblock %}
             </div>
         {% endblock %}
-    </sw-card>
+    </div>
 {% endblock %}

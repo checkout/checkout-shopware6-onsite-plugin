@@ -5,7 +5,7 @@ namespace CheckoutCom\Shopware6\Tests\Services\Transition;
 use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Service\Transition\OrderTransitionService;
 use CheckoutCom\Shopware6\Service\Transition\TransitionService;
-use CheckoutCom\Shopware6\Struct\SettingStruct;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
 use Exception;

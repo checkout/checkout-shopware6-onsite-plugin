@@ -5,7 +5,7 @@ namespace CheckoutCom\Shopware6\Service\Order;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\Transition\OrderTransitionService;
 use CheckoutCom\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
-use CheckoutCom\Shopware6\Struct\SettingStruct;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;

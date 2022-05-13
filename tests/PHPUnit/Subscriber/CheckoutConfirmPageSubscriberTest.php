@@ -5,7 +5,7 @@ namespace CheckoutCom\Shopware6\Tests\Subscriber;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Helper\Url;
 use CheckoutCom\Shopware6\Struct\Extension\ConfirmPageExtensionStruct;
-use CheckoutCom\Shopware6\Struct\SettingStruct;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use CheckoutCom\Shopware6\Subscriber\CheckoutConfirmPageSubscriber;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use PHPUnit\Framework\MockObject\MockObject;

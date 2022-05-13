@@ -12,7 +12,7 @@ use CheckoutCom\Shopware6\Service\Order\OrderService;
 use CheckoutCom\Shopware6\Service\Order\OrderTransactionService;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
 use CheckoutCom\Shopware6\Struct\PaymentHandler\HandlerPrepareProcessStruct;
-use CheckoutCom\Shopware6\Struct\SettingStruct;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
 use PHPUnit\Framework\MockObject\MockObject;

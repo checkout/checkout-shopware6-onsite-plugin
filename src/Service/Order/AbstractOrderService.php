@@ -3,7 +3,7 @@
 namespace CheckoutCom\Shopware6\Service\Order;
 
 use CheckoutCom\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
-use CheckoutCom\Shopware6\Struct\SettingStruct;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;

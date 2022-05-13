@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Struct;
+namespace CheckoutCom\Shopware6\Struct\SystemConfig;
 
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Webhook;
 use Shopware\Core\Framework\Struct\Struct;
@@ -23,15 +23,9 @@ class SettingStruct extends Struct
 
     protected string $orderStateForVoidedPayment = self::ORDER_STATE_SKIP;
 
-    protected ?string $applePayMerchantId = null;
+    protected ?ApplePaySettingStruct $applepay = null;
 
-    protected ?string $applePayDomainMediaId = null;
-
-    protected ?string $applePayKeyMediaId = null;
-
-    protected ?string $applePayPemMediaId = null;
-
-    protected ?string $googlePayMerchantId = null;
+    protected ?GooglePaySettingStruct $googlepay = null;
 
     protected ?Webhook $webhook = null;
 
@@ -105,54 +99,24 @@ class SettingStruct extends Struct
         $this->orderStateForVoidedPayment = $orderStateForVoidedPayment;
     }
 
-    public function getApplePayMerchantId(): ?string
+    public function getApplePay(): ApplePaySettingStruct
     {
-        return $this->applePayMerchantId;
+        return $this->applepay ?? new ApplePaySettingStruct();
     }
 
-    public function setApplePayMerchantId(?string $applePayMerchantId): void
+    public function setApplePay(?ApplePaySettingStruct $applePay): void
     {
-        $this->applePayMerchantId = $applePayMerchantId;
+        $this->applepay = $applePay;
     }
 
-    public function getApplePayDomainMediaId(): ?string
+    public function getGooglePay(): GooglePaySettingStruct
     {
-        return $this->applePayDomainMediaId;
+        return $this->googlepay ?? new GooglePaySettingStruct();
     }
 
-    public function setApplePayDomainMediaId(?string $applePayDomainMediaId): void
+    public function setGooglePay(?GooglePaySettingStruct $googlePay): void
     {
-        $this->applePayDomainMediaId = $applePayDomainMediaId;
-    }
-
-    public function getApplePayKeyMediaId(): ?string
-    {
-        return $this->applePayKeyMediaId;
-    }
-
-    public function setApplePayKeyMediaId(?string $applePayKeyMediaId): void
-    {
-        $this->applePayKeyMediaId = $applePayKeyMediaId;
-    }
-
-    public function getApplePayPemMediaId(): ?string
-    {
-        return $this->applePayPemMediaId;
-    }
-
-    public function setApplePayPemMediaId(?string $applePayPemMediaId): void
-    {
-        $this->applePayPemMediaId = $applePayPemMediaId;
-    }
-
-    public function getGooglePayMerchantId(): ?string
-    {
-        return $this->googlePayMerchantId;
-    }
-
-    public function setGooglePayMerchantId(?string $googlePayMerchantId): void
-    {
-        $this->googlePayMerchantId = $googlePayMerchantId;
+        $this->googlepay = $googlePay;
     }
 
     public function getWebhook(): ?Webhook
