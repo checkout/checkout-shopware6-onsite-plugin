@@ -8,6 +8,7 @@ use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
 use CheckoutCom\Shopware6\Service\Webhook\WebhookService;
 use CheckoutCom\Shopware6\Struct\WebhookReceiveDataStruct;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Validation\DataValidationDefinition;
@@ -32,10 +33,13 @@ class WebhookController extends AbstractController
 
     private WebhookService $webhookService;
 
-    public function __construct(DataValidator $validator, WebhookService $webhookService)
+    private LoggerInterface $logger;
+
+    public function __construct(DataValidator $validator, WebhookService $webhookService, LoggerInterface $logger)
     {
         $this->validator = $validator;
         $this->webhookService = $webhookService;
+        $this->logger = $logger;
     }
 
     /**
@@ -49,6 +53,8 @@ class WebhookController extends AbstractController
      */
     public function webhooks(Request $request, Context $context): JsonResponse
     {
+        $this->logger->info('Received a checkout webhook event', $request->request->all());
+
         $token = $request->headers->get('Authorization');
         $salesChannelId = (string) $request->query->get('salesChannelId');
 

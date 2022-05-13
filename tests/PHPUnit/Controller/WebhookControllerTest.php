@@ -14,6 +14,7 @@ use Shopware\Core\Framework\Validation\DataValidator;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Log\Logger;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 
@@ -31,14 +32,20 @@ class WebhookControllerTest extends TestCase
      */
     private $webhookService;
 
+    /**
+     * @var LoggerInterface|MockObject
+     */
+    private $logger;
+
     public function setUp(): void
     {
         $this->validator = $this->createMock(DataValidator::class);
         $this->webhookService = $this->createMock(WebhookService::class);
-
+        $this->logger = $this->createMock(Logger::class);
         $this->webhookController = new WebhookController(
             $this->validator,
-            $this->webhookService
+            $this->webhookService,
+            $this->logger
         );
     }
 
@@ -55,6 +62,8 @@ class WebhookControllerTest extends TestCase
         if ($token !== null) {
             $this->webhookService->expects(static::once())->method('authenticateToken')->willReturn(false);
         }
+
+        $this->logger->expects(static::once())->method('info');
 
         $this->webhookController->webhooks($request, Context::createDefaultContext());
     }
@@ -89,6 +98,8 @@ class WebhookControllerTest extends TestCase
                 $data
             ));
 
+        $this->logger->expects(static::once())->method('info');
+
         $this->webhookController->webhooks($request, Context::createDefaultContext());
     }
 
@@ -105,6 +116,8 @@ class WebhookControllerTest extends TestCase
 
         $this->webhookService->expects(static::once())->method('authenticateToken')->willReturn(true);
         $this->validator->expects(static::once())->method('validate');
+
+        $this->logger->expects(static::once())->method('info');
 
         $response = $this->webhookController->webhooks($request, Context::createDefaultContext());
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CheckoutCom\Shopware6\Tests\Handler\Method;
 
+use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\Source\Apm\RequestGiropaySource;
 use CheckoutCom\Shopware6\Handler\Method\GiropayHandler;
@@ -38,6 +39,11 @@ class GiropayHandlerTest extends AbstractPaymentHandlerTest
     public function testSnippetKey(): void
     {
         static::assertSame('checkoutCom.paymentMethod.giropayLabel', $this->paymentHandler->getSnippetKey());
+    }
+
+    public function testPaymentMethodType(): void
+    {
+        static::assertSame(PaymentSourceType::$giropay, GiropayHandler::getPaymentMethodType());
     }
 
     public function testPrepareDataForPay(): void

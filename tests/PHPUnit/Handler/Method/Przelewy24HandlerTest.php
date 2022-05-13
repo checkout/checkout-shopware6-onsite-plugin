@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace CheckoutCom\Shopware6\Tests\Handler\Method;
 
+use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\PaymentRequest;
 use CheckoutCom\Shopware6\Handler\Method\Przelewy24Handler;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
@@ -38,6 +39,11 @@ class Przelewy24HandlerTest extends AbstractPaymentHandlerTest
     public function testSnippetKey(): void
     {
         static::assertSame('checkoutCom.paymentMethod.p24Label', $this->paymentHandler->getSnippetKey());
+    }
+
+    public function testPaymentMethodType(): void
+    {
+        static::assertSame(PaymentSourceType::$przelewy24, Przelewy24Handler::getPaymentMethodType());
     }
 
     public function testPrepareDataForPay(): void
