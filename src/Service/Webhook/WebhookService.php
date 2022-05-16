@@ -108,6 +108,12 @@ class WebhookService extends AbstractWebhookService
 
             case CheckoutWebhookService::PAYMENT_DECLINED:
                 return CheckoutPaymentService::STATUS_DECLINED;
+
+            case CheckoutWebhookService::PAYMENT_EXPIRED:
+                return CheckoutPaymentService::STATUS_EXPIRED;
+
+            case CheckoutWebhookService::PAYMENT_CANCELED:
+                return CheckoutPaymentService::STATUS_CANCELED;
             default:
                 $this->logger->critical('Unknown Checkout event type', [
                     'event' => $type,

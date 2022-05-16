@@ -17,6 +17,10 @@ class CheckoutPaymentService extends AbstractCheckoutService
     public const STATUS_REFUNDED = 'Refunded';
     public const STATUS_PAID = 'Paid';
     public const STATUS_FAILED = 'Failed';
+    public const STATUS_CANCELED = 'Canceled';
+    public const STATUS_EXPIRED = 'Expired';
+    public const STATUS_PARTIALLY_CAPTURED = 'Partially Captured';
+    public const STATUS_PARTIALLY_REFUNDED = 'Partially Refunded';
 
     /**
      * @throws CheckoutApiException

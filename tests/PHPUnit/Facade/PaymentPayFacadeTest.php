@@ -150,7 +150,9 @@ class PaymentPayFacadeTest extends TestCase
                 ->method('getPaymentDetails')
                 ->willReturn($payment);
 
-            if ($checkoutPaymentStatus === CheckoutPaymentService::STATUS_DECLINED) {
+            if ($checkoutPaymentStatus === CheckoutPaymentService::STATUS_DECLINED
+            || $checkoutPaymentStatus === CheckoutPaymentService::STATUS_EXPIRED
+            || $checkoutPaymentStatus === CheckoutPaymentService::STATUS_CANCELED) {
                 $currency = $this->getCurrency();
                 $customer = $this->setUpCustomer();
 
@@ -256,6 +258,20 @@ class PaymentPayFacadeTest extends TestCase
                 false,
                 true,
                 CheckoutPaymentService::STATUS_DECLINED,
+            ],
+            'Test has checkout payment id, request get payment detail and payment is not approved, status is expired' => [
+                'checkout id',
+                false,
+                false,
+                true,
+                CheckoutPaymentService::STATUS_EXPIRED,
+            ],
+            'Test has checkout payment id, request get payment detail and payment is not approved, status is canceled' => [
+                'checkout id',
+                false,
+                false,
+                true,
+                CheckoutPaymentService::STATUS_CANCELED,
             ],
         ];
     }

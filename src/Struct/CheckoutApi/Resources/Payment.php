@@ -2,6 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Struct\CheckoutApi\Resources;
 
+use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use Shopware\Core\Framework\Struct\Struct;
 
 class Payment extends Struct
@@ -40,6 +41,17 @@ class Payment extends Struct
     public function getStatus(): ?string
     {
         return $this->status;
+    }
+
+    public function isFailed(): bool
+    {
+        $failedStatus = [
+            CheckoutPaymentService::STATUS_DECLINED,
+            CheckoutPaymentService::STATUS_CANCELED,
+            CheckoutPaymentService::STATUS_EXPIRED,
+        ];
+
+        return \in_array($this->status, $failedStatus, true);
     }
 
     public function getReference(): ?string

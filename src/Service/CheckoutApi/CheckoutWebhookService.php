@@ -53,6 +53,8 @@ class CheckoutWebhookService extends AbstractCheckoutService
         self::PAYMENT_REFUNDED,
         self::PAYMENT_PENDING,
         self::PAYMENT_DECLINED,
+        self::PAYMENT_EXPIRED,
+        self::PAYMENT_CANCELED,
     ];
 
     private RouterInterface $router;

@@ -164,6 +164,12 @@ class WebhookServiceTest extends TestCase
             'declined' => [
                 'type' => CheckoutWebhookService::PAYMENT_DECLINED,
             ],
+            'expired' => [
+                'type' => CheckoutWebhookService::PAYMENT_EXPIRED,
+            ],
+            'canceled' => [
+                'type' => CheckoutWebhookService::PAYMENT_CANCELED,
+            ],
             'unknown status' => [
                 'type' => 'unknown_status',
             ],

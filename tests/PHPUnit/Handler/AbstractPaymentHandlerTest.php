@@ -18,6 +18,7 @@ use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
+use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -111,7 +112,11 @@ abstract class AbstractPaymentHandlerTest extends TestCase
         if ($exception !== null) {
             $finalizeMethodMocker->will(static::throwException($exception));
 
-            static::expectException(AsyncPaymentFinalizeException::class);
+            if ($exception instanceof CustomerCanceledAsyncPaymentException) {
+                static::expectException(CustomerCanceledAsyncPaymentException::class);
+            } else {
+                static::expectException(AsyncPaymentFinalizeException::class);
+            }
         }
 
         $this->paymentHandler->finalize(
@@ -145,6 +150,9 @@ abstract class AbstractPaymentHandlerTest extends TestCase
             ],
             'Test throw AsyncPaymentFinalizeException' => [
                 new AsyncPaymentFinalizeException('bar', 'foo'),
+            ],
+            'Test throw CustomerCanceledAsyncPaymentException' => [
+                new CustomerCanceledAsyncPaymentException('bar', 'foo'),
             ],
             'Test pay successful' => [
                 null,

@@ -75,10 +75,12 @@ class OrderTransactionService extends AbstractOrderTransactionService
     {
         switch ($checkoutPaymentStatus) {
             case CheckoutPaymentService::STATUS_DECLINED:
+            case CheckoutPaymentService::STATUS_EXPIRED:
                 $this->orderTransactionTransitionService->failTransaction($transaction, $context);
 
                 break;
             case CheckoutPaymentService::STATUS_VOID:
+            case CheckoutPaymentService::STATUS_CANCELED:
                 $this->orderTransactionTransitionService->cancelTransaction($transaction, $context);
 
                 break;

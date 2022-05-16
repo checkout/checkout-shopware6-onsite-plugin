@@ -130,9 +130,19 @@ class OrderTransactionServiceTest extends TestCase
                 CheckoutPaymentService::STATUS_DECLINED,
                 'failTransaction',
             ],
+            'Test transition order transaction success with checkout status is expired' => [
+                false,
+                CheckoutPaymentService::STATUS_EXPIRED,
+                'failTransaction',
+            ],
             'Test transition order transaction success with checkout status is voided' => [
                 false,
                 CheckoutPaymentService::STATUS_VOID,
+                'cancelTransaction',
+            ],
+            'Test transition order transaction success with checkout status is canceled' => [
+                false,
+                CheckoutPaymentService::STATUS_CANCELED,
                 'cancelTransaction',
             ],
             'Test transition order transaction success with checkout status is authorized' => [
