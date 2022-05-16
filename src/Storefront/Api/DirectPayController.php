@@ -4,6 +4,7 @@ namespace CheckoutCom\Shopware6\Storefront\Api;
 
 use CheckoutCom\Shopware6\Facade\DirectPayFacade;
 use CheckoutCom\Shopware6\Handler\Method\ApplePayHandler;
+use CheckoutCom\Shopware6\Handler\Method\GooglePayHandler;
 use CheckoutCom\Shopware6\Struct\Response\AddProductToDirectCartResponse;
 use CheckoutCom\Shopware6\Struct\Response\DirectProcessResponse;
 use CheckoutCom\Shopware6\Struct\Response\DirectShippingResponse;
@@ -382,6 +383,7 @@ class DirectPayController extends AbstractDirectPayController
     {
         return [
             ApplePayHandler::getPaymentMethodType(),
+            GooglePayHandler::getPaymentMethodType(),
         ];
     }
 }

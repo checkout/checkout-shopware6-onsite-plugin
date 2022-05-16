@@ -1,0 +1,26 @@
+{% block checkout_com_google_pay_direct %}
+    {% set ENV_TEST = constant('CheckoutCom\\Shopware6\\Handler\\Method\\GooglePayHandler::ENV_TEST') %}
+    {% set ENV_PRODUCTION = constant('CheckoutCom\\Shopware6\\Handler\\Method\\GooglePayHandler::ENV_PRODUCTION') %}
+
+    {% set googlePayDirectOptions = {
+        "environment": page.extensions.checkoutCom.sandboxMode ? ENV_TEST : ENV_PRODUCTION,
+        "merchantId": page.extensions.checkoutCom.googlePayMerchantId,
+        "publicKey": page.extensions.checkoutCom.publicKey,
+        "totalPriceLabel": "checkoutCom.payments.totalPriceLabel"|trans|striptags,
+        "subtotalLabel": "checkoutCom.payments.subtotalLabel"|trans|striptags,
+        "unknownError": "checkoutCom.error.unknownError"|trans|striptags,
+        "paymentMethodType": staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\GooglePayHandler::getPaymentMethodType'),
+        "shopName": config('core.basicInformation.shopName'),
+        "addProductToCartEndpoint": path('store-api.checkout-com.direct.add-product-to-cart'),
+        "removeBackupEndpoint": path('store-api.checkout-com.direct.remove-backup'),
+        "getShippingMethodsEndpoint": path('store-api.checkout-com.direct.get-shipping-methods'),
+        "updateShippingPayloadEndpoint": path('store-api.checkout-com.direct.update-shipping-payload'),
+        "processPaymentEndpoint": path('store-api.checkout-com.direct.process-payment'),
+    } %}
+
+    <div id="checkoutComGooglePayDirect"
+         data-checkout-com-google-pay-direct="true"
+         data-checkout-com-google-pay-direct-options='{{ googlePayDirectOptions|json_encode }}'
+    >
+    </div>
+{% endblock %}

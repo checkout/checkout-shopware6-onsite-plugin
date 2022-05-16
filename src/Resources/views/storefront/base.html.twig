@@ -19,6 +19,10 @@
                 {% endblock %}
             {% elseif payment.customFields.checkoutConfig.methodType == METHOD_TYPE_GOOGLE_PAY %}
                 {% set googlePayActive = true %}
+
+                {% block checkout_com_base_main_sales_channel_google_pay_direct %}
+                    {% sw_include '@CheckoutCom/storefront/checkout-com/component/google/google-pay-direct.html.twig' %}
+                {% endblock %}
             {% endif %}
         {% endfor %}
 

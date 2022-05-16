@@ -8,4 +8,10 @@
             {% sw_include '@CheckoutCom/storefront/checkout-com/component/apple/apple-pay-button.html.twig' %}
         </div>
     {% endblock %}
+
+    {% block checkout_com_component_product_box_action_buy_direct_google_pay %}
+        <div class="mt-2 checkout-com-direct-pay-container d-none">
+            {% sw_include '@CheckoutCom/storefront/checkout-com/component/google/google-pay-button.html.twig' %}
+        </div>
+    {% endblock %}
 {% endblock %}

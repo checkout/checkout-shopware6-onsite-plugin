@@ -10,6 +10,7 @@
         >
             <argument type="service" id="translator"/>
             <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
+            <argument type="service" id="Shopware\Core\System\Currency\CurrencyFormatter"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
 
             <call method="setServices">

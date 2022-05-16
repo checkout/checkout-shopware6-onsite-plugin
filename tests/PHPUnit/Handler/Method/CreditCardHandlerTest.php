@@ -10,6 +10,7 @@ use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use Exception;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataValidator;
+use Shopware\Core\System\Currency\CurrencyFormatter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -21,6 +22,7 @@ class CreditCardHandlerTest extends AbstractPaymentHandlerTest
         $this->paymentHandler = new CreditCardHandler(
             $this->createMock(TranslatorInterface::class),
             $this->createMock(DataValidator::class),
+            $this->createMock(CurrencyFormatter::class),
             $this->createMock(SystemConfigService::class),
         );
 

@@ -2,8 +2,8 @@
 
 namespace CheckoutCom\Shopware6\Struct\DirectPay\ApplePay;
 
+use CheckoutCom\Shopware6\Struct\ApiStruct;
 use OpenApi\Annotations as OA;
-use Shopware\Core\Framework\Struct\Struct;
 
 /**
  * @OA\Schema(
@@ -11,24 +11,24 @@ use Shopware\Core\Framework\Struct\Struct;
  *     required={"label", "amount", "type"}
  * )
  */
-class ApplePayLineItemStruct extends Struct
+class ApplePayLineItemStruct extends ApiStruct
 {
     /**
-     *  @OA\Property(
+     * @OA\Property(
      *      description="Label"
      *  )
      */
     protected string $label;
 
     /**
-     *  @OA\Property(
+     * @OA\Property(
      *      description="Amount"
      *  )
      */
     protected float $amount;
 
     /**
-     *  @OA\Property(
+     * @OA\Property(
      *      description="Type"
      *  )
      */
@@ -39,20 +39,5 @@ class ApplePayLineItemStruct extends Struct
         $this->label = $label;
         $this->amount = $amount;
         $this->type = $type;
-    }
-
-    public function getLabel(): string
-    {
-        return $this->label;
-    }
-
-    public function getAmount(): float
-    {
-        return $this->amount;
-    }
-
-    public function getType(): string
-    {
-        return $this->type;
     }
 }

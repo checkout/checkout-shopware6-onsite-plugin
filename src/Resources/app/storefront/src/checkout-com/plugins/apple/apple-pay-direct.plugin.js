@@ -4,7 +4,7 @@ import ApplePayService from '../../services/apple-pay.service';
 import CheckoutComDirectPaymentHandler from '../../core/checkout-com-direct-payment-handler';
 
 /**
- * This Class is responsible for the direct Apple Pay
+ * This Class is responsible for handling Apple Pay direct payment
  */
 export default class CheckoutComApplePayDirect extends CheckoutComDirectPaymentHandler {
     static options = deepmerge(CheckoutComDirectPaymentHandler.options, {
@@ -17,7 +17,7 @@ export default class CheckoutComApplePayDirect extends CheckoutComDirectPaymentH
         this.applePayService = new ApplePayService();
 
         const directButtons = this.getDirectButtons();
-        if (directButtons.length === 0) {
+        if (!directButtons) {
             return;
         }
 
@@ -142,20 +142,10 @@ export default class CheckoutComApplePayDirect extends CheckoutComDirectPaymentH
             token,
             shippingContact,
         } = payment;
-        const requestShippingContact = {
-            email: shippingContact.emailAddress,
-            firstName: shippingContact.givenName,
-            lastName: shippingContact.familyName,
-            phoneNumber: shippingContact.phoneNumber,
-            street: shippingContact.addressLines[0] || '',
-            additionalAddressLine1: shippingContact.addressLines[1] || '',
-            zipCode: shippingContact.postalCode,
-            countryStateCode: shippingContact.administrativeArea,
-            city: shippingContact.locality,
-            countryCode: shippingContact.countryCode,
-        };
-
-        this.paymentAuthorized(token, requestShippingContact).then((result) => {
+        this.paymentAuthorized(
+            token,
+            this.getShippingContactPayload(shippingContact)
+        ).then((result) => {
             const {
                 redirectUrl,
                 success,
@@ -173,6 +163,21 @@ export default class CheckoutComApplePayDirect extends CheckoutComDirectPaymentH
                 this.abortApplePay();
             }
         });
+    }
+
+    getShippingContactPayload(appleShippingContact){
+        return {
+            email: appleShippingContact.emailAddress,
+            firstName: appleShippingContact.givenName,
+            lastName: appleShippingContact.familyName,
+            phoneNumber: appleShippingContact.phoneNumber,
+            street: appleShippingContact.addressLines[0] || '',
+            additionalAddressLine1: appleShippingContact.addressLines[1] || '',
+            zipCode: appleShippingContact.postalCode,
+            countryStateCode: appleShippingContact.administrativeArea,
+            city: appleShippingContact.locality,
+            countryCode: appleShippingContact.countryCode,
+        };
     }
 
     abortApplePay() {

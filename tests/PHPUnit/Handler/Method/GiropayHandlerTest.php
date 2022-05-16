@@ -12,6 +12,7 @@ use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataValidator;
+use Shopware\Core\System\Currency\CurrencyFormatter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -26,6 +27,7 @@ class GiropayHandlerTest extends AbstractPaymentHandlerTest
         $this->paymentHandler = new GiropayHandler(
             $this->createMock(TranslatorInterface::class),
             $this->createMock(DataValidator::class),
+            $this->createMock(CurrencyFormatter::class),
             $this->createMock(SystemConfigService::class),
         );
 

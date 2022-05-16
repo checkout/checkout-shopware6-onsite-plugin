@@ -1,9 +1,8 @@
 {% block checkout_com_apple_pay_button %}
-    <div class="checkout-com-direct-pay {{ cols }}" data-apple-pay="true">
+    <div class="checkout-com-direct-pay d-none {{ cols }}" data-apple-pay="true">
         {% block checkout_com_apple_pay_button_element %}
             <button type="button"
-                    data-apple-pay="true"
-                    class="checkout-com-direct-pay checkout-com-direct-apple-pay btn btn-primary btn-block btn-buy checkout-com-apple-pay-button-with-text checkout-com-apple-pay-button-black w-100 d-none"
+                    class="checkout-com-button-direct-pay checkout-com-direct-apple-pay btn btn-primary btn-block checkout-com-apple-pay-button-with-text checkout-com-apple-pay-button-black w-100"
             >
                 {% block checkout_com_apple_pay_button_element_product_id %}
                     <input type="hidden"

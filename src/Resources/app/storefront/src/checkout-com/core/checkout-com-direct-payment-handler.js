@@ -52,24 +52,10 @@ export default class CheckoutComDirectPaymentHandler extends Plugin {
             directCurrencyCodeName,
             directCountryCodeName,
         } = this.options;
-        const productIdInput = buttonElement.querySelector(`[name='${directProductIdName}']`);
-        if (!productIdInput || !productIdInput.value) {
-            throw new Error('Not found product id');
-        }
 
-        const currencyCodeInput = buttonElement.querySelector(`[name='${directCurrencyCodeName}']`);
-        if (!currencyCodeInput || !currencyCodeInput.value) {
-            throw new Error('Not found currency code');
-        }
-
-        const countryCodeInput = buttonElement.querySelector(`[name='${directCountryCodeName}']`);
-        if (!countryCodeInput || !countryCodeInput.value) {
-            throw new Error('Not found country code');
-        }
-
-        this.productId = productIdInput.value;
-        this.currencyCode = currencyCodeInput.value;
-        this.countryCode = countryCodeInput.value;
+        this.productId = this.getInputValue(buttonElement, directProductIdName);
+        this.currencyCode = this.getInputValue(buttonElement, directCurrencyCodeName);
+        this.countryCode = this.getInputValue(buttonElement, directCountryCodeName);
     }
 
     /**
@@ -78,6 +64,10 @@ export default class CheckoutComDirectPaymentHandler extends Plugin {
      * @returns {Promise<boolean>}
      */
     initDirectPayment() {
+        if (this.cartToken) {
+            return Promise.resolve(true);
+        }
+
         const { productId } = this;
         const { productQuantitySelectClass } = this.options;
 
@@ -203,7 +193,6 @@ export default class CheckoutComDirectPaymentHandler extends Plugin {
         const data = JSON.stringify({
             cartToken: this.cartToken,
         });
-
         this.cartToken = null;
         this.productId = null;
         this.currencyCode = null;
@@ -222,6 +211,15 @@ export default class CheckoutComDirectPaymentHandler extends Plugin {
     removePageLoading() {
         // Remove page loading indicator
         PageLoadingIndicatorUtil.remove();
+    }
+
+    getInputValue(parentElement, nameSelector) {
+        const input = parentElement.querySelector(`[name='${nameSelector}']`);
+        if (!input || !input.value) {
+            throw new Error(`No ${nameSelector} found`);
+        }
+
+        return input.value;
     }
 
     /**

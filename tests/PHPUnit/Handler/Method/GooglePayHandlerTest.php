@@ -12,6 +12,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\DataValidator;
+use Shopware\Core\System\Currency\CurrencyFormatter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -29,6 +30,7 @@ class GooglePayHandlerTest extends AbstractPaymentHandlerTest
         $this->paymentHandler = new GooglePayHandler(
             $this->createMock(TranslatorInterface::class),
             $this->createMock(DataValidator::class),
+            $this->createMock(CurrencyFormatter::class),
             $this->createMock(SystemConfigService::class),
         );
 

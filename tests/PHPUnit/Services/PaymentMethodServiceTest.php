@@ -21,6 +21,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataValidator;
+use Shopware\Core\System\Currency\CurrencyFormatter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -262,6 +263,7 @@ class PaymentMethodServiceTest extends TestCase
                             'trans' => 'Foo',
                         ]),
                         $this->createMock(DataValidator::class),
+                        $this->createMock(CurrencyFormatter::class),
                         $this->createMock(SystemConfigService::class),
                     ),
                 ],

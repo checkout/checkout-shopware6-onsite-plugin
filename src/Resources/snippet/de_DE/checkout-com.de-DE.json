@@ -1,5 +1,8 @@
 {
   "checkoutCom": {
+    "error": {
+      "unknownError": "Ein unbekannter Fehler ist aufgetreten."
+    },
     "paymentMethod": {
       "applePayLabel": "Apple Pay",
       "googlePayLabel": "Google Pay",
@@ -30,10 +33,9 @@
       }
     },
     "payments": {
-      "applePayDirect": {
-        "subtotalLabel": "Zwischensumme",
-        "taxesLabel": "Steuern"
-      }
+      "totalPriceLabel": "Insgesamt",
+      "subtotalLabel": "Zwischensumme",
+      "taxesLabel": "Steuern"
     }
   }
 }

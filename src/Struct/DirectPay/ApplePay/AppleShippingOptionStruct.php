@@ -13,28 +13,28 @@ use OpenApi\Annotations as OA;
 class AppleShippingOptionStruct extends AbstractShippingOptionStruct
 {
     /**
-     *  @OA\Property(
+     * @OA\Property(
      *      description="Indentifier"
      *  ),
      */
     protected ?string $identifier = null;
 
     /**
-     *  @OA\Property(
+     * @OA\Property(
      *      description="Label"
      *  ),
      */
     protected ?string $label = null;
 
     /**
-     *  @OA\Property(
+     * @OA\Property(
      *      description="Amount"
      *  ),
      */
     protected ?float $amount = null;
 
     /**
-     *  @OA\Property(
+     * @OA\Property(
      *      description="Detail"
      *  ),
      */

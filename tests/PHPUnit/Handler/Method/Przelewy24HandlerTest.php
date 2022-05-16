@@ -12,6 +12,7 @@ use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataValidator;
+use Shopware\Core\System\Currency\CurrencyFormatter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -26,6 +27,7 @@ class Przelewy24HandlerTest extends AbstractPaymentHandlerTest
         $this->paymentHandler = new Przelewy24Handler(
             $this->createMock(TranslatorInterface::class),
             $this->createMock(DataValidator::class),
+            $this->createMock(CurrencyFormatter::class),
             $this->createMock(SystemConfigService::class),
         );
 
