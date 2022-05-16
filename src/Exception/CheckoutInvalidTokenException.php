@@ -6,9 +6,7 @@ class CheckoutInvalidTokenException extends CheckoutComException
 {
     public function __construct(string $paymentType = '', array $parameters = [])
     {
-        $message = sprintf('Invalid token for payment type: %s', $paymentType);
-
-        parent::__construct($message, $parameters);
+        parent::__construct(sprintf('Invalid token for payment type: %s', $paymentType), $parameters);
     }
 
     public function getErrorCode(): string

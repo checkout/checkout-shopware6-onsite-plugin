@@ -28,6 +28,12 @@
         "expiryYearPlaceholder": "YY",
         "cvvPlaceholder": "CVV"
       }
+    },
+    "payments": {
+      "applePayDirect": {
+        "subtotalLabel": "Zwischensumme",
+        "taxesLabel": "Steuern"
+      }
     }
   }
 }

@@ -7,12 +7,10 @@ use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\Source\Apm\RequestSofortSource;
 use CheckoutCom\Shopware6\Handler\Method\SofortHandler;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
-use CheckoutCom\Shopware6\Service\Extractor\OrderExtractor;
-use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataValidator;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SofortHandlerTest extends AbstractPaymentHandlerTest
@@ -24,14 +22,12 @@ class SofortHandlerTest extends AbstractPaymentHandlerTest
         parent::setUp();
 
         $this->paymentHandler = new SofortHandler(
-            $this->createMock(LoggerService::class),
             $this->createMock(TranslatorInterface::class),
             $this->createMock(DataValidator::class),
-            $this->createMock(OrderExtractor::class),
-            $this->createMock(CheckoutTokenService::class),
-            $this->paymentPayFacade,
-            $this->paymentFinalizeFacade
+            $this->createMock(SystemConfigService::class),
         );
+
+        $this->setServices();
     }
 
     public function testSnippetKey(): void

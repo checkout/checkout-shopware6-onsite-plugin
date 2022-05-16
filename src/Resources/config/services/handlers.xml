@@ -8,13 +8,17 @@
                  class="CheckoutCom\Shopware6\Handler\PaymentHandler"
                  abstract="true"
         >
-            <argument type="service" id="checkout_com.shopware6.logger"/>
             <argument type="service" id="translator"/>
             <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Extractor\OrderExtractor"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Facade\PaymentPayFacade"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+
+            <call method="setServices">
+                <argument type="service" id="checkout_com.shopware6.logger"/>
+                <argument type="service" id="CheckoutCom\Shopware6\Service\Extractor\OrderExtractor"/>
+                <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService"/>
+                <argument type="service" id="CheckoutCom\Shopware6\Facade\PaymentPayFacade"/>
+                <argument type="service" id="CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade"/>
+            </call>
         </service>
 
         <!-- Credit Card PaymentHandler -->

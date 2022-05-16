@@ -16,13 +16,31 @@
             <argument type="service" id="Shopware\Core\Framework\Plugin\Util\PluginIdProvider"/>
         </service>
 
+        <service id="CheckoutCom\Shopware6\Service\ContextService"
+                 public="true">
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
+        </service>
+
         <service id="CheckoutCom\Shopware6\Service\AddressService">
             <argument type="service" id="order_address.repository"/>
         </service>
 
         <service id="CheckoutCom\Shopware6\Service\CustomerService">
+            <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
             <argument type="service" id="checkout_com.shopware6.logger"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="customer.repository"/>
+            <argument type="service" id="salutation.repository"/>
+        </service>
+
+        <service id="CheckoutCom\Shopware6\Service\CountryService">
+            <argument type="service" id="checkout_com.shopware6.logger"/>
+            <argument type="service" id="country.repository"/>
+            <argument type="service" id="country_state.repository"/>
+        </service>
+
+        <service id="CheckoutCom\Shopware6\Service\ShippingMethodService">
+            <argument type="service" id="shipping_method.repository"/>
         </service>
 
         <service id="CheckoutCom\Shopware6\Service\MediaService">
@@ -35,6 +53,8 @@
         <service id="CheckoutCom\Shopware6\Service\Order\OrderService">
             <argument type="service" id="checkout_com.shopware6.logger"/>
             <argument type="service" id="order.repository"/>
+            <argument type="service" id="order_address.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\SalesChannel\OrderService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\Transition\OrderTransitionService"/>
         </service>
 
@@ -51,6 +71,8 @@
 
         <service id="CheckoutCom\Shopware6\Service\Cart\CartService">
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\ContextService"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute"/>
             <argument type="service" id="Shopware\Core\Content\Product\Cart\ProductLineItemFactory"/>
         </service>
 

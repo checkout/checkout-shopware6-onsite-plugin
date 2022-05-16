@@ -5,12 +5,11 @@ namespace CheckoutCom\Shopware6\Tests\Handler\Method;
 use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\Source\RequestTokenSource;
 use CheckoutCom\Shopware6\Handler\Method\CreditCardHandler;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
-use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use Exception;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataValidator;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CreditCardHandlerTest extends AbstractPaymentHandlerTest
@@ -19,14 +18,12 @@ class CreditCardHandlerTest extends AbstractPaymentHandlerTest
     {
         parent::setUp();
         $this->paymentHandler = new CreditCardHandler(
-            $this->createMock(LoggerService::class),
             $this->createMock(TranslatorInterface::class),
             $this->createMock(DataValidator::class),
-            $this->orderExtractor,
-            $this->createMock(CheckoutTokenService::class),
-            $this->paymentPayFacade,
-            $this->paymentFinalizeFacade
+            $this->createMock(SystemConfigService::class),
         );
+
+        $this->setServices();
     }
 
     public function testSnippetKey(): void

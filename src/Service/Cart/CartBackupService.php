@@ -2,6 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Service\Cart;
 
+use CheckoutCom\Shopware6\Exception\DirectCartInvalidException;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\CartPersisterInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService as CoreCartService;
@@ -35,6 +36,31 @@ class CartBackupService extends AbstractCartBackupService
 
         // Recalculate the cart and persist it
         return $this->coreCartService->recalculate($directCart, $context);
+    }
+
+    public function copyOriginCartToCartContext(SalesChannelContext $context): Cart
+    {
+        // Get the origin cart from the token
+        $originCart = $this->coreCartService->getCart($this->getBackupCartTokenKey($context), $context);
+
+        // Copy to the cart context because we pass the context token as the target cart token
+        return $this->cloneCartAndSave($originCart, $context->getToken(), $context);
+    }
+
+    public function copyDirectCartToCartContext(string $directCartToken, SalesChannelContext $context): Cart
+    {
+        // Get the direct cart from the token
+        $directCart = $this->coreCartService->getCart($directCartToken, $context);
+
+        if ($directCart->getLineItems()->count() === 0) {
+            // The line items can be empty because the cart has already added products to it
+            throw new DirectCartInvalidException($directCartToken, [
+                'message' => 'The line items in the direct cart are empty.',
+            ]);
+        }
+
+        // Copy to the cart context because we pass the context token as the target cart token
+        return $this->cloneCartAndSave($directCart, $context->getToken(), $context);
     }
 
     public function deleteCart(string $token, SalesChannelContext $context): void

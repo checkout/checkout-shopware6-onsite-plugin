@@ -11,8 +11,11 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Customer\CustomerDefinition;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\Exception\CustomerNotFoundByIdException;
+use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\Salutation\SalutationDefinition;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class CustomerServiceTest extends TestCase
 {
@@ -21,6 +24,8 @@ class CustomerServiceTest extends TestCase
 
     private FakeEntityRepository $customerRepository;
 
+    private FakeEntityRepository $salutationRepository;
+
     private CustomerService $customerService;
 
     private SalesChannelContext $salesChannelContext;
@@ -28,11 +33,15 @@ class CustomerServiceTest extends TestCase
     public function setUp(): void
     {
         $this->customerRepository = new FakeEntityRepository(new CustomerDefinition());
+        $this->salutationRepository = new FakeEntityRepository(new SalutationDefinition());
         $this->salesChannelContext = $this->getSaleChannelContext($this);
 
         $this->customerService = new CustomerService(
+            $this->createMock(AbstractRegisterRoute::class),
             $this->createMock(LoggerService::class),
+            $this->createMock(SystemConfigService::class),
             $this->customerRepository,
+            $this->salutationRepository,
         );
     }
 

@@ -3,12 +3,14 @@
 namespace CheckoutCom\Shopware6\Service;
 
 use CheckoutCom\Shopware6\CheckoutCom;
+use CheckoutCom\Shopware6\Exception\PaymentMethodNotFoundException;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Struct\PaymentHandler\PaymentHandlerCollection;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\InstallablePaymentMethodCollection;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\InstallablePaymentMethodStruct;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\InstalledPaymentMethodCollection;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\InstalledPaymentMethodStruct;
+use Exception;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -32,6 +34,20 @@ class PaymentMethodService
         $this->installablePaymentHandlers = new PaymentHandlerCollection($paymentHandlers);
         $this->paymentMethodRepository = $paymentMethodRepository;
         $this->pluginIdProvider = $pluginIdProvider;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getPaymentHandlersByType(string $paymentMethodType): PaymentHandler
+    {
+        $paymentHandler = $this->installablePaymentHandlers->getByPaymentType($paymentMethodType);
+
+        if (!$paymentHandler instanceof PaymentHandler) {
+            throw new Exception(sprintf('Payment handler for type %s not found', $paymentMethodType));
+        }
+
+        return $paymentHandler;
     }
 
     /**
@@ -86,7 +102,7 @@ class PaymentMethodService
     /**
      * Get payment method by handler identifier.
      */
-    public function getPaymentMethodByHandlerIdentifier(Context $context, string $handlerIdentifier, ?bool $active = null): ?PaymentMethodEntity
+    public function getPaymentMethodByHandlerIdentifier(Context $context, string $handlerIdentifier, ?bool $active = null): PaymentMethodEntity
     {
         $paymentCriteria = new Criteria();
         $paymentCriteria->setLimit(1);
@@ -96,7 +112,13 @@ class PaymentMethodService
             $paymentCriteria->addFilter(new EqualsFilter('active', $active));
         }
 
-        return $this->paymentMethodRepository->search($paymentCriteria, $context)->first();
+        $paymentMethod = $this->paymentMethodRepository->search($paymentCriteria, $context)->first();
+
+        if (!$paymentMethod instanceof PaymentMethodEntity) {
+            throw new PaymentMethodNotFoundException($handlerIdentifier);
+        }
+
+        return $paymentMethod;
     }
 
     /**
@@ -136,17 +158,19 @@ class PaymentMethodService
                 'afterOrderEnabled' => true,
             ];
 
-            $existingPaymentMethod = $this->getPaymentMethodByHandlerIdentifier(
-                $context,
-                $paymentMethodData['handlerIdentifier'],
-            );
+            try {
+                $existingPaymentMethod = $this->getPaymentMethodByHandlerIdentifier(
+                    $context,
+                    $paymentMethodData['handlerIdentifier'],
+                );
 
-            // We update the payment method data if it already exists
-            if (isset($existingPaymentMethod) && $existingPaymentMethod instanceof PaymentMethodEntity) {
+                // We update the payment method data if it already exists
                 $paymentMethodData['id'] = $existingPaymentMethod->getId();
                 $paymentMethodData['name'] = $existingPaymentMethod->getName();
                 $paymentMethodData['description'] = $existingPaymentMethod->getDescription();
                 $paymentMethodData['active'] = $existingPaymentMethod->getActive();
+            } catch (PaymentMethodNotFoundException $exception) {
+                // Do nothing to make sure this exception does not block any action behind
             }
 
             $paymentData[] = $paymentMethodData;
@@ -218,12 +242,13 @@ class PaymentMethodService
                 continue;
             }
 
-            $existingPaymentMethod = $this->getPaymentMethodByHandlerIdentifier($context, $paymentMethodHandler);
-            if (!$existingPaymentMethod instanceof PaymentMethodEntity) {
-                continue;
-            }
+            try {
+                $existingPaymentMethod = $this->getPaymentMethodByHandlerIdentifier($context, $paymentMethodHandler);
 
-            $this->setActivatePaymentMethod($existingPaymentMethod->getId(), $isActive, $context);
+                $this->setActivatePaymentMethod($existingPaymentMethod->getId(), $isActive, $context);
+            } catch (PaymentMethodNotFoundException $exception) {
+                // Do nothing to make sure this exception does not block any action behind
+            }
         }
     }
 

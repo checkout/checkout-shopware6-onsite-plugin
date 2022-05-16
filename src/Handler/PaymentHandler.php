@@ -8,6 +8,10 @@ use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
 use CheckoutCom\Shopware6\Service\Extractor\AbstractOrderExtractor;
+use CheckoutCom\Shopware6\Struct\DirectPay\AbstractShippingOptionCollection;
+use CheckoutCom\Shopware6\Struct\DirectPay\AbstractShippingOptionStruct;
+use CheckoutCom\Shopware6\Struct\DirectPay\AbstractShippingPayloadStruct;
+use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -16,10 +20,12 @@ use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
+use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\DataValidator;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -33,6 +39,8 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
 
     protected DataValidator $dataValidator;
 
+    protected SystemConfigService $systemConfigService;
+
     protected AbstractOrderExtractor $orderExtractor;
 
     protected CheckoutTokenService $checkoutTokenService;
@@ -42,17 +50,23 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
     protected PaymentFinalizeFacade $paymentFinalizeFacade;
 
     public function __construct(
-        LoggerInterface $logger,
         TranslatorInterface $translator,
         DataValidator $dataValidator,
+        SystemConfigService $systemConfigService
+    ) {
+        $this->translator = $translator;
+        $this->dataValidator = $dataValidator;
+        $this->systemConfigService = $systemConfigService;
+    }
+
+    public function setServices(
+        LoggerInterface $logger,
         AbstractOrderExtractor $orderExtractor,
         CheckoutTokenService $checkoutTokenService,
         PaymentPayFacade $paymentPayFacade,
         PaymentFinalizeFacade $paymentFinalizeFacade
-    ) {
+    ): void {
         $this->logger = $logger;
-        $this->translator = $translator;
-        $this->dataValidator = $dataValidator;
         $this->orderExtractor = $orderExtractor;
         $this->checkoutTokenService = $checkoutTokenService;
         $this->paymentPayFacade = $paymentPayFacade;
@@ -199,5 +213,43 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
         $threeDs = new ThreeDsRequest();
         $threeDs->enabled = true;
         $paymentRequest->three_ds = $threeDs;
+    }
+
+    /**
+     * Get direct shipping options collection
+     *
+     * @throws Exception
+     */
+    public function getDirectShippingOptions(): AbstractShippingOptionCollection
+    {
+        throw new Exception(sprintf('Get direct shipping options are not supported by: %s', $this->getClassName()));
+    }
+
+    /**
+     * Format direct shipping for each shipping option
+     *
+     * @throws Exception
+     */
+    public function formatDirectShippingOption(ShippingMethodEntity $shippingMethodEntity, float $shippingCostsPrice): AbstractShippingOptionStruct
+    {
+        throw new Exception(sprintf('Format Direct shipping option are not supported by: %s', $this->getClassName()));
+    }
+
+    /**
+     * Get shipping payload data for direct payment
+     *
+     * @throws Exception
+     */
+    public function getDirectShippingPayload(
+        ?AbstractShippingOptionCollection $shippingMethods,
+        DirectPayCartStruct $directPayCart,
+        SalesChannelContext $context
+    ): AbstractShippingPayloadStruct {
+        throw new Exception(sprintf('Get direct shipping payload are not supported by: %s', $this->getClassName()));
+    }
+
+    protected function getShopName(SalesChannelContext $context): string
+    {
+        return $this->systemConfigService->getString('core.basicInformation.shopName', $context->getSalesChannel()->getId());
     }
 }
