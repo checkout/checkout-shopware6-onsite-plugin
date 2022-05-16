@@ -3,6 +3,7 @@
 namespace CheckoutCom\Shopware6\Tests\Handler\Method;
 
 use Checkout\Payments\PaymentRequest;
+use Checkout\Tokens\TokenType;
 use CheckoutCom\Shopware6\Handler\Method\ApplePayHandler;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Token;
@@ -37,6 +38,11 @@ class ApplePayHandlerTest extends AbstractPaymentHandlerTest
     public function testSnippetKey(): void
     {
         static::assertSame('checkoutCom.paymentMethod.applePayLabel', $this->paymentHandler->getSnippetKey());
+    }
+
+    public function testPaymentMethodType(): void
+    {
+        static::assertSame(TokenType::$applepay, ApplePayHandler::getPaymentMethodType());
     }
 
     public function testPrepareDataForPay(): void

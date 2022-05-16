@@ -3,6 +3,7 @@
 namespace CheckoutCom\Shopware6\Tests\Handler\Method;
 
 use Checkout\Payments\PaymentRequest;
+use Checkout\Tokens\TokenType;
 use CheckoutCom\Shopware6\Handler\Method\GooglePayHandler;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Token;
@@ -32,6 +33,16 @@ class GooglePayHandlerTest extends AbstractPaymentHandlerTest
         );
 
         $this->setServices();
+    }
+
+    public function testSnippetKey(): void
+    {
+        static::assertSame('checkoutCom.paymentMethod.googlePayLabel', $this->paymentHandler->getSnippetKey());
+    }
+
+    public function testPaymentMethodType(): void
+    {
+        static::assertSame(TokenType::$googlepay, GooglePayHandler::getPaymentMethodType());
     }
 
     public function testPrepareDataForPay(): void

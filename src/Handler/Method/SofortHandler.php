@@ -20,7 +20,7 @@ class SofortHandler extends PaymentHandler
 
     public static function getPaymentMethodType(): string
     {
-        return PaymentSourceType::$przelewy24;
+        return PaymentSourceType::$sofort;
     }
 
     public function prepareDataForPay(

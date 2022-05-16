@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace CheckoutCom\Shopware6\Tests\Handler\Method;
 
+use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\Source\Apm\RequestSofortSource;
 use CheckoutCom\Shopware6\Handler\Method\SofortHandler;
@@ -33,6 +34,11 @@ class SofortHandlerTest extends AbstractPaymentHandlerTest
     public function testSnippetKey(): void
     {
         static::assertSame('checkoutCom.paymentMethod.sofortLabel', $this->paymentHandler->getSnippetKey());
+    }
+
+    public function testPaymentMethodType(): void
+    {
+        static::assertSame(PaymentSourceType::$sofort, SofortHandler::getPaymentMethodType());
     }
 
     public function testPrepareDataForPay(): void

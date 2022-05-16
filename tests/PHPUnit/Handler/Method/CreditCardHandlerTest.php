@@ -2,6 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Tests\Handler\Method;
 
+use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\Source\RequestTokenSource;
 use CheckoutCom\Shopware6\Handler\Method\CreditCardHandler;
@@ -29,6 +30,11 @@ class CreditCardHandlerTest extends AbstractPaymentHandlerTest
     public function testSnippetKey(): void
     {
         static::assertSame('checkoutCom.paymentMethod.creditCardLabel', $this->paymentHandler->getSnippetKey());
+    }
+
+    public function testPaymentMethodType(): void
+    {
+        static::assertSame(PaymentSourceType::$card, CreditCardHandler::getPaymentMethodType());
     }
 
     /**
