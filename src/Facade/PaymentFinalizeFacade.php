@@ -12,6 +12,8 @@ use CheckoutCom\Shopware6\Service\Order\OrderService;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
+use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -68,6 +70,28 @@ class PaymentFinalizeFacade
         // Get the payment from the checkout.com API
         $payment = $this->checkoutPaymentService->getPaymentDetails($checkoutPaymentId, $salesChannelContext->getSalesChannelId());
         $paymentStatus = $payment->getStatus();
+
+        if ($paymentStatus === CheckoutPaymentService::STATUS_CANCELED) {
+            $message = 'Checkout.com payment is canceled';
+            $this->logger->error($message, [
+                'orderNumber' => $order->getOrderNumber(),
+                'orderTransactionId' => $orderTransaction->getId(),
+            ]);
+
+            // Order payment status will be changed to "Canceled" after throw this exception
+            throw new CustomerCanceledAsyncPaymentException($orderTransaction->getId(), $message);
+        }
+
+        if ($paymentStatus === CheckoutPaymentService::STATUS_DECLINED) {
+            $message = 'Checkout.com payment is declined';
+            $this->logger->error($message, [
+                'orderNumber' => $order->getOrderNumber(),
+                'orderTransactionId' => $orderTransaction->getId(),
+            ]);
+
+            // Order payment status will be changed to "Failed" after throw this exception
+            throw new AsyncPaymentFinalizeException($orderTransaction->getId(), $message);
+        }
 
         if ($paymentStatus === CheckoutPaymentService::STATUS_AUTHORIZED) {
             // We capture the payment from the Checkout.com API, the CheckoutApiException will be thrown if capturing is failed

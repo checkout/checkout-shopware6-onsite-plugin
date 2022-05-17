@@ -138,8 +138,20 @@ class OrderServiceTest extends TestCase
             static::expectException(Exception::class);
         }
 
-        $this->orderTransitionService->expects(static::exactly($expectThrowException ? 0 : 1))
-            ->method('setTransitionState');
+        $skipArray = [
+            CheckoutPaymentService::STATUS_REFUNDED,
+            CheckoutPaymentService::STATUS_PENDING,
+            CheckoutPaymentService::STATUS_CANCELED,
+            CheckoutPaymentService::STATUS_EXPIRED,
+            CheckoutPaymentService::STATUS_DECLINED,
+        ];
+        if (\in_array($checkoutPaymentStatus, $skipArray, true)) {
+            $this->orderTransitionService->expects(static::never())
+                ->method('setTransitionState');
+        } else {
+            $this->orderTransitionService->expects(static::exactly($expectThrowException ? 0 : 1))
+                ->method('setTransitionState');
+        }
 
         $settings = $this->createMock(SettingStruct::class);
 
@@ -211,6 +223,18 @@ class OrderServiceTest extends TestCase
             'Test transition order success with checkout status is pending' => [
                 false,
                 CheckoutPaymentService::STATUS_PENDING,
+            ],
+            'Test transition order success with checkout status is canceled' => [
+                false,
+                CheckoutPaymentService::STATUS_CANCELED,
+            ],
+            'Test transition order success with checkout status is expired' => [
+                false,
+                CheckoutPaymentService::STATUS_EXPIRED,
+            ],
+            'Test transition order success with checkout status is declined' => [
+                false,
+                CheckoutPaymentService::STATUS_DECLINED,
             ],
         ];
     }

@@ -39,6 +39,8 @@ class CheckoutWebhookServiceTest extends AbstractCheckoutTest
             CheckoutWebhookService::PAYMENT_REFUNDED,
             CheckoutWebhookService::PAYMENT_PENDING,
             CheckoutWebhookService::PAYMENT_DECLINED,
+            CheckoutWebhookService::PAYMENT_EXPIRED,
+            CheckoutWebhookService::PAYMENT_CANCELED,
         ]);
     }
 

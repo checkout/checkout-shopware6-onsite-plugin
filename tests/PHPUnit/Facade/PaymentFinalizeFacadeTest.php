@@ -15,6 +15,8 @@ use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
+use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -83,8 +85,26 @@ class PaymentFinalizeFacadeTest extends TestCase
             'status' => $checkoutPaymentStatus,
         ]);
 
+        $isRunProcessTransition = 1;
         if (empty($checkoutPaymentId)) {
+            $isRunProcessTransition = 0;
             static::expectException(CheckoutPaymentIdNotFoundException::class);
+        } elseif ($checkoutPaymentStatus === CheckoutPaymentService::STATUS_DECLINED) {
+            $isRunProcessTransition = 0;
+            $this->checkoutPaymentService
+                ->expects(static::once())
+                ->method('getPaymentDetails')
+                ->willReturn($payment);
+
+            static::expectException(AsyncPaymentFinalizeException::class);
+        } elseif ($checkoutPaymentStatus === CheckoutPaymentService::STATUS_CANCELED) {
+            $isRunProcessTransition = 0;
+            $this->checkoutPaymentService
+                ->expects(static::once())
+                ->method('getPaymentDetails')
+                ->willReturn($payment);
+
+            static::expectException(CustomerCanceledAsyncPaymentException::class);
         } else {
             $this->checkoutPaymentService
                 ->expects(static::once())
@@ -97,11 +117,11 @@ class PaymentFinalizeFacadeTest extends TestCase
         }
 
         $this->orderTransactionService
-            ->expects(static::exactly(empty($checkoutPaymentId) ? 0 : 1))
+            ->expects(static::exactly($isRunProcessTransition))
             ->method('processTransition');
 
         $this->orderService
-            ->expects(static::exactly(empty($checkoutPaymentId) ? 0 : 1))
+            ->expects(static::exactly($isRunProcessTransition))
             ->method('processTransition');
 
         $this->paymentFinalizeFacade->finalize($transaction, $this->salesChannelContext);
@@ -120,6 +140,14 @@ class PaymentFinalizeFacadeTest extends TestCase
             'Test has checkout payment id but it does not need to capture checkout payment' => [
                 'checkout payment id',
                 CheckoutPaymentService::STATUS_CAPTURED,
+            ],
+            'Test has checkout payment id but must cancel checkout payment' => [
+                'checkout payment id',
+                CheckoutPaymentService::STATUS_CANCELED,
+            ],
+            'Test has checkout payment id but must decline checkout payment' => [
+                'checkout payment id',
+                CheckoutPaymentService::STATUS_DECLINED,
             ],
         ];
     }

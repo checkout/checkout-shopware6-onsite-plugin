@@ -11,7 +11,6 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Checkout\Order\OrderStates;
 use Shopware\Core\Checkout\Order\SalesChannel\OrderService as CoreOrderService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -212,13 +211,12 @@ class OrderService extends AbstractOrderService
                 $this->orderTransitionService->setTransitionState($order, $settings->getOrderStateForVoidedPayment(), $context);
 
                 break;
+            // We don't need to change order status for this payment status
             case CheckoutPaymentService::STATUS_REFUNDED:
-                $this->orderTransitionService->setTransitionState($order, OrderStates::STATE_CANCELLED, $context);
-
-                break;
             case CheckoutPaymentService::STATUS_PENDING:
-                $this->orderTransitionService->setTransitionState($order, OrderStates::STATE_OPEN, $context);
-
+            case CheckoutPaymentService::STATUS_CANCELED:
+            case CheckoutPaymentService::STATUS_EXPIRED:
+            case CheckoutPaymentService::STATUS_DECLINED:
                 break;
 
             default:

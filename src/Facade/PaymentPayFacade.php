@@ -148,7 +148,7 @@ class PaymentPayFacade
             $checkoutOrderCustomFields->setCheckoutReturnUrl($payment->getRedirectUrl());
         } else {
             $payment = $this->checkoutPaymentService->getPaymentDetails($checkoutPaymentId, $salesChannelContext->getSalesChannelId());
-            if ($payment->getStatus() === CheckoutPaymentService::STATUS_DECLINED) {
+            if ($payment->isFailed()) {
                 $payment = $this->createCheckoutPayment($paymentHandler, $dataBag, $transaction, $order, $salesChannelContext);
 
                 $checkoutOrderCustomFields->setCheckoutPaymentId($payment->getId());

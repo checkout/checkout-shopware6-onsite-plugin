@@ -20,6 +20,7 @@ use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
+use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\DataValidator;
@@ -194,6 +195,13 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
             // We catch AsyncPaymentFinalizeException, log and throw it again
             $this->logger->error(
                 sprintf('Error finalizing with order %s, Error: %s', $transaction->getOrder()->getOrderNumber(), $ex->getMessage())
+            );
+
+            throw $ex;
+        } catch (CustomerCanceledAsyncPaymentException $ex) {
+            // We catch CustomerCanceledAsyncPaymentException, log and throw it again
+            $this->logger->error(
+                sprintf('Payment of order %s has been canceled', $transaction->getOrder()->getOrderNumber())
             );
 
             throw $ex;
