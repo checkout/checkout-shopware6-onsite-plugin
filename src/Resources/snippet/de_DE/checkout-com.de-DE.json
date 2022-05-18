@@ -11,7 +11,8 @@
       "p24Label": "Przelewy24",
       "sofortLabel": "Sofort",
       "payPalLabel": "PayPal",
-      "sepaLabel": "SEPA Direct Debit"
+      "sepaLabel": "SEPA Direct Debit",
+      "idealLabel": "iDEAL"
     },
     "messages": {
       "card": {

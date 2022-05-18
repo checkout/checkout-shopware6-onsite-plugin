@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace CheckoutCom\Shopware6\Tests\Handler\Method;
 
+use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\Source\Apm\RequestPayPalSource;
 use CheckoutCom\Shopware6\Handler\Method\PayPalHandler;
@@ -34,6 +35,11 @@ class PayPalHandlerTest extends AbstractPaymentHandlerTest
     public function testSnippetKey(): void
     {
         static::assertSame('checkoutCom.paymentMethod.payPalLabel', $this->paymentHandler->getSnippetKey());
+    }
+
+    public function testPaymentMethodType(): void
+    {
+        static::assertSame(PaymentSourceType::$paypal, PayPalHandler::getPaymentMethodType());
     }
 
     public function testGetDirectShippingOptions(): void
