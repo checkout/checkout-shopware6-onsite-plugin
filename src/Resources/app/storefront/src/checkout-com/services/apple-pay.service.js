@@ -27,7 +27,7 @@ export default class ApplePayService {
                 return;
             }
 
-            let { merchant } = JSON.parse(result);
+            const { merchant } = JSON.parse(result);
 
             // Need to commit the merchant to the Apple Pay session to let it know that we are ready to process the payment
             callback(merchant);

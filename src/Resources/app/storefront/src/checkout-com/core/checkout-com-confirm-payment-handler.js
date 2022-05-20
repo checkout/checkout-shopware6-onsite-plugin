@@ -63,7 +63,7 @@ export default class CheckoutComConfirmPaymentHandler extends Plugin {
     /**
      * This method is called when the user clicks on the submit button on the payment form.
      */
-    onConfirmFormSubmit(event) {
+    onConfirmFormSubmit() {
         throw new Error(
             `The "onConfirmFormSubmit" method for the plugin "${this._pluginName}" is not defined.`,
         );

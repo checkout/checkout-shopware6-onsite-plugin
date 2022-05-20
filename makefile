@@ -22,6 +22,10 @@ dev: ## Installs all dev dependencies
 	cd src/Resources/app/administration && npm install
 	cd src/Resources/app/storefront && npm install
 
+core: ## Installs all core dependencies
+	cd vendor/shopware/administration/Resources/app/administration && npm install
+	cd vendor/shopware/storefront/Resources/app/storefront && npm install
+
 clean: ## Cleans all dependencies
 	rm -rf vendor
 
@@ -39,6 +43,10 @@ ecs: ## Starts the ESC checker
 csfix: ## Starts the PHP CS Fixer
 	php ./vendor/bin/ecs check . --config easy-coding-standard.php --fix
 
+jest: ## Starts all Jest tests
+	cd ./src/Resources/app/administration && ./node_modules/.bin/jest --config=jest.config.js
+	cd ./src/Resources/app/storefront && ./node_modules/.bin/jest --config=jest.config.js
+
 lint: ## Runs eslint
 	make lint-js -B
 	make lint-scss -B
@@ -51,15 +59,19 @@ lint-fix: ## Runs eslint and fix
 
 lint-js: ## Runs js eslint
 	npm run --prefix src/Resources/app/administration/ lint
+	npm run --prefix src/Resources/app/storefront/ lint
 
 lint-js-fix: ## Runs eslint and fix
 	npm run --prefix src/Resources/app/administration/ lint -- --fix
+	npm run --prefix src/Resources/app/storefront/ lint -- --fix
 
 lint-scss: ## Runs scss stylelint
 	npm run --prefix src/Resources/app/administration/ lint:scss
+	npm run --prefix src/Resources/app/storefront/ lint:scss-all
 
 lint-scss-fix: ## Runs scss stylelint and fix
 	npm run --prefix src/Resources/app/administration/ lint:scss-fix
+	npm run --prefix src/Resources/app/storefront/ lint:scss-all:fix
 
 lint-twig: ## Runs twig lint
 	npm run --prefix src/Resources/app/administration/ lint:twig
@@ -72,6 +84,7 @@ review: ## Starts the full review pipeline
 	make ecs -B
 	make stan -B
 	make phpunit -B
+	make jest -B
 	make lint-js -B
 	make lint-scss -B
 	make lint-twig -B
