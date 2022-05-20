@@ -7,6 +7,7 @@ use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\PaymentRequest;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Handler\Source\RequestPayPalSource;
+use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use Exception;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -40,11 +41,13 @@ class PayPalHandler extends PaymentHandler
 
     /**
      * Build own PayPal source to call the Checkout.com API
+     *
+     * @throws Exception
      */
     private function buildPayPalSource(OrderEntity $order): RequestPayPalSource
     {
         $source = new RequestPayPalSource();
-        $source->invoice_number = $this->orderExtractor->extractOrderNumber($order);
+        $source->invoice_number = CheckoutComUtil::buildReference($order);
 
         return $source;
     }

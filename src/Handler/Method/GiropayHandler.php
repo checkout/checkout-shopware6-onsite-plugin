@@ -37,11 +37,13 @@ class GiropayHandler extends PaymentHandler
 
     /**
      * Build token source to call the Checkout.com API
+     *
+     * @throws \Exception
      */
     private function buildGiropaySource(OrderEntity $order): RequestGiropaySource
     {
         $request = new RequestGiropaySource();
-        $request->purpose = \sprintf('order_%s', $order->getOrderNumber());
+        $request->purpose = \sprintf('order_%s', $this->orderExtractor->extractOrderNumber($order));
 
         return $request;
     }
