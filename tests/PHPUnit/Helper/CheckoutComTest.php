@@ -8,8 +8,10 @@ use Checkout\Common\CustomerRequest;
 use Checkout\Payments\ShippingDetails;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
 
 class CheckoutComTest extends TestCase
 {
@@ -44,6 +46,25 @@ class CheckoutComTest extends TestCase
         $this->testBuildShipDetail($customerAddress);
     }
 
+    /**
+     * @dataProvider buildReferenceProvider
+     */
+    public function testBuildReference(?string $orderNumber): void
+    {
+        $orderId = 'foo';
+        $order = new OrderEntity();
+        $order->setId($orderId);
+
+        if ($orderNumber === null) {
+            static::expectException(Exception::class);
+        } else {
+            $order->setOrderNumber($orderNumber);
+        }
+
+        $actual = CheckoutComUtil::buildReference($order);
+        static::assertSame(sprintf('ord_%s_id_%s', $orderNumber, $orderId), $actual);
+    }
+
     public function testBuildCustomer(): void
     {
         $firstName = 'FirstName';
@@ -65,6 +86,18 @@ class CheckoutComTest extends TestCase
     {
         $result = CheckoutComUtil::formatPriceCheckout($price, $currency);
         static::assertSame($expected, $result);
+    }
+
+    public function buildReferenceProvider(): array
+    {
+        return [
+            'Test could not find order number' => [
+                null,
+            ],
+            'Test found order number' => [
+                '1234',
+            ],
+        ];
     }
 
     public function customerAddressDataProvider(): array

@@ -13,9 +13,23 @@ use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
 
 class CheckoutComUtil
 {
+    /**
+     * @throws Exception
+     */
+    public static function buildReference(OrderEntity $order): string
+    {
+        $orderNumber = $order->getOrderNumber();
+        if ($orderNumber === null) {
+            throw new Exception('Order number could not be null');
+        }
+
+        return sprintf('ord_%s_id_%s', $orderNumber, $order->getId());
+    }
+
     /**
      * Build ship detail request checkout.com from order address entity shopware
      */

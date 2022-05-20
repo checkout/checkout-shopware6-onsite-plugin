@@ -46,6 +46,7 @@ class GiropayHandlerTest extends AbstractPaymentHandlerTest
 
     public function testPrepareDataForPay(): void
     {
+        $this->orderExtractor->expects(static::once())->method('extractOrderNumber')->willReturn('12345');
         $dataBag = $this->getRequestBag();
         $order = new OrderEntity();
         $order->setId('testId');
