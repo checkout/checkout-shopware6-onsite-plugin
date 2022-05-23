@@ -1,7 +1,8 @@
 {
   "checkoutCom": {
     "error": {
-      "unknownError": "Ein unbekannter Fehler ist aufgetreten."
+      "unknownError": "Ein unbekannter Fehler ist aufgetreten.",
+      "paymentMethodError": "Ein unbekannter Fehler ist aufgetreten. Bitte ändern Sie Ihre Zahlungsmethode oder versuchen Sie es später noch einmal."
     },
     "paymentMethod": {
       "applePayLabel": "Apple Pay",

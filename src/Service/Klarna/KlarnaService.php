@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace CheckoutCom\Shopware6\Service\Klarna;
 
+use Checkout\Payments\Source\Apm\KlarnaProduct;
 use CheckoutCom\Shopware6\Exception\CheckoutComKlarnaException;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
@@ -98,6 +99,8 @@ class KlarnaService
 
     /**
      * @param OrderLineItemCollection|LineItemCollection|Collection $lineItems
+     *
+     * @return array<KlarnaProduct>
      */
     public function buildProductData(Collection $lineItems, string $currencyIsoCode): array
     {
@@ -115,14 +118,15 @@ class KlarnaService
                 continue;
             }
 
-            $results[] = [
-                'name' => $lineItem->getLabel(),
-                'quantity' => $lineItem->getQuantity(),
-                'unit_price' => CheckoutComUtil::formatPriceCheckout($price->getUnitPrice(), $currencyIsoCode),
-                'tax_rate' => (int) $calculatedTax->getTaxRate() * 100,
-                'total_amount' => CheckoutComUtil::formatPriceCheckout($price->getTotalPrice(), $currencyIsoCode),
-                'total_tax_amount' => CheckoutComUtil::formatPriceCheckout($calculatedTax->getTax(), $currencyIsoCode),
-            ];
+            $product = new KlarnaProduct();
+            $product->name = $lineItem->getLabel() ?? '';
+            $product->quantity = $lineItem->getQuantity();
+            $product->unit_price = CheckoutComUtil::formatPriceCheckout($price->getUnitPrice(), $currencyIsoCode);
+            $product->tax_rate = (int) $calculatedTax->getTaxRate() * 100;
+            $product->total_amount = CheckoutComUtil::formatPriceCheckout($price->getTotalPrice(), $currencyIsoCode);
+            $product->total_tax_amount = CheckoutComUtil::formatPriceCheckout($calculatedTax->getTax(), $currencyIsoCode);
+
+            $results[] = $product;
         }
 
         return $results;

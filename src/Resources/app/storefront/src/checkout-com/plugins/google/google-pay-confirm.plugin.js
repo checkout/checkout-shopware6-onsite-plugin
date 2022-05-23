@@ -1,5 +1,4 @@
 import deepmerge from 'deepmerge';
-import StoreApiClient from 'src/service/store-api-client.service';
 import CheckoutComConfirmPaymentHandler from '../../core/checkout-com-confirm-payment-handler';
 import { GOOGLE_PAY } from '../../helper/constants';
 
@@ -16,11 +15,6 @@ export default class CheckoutComGooglePayConfirm extends CheckoutComConfirmPayme
         publicKey: null,
         merchantId: null,
     });
-
-    init() {
-        this.storeApiClient = new StoreApiClient();
-        super.init();
-    }
 
     // Begin submit Google Pay
     onConfirmFormSubmit() {

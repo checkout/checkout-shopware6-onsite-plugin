@@ -62,7 +62,7 @@ class KlarnaController extends AbstractController
      *          @OA\JsonContent(
      *              @OA\Property(
      *                  property="orderId",
-     *                  description="Create klarnar session with orderId",
+     *                  description="Create Klarna session with orderId",
      *                  type="string"
      *              ),
      *          )

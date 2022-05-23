@@ -1,0 +1,43 @@
+{% block checkout_com_klarna_widget %}
+    {% block checkout_com_klarna_widget_import_frame_script %}
+        <script defer src="{{ page.extensions.checkoutCom.klarnaCdnUrl }}"></script>
+    {% endblock %}
+
+    {% set billingAddress = context.customer.activeBillingAddress %}
+
+    {% set klarnaOptions = {
+        "klarnaCreditSessionsEndpoint": path('store-api.checkout-com.klarna.credit-sessions'),
+        "orderId": page.order ? page.order.id : null,
+        "billingAddress": {
+            "city": billingAddress.city,
+            "country": billingAddress.country.iso|upper,
+            "email": context.customer.email,
+            "family_name": billingAddress.lastName,
+            "given_name": billingAddress.firstName,
+            "postal_code": billingAddress.zipcode,
+            "region": billingAddress.countryState|countryStateCode,
+            "street_address": billingAddress.street,
+            "street_address2": billingAddress.additionalAddressLine1
+        }
+    } %}
+
+    {% block checkout_com_klarna_widget_component %}
+        <div id="checkoutComKlarnaCheckoutContainer"
+             data-checkout-com-klarna="true"
+             data-checkout-com-klarna-options='{{ klarnaOptions|json_encode }}'
+        >
+            {% block checkout_com_klarna_widget_component_error_wrap %}
+                <div class="checkout-com-klarna-widget-error d-none">
+                    {% block checkout_com_klarna_widget_component_error_wrap_alert %}
+                        {% sw_include '@Storefront/storefront/utilities/alert.html.twig' with {
+                            type: "danger",
+                            content: "checkoutCom.error.paymentMethodError"|trans|striptags,
+                            icon: "false"
+                        } %}
+                    {% endblock %}
+                </div>
+            {% endblock %}
+        </div>
+    {% endblock %}
+{% endblock %}
+

@@ -11,6 +11,7 @@ import CheckoutComGooglePayDisplay from './checkout-com/plugins/google/google-pa
 import CheckoutComCardPayment from './checkout-com/plugins/card-payment.plugin';
 import CheckoutComSepa from './checkout-com/plugins/sepa.plugin';
 import CheckoutComIdeal from './checkout-com/plugins/ideal.plugin';
+import CheckoutComKlarna from './checkout-com/plugins/klarna.plugin';
 
 const PluginManager = window.PluginManager;
 
@@ -32,3 +33,4 @@ PluginManager.register('CheckoutComGooglePayDisplay', CheckoutComGooglePayDispla
 PluginManager.register('CheckoutComCardPayment', CheckoutComCardPayment, '[data-checkout-com-card-payment]');
 PluginManager.register('CheckoutComSepa', CheckoutComSepa, '[data-checkout-com-sepa]');
 PluginManager.register('CheckoutComIdeal', CheckoutComIdeal, '[data-checkout-com-ideal]');
+PluginManager.register('CheckoutComKlarna', CheckoutComKlarna, '[data-checkout-com-klarna]');

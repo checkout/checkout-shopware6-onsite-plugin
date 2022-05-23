@@ -1,7 +1,8 @@
 {
   "checkoutCom": {
     "error": {
-      "unknownError": "An unknown error occurred."
+      "unknownError": "An unknown error occurred.",
+      "paymentMethodError": "An unknown error occurred. Please change your payment method or try again later."
     },
     "paymentMethod": {
       "applePayLabel": "Apple Pay",
