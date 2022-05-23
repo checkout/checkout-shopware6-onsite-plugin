@@ -135,6 +135,16 @@
                  parent="checkout_com.shopware6.service.checkout_api.abstract_checkout_service">
         </service>
 
+        <service id="CheckoutCom\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService"
+                 parent="checkout_com.shopware6.service.checkout_api.abstract_checkout_service">
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Klarna\KlarnaService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Extractor\OrderExtractor"/>
+        </service>
+
+        <service id="CheckoutCom\Shopware6\Service\Klarna\KlarnaService">
+            <argument type="service" id="language.repository"/>
+        </service>
+
         <!--   EXTRACTOR    -->
         <service id="CheckoutCom\Shopware6\Service\Extractor\OrderExtractor">
             <argument type="service" id="checkout_com.shopware6.logger"/>

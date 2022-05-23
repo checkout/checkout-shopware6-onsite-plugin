@@ -4,6 +4,7 @@ namespace CheckoutCom\Shopware6\Tests\Subscriber;
 
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Helper\Util;
+use CheckoutCom\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
 use CheckoutCom\Shopware6\Service\Order\OrderTransactionService;
@@ -46,6 +47,11 @@ class OrderStateMachineSubscriberTest extends TestCase
      */
     private $checkoutPaymentService;
 
+    /**
+     * @var CheckoutKlarnaService|MockObject
+     */
+    private $checkoutKlarnaService;
+
     private SalesChannelContext $salesChannelContext;
 
     public function setUp(): void
@@ -54,11 +60,13 @@ class OrderStateMachineSubscriberTest extends TestCase
         $this->settingsFactory = $this->createMock(SettingsFactory::class);
         $this->orderTransactionService = $this->createMock(OrderTransactionService::class);
         $this->checkoutPaymentService = $this->createMock(CheckoutPaymentService::class);
+        $this->checkoutKlarnaService = $this->createMock(CheckoutKlarnaService::class);
         $this->subscriber = new OrderStateMachineSubscriber(
             $this->orderService,
             $this->settingsFactory,
             $this->orderTransactionService,
-            $this->checkoutPaymentService
+            $this->checkoutPaymentService,
+            $this->checkoutKlarnaService
         );
     }
 

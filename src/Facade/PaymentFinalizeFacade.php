@@ -5,6 +5,7 @@ namespace CheckoutCom\Shopware6\Facade;
 use CheckoutCom\Shopware6\Event\CheckoutFinalizeStatusEvent;
 use CheckoutCom\Shopware6\Exception\CheckoutPaymentIdNotFoundException;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
+use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
 use CheckoutCom\Shopware6\Service\Order\AbstractOrderTransactionService;
@@ -50,8 +51,11 @@ class PaymentFinalizeFacade
     /**
      * @throws Exception
      */
-    public function finalize(AsyncPaymentTransactionStruct $transaction, SalesChannelContext $salesChannelContext): void
-    {
+    public function finalize(
+        PaymentHandler $paymentHandler,
+        AsyncPaymentTransactionStruct $transaction,
+        SalesChannelContext $salesChannelContext
+    ): void {
         $order = $transaction->getOrder();
         $orderTransaction = $transaction->getOrderTransaction();
         $checkoutOrderCustomFields = OrderService::getCheckoutOrderCustomFields($order);
@@ -93,11 +97,8 @@ class PaymentFinalizeFacade
             throw new AsyncPaymentFinalizeException($orderTransaction->getId(), $message);
         }
 
-        if ($paymentStatus === CheckoutPaymentService::STATUS_AUTHORIZED) {
-            // We capture the payment from the Checkout.com API, the CheckoutApiException will be thrown if capturing is failed
-            $this->checkoutPaymentService->capturePayment($checkoutPaymentId, $salesChannelContext->getSalesChannelId());
-
-            // If we successfully capture the payment, we can mark the status as captured
+        if ($payment->getStatus() === CheckoutPaymentService::STATUS_AUTHORIZED && $paymentHandler->captureWhenFinalize()) {
+            $paymentHandler->capturePayment($checkoutPaymentId, $salesChannelContext);
             $paymentStatus = CheckoutPaymentService::STATUS_CAPTURED;
         }
 

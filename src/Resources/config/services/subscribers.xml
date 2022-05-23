@@ -38,6 +38,8 @@
             <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderTransactionService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService"/>
+
             <tag name="kernel.event_subscriber"/>
         </service>
 

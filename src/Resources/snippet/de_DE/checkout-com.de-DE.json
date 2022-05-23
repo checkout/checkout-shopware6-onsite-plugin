@@ -12,7 +12,8 @@
       "sofortLabel": "Sofort",
       "payPalLabel": "PayPal",
       "sepaLabel": "SEPA Direct Debit",
-      "idealLabel": "iDEAL"
+      "idealLabel": "iDEAL",
+      "klarnaLabel": "Klarna"
     },
     "messages": {
       "card": {

@@ -5,6 +5,7 @@ namespace CheckoutCom\Shopware6\Tests\Facade;
 use CheckoutCom\Shopware6\Exception\CheckoutPaymentIdNotFoundException;
 use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
+use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
@@ -80,6 +81,13 @@ class PaymentFinalizeFacadeTest extends TestCase
         $orderTransaction->setOrder($order);
         $transaction = new AsyncPaymentTransactionStruct($orderTransaction, $order, 'foo url');
 
+        $paymentHandler = $this->createConfiguredMock(
+            PaymentHandler::class,
+            [
+                'captureWhenFinalize' => true,
+            ]
+        );
+
         $payment = new Payment();
         $payment->assign([
             'status' => $checkoutPaymentStatus,
@@ -111,8 +119,7 @@ class PaymentFinalizeFacadeTest extends TestCase
                 ->method('getPaymentDetails')
                 ->willReturn($payment);
 
-            $this->checkoutPaymentService
-                ->expects(static::exactly($checkoutPaymentStatus === CheckoutPaymentService::STATUS_AUTHORIZED ? 1 : 0))
+            $paymentHandler->expects(static::exactly($checkoutPaymentStatus === CheckoutPaymentService::STATUS_AUTHORIZED ? 1 : 0))
                 ->method('capturePayment');
         }
 
@@ -124,7 +131,7 @@ class PaymentFinalizeFacadeTest extends TestCase
             ->expects(static::exactly($isRunProcessTransition))
             ->method('processTransition');
 
-        $this->paymentFinalizeFacade->finalize($transaction, $this->salesChannelContext);
+        $this->paymentFinalizeFacade->finalize($paymentHandler, $transaction, $this->salesChannelContext);
     }
 
     public function finalizeProvider(): array

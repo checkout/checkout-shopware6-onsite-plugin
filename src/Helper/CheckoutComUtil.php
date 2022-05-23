@@ -9,12 +9,14 @@ use Checkout\Common\CustomerRequest;
 use Checkout\Payments\ShippingDetails;
 use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartItemCollection;
 use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
+use CheckoutCom\Shopware6\Struct\LineItemTotalPrice;
 use Exception;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 
 class CheckoutComUtil
 {
@@ -46,8 +48,6 @@ class CheckoutComUtil
 
     /**
      * Build address request checkout.com from customer address entity shopware
-     *
-     * @throws Exception
      */
     public static function buildAddress(OrderAddressEntity $addressEntity): Address
     {
@@ -75,6 +75,30 @@ class CheckoutComUtil
         $customerRequest->email = $customer->getEmail();
 
         return $customerRequest;
+    }
+
+    /**
+     * Build our line item total price struct from the Shopware cart
+     */
+    public static function buildLineItemTotalPriceFromCart(Cart $cart): LineItemTotalPrice
+    {
+        $lineItemTotalPrice = new LineItemTotalPrice();
+        $lineItemTotalPrice->setPrice($cart->getPrice());
+        $lineItemTotalPrice->setLineItems($cart->getLineItems());
+
+        return $lineItemTotalPrice;
+    }
+
+    /**
+     * Build our line item total price struct from the Shopware order entity
+     */
+    public static function buildLineItemTotalPriceFromOrder(OrderEntity $order): LineItemTotalPrice
+    {
+        $lineItemTotalPrice = new LineItemTotalPrice();
+        $lineItemTotalPrice->setPrice($order->getPrice());
+        $lineItemTotalPrice->setLineItems($order->getLineItems());
+
+        return $lineItemTotalPrice;
     }
 
     /**
@@ -118,6 +142,21 @@ class CheckoutComUtil
         }
 
         return $directPayCart;
+    }
+
+    public static function getCountryStateCode(?CountryStateEntity $countryStateEntity): ?string
+    {
+        if (!$countryStateEntity instanceof CountryStateEntity) {
+            return null;
+        }
+
+        $countryStateCode = $countryStateEntity->getShortCode();
+        $countryStateData = explode('-', $countryStateCode);
+        if (empty($countryStateData)) {
+            return null;
+        }
+
+        return end($countryStateData);
     }
 
     /**

@@ -9,7 +9,9 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\EntityNotFoundException;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\System\Currency\CurrencyEntity;
@@ -89,25 +91,7 @@ class OrderExtractor extends AbstractOrderExtractor
      */
     public function extractShippingAddress(OrderEntity $order, SalesChannelContext $context): OrderAddressEntity
     {
-        $deliveries = $order->getDeliveries();
-        if (!$deliveries instanceof OrderDeliveryCollection) {
-            $message = sprintf('Could not extract deliveries from order ID: %s', $order->getId());
-            $this->logger->error($message, [
-                'function' => __FUNCTION__,
-            ]);
-
-            throw new Exception($message);
-        }
-
-        $delivery = $deliveries->first();
-        if (!$delivery instanceof OrderDeliveryEntity) {
-            $message = sprintf('No order delivery found with order ID: %s', $order->getId());
-            $this->logger->error($message, [
-                'function' => __FUNCTION__,
-            ]);
-
-            throw new Exception($message);
-        }
+        $delivery = $this->extractOrderDelivery($order);
 
         $shippingAddress = $delivery->getShippingOrderAddress();
         if (!$shippingAddress instanceof OrderAddressEntity) {
@@ -137,5 +121,62 @@ class OrderExtractor extends AbstractOrderExtractor
         }
 
         return $currency;
+    }
+
+    public function extractOrderLineItems(OrderEntity $order): OrderLineItemCollection
+    {
+        $lineItems = $order->getLineItems();
+        if (!$lineItems instanceof OrderLineItemCollection) {
+            $message = sprintf('Could not line items from order ID: %s', $order->getId());
+            $this->logger->error($message, [
+                'function' => __FUNCTION__,
+            ]);
+
+            throw new Exception($message);
+        }
+
+        return $lineItems;
+    }
+
+    public function extractOrderDelivery(OrderEntity $order): OrderDeliveryEntity
+    {
+        $deliveries = $order->getDeliveries();
+        if (!$deliveries instanceof OrderDeliveryCollection) {
+            $message = sprintf('Could not extract deliveries from order ID: %s', $order->getId());
+            $this->logger->error($message, [
+                'function' => __FUNCTION__,
+            ]);
+
+            throw new Exception($message);
+        }
+
+        $delivery = $deliveries->first();
+        if (!$delivery instanceof OrderDeliveryEntity) {
+            $message = sprintf('No order delivery found with order ID: %s', $order->getId());
+            $this->logger->error($message, [
+                'function' => __FUNCTION__,
+            ]);
+
+            throw new Exception($message);
+        }
+
+        return $delivery;
+    }
+
+    public function extractOrderShippingMethod(OrderEntity $order): ShippingMethodEntity
+    {
+        $delivery = $this->extractOrderDelivery($order);
+
+        $shippingMethod = $delivery->getShippingMethod();
+        if (!$shippingMethod instanceof ShippingMethodEntity) {
+            $message = sprintf('No shipping method found with order ID: %s', $order->getId());
+            $this->logger->error($message, [
+                'function' => __FUNCTION__,
+            ]);
+
+            throw new Exception($message);
+        }
+
+        return $shippingMethod;
     }
 }

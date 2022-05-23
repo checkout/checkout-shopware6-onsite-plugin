@@ -2,8 +2,10 @@
 
 namespace CheckoutCom\Shopware6\Subscriber;
 
+use Checkout\CheckoutApiException;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Helper\Util;
+use CheckoutCom\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
 use CheckoutCom\Shopware6\Service\Order\AbstractOrderTransactionService;
@@ -11,6 +13,7 @@ use CheckoutCom\Shopware6\Service\Order\OrderService;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
 use Exception;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Checkout\Order\Event\OrderStateMachineStateChangeEvent;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\System\StateMachine\Event\StateMachineStateChangeEvent;
@@ -26,22 +29,27 @@ class OrderStateMachineSubscriber implements EventSubscriberInterface
 
     private CheckoutPaymentService $checkoutPaymentService;
 
+    private CheckoutKlarnaService $checkoutKlarnaService;
+
     public function __construct(
         AbstractOrderService $orderService,
         SettingsFactory $settingsFactory,
         AbstractOrderTransactionService $orderTransactionService,
-        CheckoutPaymentService $checkoutPaymentService
+        CheckoutPaymentService $checkoutPaymentService,
+        CheckoutKlarnaService $checkoutKlarnaService
     ) {
         $this->orderService = $orderService;
         $this->settingsFactory = $settingsFactory;
         $this->orderTransactionService = $orderTransactionService;
         $this->checkoutPaymentService = $checkoutPaymentService;
+        $this->checkoutKlarnaService = $checkoutKlarnaService;
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
             'state_machine.order_transaction.state_changed' => 'onOrderTransactionStateChange',
+            'state_enter.order_delivery.state.shipped' => 'onOrderDeliveryEnterStateShipped',
         ];
     }
 
@@ -56,6 +64,22 @@ class OrderStateMachineSubscriber implements EventSubscriberInterface
         }
 
         $this->handleProcessTransaction($event);
+    }
+
+    /**
+     * @throws CheckoutApiException
+     */
+    public function onOrderDeliveryEnterStateShipped(OrderStateMachineStateChangeEvent $event): void
+    {
+        $order = $event->getOrder();
+        $checkoutCustomField = OrderService::getCheckoutOrderCustomFields($order);
+        $paymentId = $checkoutCustomField->getCheckoutPaymentId();
+
+        if (!$paymentId) {
+            return;
+        }
+
+        $this->checkoutKlarnaService->capturePayment($paymentId, $event->getSalesChannelId(), $order);
     }
 
     /**
