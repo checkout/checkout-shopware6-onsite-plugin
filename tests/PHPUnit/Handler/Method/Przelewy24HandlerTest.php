@@ -8,13 +8,12 @@ use Checkout\Payments\PaymentRequest;
 use CheckoutCom\Shopware6\Handler\Method\Przelewy24Handler;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Handler\Source\RequestPrzelewy24Source;
+use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
 use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
+use Exception;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Framework\Validation\DataValidator;
-use Shopware\Core\System\Currency\CurrencyFormatter;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
 
 class Przelewy24HandlerTest extends AbstractPaymentHandlerTest
 {
@@ -25,10 +24,10 @@ class Przelewy24HandlerTest extends AbstractPaymentHandlerTest
         parent::setUp();
 
         $this->paymentHandler = new Przelewy24Handler(
-            $this->createMock(TranslatorInterface::class),
-            $this->createMock(DataValidator::class),
-            $this->createMock(CurrencyFormatter::class),
-            $this->createMock(SystemConfigService::class),
+            $this->translator,
+            $this->dataValidator,
+            $this->currencyFormatter,
+            $this->systemConfigService,
         );
 
         $this->setServices();
@@ -42,6 +41,32 @@ class Przelewy24HandlerTest extends AbstractPaymentHandlerTest
     public function testPaymentMethodType(): void
     {
         static::assertSame(PaymentSourceType::$przelewy24, Przelewy24Handler::getPaymentMethodType());
+    }
+
+    public function testGetDirectShippingOptions(): void
+    {
+        static::expectException(Exception::class);
+        $this->paymentHandler->getDirectShippingOptions();
+    }
+
+    public function testFormatDirectShippingOption(): void
+    {
+        static::expectException(Exception::class);
+        $this->paymentHandler->formatDirectShippingOption(
+            $this->createMock(ShippingMethodEntity::class),
+            5.0,
+            $this->saleChannelContext
+        );
+    }
+
+    public function testGetDirectShippingPayload(): void
+    {
+        static::expectException(Exception::class);
+        $this->paymentHandler->getDirectShippingPayload(
+            null,
+            $this->createMock(DirectPayCartStruct::class),
+            $this->saleChannelContext
+        );
     }
 
     public function testPrepareDataForPay(): void

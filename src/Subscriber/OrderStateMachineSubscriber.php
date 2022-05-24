@@ -6,8 +6,8 @@ use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Helper\Util;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
+use CheckoutCom\Shopware6\Service\Order\AbstractOrderTransactionService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
-use CheckoutCom\Shopware6\Service\Order\OrderTransactionService;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
 use Exception;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
@@ -22,12 +22,16 @@ class OrderStateMachineSubscriber implements EventSubscriberInterface
 
     private SettingsFactory $settingsFactory;
 
-    private OrderTransactionService $orderTransactionService;
+    private AbstractOrderTransactionService $orderTransactionService;
 
     private CheckoutPaymentService $checkoutPaymentService;
 
-    public function __construct(AbstractOrderService $orderService, SettingsFactory $settingsFactory, OrderTransactionService $orderTransactionService, CheckoutPaymentService $checkoutPaymentService)
-    {
+    public function __construct(
+        AbstractOrderService $orderService,
+        SettingsFactory $settingsFactory,
+        AbstractOrderTransactionService $orderTransactionService,
+        CheckoutPaymentService $checkoutPaymentService
+    ) {
         $this->orderService = $orderService;
         $this->settingsFactory = $settingsFactory;
         $this->orderTransactionService = $orderTransactionService;

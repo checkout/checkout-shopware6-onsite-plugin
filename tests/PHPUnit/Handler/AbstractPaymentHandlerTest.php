@@ -20,9 +20,13 @@ use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\Framework\Validation\DataValidator;
+use Shopware\Core\System\Currency\CurrencyFormatter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Throwable;
 
 abstract class AbstractPaymentHandlerTest extends TestCase
@@ -46,6 +50,26 @@ abstract class AbstractPaymentHandlerTest extends TestCase
     protected $paymentFinalizeFacade;
 
     /**
+     * @var TranslatorInterface|MockObject
+     */
+    protected $translator;
+
+    /**
+     * @var DataValidator|MockObject
+     */
+    protected $dataValidator;
+
+    /**
+     * @var CurrencyFormatter|MockObject
+     */
+    protected $currencyFormatter;
+
+    /**
+     * @var SystemConfigService|MockObject
+     */
+    protected $systemConfigService;
+
+    /**
      * @var MockObject|SalesChannelContext
      */
     protected $saleChannelContext;
@@ -58,6 +82,10 @@ abstract class AbstractPaymentHandlerTest extends TestCase
         $this->orderExtractor = $this->createMock(AbstractOrderExtractor::class);
         $this->paymentPayFacade = $this->createMock(PaymentPayFacade::class);
         $this->paymentFinalizeFacade = $this->createMock(PaymentFinalizeFacade::class);
+        $this->translator = $this->createMock(TranslatorInterface::class);
+        $this->dataValidator = $this->createMock(DataValidator::class);
+        $this->currencyFormatter = $this->createMock(CurrencyFormatter::class);
+        $this->systemConfigService = $this->createMock(SystemConfigService::class);
     }
 
     public function setServices(): void
