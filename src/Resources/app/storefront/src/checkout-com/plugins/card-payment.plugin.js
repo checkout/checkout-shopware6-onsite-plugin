@@ -52,7 +52,7 @@ export default class CheckoutComCardPayment extends Plugin {
         } = this.options;
 
         // Submit payment form handler
-        this.submitPaymentButton.addEventListener('click', this.onSubmitPaymentClick.bind(this));
+        this.submitPaymentButton.addEventListener('click', this.onSubmitPayment.bind(this));
 
         Frames.init({
             publicKey,
@@ -66,7 +66,7 @@ export default class CheckoutComCardPayment extends Plugin {
         });
     }
 
-    onSubmitPaymentClick(event) {
+    onSubmitPayment(event) {
         const { cardholderNameId } = this.options;
 
         event.preventDefault();

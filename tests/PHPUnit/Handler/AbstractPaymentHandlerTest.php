@@ -6,6 +6,7 @@ use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\RequestUtil;
+use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutSourceService;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
 use CheckoutCom\Shopware6\Service\Extractor\AbstractOrderExtractor;
 use CheckoutCom\Shopware6\Service\LoggerService;
@@ -38,6 +39,16 @@ abstract class AbstractPaymentHandlerTest extends TestCase
      * @var AbstractOrderExtractor|MockObject
      */
     protected $orderExtractor;
+
+    /**
+     * @var CheckoutTokenService|MockObject
+     */
+    protected $checkoutTokenService;
+
+    /**
+     * @var CheckoutSourceService|MockObject
+     */
+    protected $checkoutSourceService;
 
     /**
      * @var PaymentPayFacade|MockObject
@@ -80,6 +91,8 @@ abstract class AbstractPaymentHandlerTest extends TestCase
     {
         $this->saleChannelContext = $this->getSaleChannelContext($this);
         $this->orderExtractor = $this->createMock(AbstractOrderExtractor::class);
+        $this->checkoutTokenService = $this->createMock(CheckoutTokenService::class);
+        $this->checkoutSourceService = $this->createMock(CheckoutSourceService::class);
         $this->paymentPayFacade = $this->createMock(PaymentPayFacade::class);
         $this->paymentFinalizeFacade = $this->createMock(PaymentFinalizeFacade::class);
         $this->translator = $this->createMock(TranslatorInterface::class);
@@ -93,7 +106,8 @@ abstract class AbstractPaymentHandlerTest extends TestCase
         $this->paymentHandler->setServices(
             $this->createMock(LoggerService::class),
             $this->orderExtractor,
-            $this->createMock(CheckoutTokenService::class),
+            $this->checkoutTokenService,
+            $this->checkoutSourceService,
             $this->paymentPayFacade,
             $this->paymentFinalizeFacade
         );

@@ -6,6 +6,7 @@ use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\ThreeDsRequest;
 use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
+use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutSourceService;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
 use CheckoutCom\Shopware6\Service\Extractor\AbstractOrderExtractor;
 use CheckoutCom\Shopware6\Struct\DirectPay\AbstractShippingOptionCollection;
@@ -49,6 +50,8 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
 
     protected CheckoutTokenService $checkoutTokenService;
 
+    protected CheckoutSourceService $checkoutSourceService;
+
     protected PaymentPayFacade $paymentPayFacade;
 
     protected PaymentFinalizeFacade $paymentFinalizeFacade;
@@ -69,12 +72,14 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
         LoggerInterface $logger,
         AbstractOrderExtractor $orderExtractor,
         CheckoutTokenService $checkoutTokenService,
+        CheckoutSourceService $checkoutSourceService,
         PaymentPayFacade $paymentPayFacade,
         PaymentFinalizeFacade $paymentFinalizeFacade
     ): void {
         $this->logger = $logger;
         $this->orderExtractor = $orderExtractor;
         $this->checkoutTokenService = $checkoutTokenService;
+        $this->checkoutSourceService = $checkoutSourceService;
         $this->paymentPayFacade = $paymentPayFacade;
         $this->paymentFinalizeFacade = $paymentFinalizeFacade;
     }
