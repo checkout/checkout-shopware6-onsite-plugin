@@ -10,7 +10,8 @@
       "giropayLabel": "Giropay",
       "p24Label": "Przelewy24",
       "sofortLabel": "Sofort",
-      "payPalLabel": "PayPal"
+      "payPalLabel": "PayPal",
+      "sepaLabel": "SEPA Direct Debit"
     },
     "messages": {
       "card": {
