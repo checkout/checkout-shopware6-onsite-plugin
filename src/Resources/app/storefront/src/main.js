@@ -9,6 +9,7 @@ import CheckoutComGooglePayDirect from './checkout-com/plugins/google/google-pay
 import CheckoutComGooglePayDisplay from './checkout-com/plugins/google/google-pay-display.plugin';
 
 import CheckoutComCardPayment from './checkout-com/plugins/card-payment.plugin';
+import CheckoutComSepa from './checkout-com/plugins/sepa.plugin';
 
 const PluginManager = window.PluginManager;
 
@@ -28,3 +29,4 @@ PluginManager.register('CheckoutComGooglePayDisplay', CheckoutComGooglePayDispla
 // Show card payments components in the checkout
 // -----------------------------------------------------------------------------
 PluginManager.register('CheckoutComCardPayment', CheckoutComCardPayment, '[data-checkout-com-card-payment]');
+PluginManager.register('CheckoutComSepa', CheckoutComSepa, '[data-checkout-com-sepa]');

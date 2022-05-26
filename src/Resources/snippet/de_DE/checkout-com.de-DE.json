@@ -31,6 +31,10 @@
         "expiryMonthPlaceholder": "MM",
         "expiryYearPlaceholder": "YY",
         "cvvPlaceholder": "CVV"
+      },
+      "sepa": {
+        "ibanLabel": "IBAN",
+        "ibanPlaceholder": "IBAN"
       }
     },
     "payments": {

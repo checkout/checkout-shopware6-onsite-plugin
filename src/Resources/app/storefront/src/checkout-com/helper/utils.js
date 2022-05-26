@@ -12,3 +12,7 @@ const createInput = (field, value) => {
 export const createTokenInput = (token) => {
     return createInput(`${DATA_BAG_KEY}[token]`, token);
 };
+
+export const createSourceInput = (field, value) => {
+    return createInput(`${DATA_BAG_KEY}[source][${field}]`, value);
+};
