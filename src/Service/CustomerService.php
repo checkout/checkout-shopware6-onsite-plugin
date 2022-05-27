@@ -54,10 +54,12 @@ class CustomerService
 
     public function registerAndLoginCustomer(
         RegisterAndLoginGuestRequest $registerAndLoginGuestRequest,
+        SalutationEntity $salutation,
         SalesChannelContext $context
     ): RegisterAndLoginGuestStruct {
         $dataBag = $this->getRegisterCustomerDataBag(
             $registerAndLoginGuestRequest,
+            $salutation,
             $context
         );
 
@@ -126,9 +128,9 @@ class CustomerService
 
     private function getRegisterCustomerDataBag(
         RegisterAndLoginGuestRequest $registerAndLoginGuestRequest,
+        SalutationEntity $salutation,
         SalesChannelContext $context
     ): RequestDataBag {
-        $salutation = $this->getNotSpecifiedSalutation($context->getContext());
         $salutationId = $salutation->getId();
         $countryState = $registerAndLoginGuestRequest->getCountryState();
 

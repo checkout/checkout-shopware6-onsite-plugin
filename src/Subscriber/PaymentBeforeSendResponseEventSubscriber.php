@@ -70,7 +70,7 @@ class PaymentBeforeSendResponseEventSubscriber implements EventSubscriberInterfa
                 throw new Exception('Missing context when process convert response');
             }
 
-            $order = $this->orderService->getOrder($orderId, $context);
+            $order = $this->orderService->getOrder($context, $orderId);
             $checkoutOrderCustomFields = OrderService::getCheckoutOrderCustomFields($order);
 
             if (!empty($checkoutOrderCustomFields->getCheckoutPaymentId())) {

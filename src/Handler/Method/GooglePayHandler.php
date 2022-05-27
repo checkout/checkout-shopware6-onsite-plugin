@@ -148,6 +148,7 @@ class GooglePayHandler extends PaymentHandler
         OrderEntity $order,
         SalesChannelContext $context
     ): PaymentRequest {
+        $this->enableThreeDsRequest($paymentRequest);
         $paymentRequest->source = $this->buildTokenSource($dataBag, $context);
 
         return $paymentRequest;

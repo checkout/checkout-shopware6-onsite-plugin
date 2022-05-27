@@ -52,7 +52,7 @@ class ReturnUrlController extends AbstractController
 
         /** @var Context $context */
         $context = $request->get(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT);
-        $order = $this->orderService->getOrder($orderId, $context);
+        $order = $this->orderService->getOrder($context, $orderId);
 
         $finalizeRequest = new Request();
         $finalizeRequest->query->set(self::FINALIZE_JWT_TOKEN, $this->getJwtToken($order));

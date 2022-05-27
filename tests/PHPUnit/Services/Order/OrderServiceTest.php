@@ -15,6 +15,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressDefinition;
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryDefinition;
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\SalesChannel\OrderService as CoreOrderService;
@@ -37,6 +38,8 @@ class OrderServiceTest extends TestCase
 
     private FakeEntityRepository $orderAddressRepository;
 
+    private FakeEntityRepository $orderDeliveryRepository;
+
     /**
      * @var MockObject|OrderTransitionService
      */
@@ -55,6 +58,7 @@ class OrderServiceTest extends TestCase
     {
         $this->orderRepository = new FakeEntityRepository(new OrderDefinition());
         $this->orderAddressRepository = new FakeEntityRepository(new OrderAddressDefinition());
+        $this->orderDeliveryRepository = new FakeEntityRepository(new OrderDeliveryDefinition());
         $this->coreOrderService = $this->createMock(CoreOrderService::class);
         $this->orderTransitionService = $this->createMock(OrderTransitionService::class);
         $this->salesChannelContext = $this->getSaleChannelContext($this);
@@ -63,6 +67,7 @@ class OrderServiceTest extends TestCase
             $this->createMock(LoggerService::class),
             $this->orderRepository,
             $this->orderAddressRepository,
+            $this->orderDeliveryRepository,
             $this->coreOrderService,
             $this->orderTransitionService
         );
@@ -100,7 +105,7 @@ class OrderServiceTest extends TestCase
 
         $this->orderRepository->entitySearchResults[] = $search;
 
-        $order = $this->orderService->getOrder($orderId, $this->salesChannelContext->getContext());
+        $order = $this->orderService->getOrder($this->salesChannelContext->getContext(), $orderId);
 
         static::assertInstanceOf(OrderEntity::class, $order);
     }
@@ -260,6 +265,7 @@ class OrderServiceTest extends TestCase
             $this->createMock(LoggerService::class),
             $orderRepository,
             $this->orderAddressRepository,
+            $this->orderDeliveryRepository,
             $this->coreOrderService,
             $this->orderTransitionService
         );
@@ -289,6 +295,7 @@ class OrderServiceTest extends TestCase
             $this->createMock(LoggerService::class),
             $orderRepository,
             $this->orderAddressRepository,
+            $this->orderDeliveryRepository,
             $this->coreOrderService,
             $this->orderTransitionService
         );
