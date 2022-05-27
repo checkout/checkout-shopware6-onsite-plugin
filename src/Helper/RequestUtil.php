@@ -60,14 +60,4 @@ class RequestUtil
 
         return $paymentData->get(self::DATA_SOURCE);
     }
-
-    public static function getBic(RequestDataBag $dataBag): ?string
-    {
-        $paymentData = static::getPaymentData($dataBag);
-        if (!$paymentData instanceof RequestDataBag) {
-            return null;
-        }
-
-        return $paymentData->get(self::DATA_BIC);
-    }
 }

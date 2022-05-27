@@ -1,0 +1,25 @@
+{% block checkout_com_ideal_fields %}
+    <div id="checkoutComIdeal"
+         class="checkout-com-ideal"
+         data-checkout-com-ideal="true"
+    >
+        {% block checkout_com_ideal_form_bic %}
+            <div class="form-row">
+                <div class="form-group col">
+                    {% block checkout_com_ideal_form_bic_label %}
+                        <label class="form-label" for="idealBic">
+                            {{ "checkoutCom.components.ideal.bicLabel"|trans|striptags }}{{ "general.required"|trans|sw_sanitize }}
+                        </label>
+                    {% endblock %}
+                    {% block checkout_com_ideal_form_bic_input %}
+                        <input id="idealBic" class="form-control checkout-com-field-ideal-bic"
+                               type="text"
+                               required="require"
+                               placeholder="{{ "checkoutCom.components.ideal.bicPlaceholder"|trans|striptags }}"
+                        />
+                    {% endblock %}
+                </div>
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}

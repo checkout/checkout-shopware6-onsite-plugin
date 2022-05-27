@@ -7,9 +7,6 @@ import { DATA_BAG_KEY } from '../helper/constants';
 
 /**
  * This plugin handles the payment process for the checkout order form.
- * It is responsible for submitting the payment data to the backend using AJAX instead of Regular form submission.
- * We will redirect the user after the form is submitted.
- * We use a payment session to validate that the payment is successful.
  */
 export default class CheckoutComConfirmPaymentHandler extends Plugin {
     static options = {
@@ -26,21 +23,9 @@ export default class CheckoutComConfirmPaymentHandler extends Plugin {
         this.withoutHttpClient = new HttpClient(false);
         this.client = new HttpClient();
 
-        this.submitPaymentButton = DomAccess.querySelector(
-            document,
-            submitPaymentButtonId,
-            false,
-        );
-
-        this.submitButtonLoader = new ButtonLoadingIndicator(
-            this.submitPaymentButton,
-        );
-
-        this.paymentForm = DomAccess.querySelector(
-            document,
-            paymentFormId,
-            false,
-        );
+        this.submitPaymentButton = DomAccess.querySelector(document, submitPaymentButtonId, false);
+        this.submitButtonLoader = new ButtonLoadingIndicator(this.submitPaymentButton);
+        this.paymentForm = DomAccess.querySelector(document, paymentFormId, false);
 
         this.registerEvents();
     }
@@ -64,17 +49,14 @@ export default class CheckoutComConfirmPaymentHandler extends Plugin {
      * This method is called when the user clicks on the submit button on the payment form.
      */
     onConfirmFormSubmit() {
-        throw new Error(
-            `The "onConfirmFormSubmit" method for the plugin "${this._pluginName}" is not defined.`,
-        );
+        throw new Error(`The "onConfirmFormSubmit" method for the plugin "${this._pluginName}" is not defined.`);
     }
 
     /**
      * Prepare the handler for submitting the payment data to the backend.
-     * It will call the backend to process the payment.
-     * After the payment is processed, the successful/failure response will be handled by the "onPaymentResponse" method.
+     * It will submit the payment data to the backend using AJAX instead of Regular form submission
      */
-    submitPaymentForm(token) {
+    submitAjaxPaymentForm(token) {
         // Get the action url from the form
         const formAction = this.paymentForm.getAttribute('action');
 

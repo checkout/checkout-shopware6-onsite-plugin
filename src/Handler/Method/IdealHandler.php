@@ -6,6 +6,7 @@ namespace CheckoutCom\Shopware6\Handler\Method;
 use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\Source\Apm\RequestIdealSource;
+use CheckoutCom\Shopware6\Exception\CheckoutInvalidSourceException;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\RequestUtil;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -43,14 +44,19 @@ class IdealHandler extends PaymentHandler
      */
     private function buildIDealSource(RequestDataBag $dataBag, OrderEntity $order): RequestIdealSource
     {
-        $bic = RequestUtil::getBic($dataBag);
+        $sourceData = RequestUtil::getSource($dataBag);
+        if (!$sourceData instanceof RequestDataBag) {
+            throw new CheckoutInvalidSourceException(static::getPaymentMethodType());
+        }
+
+        $sourceData = $sourceData->all();
         $definition = $this->getValidationDefinition();
-        $this->dataValidator->validate([RequestUtil::DATA_BIC => $bic], $definition);
+        $this->dataValidator->validate($sourceData, $definition);
 
         $orderNumber = $this->orderExtractor->extractOrderNumber($order);
 
         $request = new RequestIdealSource();
-        $request->bic = (string) $bic;
+        $request->bic = $sourceData['bic'];
         $request->description = \sprintf('ORD%s', $orderNumber);
 
         return $request;
@@ -59,7 +65,7 @@ class IdealHandler extends PaymentHandler
     private function getValidationDefinition(): DataValidationDefinition
     {
         $definition = new DataValidationDefinition('checkout_com.payment_handler.ideal');
-        $definition->add(RequestUtil::DATA_BIC, new Type('string'), new NotBlank());
+        $definition->add('bic', new Type('string'), new NotBlank());
 
         return $definition;
     }

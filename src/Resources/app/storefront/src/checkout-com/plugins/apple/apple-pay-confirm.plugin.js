@@ -65,7 +65,7 @@ export default class CheckoutComApplePayConfirm extends CheckoutComConfirmPaymen
         const { token } = payment;
 
         // Submit the token to the server to process the payment
-        this.submitPaymentForm(token).then(this.onPaymentResponse.bind(this));
+        this.submitAjaxPaymentForm(token).then(this.onPaymentResponse.bind(this));
     }
 
     /**
