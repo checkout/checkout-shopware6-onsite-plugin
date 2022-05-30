@@ -83,9 +83,9 @@ class CheckoutWebhookService extends AbstractCheckoutService
 
             return $this->buildWebhook($webhook);
         } catch (CheckoutApiException $e) {
-            $errorMessage = $this->modifyAndLogMessage($e, __FUNCTION__);
+            $this->logMessage($e, __FUNCTION__);
 
-            throw new CheckoutApiException($errorMessage);
+            throw $e;
         }
     }
 
@@ -103,13 +103,14 @@ class CheckoutWebhookService extends AbstractCheckoutService
 
             return $this->buildWebhook($webhook);
         } catch (CheckoutApiException $e) {
-            $errorMessage = $this->modifyAndLogMessage($e, __FUNCTION__);
+            $this->logMessage($e, __FUNCTION__);
 
+            // @TODO Update HTTP status code CC-144
             if ($e->http_status_code === Response::HTTP_NOT_FOUND) {
                 throw new CheckoutComWebhookNotFoundException($webhookId);
             }
 
-            throw new CheckoutApiException($errorMessage);
+            throw $e;
         }
     }
 

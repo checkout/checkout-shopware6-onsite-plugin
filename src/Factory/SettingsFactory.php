@@ -3,8 +3,11 @@
 namespace CheckoutCom\Shopware6\Factory;
 
 use CheckoutCom\Shopware6\Exception\CheckoutComException;
+use CheckoutCom\Shopware6\Helper\Url;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Webhook;
+use CheckoutCom\Shopware6\Struct\Extension\PublicConfigStruct;
 use CheckoutCom\Shopware6\Struct\SystemConfig\AbstractPaymentMethodSettingStruct;
+use CheckoutCom\Shopware6\Struct\SystemConfig\GooglePaySettingStruct;
 use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Throwable;
@@ -121,6 +124,31 @@ class SettingsFactory
     public function get3dSecureConfig(?string $salesChannelId = null): bool
     {
         return $this->systemConfigService->getBool(self::SYSTEM_CONFIG_DOMAIN . self::CHECKOUT_PLUGIN_CONFIG_3DS, $salesChannelId);
+    }
+
+    /**
+     * Get public config of the plugin
+     */
+    public function getPublicConfig(string $salesChannelId): PublicConfigStruct
+    {
+        $settings = $this->getSettings($salesChannelId);
+        $googleSettings = $this->getPaymentMethodSettings(
+            GooglePaySettingStruct::class,
+            $salesChannelId
+        );
+
+        if (!$googleSettings instanceof GooglePaySettingStruct) {
+            throw new CheckoutComException('Google Pay settings not found');
+        }
+
+        $publicConfigStruct = new PublicConfigStruct();
+        $publicConfigStruct->setFrameUrl(Url::IFRAME_URL);
+        $publicConfigStruct->setKlarnaCdnUrl(Url::KLARNA_CDN_URL);
+        $publicConfigStruct->setPublicKey($settings->getPublicKey());
+        $publicConfigStruct->setSandboxMode($settings->isSandboxMode());
+        $publicConfigStruct->setGooglePayMerchantId($googleSettings->getMerchantId());
+
+        return $publicConfigStruct;
     }
 
     private function getSystemConfigSettings(?string $salesChannelId = null): array

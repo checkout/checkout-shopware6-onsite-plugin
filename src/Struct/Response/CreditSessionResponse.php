@@ -20,52 +20,10 @@ class CreditSessionResponse extends StoreApiResponse
      *      type="boolean",
      *      description="Success flag"
      *  ),
-     *  @OA\Property(
+     * @OA\Property(
      *      property="creditSession",
      *      description="Credit session response data",
-     *      type="object",
-     *      @OA\Property(
-     *          property="session_id",
-     *         description="Klarna session Id",
-     *         type="string"
-     *      ),
-     *      @OA\Property(
-     *          property="client_token",
-     *          description="Klarna credit session client token",
-     *          type="string"
-     *      ),
-     *      @OA\Property(
-     *          property="payment_method_categories",
-     *          description="Klarna payment methods",
-     *          type="array"
-     *          @OA\Items(
-     *              @OA\Property(
-     *                  property="name",
-     *                  description="Payment method name",
-     *                  type="string"
-     *              ),
-     *              @OA\Property(
-     *                  property="identifier",
-     *                  description="Payment method identifier",
-     *                  type="string"
-     *              ),
-     *              @OA\Property(
-     *                  property="asset_urls",
-     *                  description="Payment method assert urls",
-     *                  type="object",
-     *                  @OA\Property(
-     *                      property="descriptive",
-     *                      description="Payment method descriptive url",
-     *                      type="string"
-     *                  ),
-     *                  @OA\Property(
-     *                      property="standard",
-     *                      description="Payment method name standard url",
-     *                      type="string"
-     *                  ),
-     *             )
-     *         )
-     *     )
+     *      ref="#/components/schemas/checkout_com_klarna_credit_session"
      * )
      *
      * @var ArrayStruct

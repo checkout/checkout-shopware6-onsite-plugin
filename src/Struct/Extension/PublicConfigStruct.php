@@ -2,18 +2,49 @@
 
 namespace CheckoutCom\Shopware6\Struct\Extension;
 
+use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Struct\Struct;
 
-class GenericPageExtensionStruct extends Struct
+/**
+ * @OA\Schema(
+ *     schema="checkout_com_public_config",
+ * )
+ */
+class PublicConfigStruct extends Struct
 {
+    /**
+     * @OA\Property(
+     *      description="Credit Card IFrame URL"
+     *  )
+     */
     protected string $frameUrl = '';
 
+    /**
+     * @OA\Property(
+     *      description="Klarna CDN URL"
+     *  )
+     */
     protected string $klarnaCdnUrl = '';
 
+    /**
+     * @OA\Property(
+     *      description="Checkout.com Public key"
+     *  )
+     */
     protected string $publicKey = '';
 
+    /**
+     * @OA\Property(
+     *      description="Sandbox mode"
+     *  )
+     */
     protected bool $sandboxMode = true;
 
+    /**
+     * @OA\Property(
+     *      description="Google Pay merchant ID"
+     *  )
+     */
     protected ?string $googlePayMerchantId = null;
 
     public function getFrameUrl(): string

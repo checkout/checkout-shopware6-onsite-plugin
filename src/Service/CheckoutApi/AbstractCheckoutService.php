@@ -20,7 +20,7 @@ abstract class AbstractCheckoutService
         $this->checkoutApiFactory = $checkoutApiFactory;
     }
 
-    protected function modifyAndLogMessage(CheckoutApiException $exception, string $functionName, array $parameters = []): string
+    protected function logMessage(CheckoutApiException $exception, string $functionName, array $parameters = []): void
     {
         $this->logger->critical(
             sprintf('Call checkout api service, Error: %s', $exception->getMessage()),
@@ -33,7 +33,5 @@ abstract class AbstractCheckoutService
                 ]
             )
         );
-
-        return sprintf('Could not request payment method: %s, Error: %s', $functionName, $exception->getMessage());
     }
 }

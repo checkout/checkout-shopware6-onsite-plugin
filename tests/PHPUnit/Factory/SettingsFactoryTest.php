@@ -5,6 +5,7 @@ namespace CheckoutCom\Shopware6\Tests\Factory;
 use CheckoutCom\Shopware6\Exception\CheckoutComException;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Handler\Method\ApplePayHandler;
+use CheckoutCom\Shopware6\Struct\Extension\PublicConfigStruct;
 use CheckoutCom\Shopware6\Struct\SystemConfig\ApplePaySettingStruct;
 use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use Exception;
@@ -60,6 +61,15 @@ class SettingsFactoryTest extends TestCase
         $settings = $this->settingsFactory->getPaymentMethodSettings(ApplePaySettingStruct::class, $saleChannelId);
 
         static::assertInstanceOf(ApplePaySettingStruct::class, $settings);
+    }
+
+    public function testGetPublicConfig(): void
+    {
+        $this->systemConfigService->method('getDomain')
+            ->willReturn([]);
+
+        $expect = $this->settingsFactory->getPublicConfig('foo');
+        static::assertInstanceOf(PublicConfigStruct::class, $expect);
     }
 
     public function getSettingsProvider(): array
