@@ -157,7 +157,7 @@ export default class DisplayPaymentHandler extends Plugin {
 
         const rootElement = element.closest(paymentMethodClass);
 
-        if (!!rootElement) {
+        if (rootElement) {
             rootElement.remove();
         }
     }
@@ -165,7 +165,7 @@ export default class DisplayPaymentHandler extends Plugin {
     _removeSubmitForm(innerIdentifierButton) {
         const element = DomAccess.querySelector(document, innerIdentifierButton, false);
 
-        if (!!element) {
+        if (element) {
             element.remove();
         }
     }

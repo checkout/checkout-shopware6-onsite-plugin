@@ -34,7 +34,7 @@ export default class CheckoutComGooglePayDisplay extends DisplayPaymentHandler {
 
                 this.showDirectButtons();
             })
-            .catch((_) => {
+            .catch(() => {
                 this.hideUnavailablePaymentMethod();
             });
     }

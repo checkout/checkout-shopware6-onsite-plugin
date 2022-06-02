@@ -6,6 +6,7 @@
 /tests/Cypress/package-lock.json
 /coverage
 
+src/Resources/app/administration/coverage
 src/Resources/app/administration/node_modules
 
 src/Resources/app/storefront/dist/

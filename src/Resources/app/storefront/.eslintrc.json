@@ -1,0 +1,54 @@
+{
+  "env": {
+    "jest/globals": true,
+    "browser": true,
+    "jquery": true,
+    "node": true,
+    "es6": true
+  },
+  "globals": {
+    "ApplePaySession": "writable",
+    "Frames": "writable",
+    "google": "writable"
+  },
+  "extends": [
+    "eslint:recommended"
+  ],
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "rules": {
+    "comma-dangle": [
+      "error",
+      "always-multiline"
+    ],
+    "one-var": [
+      "error",
+      "never"
+    ],
+    "no-console": [
+      "error",
+      {
+        "allow": [
+          "warn",
+          "error"
+        ]
+      }
+    ],
+    "no-debugger": 2,
+    "prefer-const": "warn",
+    "quotes": [
+      "warn",
+      "single"
+    ],
+    "indent": [
+      "warn",
+      4,
+      {
+        "SwitchCase": 1
+      }
+    ]
+  }
+}
