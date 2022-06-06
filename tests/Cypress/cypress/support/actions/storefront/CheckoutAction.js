@@ -1,5 +1,6 @@
 import listingRepository from '../../repositories/storefront/ListingRepository';
 import offCanvasRepository from '../../repositories/storefront/OffCanvasRepository';
+import checkoutConfirmRepository from '../../repositories/storefront/CheckoutConfirmRepository';
 
 class CheckoutAction {
 
@@ -71,6 +72,13 @@ class CheckoutAction {
     goToOrderScreen() {
         cy.get('.header-logo-main-link').click();
         cy.visit('/account/order');
+    }
+
+    /**
+     * Check for terms and conditions
+     */
+    checkTermAndCondition() {
+        checkoutConfirmRepository.getTermAndConditionCheckbox().click(1, 1)
     }
 }
 

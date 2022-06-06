@@ -1,6 +1,6 @@
 import shopConfigurationAction from '../../support/actions/admin/ShopConfigurationAction';
 import checkoutAction from '../../support/actions/storefront/CheckoutAction';
-import storefrontLoginAction from '../../support/actions/storefront/LoginAction';
+import dummyCheckoutScenario from '../../support/scenarios/DummyCheckoutScenario';
 
 import checkoutConfirmRepository from '../../support/repositories/storefront/CheckoutConfirmRepository';
 import accountOrderRepository from '../../support/repositories/storefront/AccountOrderRepository';
@@ -21,12 +21,7 @@ describe('Testing Storefront Credit Card Payment', () => {
     });
 
     beforeEach(() => {
-        storefrontLoginAction.login('test@example.com', 'shopware');
-
-        checkoutAction.addFirstProductToCart(1);
-        checkoutAction.checkoutFromOffcanvas();
-
-        cy.get('.confirm-tos .custom-checkbox label').click(1, 1);
+        dummyCheckoutScenario.execute();
 
         checkoutAction.selectPaymentMethod('Credit card');
     });

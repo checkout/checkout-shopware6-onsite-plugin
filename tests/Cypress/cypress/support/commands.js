@@ -35,3 +35,25 @@ Cypress.Commands.add('getIframeBody', (selector) => {
         // https://on.cypress.io/wrap
         .then(cy.wrap);
 });
+
+/**
+ * Updates an existing entity using Shopware API at the given endpoint and handler identifier.
+ * @memberOf Cypress.Chainable#
+ * @name updateViaAdminApiWithIdentifier
+ * @function
+ * @param {String} endpoint - API endpoint for the request
+ * @param {String} identifier - Id of the entity to be updated
+ * @param {Object} data - Necessary data for the API request
+ */
+Cypress.Commands.add('updateViaAdminApiWithIdentifier', (endpoint, identifier, data) => {
+    return cy.searchViaAdminApi({
+        endpoint: endpoint,
+        data: {
+            field: 'handlerIdentifier',
+            value: identifier,
+        },
+    })
+        .then((entity) => {
+            return cy.updateViaAdminApi(endpoint, entity.id, { data });
+        });
+});
