@@ -13,7 +13,8 @@ class RequestUtil
     public const DATA_JSON = 'json';
     public const DATA_TOKEN = 'token';
     public const DATA_SOURCE = 'source';
-    public const DATA_BIC = 'bic';
+    public const DATA_SOURCE_ID = 'sourceId';
+    public const DATA_SHOULD_SAVE_SOURCE = 'shouldSaveSource';
 
     /**
      * @return string|RequestDataBag|null
@@ -26,6 +27,28 @@ class RequestUtil
         }
 
         return $paymentData->get(self::DATA_TOKEN);
+    }
+
+    public static function getSourceIdPayment(RequestDataBag $dataBag): ?string
+    {
+        $paymentData = static::getPaymentData($dataBag);
+        if (!$paymentData instanceof RequestDataBag) {
+            return null;
+        }
+
+        return $paymentData->get(self::DATA_SOURCE_ID);
+    }
+
+    public static function getShouldSaveSource(RequestDataBag $dataBag): bool
+    {
+        $paymentData = static::getPaymentData($dataBag);
+        if (!$paymentData instanceof RequestDataBag) {
+            return false;
+        }
+
+        $shouldSaveSource = $paymentData->get(self::DATA_SHOULD_SAVE_SOURCE);
+
+        return $shouldSaveSource === true || $shouldSaveSource === 'true';
     }
 
     /**

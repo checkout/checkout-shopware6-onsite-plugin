@@ -23,6 +23,7 @@ describe('CardPaymentPlugin tests', () => {
             init: jest.fn(),
             submitCard: jest.fn(),
             enableSubmitForm: jest.fn(),
+            isCardValid: jest.fn(),
         };
 
         window.PluginManager = {

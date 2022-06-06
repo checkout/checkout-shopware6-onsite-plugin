@@ -178,7 +178,7 @@ class OrderService extends AbstractOrderService
     public function updateCheckoutCustomFields(OrderEntity $order, OrderCustomFieldsStruct $orderCustomFields, SalesChannelContext $context): void
     {
         $this->logger->debug('Updating order checkout custom fields', [
-            'customerId' => $order->getId(),
+            'orderId' => $order->getId(),
             'customFields' => [
                 self::CHECKOUT_CUSTOM_FIELDS => $orderCustomFields->jsonSerialize(),
             ],

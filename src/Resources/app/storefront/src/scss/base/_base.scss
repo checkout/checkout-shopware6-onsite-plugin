@@ -7,3 +7,42 @@
 .checkout-com-button-direct-pay {
     @extend .btn-buy;
 }
+
+.checkout-com-source {
+    margin-top: 0.5rem;
+
+    .checkout-com-source-card-number {
+        display: inline-block;
+        min-width: 145px;
+    }
+
+    .checkout-com-source-card-image {
+        margin-left: 5px;
+        height: 25px;
+    }
+
+    .checkout-com-radio-label {
+        font-weight: bold;
+    }
+
+    .checkout-com-source-form {
+        display: none;
+    }
+
+    input[type="radio"]:checked ~ .checkout-com-source-form {
+        display: block;
+    }
+
+    .checkout-com-remove-source-button {
+        display: inline-block;
+        margin-left: 5px;
+        vertical-align: middle;
+        cursor: pointer;
+    }
+}
+
+body {
+    .checkout-com-custom-checkbox {
+        @extend .custom-checkbox;
+    }
+}

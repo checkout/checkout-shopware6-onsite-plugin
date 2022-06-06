@@ -6,6 +6,7 @@ use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
+use CheckoutCom\Shopware6\Service\CustomerService;
 use CheckoutCom\Shopware6\Service\Extractor\OrderExtractor;
 use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
@@ -45,6 +46,11 @@ class PaymentPayFacadeTest extends TestCase
     protected $checkoutPaymentService;
 
     /**
+     * @var CustomerService|MockObject
+     */
+    protected $customerService;
+
+    /**
      * @var OrderExtractor|MockObject
      */
     protected $orderExtractor;
@@ -76,6 +82,7 @@ class PaymentPayFacadeTest extends TestCase
         $this->salesChannelContext = $this->getSaleChannelContext($this);
         $this->settingsFactory = $this->createMock(SettingsFactory::class);
         $this->checkoutPaymentService = $this->createMock(CheckoutPaymentService::class);
+        $this->customerService = $this->createMock(CustomerService::class);
         $this->orderExtractor = $this->createMock(OrderExtractor::class);
         $this->orderService = $this->createMock(OrderService::class);
         $this->orderTransactionService = $this->createMock(OrderTransactionService::class);
@@ -86,6 +93,7 @@ class PaymentPayFacadeTest extends TestCase
             $this->createMock(EventDispatcherInterface::class),
             $this->settingsFactory,
             $this->checkoutPaymentService,
+            $this->customerService,
             $this->orderExtractor,
             $this->orderService,
             $this->orderTransactionService,

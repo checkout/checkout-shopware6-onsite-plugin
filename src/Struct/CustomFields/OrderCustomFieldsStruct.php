@@ -12,6 +12,8 @@ class OrderCustomFieldsStruct extends Struct
 
     protected string $transactionReturnUrl = '';
 
+    protected bool $shouldSaveSource = false;
+
     public function __construct(?string $checkoutPaymentId = null, string $checkoutReturnUrl = '', string $transactionReturnUrl = '')
     {
         $this->checkoutPaymentId = $checkoutPaymentId;
@@ -52,5 +54,15 @@ class OrderCustomFieldsStruct extends Struct
     public function setTransactionReturnUrl(string $transactionReturnUrl): void
     {
         $this->transactionReturnUrl = $transactionReturnUrl;
+    }
+
+    public function isShouldSaveSource(): bool
+    {
+        return $this->shouldSaveSource;
+    }
+
+    public function setShouldSaveSource(bool $shouldSaveSource): void
+    {
+        $this->shouldSaveSource = $shouldSaveSource;
     }
 }

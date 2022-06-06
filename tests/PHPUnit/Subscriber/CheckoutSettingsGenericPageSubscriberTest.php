@@ -4,7 +4,7 @@ namespace CheckoutCom\Shopware6\Tests\Subscriber;
 
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Helper\Url;
-use CheckoutCom\Shopware6\Struct\Extension\ConfirmPageExtensionStruct;
+use CheckoutCom\Shopware6\Struct\Extension\GenericPageExtensionStruct;
 use CheckoutCom\Shopware6\Struct\SystemConfig\GooglePaySettingStruct;
 use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use CheckoutCom\Shopware6\Subscriber\CheckoutSettingsGenericPageSubscriber;
@@ -70,14 +70,14 @@ class CheckoutSettingsGenericPageSubscriberTest extends TestCase
 
         static::assertTrue($event->getPage()->hasExtension(CheckoutSettingsGenericPageSubscriber::GENERIC_PAGE_EXTENSION));
 
-        $confirmPageExtension = $event->getPage()->getExtension(CheckoutSettingsGenericPageSubscriber::GENERIC_PAGE_EXTENSION);
+        $genericPageExtension = $event->getPage()->getExtension(CheckoutSettingsGenericPageSubscriber::GENERIC_PAGE_EXTENSION);
 
-        static::assertInstanceOf(ConfirmPageExtensionStruct::class, $confirmPageExtension);
+        static::assertInstanceOf(GenericPageExtensionStruct::class, $genericPageExtension);
 
-        /** @var ConfirmPageExtensionStruct $confirmPageExtension */
-        static::assertSame($sandbox, $confirmPageExtension->isSandboxMode());
-        static::assertSame($publicKey, $confirmPageExtension->getPublicKey());
-        static::assertSame(Url::IFRAME_URL, $confirmPageExtension->getFrameUrl());
+        /** @var GenericPageExtensionStruct $genericPageExtension */
+        static::assertSame($sandbox, $genericPageExtension->isSandboxMode());
+        static::assertSame($publicKey, $genericPageExtension->getPublicKey());
+        static::assertSame(Url::IFRAME_URL, $genericPageExtension->getFrameUrl());
     }
 
     public function pageLoadedEventProvider(): array

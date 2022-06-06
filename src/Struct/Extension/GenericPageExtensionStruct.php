@@ -4,7 +4,7 @@ namespace CheckoutCom\Shopware6\Struct\Extension;
 
 use Shopware\Core\Framework\Struct\Struct;
 
-class ConfirmPageExtensionStruct extends Struct
+class GenericPageExtensionStruct extends Struct
 {
     protected string $frameUrl = '';
 

@@ -10,8 +10,16 @@ const createInput = (field, value) => {
     return input;
 };
 
+export const createSourceIdInput = (sourceId) => {
+    return createInput(`${DATA_BAG_KEY}[sourceId]`, sourceId);
+};
+
 export const createTokenInput = (token) => {
     return createInput(`${DATA_BAG_KEY}[token]`, token);
+};
+
+export const createShouldSaveSourceInput = (shouldSaveSource) => {
+    return createInput(`${DATA_BAG_KEY}[shouldSaveSource]`, shouldSaveSource);
 };
 
 export const createSourceInput = (field, value) => {

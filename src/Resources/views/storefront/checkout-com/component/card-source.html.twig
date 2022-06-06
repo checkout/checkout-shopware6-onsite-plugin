@@ -1,0 +1,56 @@
+{% block checkout_com_card_source %}
+    {% for source in sources %}
+        {% block checkout_com_card_source_item %}
+            <div
+                class="checkout-com-source {{ removable ? 'checkout-com-source-remove' : formRadioWrapperClass }}"
+                data-checkout-com-source-id="{{ source.id }}"
+            >
+                {% block checkout_com_card_source_input %}
+                    {% if not removable %}
+                        <input type="radio"
+                               name="checkoutComSourceId"
+                               class="{{ formCheckInputClass }}"
+                               id="{{ source.id }}"
+                               value="{{ source.id }}"
+                            {{ loop.first ? 'checked' : '' }}
+                        />
+                    {% endif %}
+                {% endblock %}
+
+                {% set sourceCardIcon = checkoutCardIcon(source.scheme) %}
+
+                {% block checkout_com_card_source_label %}
+                    <label class="checkout-com-radio-label {{ removable ? '' : formCheckLabelClass }}"
+                           for="{{ source.id }}">
+                        {% block checkout_com_card_source_label_last_4_digits %}
+                            <span class="checkout-com-source-card-number">
+                                {% block checkout_com_card_source_label_last_4_digits_text %}
+                                    {% for i in range(1, 12) %}*{% endfor %}{{ source.last4 }}
+                                {% endblock %}
+                            </span>
+                        {% endblock %}
+
+                        {% if sourceCardIcon is not null %}
+                            {% block checkout_com_card_source_label_img %}
+                                <img
+                                    class="checkout-com-source-card-image"
+                                    src="{{ sourceCardIcon }}"
+                                    alt="{{ source.scheme }}"/>
+                            {% endblock %}
+                        {% endif %}
+
+                        {% block checkout_com_card_source_remove_button %}
+                            {% if removable %}
+                                <div class="checkout-com-remove-source-button">
+                                    {% block checkout_com_card_source_remove_button_icon %}
+                                        {% sw_icon 'x' style { 'size': 'sm' } %}
+                                    {% endblock %}
+                                </div>
+                            {% endif %}
+                        {% endblock %}
+                    </label>
+                {% endblock %}
+            </div>
+        {% endblock %}
+    {% endfor %}
+{% endblock %}

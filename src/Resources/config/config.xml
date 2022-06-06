@@ -39,6 +39,7 @@
             <name>orderStateForPaidPayment</name>
             <label>Order state for paid payment</label>
             <label lang="de-DE">Auftragsstatus für bezahlte Zahlung</label>
+            <defaultValue>checkout_com.skip</defaultValue>
             <options>
                 <option>
                     <id>checkout_com.skip</id>
@@ -72,6 +73,7 @@
             <name>orderStateForFailedPayment</name>
             <label>Order state for failed payment</label>
             <label lang="de-DE">Auftragsstatus bei fehlgeschlagener Zahlung</label>
+            <defaultValue>checkout_com.skip</defaultValue>
             <options>
                 <option>
                     <id>checkout_com.skip</id>

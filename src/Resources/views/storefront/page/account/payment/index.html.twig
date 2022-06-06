@@ -1,0 +1,18 @@
+{% sw_extends '@Storefront/storefront/page/account/payment/index.html.twig' %}
+
+{% block page_account_main_content %}
+    {{ parent() }}
+
+    {% block checkout_com_source_manage %}
+        {% set sourceManageOptions = {
+            "deleteSourceEndpoint": path('store-api.checkout-com.source.remove'),
+        } %}
+
+        {% block checkout_com_source_manage_plugin_element %}
+            <div data-checkout-com-source-manage="true"
+                 data-checkout-com-source-manage-options='{{ sourceManageOptions|json_encode }}'
+            >
+            </div>
+        {% endblock %}
+    {% endblock %}
+{% endblock %}

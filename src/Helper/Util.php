@@ -3,6 +3,7 @@
 namespace CheckoutCom\Shopware6\Helper;
 
 use Exception;
+use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\System\StateMachine\Event\StateMachineStateChangeEvent;
 
 class Util
@@ -35,5 +36,12 @@ class Util
             $technicalName,
             $stateName,
         ]);
+    }
+
+    public static function serializeStruct(Struct $struct): array
+    {
+        $encodeStruct = (string) json_encode($struct);
+
+        return json_decode($encodeStruct, true);
     }
 }

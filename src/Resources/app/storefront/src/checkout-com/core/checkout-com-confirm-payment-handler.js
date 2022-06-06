@@ -20,12 +20,15 @@ export default class CheckoutComConfirmPaymentHandler extends Plugin {
             paymentFormId,
         } = this.options;
 
+        this.submitPaymentButton = DomAccess.querySelector(document, submitPaymentButtonId, false);
+        this.paymentForm = DomAccess.querySelector(document, paymentFormId, false);
+        if (!this.submitPaymentButton || !this.paymentForm) {
+            return;
+        }
+
+        this.submitButtonLoader = new ButtonLoadingIndicator(this.submitPaymentButton);
         this.withoutHttpClient = new HttpClient(false);
         this.client = new HttpClient();
-
-        this.submitPaymentButton = DomAccess.querySelector(document, submitPaymentButtonId, false);
-        this.submitButtonLoader = new ButtonLoadingIndicator(this.submitPaymentButton);
-        this.paymentForm = DomAccess.querySelector(document, paymentFormId, false);
 
         this.registerEvents();
     }

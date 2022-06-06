@@ -3,6 +3,11 @@
 namespace CheckoutCom\Shopware6\Service;
 
 use CheckoutCom\Shopware6\Exception\SalutationNotFoundException;
+use CheckoutCom\Shopware6\Handler\Method\CardPaymentHandler;
+use CheckoutCom\Shopware6\Helper\Util;
+use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\PaymentSource;
+use CheckoutCom\Shopware6\Struct\Customer\CustomerSourceCollection;
+use CheckoutCom\Shopware6\Struct\Customer\CustomerSourceCustomFieldsStruct;
 use CheckoutCom\Shopware6\Struct\Customer\RegisterAndLoginGuestStruct;
 use CheckoutCom\Shopware6\Struct\Request\RegisterAndLoginGuestRequest;
 use Psr\Log\LoggerInterface;
@@ -25,7 +30,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class CustomerService
 {
-    public const CHECKOUT_CUSTOM_FIELDS = 'checkoutPayments';
+    public const CHECKOUT_SOURCE_CUSTOM_FIELDS = 'checkoutComSource';
     public const SALUTATION_NOT_SPECIFIED = 'not_specified';
 
     private AbstractRegisterRoute $registerRoute;
@@ -104,14 +109,6 @@ class CustomerService
     {
         $criteria = new Criteria([$customerId]);
         $criteria->setLimit(1);
-        $criteria->addAssociations([
-            'defaultBillingAddress.country',
-            'defaultBillingAddress.countryState',
-            'defaultShippingAddress.country',
-            'defaultShippingAddress.countryState',
-            'activeShippingAddress.country',
-            'activeShippingAddress.countryState',
-        ]);
 
         $customer = $this->customerRepository->search($criteria, $context)->first();
 
@@ -124,6 +121,127 @@ class CustomerService
         }
 
         return $customer;
+    }
+
+    public static function getCheckoutSourceCustomFields(CustomerEntity $customer): CustomerSourceCustomFieldsStruct
+    {
+        $customFields = $customer->getCustomFields() ?? [];
+        $checkoutCustomFields = $customFields[self::CHECKOUT_SOURCE_CUSTOM_FIELDS] ?? [];
+
+        $cardSourceTypes = self::getSupportSources();
+        foreach ($cardSourceTypes as $cardSourceType) {
+            if (!\array_key_exists($cardSourceType, $checkoutCustomFields)) {
+                continue;
+            }
+
+            $sourceCollection = new CustomerSourceCollection();
+            foreach ($checkoutCustomFields[$cardSourceType] as $source) {
+                $sourceCollection->add(
+                    (new PaymentSource())->assign($source)
+                );
+            }
+
+            $checkoutCustomFields[$cardSourceType] = $sourceCollection;
+        }
+
+        return (new CustomerSourceCustomFieldsStruct())->assign($checkoutCustomFields);
+    }
+
+    public static function getSupportSources(): array
+    {
+        return [
+            CardPaymentHandler::getPaymentMethodType(),
+        ];
+    }
+
+    /**
+     * Remove customer stored sources by sourceID from the customer custom fields.
+     */
+    public function removeCustomerSource(
+        string $sourceId,
+        CustomerEntity $customer,
+        SalesChannelContext $salesChannelContext
+    ): void {
+        $customerSourceCustomFields = CustomerService::getCheckoutSourceCustomFields($customer);
+        foreach ($customerSourceCustomFields->getVars() as $property => $cardSource) {
+            if (!$cardSource instanceof CustomerSourceCollection) {
+                continue;
+            }
+
+            $newCardSource = $cardSource->filter(function (PaymentSource $source) use ($sourceId) {
+                return $source->getId() !== $sourceId;
+            });
+
+            $customerSourceCustomFields->assign([
+                $property => $newCardSource,
+            ]);
+        }
+
+        $this->updateCheckoutCustomFields($customer, $customerSourceCustomFields, $salesChannelContext);
+    }
+
+    /**
+     * Save customer stored sources to the customer custom fields.
+     */
+    public function saveCustomerSource(
+        string $customerId,
+        PaymentSource $paymentSource,
+        SalesChannelContext $salesChannelContext
+    ): void {
+        $sourceType = $paymentSource->getType();
+        if (empty($sourceType)) {
+            return;
+        }
+
+        if (!\in_array($sourceType, CustomerService::getSupportSources(), true)) {
+            return;
+        }
+        $customer = $this->getCustomer($customerId, $salesChannelContext->getContext());
+        $customerSourceCustomFields = CustomerService::getCheckoutSourceCustomFields($customer);
+        $cardSource = $customerSourceCustomFields->getSourceByType($sourceType);
+        if (!$cardSource instanceof CustomerSourceCollection) {
+            // If the customer has no card source, we create a new instance of it
+            $cardSource = new CustomerSourceCollection();
+        }
+
+        // Check if the source already exists
+        if ($cardSource->hasFingerPrint($paymentSource->getFingerprint())) {
+            return;
+        }
+
+        $cardSource->add($paymentSource);
+        $customerSourceCustomFields->assign([
+            $sourceType => $cardSource,
+        ]);
+
+        $this->updateCheckoutCustomFields($customer, $customerSourceCustomFields, $salesChannelContext);
+    }
+
+    /**
+     * Update customer custom fields of the customer for checkout.com payments
+     */
+    public function updateCheckoutCustomFields(
+        CustomerEntity $customer,
+        CustomerSourceCustomFieldsStruct $customFields,
+        SalesChannelContext $context
+    ): void {
+        $checkoutUpdateData = Util::serializeStruct($customFields);
+
+        $this->logger->debug('Updating customer checkout custom fields', [
+            'customerId' => $customer->getId(),
+            'customFields' => [
+                self::CHECKOUT_SOURCE_CUSTOM_FIELDS => $checkoutUpdateData,
+            ],
+        ]);
+
+        $this->customerRepository->update([
+            [
+                'id' => $customer->getId(),
+                'customFields' => [
+                    self::CHECKOUT_SOURCE_CUSTOM_FIELDS => $checkoutUpdateData,
+                ],
+            ],
+        ], $context->getContext());
     }
 
     private function getRegisterCustomerDataBag(

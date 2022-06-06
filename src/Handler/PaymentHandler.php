@@ -3,10 +3,12 @@
 namespace CheckoutCom\Shopware6\Handler;
 
 use Checkout\Payments\PaymentRequest;
+use Checkout\Payments\Source\RequestIdSource;
 use Checkout\Payments\ThreeDsRequest;
 use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
+use CheckoutCom\Shopware6\Helper\RequestUtil;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutSourceService;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
@@ -260,6 +262,22 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
         $threeDs = new ThreeDsRequest();
         $threeDs->enabled = true;
         $paymentRequest->three_ds = $threeDs;
+    }
+
+    /**
+     * Get RequestIdSource instance from request data bag if the DataBag has `sourceId` key
+     */
+    public function getRequestIdSource(RequestDataBag $dataBag): ?RequestIdSource
+    {
+        $sourceId = RequestUtil::getSourceIdPayment($dataBag);
+        if (!\is_string($sourceId)) {
+            return null;
+        }
+
+        $requestIdSource = new RequestIdSource();
+        $requestIdSource->id = $sourceId;
+
+        return $requestIdSource;
     }
 
     /**

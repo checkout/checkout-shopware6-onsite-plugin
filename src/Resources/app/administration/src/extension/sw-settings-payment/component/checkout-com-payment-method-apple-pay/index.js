@@ -127,7 +127,9 @@ Component.register('checkout-com-payment-method-apple-pay', {
         },
 
         async loadSalesChannelDomain() {
+            let domainMediasData = [];
             if (!this.isNotDefaultSalesChannel) {
+                this.$set(this.domainMedias, 'data', domainMediasData);
                 return;
             }
 
@@ -136,7 +138,7 @@ Component.register('checkout-com-payment-method-apple-pay', {
                 Context.api,
             );
 
-            const domainMediasData = await Promise.all(salesChannelDomains.map(async (salesChannelDomain) => {
+            domainMediasData = await Promise.all(salesChannelDomains.map(async (salesChannelDomain) => {
                 const domainMediaData = {
                     id: salesChannelDomain.id,
                     url: salesChannelDomain.url,
