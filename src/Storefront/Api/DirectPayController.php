@@ -118,7 +118,7 @@ class DirectPayController extends AbstractDirectPayController
      *          @OA\JsonContent(ref="#/components/schemas/SuccessResponse")
      *     )
      * )
-     * @Route("/store-api/checkout-com/direct/remove-backup", name="store-api.checkout-com.direct.remove-backup", methods={"POST"}, defaults={"csrf_protected"=false}, options={"seo"="false"})
+     * @Route("/store-api/checkout-com/direct/remove-backup", name="store-api.checkout-com.direct.remove-backup", methods={"POST"}, options={"seo"="false"})
      */
     public function removeBackUp(SalesChannelContext $context, RequestDataBag $data): SuccessResponse
     {
@@ -164,7 +164,7 @@ class DirectPayController extends AbstractDirectPayController
      *          @OA\JsonContent(ref="#/components/schemas/checkout_com_direct_shipping_response")
      *     )
      * )
-     * @Route("/store-api/checkout-com/direct/get-shipping-methods", name="store-api.checkout-com.direct.get-shipping-methods", methods={"POST"}, defaults={"csrf_protected"=false}, options={"seo"="false"})
+     * @Route("/store-api/checkout-com/direct/get-shipping-methods", name="store-api.checkout-com.direct.get-shipping-methods", methods={"POST"}, options={"seo"="false"})
      */
     public function getShippingMethods(SalesChannelContext $context, RequestDataBag $data): DirectShippingResponse
     {
@@ -210,7 +210,7 @@ class DirectPayController extends AbstractDirectPayController
      *          @OA\JsonContent(ref="#/components/schemas/checkout_com_direct_shipping_response")
      *     ),
      * )
-     * @Route("/store-api/checkout-com/direct/update-shipping-payload", name="store-api.checkout-com.direct.update-shipping-payload", methods={"POST"}, defaults={"csrf_protected"=false}, options={"seo"="false"})
+     * @Route("/store-api/checkout-com/direct/update-shipping-payload", name="store-api.checkout-com.direct.update-shipping-payload", methods={"POST"}, options={"seo"="false"})
      */
     public function updateShippingPayload(SalesChannelContext $context, RequestDataBag $data): DirectShippingResponse
     {
@@ -307,7 +307,7 @@ class DirectPayController extends AbstractDirectPayController
      *         @OA\JsonContent(ref="#/components/schemas/checkout_com_direct_process_response")
      *     )
      * )
-     * @Route("/store-api/checkout-com/direct/process-payment", name="store-api.checkout-com.direct.process-payment", methods={"POST"}, defaults={"csrf_protected"=false}, options={"seo"="false"})
+     * @Route("/store-api/checkout-com/direct/process-payment", name="store-api.checkout-com.direct.process-payment", methods={"POST"}, options={"seo"="false"})
      */
     public function processPayment(SalesChannelContext $context, RequestDataBag $data): DirectProcessResponse
     {

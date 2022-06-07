@@ -24,8 +24,10 @@ use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Payment\PaymentService;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\Salutation\SalutationEntity;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Throwable;
@@ -250,20 +252,19 @@ class DirectPayFacade
                 $shippingContact->get('countryCode'),
                 $context->getContext()
             );
+            $salutation = $this->customerService->getNotSpecifiedSalutation($context->getContext());
 
-            $customer = $context->getCustomer();
+            $countryState = null;
+            if ($shippingContact->has('countryStateCode')) {
+                $countryState = $this->countryService->getCountryState(
+                    $shippingContact->get('countryStateCode'),
+                    $country,
+                    $context->getContext()
+                );
+            }
 
             // If the customer is not logged in, we need to create and log in a new customer.
-            if (!$customer instanceof CustomerEntity) {
-                $countryState = null;
-                if ($shippingContact->has('countryStateCode')) {
-                    $countryState = $this->countryService->getCountryState(
-                        $shippingContact->get('countryStateCode'),
-                        $country,
-                        $context->getContext()
-                    );
-                }
-
+            if (!$context->getCustomer() instanceof CustomerEntity) {
                 $registerAndLoginGuestRequest = new RegisterAndLoginGuestRequest(
                     $shippingContact->get('firstName', ''),
                     $shippingContact->get('lastName', ''),
@@ -280,6 +281,7 @@ class DirectPayFacade
                 // Create guest customer and login
                 $response = $this->customerService->registerAndLoginCustomer(
                     $registerAndLoginGuestRequest,
+                    $salutation,
                     $context
                 );
 
@@ -299,7 +301,7 @@ class DirectPayFacade
             throw new CheckoutComException('Prepare process payment failed');
         }
 
-        $response = $this->handleProcessPayment($context, $data, $country, $shippingContact);
+        $response = $this->handleProcessPayment($context, $data, $shippingContact, $salutation, $country, $countryState);
 
         $originCart = $this->cartService->getCart($originCartTokenKey, $context);
         $this->cartBackupService->cloneCartAndSave($originCart, $context->getToken(), $context);
@@ -331,8 +333,14 @@ class DirectPayFacade
      *
      * @see \Shopware\Storefront\Controller\CheckoutController::order()
      */
-    private function handleProcessPayment(SalesChannelContext $context, RequestDataBag $data, CountryEntity $country, RequestDataBag $shippingContact): DirectProcessResponse
-    {
+    private function handleProcessPayment(
+        SalesChannelContext $context,
+        RequestDataBag $data,
+        RequestDataBag $shippingContact,
+        SalutationEntity $salutation,
+        CountryEntity $country,
+        ?CountryStateEntity $countryState
+    ): DirectProcessResponse {
         // Have to agree to the terms of services
         // to avoid constraint violation checks when create an order
         $data->set('tos', true);
@@ -341,7 +349,7 @@ class DirectPayFacade
         $data->remove('cartToken');
 
         try {
-            $order = $this->orderService->createOrder($country, $shippingContact, $data, $context);
+            $order = $this->orderService->createOrder($context, $data, $shippingContact, $salutation, $country, $countryState);
         } catch (Throwable $exception) {
             $this->logger->critical('Create order failed', ['message' => $exception->getMessage()]);
 

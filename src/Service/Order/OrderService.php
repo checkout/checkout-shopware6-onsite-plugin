@@ -3,13 +3,14 @@
 namespace CheckoutCom\Shopware6\Service\Order;
 
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
-use CheckoutCom\Shopware6\Service\Transition\OrderTransitionService;
+use CheckoutCom\Shopware6\Service\Transition\AbstractOrderTransitionService;
 use CheckoutCom\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
 use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
-use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\SalesChannel\OrderService as CoreOrderService;
 use Shopware\Core\Framework\Context;
@@ -18,10 +19,13 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\Salutation\SalutationEntity;
 
 class OrderService extends AbstractOrderService
 {
@@ -42,20 +46,24 @@ class OrderService extends AbstractOrderService
 
     private EntityRepositoryInterface $orderAddressRepository;
 
+    private EntityRepositoryInterface $orderDeliveryRepository;
+
     private CoreOrderService $coreOrderService;
 
-    private OrderTransitionService $orderTransitionService;
+    private AbstractOrderTransitionService $orderTransitionService;
 
     public function __construct(
         LoggerInterface $logger,
         EntityRepositoryInterface $orderRepository,
         EntityRepositoryInterface $orderAddressRepository,
+        EntityRepositoryInterface $orderDeliveryRepository,
         CoreOrderService $coreOrderService,
-        OrderTransitionService $orderTransitionService
+        AbstractOrderTransitionService $orderTransitionService
     ) {
         $this->logger = $logger;
         $this->orderRepository = $orderRepository;
         $this->orderAddressRepository = $orderAddressRepository;
+        $this->orderDeliveryRepository = $orderDeliveryRepository;
         $this->coreOrderService = $coreOrderService;
         $this->orderTransitionService = $orderTransitionService;
     }
@@ -79,43 +87,78 @@ class OrderService extends AbstractOrderService
      * @throws Exception
      */
     public function createOrder(
-        CountryEntity $country,
-        RequestDataBag $shippingContact,
+        SalesChannelContext $context,
         DataBag $data,
-        SalesChannelContext $context
+        RequestDataBag $shippingContact,
+        SalutationEntity $salutation,
+        CountryEntity $country,
+        ?CountryStateEntity $countryState
     ): OrderEntity {
         $orderId = $this->coreOrderService->createOrder($data, $context);
 
-        $order = $this->getOrder($orderId, $context->getContext());
+        $order = $this->getOrder(
+            $context->getContext(),
+            $orderId,
+            [
+                'deliveries.shippingOrderAddress',
+            ]
+        );
 
-        $orderAddresses = $order->getAddresses();
+        $orderDeliveries = $order->getDeliveries();
+        if (!$orderDeliveries instanceof OrderDeliveryCollection) {
+            $message = sprintf('Order delivery collection did not find with order ID: %s', $orderId);
+            $this->logger->critical($message);
 
-        if (!$orderAddresses instanceof OrderAddressCollection) {
-            throw new Exception(sprintf('Order dress did not find with order ID: %s', $orderId));
+            throw new Exception($message);
         }
 
         // Always make sure use the data from request
-        foreach ($orderAddresses as $address) {
-            $this->updateOrderAddress(
-                $address->getId(),
-                $shippingContact->get('firstName'),
-                $shippingContact->get('lastName'),
-                $shippingContact->get('street'),
-                $shippingContact->get('zipCode'),
-                $shippingContact->get('city'),
-                $country->getId(),
-                $context->getContext()
-            );
+        foreach ($orderDeliveries as $orderDelivery) {
+            $orderShippingAddress = $orderDelivery->getShippingOrderAddress();
+            if (!$orderShippingAddress instanceof OrderAddressEntity) {
+                continue;
+            }
+
+            $updatedData = [
+                'id' => $orderShippingAddress->getId(),
+                'orderId' => $orderId,
+                'salutationId' => $salutation->getId(),
+                'firstName' => $shippingContact->get('firstName'),
+                'lastName' => $shippingContact->get('lastName'),
+                'street' => $shippingContact->get('street'),
+                'zipcode' => $shippingContact->get('zipCode'),
+                'city' => $shippingContact->get('city'),
+                'countryId' => $country->getId(),
+                'countryStateId' => empty($countryState) ? null : $countryState->getId(),
+            ];
+
+            if ($orderShippingAddress->getId() === $order->getBillingAddressId()) {
+                // Create new order shipping address ID
+                $orderShippingAddressId = Uuid::randomHex();
+                $updatedData['id'] = $orderShippingAddressId;
+
+                // Also update the order delivery with new order shipping address ID
+                $this->orderDeliveryRepository->update([
+                    [
+                        'id' => $orderDelivery->getId(),
+                        'shippingOrderAddressId' => $orderShippingAddressId,
+                    ],
+                ], $context->getContext());
+            }
+
+            $this->orderAddressRepository->upsert([$updatedData], $context->getContext());
         }
 
         return $order;
     }
 
-    public function getOrder(string $orderId, Context $context): OrderEntity
+    public function getOrder(Context $context, string $orderId, array $associations = []): OrderEntity
     {
         $criteria = new Criteria([$orderId]);
         $criteria->setLimit(1);
-        $criteria->addAssociation('addresses');
+        foreach ($associations as $association) {
+            $criteria->addAssociation($association);
+        }
 
         $order = $this->orderRepository->search($criteria, $context)->first();
         if (!$order instanceof OrderEntity) {
@@ -127,29 +170,6 @@ class OrderService extends AbstractOrderService
         }
 
         return $order;
-    }
-
-    public function updateOrderAddress(
-        string $orderAddressId,
-        string $firstname,
-        string $lastname,
-        string $street,
-        string $zipcode,
-        string $city,
-        string $countryId,
-        Context $context
-    ): void {
-        $this->orderAddressRepository->update([
-            [
-                'id' => $orderAddressId,
-                'firstName' => $firstname,
-                'lastName' => $lastname,
-                'street' => $street,
-                'zipcode' => $zipcode,
-                'city' => $city,
-                'countryId' => $countryId,
-            ],
-        ], $context);
     }
 
     /**

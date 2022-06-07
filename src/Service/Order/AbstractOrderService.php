@@ -15,7 +15,7 @@ abstract class AbstractOrderService
 {
     abstract public function getDecorated(): AbstractOrderService;
 
-    abstract public function getOrder(string $orderId, Context $context): OrderEntity;
+    abstract public function getOrder(Context $context, string $orderId, array $associations = []): OrderEntity;
 
     abstract public function setRequestLastOrderId(string $lastOrderId): void;
 
