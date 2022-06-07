@@ -11,7 +11,7 @@ use CheckoutCom\Shopware6\Service\ContextService;
 use CheckoutCom\Shopware6\Service\CountryService;
 use CheckoutCom\Shopware6\Service\CustomerService;
 use CheckoutCom\Shopware6\Service\LoggerService;
-use CheckoutCom\Shopware6\Service\Order\OrderService;
+use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
 use CheckoutCom\Shopware6\Service\PaymentMethodService;
 use CheckoutCom\Shopware6\Service\ShippingMethodService;
 use CheckoutCom\Shopware6\Struct\DirectPay\AbstractShippingOptionCollection;
@@ -41,7 +41,7 @@ class DirectPayFacade
 
     private LoggerService $logger;
 
-    private OrderService $orderService;
+    private AbstractOrderService $orderService;
 
     private ContextService $contextService;
 
@@ -61,7 +61,7 @@ class DirectPayFacade
         RouterInterface $router,
         PaymentService $paymentService,
         LoggerService $loggerService,
-        OrderService $orderService,
+        AbstractOrderService $orderService,
         ContextService $contextService,
         AbstractCartService $cartService,
         AbstractCartBackupService $cartBackupService,

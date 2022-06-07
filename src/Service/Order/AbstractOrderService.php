@@ -6,6 +6,9 @@ use CheckoutCom\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
 use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Validation\DataBag\DataBag;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 abstract class AbstractOrderService
@@ -17,6 +20,13 @@ abstract class AbstractOrderService
     abstract public function setRequestLastOrderId(string $lastOrderId): void;
 
     abstract public function getRequestLastOrderId(): ?string;
+
+    abstract public function createOrder(
+        CountryEntity $country,
+        RequestDataBag $shippingContact,
+        DataBag $data,
+        SalesChannelContext $context
+    ): OrderEntity;
 
     abstract public function updateCheckoutCustomFields(OrderEntity $order, OrderCustomFieldsStruct $orderCustomFields, SalesChannelContext $context): void;
 

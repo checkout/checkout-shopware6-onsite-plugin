@@ -7,11 +7,21 @@ use Checkout\Common\Currency;
 use Checkout\Common\CustomerRequest;
 use Checkout\Payments\ShippingDetails;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
+use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
 use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
 use Exception;
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\Delivery\Struct\Delivery;
+use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
+use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
 
 class CheckoutComTest extends TestCase
 {
@@ -86,6 +96,32 @@ class CheckoutComTest extends TestCase
     {
         $result = CheckoutComUtil::formatPriceCheckout($price, $currency);
         static::assertSame($expected, $result);
+    }
+
+    /**
+     * @dataProvider buildDirectPayCartProvider
+     */
+    public function testBuildDirectPayCart(LineItemCollection $lineItems, DeliveryCollection $deliveries, float $taxAmount): void
+    {
+        $cart = $this->createMock(Cart::class);
+        $cart->method('getLineItems')->willReturn($lineItems);
+        $cart->method('getDeliveries')->willReturn($deliveries);
+
+        $calculatedTaxCollection = $this->createConfiguredMock(CalculatedTaxCollection::class, [
+            'getAmount' => $taxAmount,
+        ]);
+
+        $price = $this->createConfiguredMock(CartPrice::class, [
+            'getCalculatedTaxes' => $calculatedTaxCollection,
+        ]);
+
+        $cart->method('getPrice')->willReturn($price);
+        $cart->setLineItems($lineItems);
+        $cart->setDeliveries($deliveries);
+
+        $expect = CheckoutComUtil::buildDirectPayCart($cart);
+
+        static::assertInstanceOf(DirectPayCartStruct::class, $expect);
     }
 
     public function buildReferenceProvider(): array
@@ -250,6 +286,52 @@ class CheckoutComTest extends TestCase
                 'expected' => 12500,
                 'price' => 124.2545435535,
                 'currency' => Currency::$CLP,
+            ],
+        ];
+    }
+
+    public function buildDirectPayCartProvider(): array
+    {
+        return [
+            'Test empty line items and empty delivery items and tax is 0' => [
+                new LineItemCollection(),
+                new DeliveryCollection(),
+                0,
+            ],
+            'Test has line items but empty delivery items and tax is 0' => [
+                new LineItemCollection([
+                    new LineItem('foo1', 'bar'),
+                    (new LineItem('foo2', 'bar'))
+                        ->setPrice($this->createConfiguredMock(CalculatedPrice::class, [
+                            'getUnitPrice' => 5.0,
+                        ])),
+                ]),
+                new DeliveryCollection(),
+                0.0,
+            ],
+            'Test empty line items but has delivery items and tax is 0' => [
+                new LineItemCollection(),
+                new DeliveryCollection([
+                    $this->createConfiguredMock(Delivery::class, [
+                        'getShippingCosts' => $this->createConfiguredMock(CalculatedPrice::class, [
+                            'getUnitPrice' => 0.0,
+                        ]),
+                    ]),
+                    $this->createConfiguredMock(Delivery::class, [
+                        'getShippingCosts' => $this->createConfiguredMock(CalculatedPrice::class, [
+                            'getUnitPrice' => 5.0,
+                        ]),
+                        'getShippingMethod' => $this->createConfiguredMock(ShippingMethodEntity::class, [
+                            'getName' => 'foo',
+                        ]),
+                    ]),
+                ]),
+                0.0,
+            ],
+            'Test empty line and delivery items but tax is more than 0' => [
+                new LineItemCollection(),
+                new DeliveryCollection(),
+                5.0,
             ],
         ];
     }

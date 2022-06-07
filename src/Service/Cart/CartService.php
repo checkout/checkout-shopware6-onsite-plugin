@@ -18,19 +18,19 @@ class CartService extends AbstractCartService
 
     private ContextService $contextService;
 
-    private AbstractContextSwitchRoute $salesChannelContextSwitcher;
+    private AbstractContextSwitchRoute $contextSwitchRoute;
 
     private ProductLineItemFactory $productLineItemFactory;
 
     public function __construct(
         CoreCartService $coreCartService,
         ContextService $contextService,
-        AbstractContextSwitchRoute $salesChannelContextSwitcher,
+        AbstractContextSwitchRoute $contextSwitchRoute,
         ProductLineItemFactory $productLineItemFactory
     ) {
         $this->coreCartService = $coreCartService;
         $this->contextService = $contextService;
-        $this->salesChannelContextSwitcher = $salesChannelContextSwitcher;
+        $this->contextSwitchRoute = $contextSwitchRoute;
         $this->productLineItemFactory = $productLineItemFactory;
     }
 
@@ -51,7 +51,7 @@ class CartService extends AbstractCartService
      */
     public function recalculateCart(SalesChannelContext $context): Cart
     {
-        $cart = $this->coreCartService->getCart($context->getToken(), $context);
+        $cart = $this->getCart($context->getToken(), $context);
 
         return $this->coreCartService->recalculate($cart, $context);
     }
@@ -77,7 +77,7 @@ class CartService extends AbstractCartService
             SalesChannelContextService::COUNTRY_ID => $countryID,
         ]);
 
-        $this->salesChannelContextSwitcher->switchContext($dataBag, $context);
+        $this->contextSwitchRoute->switchContext($dataBag, $context);
 
         return $this->contextService->getSalesChannelContext(
             $context->getSalesChannel()->getId(),
@@ -96,7 +96,7 @@ class CartService extends AbstractCartService
             SalesChannelContextService::SHIPPING_METHOD_ID => $shippingMethodID,
         ]);
 
-        $this->salesChannelContextSwitcher->switchContext($dataBag, $context);
+        $this->contextSwitchRoute->switchContext($dataBag, $context);
 
         return $this->contextService->getSalesChannelContext(
             $context->getSalesChannel()->getId(),
@@ -115,7 +115,7 @@ class CartService extends AbstractCartService
             SalesChannelContextService::PAYMENT_METHOD_ID => $paymentMethodId,
         ]);
 
-        $this->salesChannelContextSwitcher->switchContext($dataBag, $context);
+        $this->contextSwitchRoute->switchContext($dataBag, $context);
 
         return $this->contextService->getSalesChannelContext(
             $context->getSalesChannel()->getId(),
