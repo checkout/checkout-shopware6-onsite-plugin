@@ -131,6 +131,8 @@ class CustomerServiceTest extends TestCase
             $this->createMock(CountryEntity::class)
         );
 
+        $salutation = $this->createMock(SalutationEntity::class);
+
         $this->systemConfigService->method('getString')
             ->willReturn($hasConfig ? 'any url' : '');
 
@@ -172,8 +174,7 @@ class CustomerServiceTest extends TestCase
                 ->willReturn($customerResponse);
         }
 
-        $expect = $this->customerService->registerAndLoginCustomer($registerAndLoginCustomerRequest, $salesChannel);
-
+        $expect = $this->customerService->registerAndLoginCustomer($registerAndLoginCustomerRequest, $salutation, $salesChannel);
         static::assertInstanceOf(RegisterAndLoginGuestStruct::class, $expect);
     }
 

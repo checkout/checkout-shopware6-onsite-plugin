@@ -6,13 +6,13 @@ import ApplePayDisplayPlugin from '../../../../src/checkout-com/plugins/apple/ap
 
 describe('ApplePayDisplayPlugin tests', () => {
     let applePayDisplayPlugin = undefined;
-    let spyInit = jest.fn();
+    const spyInit = jest.fn();
 
     beforeEach(() => {
         const mockElement = document.createElement('div');
 
         window.csrf = {
-            enabled: false
+            enabled: false,
         };
 
         window.router = [];
@@ -23,10 +23,10 @@ describe('ApplePayDisplayPlugin tests', () => {
             },
             getPlugin: () => {
                 return {
-                    get: () => []
+                    get: () => [],
                 };
             },
-            initializePlugins: undefined
+            initializePlugins: undefined,
         };
 
         // mock buy box plugins

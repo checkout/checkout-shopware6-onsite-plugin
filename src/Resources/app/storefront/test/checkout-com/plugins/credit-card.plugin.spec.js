@@ -8,13 +8,13 @@ import template from './credit-card.plugin.template.html';
 describe('CreditCardPlugin tests', () => {
     let creditCardPlugin = undefined;
     let mockElement = undefined;
-    let spyInit = jest.fn();
+    const spyInit = jest.fn();
 
     beforeEach(() => {
         document.body.innerHTML = template;
 
         window.csrf = {
-            enabled: false
+            enabled: false,
         };
 
         window.router = [];
@@ -22,7 +22,7 @@ describe('CreditCardPlugin tests', () => {
         window.Frames = {
             init: jest.fn(),
             submitCard: jest.fn(),
-            enableSubmitForm: jest.fn()
+            enableSubmitForm: jest.fn(),
         };
 
         window.PluginManager = {
@@ -31,10 +31,10 @@ describe('CreditCardPlugin tests', () => {
             },
             getPlugin: () => {
                 return {
-                    get: () => []
+                    get: () => [],
                 };
             },
-            initializePlugins: undefined
+            initializePlugins: undefined,
         };
 
         // mock buy box plugins

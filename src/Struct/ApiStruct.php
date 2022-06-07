@@ -2,7 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Struct;
 
-use Exception;
+use CheckoutCom\Shopware6\Exception\CheckoutComException;
 use Shopware\Core\Framework\Struct\Collection;
 use Shopware\Core\Framework\Struct\Struct;
 
@@ -18,9 +18,6 @@ abstract class ApiStruct extends Struct
 {
     private const REMOVED_FIELDS = ['extensions'];
 
-    /**
-     * @throws Exception
-     */
     public function toApiJson(): array
     {
         $data = $this->getApiJson($this->getVars());
@@ -31,9 +28,6 @@ abstract class ApiStruct extends Struct
         return $data;
     }
 
-    /**
-     * @throws Exception
-     */
     private function getApiJson(array $structData): array
     {
         foreach (self::REMOVED_FIELDS as $field) {
@@ -59,16 +53,13 @@ abstract class ApiStruct extends Struct
         return $structData;
     }
 
-    /**
-     * @throws Exception
-     */
     private function getCollectionApiJson(Collection $collection): array
     {
         $data = [];
 
         foreach ($collection->getElements() as $key => $item) {
             if (!$item instanceof ApiStruct) {
-                throw new Exception('Collection item must be an instance of ApiStruct');
+                throw new CheckoutComException('Collection item must be an instance of ApiStruct');
             }
 
             $data[$key] = $item->getApiJson($item->getVars());

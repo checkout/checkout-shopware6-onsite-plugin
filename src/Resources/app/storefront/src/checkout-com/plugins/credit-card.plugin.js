@@ -2,7 +2,7 @@ import Plugin from 'src/plugin-system/plugin.class';
 import ButtonLoadingIndicator from 'src/utility/loading-indicator/button-loading-indicator.util';
 import DomAccess from 'src/helper/dom-access.helper';
 import HttpClient from 'src/service/http-client.service';
-import { DATA_BAG_KEY } from '../helper/constants';
+import { createTokenInput } from '../helper/utils';
 
 /**
  * This Class is responsible for the Credit Card integration
@@ -169,27 +169,14 @@ export default class CheckoutComCreditCard extends Plugin {
      * @param token {string}
      */
     onCardTokenized({ token }) {
-        const { paymentFormId } = this.options;
-
-        const paymentForm = this.getElement(document, paymentFormId);
-
-        const input = this.createTokenInput(token);
+        const input = createTokenInput(token);
 
         // Add the token input to the form
         // It will be sent to the server along with the form.
-        paymentForm.append(input);
+        this.paymentForm.append(input);
 
         // Continue to submit shopware payment form
-        paymentForm.submit();
-    }
-
-    createTokenInput(token) {
-        const input = document.createElement('input');
-        input.setAttribute('type', 'hidden');
-        input.setAttribute('name', `${DATA_BAG_KEY}[token]`);
-        input.setAttribute('value', token);
-
-        return input;
+        this.paymentForm.submit();
     }
 
     clearErrorMessage(element) {

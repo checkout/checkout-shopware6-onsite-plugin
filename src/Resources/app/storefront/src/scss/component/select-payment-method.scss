@@ -1,24 +1,29 @@
 input {
     &.checkout-com-field__cardholder-name {
         -webkit-text-fill-color: #13395e;
+
         &::-webkit-input-placeholder {
             /* WebKit, Blink, Edge */
             color: rgb(117, 117, 117);
         }
+
         &:-moz-placeholder {
             /* Mozilla Firefox 4 to 18 */
             color: rgb(117, 117, 117);
             opacity: 1;
         }
+
         &::-moz-placeholder {
             /* Mozilla Firefox 19+ */
             color: rgb(117, 117, 117);
             opacity: 1;
         }
+
         &:-ms-input-placeholder {
             /* Internet Explorer 10-11 */
             color: rgb(117, 117, 117);
         }
+
         &::-ms-input-placeholder {
             /* Microsoft Edge */
             color: rgb(117, 117, 117);
@@ -33,6 +38,7 @@ input {
 
 .checkout-com-field__card-number {
     position: relative;
+
     .checkout-com-field_icon-card-container {
         position: absolute;
         top: 50%;

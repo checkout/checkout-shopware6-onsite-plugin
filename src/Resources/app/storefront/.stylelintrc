@@ -1,5 +1,6 @@
 {
     "extends": "stylelint-config-standard",
+    "customSyntax": "postcss-scss",
     "plugins": [
         "stylelint-scss"
     ],
@@ -17,7 +18,10 @@
                 "user-modify"
             ]
         }],
+        "property-no-vendor-prefix": null,
         "no-descending-specificity": null,
+        "color-function-notation": null,
+        "selector-no-vendor-prefix": null,
         "max-nesting-depth": [3, {
             "ignore": ["blockless-at-rules", "pseudo-classes"],
             "severity": "warning"

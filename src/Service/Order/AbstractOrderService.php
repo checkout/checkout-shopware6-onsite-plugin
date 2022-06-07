@@ -8,8 +8,10 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\Salutation\SalutationEntity;
 
 abstract class AbstractOrderService
 {
@@ -22,10 +24,12 @@ abstract class AbstractOrderService
     abstract public function getRequestLastOrderId(): ?string;
 
     abstract public function createOrder(
-        CountryEntity $country,
-        RequestDataBag $shippingContact,
+        SalesChannelContext $context,
         DataBag $data,
-        SalesChannelContext $context
+        RequestDataBag $shippingContact,
+        SalutationEntity $salutation,
+        CountryEntity $country,
+        ?CountryStateEntity $countryState
     ): OrderEntity;
 
     abstract public function updateCheckoutCustomFields(OrderEntity $order, OrderCustomFieldsStruct $orderCustomFields, SalesChannelContext $context): void;

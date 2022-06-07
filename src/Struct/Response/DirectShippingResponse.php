@@ -3,7 +3,6 @@
 namespace CheckoutCom\Shopware6\Struct\Response;
 
 use CheckoutCom\Shopware6\Struct\DirectPay\AbstractShippingPayloadStruct;
-use Exception;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\SalesChannel\StoreApiResponse;
@@ -34,9 +33,6 @@ class DirectShippingResponse extends StoreApiResponse
      */
     protected $object;
 
-    /**
-     * @throws Exception
-     */
     public function __construct(bool $success, ?AbstractShippingPayloadStruct $shippingPayload = null)
     {
         parent::__construct(new ArrayStruct([
