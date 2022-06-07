@@ -6,13 +6,13 @@ import GooglePayDirectPlugin from '../../../../src/checkout-com/plugins/google/g
 
 describe('GooglePayDirectPlugin tests', () => {
     let googlePayDirectPlugin = undefined;
-    let spyInit = jest.fn();
+    const spyInit = jest.fn();
 
     beforeEach(() => {
         const mockElement = document.createElement('div');
 
         window.csrf = {
-            enabled: false
+            enabled: false,
         };
 
         window.router = [];
@@ -23,10 +23,10 @@ describe('GooglePayDirectPlugin tests', () => {
             },
             getPlugin: () => {
                 return {
-                    get: () => []
+                    get: () => [],
                 };
             },
-            initializePlugins: undefined
+            initializePlugins: undefined,
         };
 
         // mock buy box plugins

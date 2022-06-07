@@ -4,15 +4,19 @@
         -webkit-appearance: -apple-pay-button;
         -apple-pay-button-type: buy;
     }
+
     .checkout-com-apple-pay-button-with-text > * {
         display: none;
     }
+
     .checkout-com-apple-pay-button-black {
         -apple-pay-button-style: black;
     }
+
     .checkout-com-apple-pay-button-white-with-text {
         -apple-pay-button-style: white;
     }
+
     .checkout-com-apple-pay-button-white-with-line-with-text {
         -apple-pay-button-style: white-outline;
     }
@@ -21,6 +25,7 @@
 @supports not (-webkit-appearance: -apple-pay-button) {
     .checkout-com-apple-pay-button-with-text {
         --apple-pay-scale: 1; /* (height / 32) */
+
         display: inline-flex;
         justify-content: center;
         border-radius: $border-radius;
@@ -28,40 +33,48 @@
         min-width: 200px;
         min-height: 32px;
     }
+
     .checkout-com-apple-pay-button-black {
         background-color: black;
         border-color: black;
         color: white;
     }
+
     .checkout-com-apple-pay-button-white-with-text {
         background-color: white;
         border-color: white;
         color: black;
     }
+
     .checkout-com-apple-pay-button-white-with-line-with-text {
         background-color: white;
         color: black;
-        border: .5px solid black;
+        border: 0.5px solid black;
     }
+
     .checkout-com-apple-pay-button-with-text.checkout-com-apple-pay-button-black > .logo {
         background-image: -webkit-named-image(apple-pay-logo-white);
         background-color: black;
     }
+
     .checkout-com-apple-pay-button-with-text.checkout-com-apple-pay-button-white-with-text > .logo {
         background-image: -webkit-named-image(apple-pay-logo-black);
         background-color: white;
     }
+
     .checkout-com-apple-pay-button-with-text.checkout-com-apple-pay-button-white-with-line-with-text > .logo {
         background-image: -webkit-named-image(apple-pay-logo-black);
         background-color: white;
     }
+
     .checkout-com-apple-pay-button-with-text > .text {
-        font-family: -apple-system;
+        font-family: -apple-system, serif;
         font-size: calc(1em * var(--apple-pay-scale));
         font-weight: 300;
         align-self: center;
         margin-right: calc(2px * var(--apple-pay-scale));
     }
+
     .checkout-com-apple-pay-button-with-text > .logo {
         width: calc(35px * var(--scale));
         height: 100%;

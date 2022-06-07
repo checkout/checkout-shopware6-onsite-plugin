@@ -8,13 +8,13 @@ import template from './apple-pay-confirm.plugin.template.html';
 describe('ApplePayConfirmPlugin tests', () => {
     let applePayConfirmPlugin = undefined;
     let mockElement = undefined;
-    let spyInit = jest.fn();
+    const spyInit = jest.fn();
 
     beforeEach(() => {
         document.body.innerHTML = template;
 
         window.csrf = {
-            enabled: false
+            enabled: false,
         };
 
         window.router = [];
@@ -25,10 +25,10 @@ describe('ApplePayConfirmPlugin tests', () => {
             },
             getPlugin: () => {
                 return {
-                    get: () => []
+                    get: () => [],
                 };
             },
-            initializePlugins: undefined
+            initializePlugins: undefined,
         };
 
         // mock buy box plugins
