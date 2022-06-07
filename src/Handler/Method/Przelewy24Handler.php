@@ -3,10 +3,11 @@ declare(strict_types=1);
 
 namespace CheckoutCom\Shopware6\Handler\Method;
 
+use Checkout\Common\Country;
 use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\PaymentRequest;
+use Checkout\Payments\Source\Apm\RequestP24Source;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
-use CheckoutCom\Shopware6\Handler\Source\RequestPrzelewy24Source;
 use Exception;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -44,7 +45,7 @@ class Przelewy24Handler extends PaymentHandler
      *
      * @throws Exception
      */
-    private function buildPrzelewy24Source(OrderEntity $order): RequestPrzelewy24Source
+    private function buildPrzelewy24Source(OrderEntity $order): RequestP24Source
     {
         $orderCustomer = $order->getOrderCustomer();
         if (!$orderCustomer instanceof OrderCustomerEntity) {
@@ -56,7 +57,8 @@ class Przelewy24Handler extends PaymentHandler
             throw new Exception($message);
         }
 
-        $request = new RequestPrzelewy24Source();
+        $request = new RequestP24Source();
+        $request->payment_country = Country::$PL;
         $request->account_holder_name = \sprintf('%s %s', $orderCustomer->getFirstName(), $orderCustomer->getLastName());
         $request->account_holder_email = $orderCustomer->getEmail();
 
