@@ -3,6 +3,7 @@
 namespace CheckoutCom\Shopware6\Facade;
 
 use Checkout\CheckoutApiException;
+use Checkout\Common\Currency;
 use Checkout\Payments\PaymentRequest;
 use CheckoutCom\Shopware6\Event\CheckoutRequestPaymentEvent;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
@@ -219,8 +220,10 @@ class PaymentPayFacade
             $paymentRequest->amount = CheckoutComUtil::formatPriceCheckout($order->getAmountTotal(), $orderCurrency->getIsoCode());
         }
 
+        /** @var Currency $currency */
+        $currency = strtoupper($orderCurrency->getIsoCode());
         // We uppercase the ISO code to avoid errors with checkout.com
-        $paymentRequest->currency = strtoupper($orderCurrency->getIsoCode());
+        $paymentRequest->currency = $currency;
 
         // We disable auto `Capture` for the payment
         // We will `Capture` this payment in @finalize function
