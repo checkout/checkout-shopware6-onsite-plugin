@@ -22,8 +22,8 @@
             </call>
         </service>
 
-        <!-- Credit Card PaymentHandler -->
-        <service id="CheckoutCom\Shopware6\Handler\Method\CreditCardHandler" parent="checkout_com.shopware6.handler.payment_handler">
+        <!-- Card Payments PaymentHandler -->
+        <service id="CheckoutCom\Shopware6\Handler\Method\CardPaymentHandler" parent="checkout_com.shopware6.handler.payment_handler">
             <tag name="shopware.payment.method.async"/>
             <tag name="checkout_com.shopware6.payment_handler"/>
         </service>

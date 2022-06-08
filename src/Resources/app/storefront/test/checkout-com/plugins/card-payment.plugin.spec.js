@@ -2,11 +2,11 @@
  * @jest-environment jsdom
  */
 
-import CreditCardPlugin from '../../../src/checkout-com/plugins/credit-card.plugin';
-import template from './credit-card.plugin.template.html';
+import CardPaymentPlugin from '../../../src/checkout-com/plugins/card-payment.plugin';
+import template from './card-payment.plugin.template.html';
 
-describe('CreditCardPlugin tests', () => {
-    let creditCardPlugin = undefined;
+describe('CardPaymentPlugin tests', () => {
+    let cardPaymentPlugin = undefined;
     let mockElement = undefined;
     const spyInit = jest.fn();
 
@@ -39,18 +39,18 @@ describe('CreditCardPlugin tests', () => {
 
         // mock buy box plugins
         mockElement = document.querySelector('#confirmOrderForm');
-        creditCardPlugin = new CreditCardPlugin(mockElement);
+        cardPaymentPlugin = new CardPaymentPlugin(mockElement);
 
         // create spy elements
-        creditCardPlugin.init = spyInit;
+        cardPaymentPlugin.init = spyInit;
     });
 
     afterEach(() => {
-        creditCardPlugin = undefined;
+        cardPaymentPlugin = undefined;
         spyInit.mockClear();
     });
 
-    test('credit card plugin exists', () => {
-        expect(typeof creditCardPlugin).toBe('object');
+    test('card payments plugin exists', () => {
+        expect(typeof cardPaymentPlugin).toBe('object');
     });
 });

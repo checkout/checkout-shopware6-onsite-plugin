@@ -2,7 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Tests\Subscriber;
 
-use CheckoutCom\Shopware6\Handler\Method\CreditCardHandler;
+use CheckoutCom\Shopware6\Handler\Method\CardPaymentHandler;
 use CheckoutCom\Shopware6\Subscriber\PaymentMethodSubscriber;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use PHPUnit\Framework\TestCase;
@@ -35,7 +35,7 @@ class PaymentMethodSubscriberTest extends TestCase
     {
         $entity = new PaymentMethodEntity();
         $entity->setId(Uuid::randomHex());
-        $entity->setHandlerIdentifier(CreditCardHandler::class);
+        $entity->setHandlerIdentifier(CardPaymentHandler::class);
 
         return $entity;
     }

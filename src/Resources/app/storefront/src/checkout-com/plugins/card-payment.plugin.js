@@ -5,9 +5,9 @@ import HttpClient from 'src/service/http-client.service';
 import { createTokenInput } from '../helper/utils';
 
 /**
- * This Class is responsible for the Credit Card integration
+ * This Class is responsible for the Card Payments integration
  */
-export default class CheckoutComCreditCard extends Plugin {
+export default class CheckoutComCardPayment extends Plugin {
     // The card logo MIME type is always svg
     LOGO_MIME_TYPE = 'svg';
 
@@ -77,8 +77,8 @@ export default class CheckoutComCreditCard extends Plugin {
 
             this.createLoading();
 
-            // Submit the credit card Frame, to get the token instead of submitting the payment form
-            // All the credit card data is submitted to the checkout.com server by the iframe
+            // Submit the card Frame, to get the token instead of submitting the payment form
+            // All the card data is submitted to the checkout.com server by the iframe
             Frames.submitCard();
         });
 
@@ -95,7 +95,7 @@ export default class CheckoutComCreditCard extends Plugin {
     }
 
     onReadyFrames() {
-        // Because we add `d-none` class to the credit card form, we need to remove it when the frame is ready
+        // Because we add `d-none` class to the card form, we need to remove it when the frame is ready
         this.el.classList.remove('d-none');
     }
 

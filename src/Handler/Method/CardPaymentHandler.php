@@ -14,11 +14,11 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
-class CreditCardHandler extends PaymentHandler
+class CardPaymentHandler extends PaymentHandler
 {
     public function getSnippetKey(): string
     {
-        return 'checkoutCom.paymentMethod.creditCardLabel';
+        return 'checkoutCom.paymentMethod.cardPaymentsLabel';
     }
 
     public static function getPaymentMethodType(): string

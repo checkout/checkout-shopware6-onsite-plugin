@@ -20,8 +20,8 @@
     </card>
 
     <card>
-        <title>Order State Automation</title>
-        <title lang="de-DE">Auftragsstatus Automatisierung</title>
+        <title>Order Status Customisation</title>
+        <title lang="de-DE">Anpassung des Auftragsstatus</title>
 
         <input-field type="single-select">
             <name>orderStateForPaidPayment</name>

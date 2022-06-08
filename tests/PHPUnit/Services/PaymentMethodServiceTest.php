@@ -2,7 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Tests\Services;
 
-use CheckoutCom\Shopware6\Handler\Method\CreditCardHandler;
+use CheckoutCom\Shopware6\Handler\Method\CardPaymentHandler;
 use CheckoutCom\Shopware6\Handler\Method\GooglePayHandler;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Service\PaymentMethodService;
@@ -127,8 +127,8 @@ class PaymentMethodServiceTest extends TestCase
         return [
             'Test did not find payment handler' => [
                 'paymentMethods' => [
-                    $this->createConfiguredMock(CreditCardHandler::class, [
-                        'getClassName' => CreditCardHandler::class,
+                    $this->createConfiguredMock(CardPaymentHandler::class, [
+                        'getClassName' => CardPaymentHandler::class,
                     ]),
                 ],
                 'paymentMethodType' => GooglePayHandler::getPaymentMethodType(),
@@ -136,11 +136,11 @@ class PaymentMethodServiceTest extends TestCase
             ],
             'Test found payment handler' => [
                 'paymentMethods' => [
-                    $this->createConfiguredMock(CreditCardHandler::class, [
-                        'getClassName' => CreditCardHandler::class,
+                    $this->createConfiguredMock(CardPaymentHandler::class, [
+                        'getClassName' => CardPaymentHandler::class,
                     ]),
                 ],
-                'paymentMethodType' => CreditCardHandler::getPaymentMethodType(),
+                'paymentMethodType' => CardPaymentHandler::getPaymentMethodType(),
                 true,
             ],
         ];
@@ -157,7 +157,7 @@ class PaymentMethodServiceTest extends TestCase
             'Test successful install payment methods without any exists payment methods' => [
                 true,
                 'paymentMethods' => [
-                    $this->createMock(CreditCardHandler::class),
+                    $this->createMock(CardPaymentHandler::class),
                 ],
                 'existsPaymentMethods' => [
                 ],
@@ -165,10 +165,10 @@ class PaymentMethodServiceTest extends TestCase
             'Test successful install payment methods with exists payment methods' => [
                 true,
                 'paymentMethods' => [
-                    $this->createMock(CreditCardHandler::class),
+                    $this->createMock(CardPaymentHandler::class),
                 ],
                 'existsPaymentMethods' => [
-                    CreditCardHandler::class,
+                    CardPaymentHandler::class,
                 ],
             ],
         ];
@@ -188,8 +188,8 @@ class PaymentMethodServiceTest extends TestCase
             'Test empty installed payment methods' => [
                 false,
                 'paymentMethods' => [
-                    $this->createConfiguredMock(CreditCardHandler::class, [
-                        'getClassName' => CreditCardHandler::class,
+                    $this->createConfiguredMock(CardPaymentHandler::class, [
+                        'getClassName' => CardPaymentHandler::class,
                         'getPaymentMethodDisplayName' => new DisplayNameTranslationCollection(),
                     ]),
                 ],
@@ -201,8 +201,8 @@ class PaymentMethodServiceTest extends TestCase
             'Test set activate for not in checkout.com installed payment methods' => [
                 false,
                 'paymentMethods' => [
-                    $this->createConfiguredMock(CreditCardHandler::class, [
-                        'getClassName' => CreditCardHandler::class,
+                    $this->createConfiguredMock(CardPaymentHandler::class, [
+                        'getClassName' => CardPaymentHandler::class,
                         'getPaymentMethodDisplayName' => new DisplayNameTranslationCollection(),
                     ]),
                 ],
@@ -215,14 +215,14 @@ class PaymentMethodServiceTest extends TestCase
             'Test set activate for installed payment methods with duplicate payment methods' => [
                 false,
                 'paymentMethods' => [
-                    $this->createConfiguredMock(CreditCardHandler::class, [
-                        'getClassName' => CreditCardHandler::class,
+                    $this->createConfiguredMock(CardPaymentHandler::class, [
+                        'getClassName' => CardPaymentHandler::class,
                         'getPaymentMethodDisplayName' => new DisplayNameTranslationCollection(),
                     ]),
                 ],
                 'existsPaymentMethods' => [
-                    CreditCardHandler::class,
-                    CreditCardHandler::class,
+                    CardPaymentHandler::class,
+                    CardPaymentHandler::class,
                 ],
                 true,
                 true,
@@ -230,13 +230,13 @@ class PaymentMethodServiceTest extends TestCase
             'Test set activate for installed payment methods with same activate status' => [
                 false,
                 'paymentMethods' => [
-                    $this->createConfiguredMock(CreditCardHandler::class, [
-                        'getClassName' => CreditCardHandler::class,
+                    $this->createConfiguredMock(CardPaymentHandler::class, [
+                        'getClassName' => CardPaymentHandler::class,
                         'getPaymentMethodDisplayName' => new DisplayNameTranslationCollection(),
                     ]),
                 ],
                 'existsPaymentMethods' => [
-                    CreditCardHandler::class,
+                    CardPaymentHandler::class,
                 ],
                 true,
                 true,
@@ -244,13 +244,13 @@ class PaymentMethodServiceTest extends TestCase
             'Test set activate for installed payment methods with wrong class name' => [
                 false,
                 'paymentMethods' => [
-                    $this->createConfiguredMock(CreditCardHandler::class, [
+                    $this->createConfiguredMock(CardPaymentHandler::class, [
                         'getClassName' => 'Wrong class name',
                         'getPaymentMethodDisplayName' => new DisplayNameTranslationCollection(),
                     ]),
                 ],
                 'existsPaymentMethods' => [
-                    CreditCardHandler::class,
+                    CardPaymentHandler::class,
                 ],
                 true,
                 false,
@@ -258,7 +258,7 @@ class PaymentMethodServiceTest extends TestCase
             'Test set activate for installed payment methods updated activate status successful' => [
                 true,
                 'paymentMethods' => [
-                    new CreditCardHandler(
+                    new CardPaymentHandler(
                         $this->createConfiguredMock(TranslatorInterface::class, [
                             'trans' => 'Foo',
                         ]),
@@ -268,7 +268,7 @@ class PaymentMethodServiceTest extends TestCase
                     ),
                 ],
                 'existsPaymentMethods' => [
-                    CreditCardHandler::class,
+                    CardPaymentHandler::class,
                 ],
                 true,
                 false,
