@@ -1,4 +1,5 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils';
+import '@core/src/app/component/utils/sw-inherit-wrapper';
 import '../../../../src/module/checkout-payments/components/checkout-plugin-config-section-api';
 
 function createWrapper(customOptions = {}) {
@@ -6,13 +7,18 @@ function createWrapper(customOptions = {}) {
 
     const options = {
         localVue,
-        propsData: {},
+        propsData: {
+            inheritedValue: {},
+            actualConfigData: {},
+            isNotDefaultSalesChannel: false,
+        },
         stubs: {
             'sw-button': true,
             'sw-container': true,
             'sw-switch-field': true,
             'sw-password-field': true,
             'sw-external-link': true,
+            'sw-inherit-wrapper': Shopware.Component.build('sw-inherit-wrapper'),
         },
         provide: {
             checkoutConfigService: {}

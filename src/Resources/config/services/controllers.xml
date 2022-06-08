@@ -19,6 +19,7 @@
         </service>
 
         <service id="CheckoutCom\Shopware6\Storefront\Controller\MediaController" public="true">
+            <argument type="service" id="CheckoutCom\Shopware6\Service\ContextService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\MediaService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\ApplePay\ApplePayService"/>
 

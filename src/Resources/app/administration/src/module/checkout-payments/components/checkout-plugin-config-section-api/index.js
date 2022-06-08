@@ -2,7 +2,12 @@ import template from './checkout-plugin-config-section-api.html.twig';
 import './checkout-plugin-config-section-api.scss';
 import { DASHBOARD_LINK } from '../../../../constant/settings';
 
-const { Component, Mixin } = Shopware;
+const {
+    Component,
+    Mixin,
+    Utils,
+} = Shopware;
+const { isEmpty } = Utils.types;
 
 Component.register('checkout-plugin-config-section-api', {
     template,
@@ -12,19 +17,23 @@ Component.register('checkout-plugin-config-section-api', {
     mixins: [Mixin.getByName('notification')],
 
     props: {
-        value: {
+        inheritedValue: {
+            type: Object,
+            required: true,
+        },
+        actualConfigData: {
             type: Object,
             required: false,
+        },
+        isNotDefaultSalesChannel: {
+            type: Boolean,
+            required: true,
         },
     },
 
     data() {
         return {
-            config: {
-                secretKey: this.getConfigPropsValue('secretKey', ''),
-                publicKey: this.getConfigPropsValue('publicKey', ''),
-                sandboxMode: this.getConfigPropsValue('sandboxMode', true),
-            },
+            config: this.actualConfigData || {},
             error: {
                 secretKey: false,
                 publicKey: false,
@@ -53,18 +62,24 @@ Component.register('checkout-plugin-config-section-api', {
     },
 
     methods: {
-        // We need to use the getConfigPropsValue function to get the value from the config props.
-        getConfigPropsValue(field, defaultValue = null) {
-            if (!this.value) {
-                return defaultValue;
-            }
+        updateInheritedValue(field, currentValue, value, updateCurrentValueCB) {
+            updateCurrentValueCB({
+                ...currentValue,
+                [field]: value,
+            });
+        },
 
-            return this.value[field] ?? defaultValue;
+        checkInheritance(value) {
+            return isEmpty(value);
         },
 
         async onTestButtonClicked() {
             this.isLoading = true;
-            const { secretKey, publicKey, sandboxMode } = this.config;
+            const {
+                secretKey,
+                publicKey,
+                sandboxMode,
+            } = isEmpty(this.config) ? this.inheritedValue : this.config;
 
             // We reset the error state
             this.error = {
@@ -90,7 +105,10 @@ Component.register('checkout-plugin-config-section-api', {
         },
 
         _showMessageResult(result) {
-            const { isSecretKey, valid } = result;
+            const {
+                isSecretKey,
+                valid,
+            } = result;
 
             const inputError = isSecretKey ? 'secretKey' : 'publicKey';
             const validKey = valid ? 'isValid' : 'isInvalid';

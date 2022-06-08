@@ -1,7 +1,7 @@
 {
   "checkout-payments": {
     "general": {
-      "permissionDeny": "Sie haben keine Erlaubnis, diese Aktion durchzuführen"
+      "permissionDeny": "You do not have permission to do this action"
     },
     "config": {
       "api": {
@@ -25,13 +25,6 @@
             "isInvalid": "The public key is invalid"
           }
         }
-      },
-      "orderState": {
-        "skipOptionOrder": "Skip this option",
-        "orderStateForPaidPaymentLabel": "Order state for paid payment",
-        "orderStateForFailedPaymentLabel": "Order state for failed payment",
-        "orderStateForAuthorizedPaymentLabel": "Order state for authorized payment",
-        "orderStateForVoidedPaymentLabel": "Order state for voided payment"
       }
     },
     "paymentMethod": {
@@ -43,9 +36,11 @@
           "externalLinkLabel": "Learn how to Set up Apple Pay",
           "appleMerchantIdLabel": "Apple Merchant ID",
           "appleMerchantIdHelpText": "This is found in your Apple developer account",
-          "domainUploadLabel": "Upload your Apple Merchant Domains file (.txt)",
+          "domainUploadLabel": "Upload your Apple Merchant Domain files (.txt)",
           "keyUploadLabel": "Upload your Apple Key Certificate file (.key)",
-          "pemUploadLabel": "Upload your Apple PEM Certificate file (.pem)"
+          "pemUploadLabel": "Upload your Apple PEM Certificate file (.pem)",
+          "urlColumn": "URL",
+          "mediaColumn": "Media"
         }
       },
       "googlePay": {

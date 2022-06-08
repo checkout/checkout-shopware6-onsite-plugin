@@ -1,66 +1,81 @@
 {% block checkout_plugin_config_section_api %}
-    <div class="checkout-plugin-config-section-api">
-        {% block checkout_plugin_config_section_api_secret_key %}
-            <sw-password-field
-                v-model="config.secretKey"
-                copyable
-                type="password"
-                :is-invalid="error.secretKey"
-                :label="$tc('checkout-payments.config.api.secretKeyLabel')"
-                :placeholder="$tc('checkout-payments.config.api.secretKeyLabel')"
-                :disabled="isLoading"
-            />
-        {% endblock %}
+    <sw-inherit-wrapper
+        v-model="config"
+        label=" "
+        :inherited-value="inheritedValue"
+        :has-parent="isNotDefaultSalesChannel"
+        :custom-inheritation-check-function="checkInheritance"
+        :disabled="isLoading"
+    >
+        <template #content="props">
+            {% block checkout_plugin_config_section_api_secret_key %}
+                <sw-password-field
+                    copyable
+                    type="password"
+                    :is-invalid="error.secretKey"
+                    :label="$tc('checkout-payments.config.api.secretKeyLabel')"
+                    :placeholder="$tc('checkout-payments.config.api.secretKeyLabel')"
+                    :disabled="props.isInherited || isLoading"
+                    :value="props.currentValue.secretKey"
+                    @input="updateInheritedValue('secretKey', props.currentValue, $event, props.updateCurrentValue)"
+                    @change="updateInheritedValue('secretKey', props.currentValue, $event, props.updateCurrentValue)"
+                />
+            {% endblock %}
 
-        {% block checkout_plugin_config_section_api_public_key %}
-            <sw-password-field
-                v-model="config.publicKey"
-                copyable
-                type="password"
-                :is-invalid="error.publicKey"
-                :label="$tc('checkout-payments.config.api.publicKeyLabel')"
-                :placeholder="$tc('checkout-payments.config.api.secretKeyLabel')"
-                :disabled="isLoading"
-            />
-        {% endblock %}
+            {% block checkout_plugin_config_section_api_public_key %}
+                <sw-password-field
+                    copyable
+                    type="password"
+                    :is-invalid="error.publicKey"
+                    :label="$tc('checkout-payments.config.api.publicKeyLabel')"
+                    :placeholder="$tc('checkout-payments.config.api.secretKeyLabel')"
+                    :disabled="props.isInherited || isLoading"
+                    :value="props.currentValue.publicKey"
+                    @input="updateInheritedValue('publicKey', props.currentValue, $event, props.updateCurrentValue)"
+                    @change="updateInheritedValue('publicKey', props.currentValue, $event, props.updateCurrentValue)"
+                />
+            {% endblock %}
 
-        {% block checkout_plugin_config_section_api_sandbox_mode %}
-            <sw-switch-field
-                v-model="config.sandboxMode"
-                bordered
-                :label="$tc('checkout-payments.config.api.sandboxModeLabel')"
-                :help-text="$tc('checkout-payments.config.api.sandboxModeHelpText')"
-                :disabled="isLoading"
-            />
-        {% endblock %}
+            {% block checkout_plugin_config_section_api_sandbox_mode %}
+                <sw-switch-field
+                    bordered
+                    :label="$tc('checkout-payments.config.api.sandboxModeLabel')"
+                    :help-text="$tc('checkout-payments.config.api.sandboxModeHelpText')"
+                    :disabled="props.isInherited || isLoading"
+                    :value="props.currentValue.sandboxMode"
+                    @input="updateInheritedValue('sandboxMode', props.currentValue, $event, props.updateCurrentValue)"
+                    @change="updateInheritedValue('sandboxMode', props.currentValue, $event, props.updateCurrentValue)"
+                />
+            {% endblock %}
 
-        {% block checkout_plugin_config_section_api_extra_component %}
-            <sw-container
-                gap="16px"
-                columns="1fr 2fr"
-            >
-                {% block checkout_plugin_config_section_api_extra_component_test_button %}
-                    <sw-button
-                        ref="testApiButton"
-                        :is-loading="isLoading"
-                        @click="onTestButtonClicked"
-                    >
-                        {{ $tc('checkout-payments.config.api.testButton') }}
-                    </sw-button>
-                {% endblock %}
-                {% block checkout_plugin_config_section_api_extra_component_link_button %}
-                    <sw-external-link
-                        class="checkout-plugin-config-payments-link"
-                        :small="false"
-                        icon="small-arrow-small-external"
-                        rel="noopener"
-                        :href="apiLink"
-                        target="_blank"
-                    >
-                        {{ $tc('checkout-payments.config.api.apiLinkButton') }}
-                    </sw-external-link>
-                {% endblock %}
-            </sw-container>
-        {% endblock %}
-    </div>
+            {% block checkout_plugin_config_section_api_extra_component %}
+                <sw-container
+                    gap="16px"
+                    columns="1fr 2fr"
+                >
+                    {% block checkout_plugin_config_section_api_extra_component_test_button %}
+                        <sw-button
+                            ref="testApiButton"
+                            :is-loading="isLoading"
+                            @click="onTestButtonClicked"
+                        >
+                            {{ $tc('checkout-payments.config.api.testButton') }}
+                        </sw-button>
+                    {% endblock %}
+                    {% block checkout_plugin_config_section_api_extra_component_link_button %}
+                        <sw-external-link
+                            class="checkout-plugin-config-payments-link"
+                            :small="false"
+                            icon="small-arrow-small-external"
+                            rel="noopener"
+                            :href="apiLink"
+                            target="_blank"
+                        >
+                            {{ $tc('checkout-payments.config.api.apiLinkButton') }}
+                        </sw-external-link>
+                    {% endblock %}
+                </sw-container>
+            {% endblock %}
+        </template>
+    </sw-inherit-wrapper>
 {% endblock %}

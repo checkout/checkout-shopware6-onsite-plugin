@@ -7,10 +7,13 @@ function createWrapper(customOptions = {}) {
     const options = {
         localVue,
         propsData: {
-            paymentMethodConfigs: {}
+            salesChannelId: '',
+            paymentMethodConfigs: {},
+            parentPaymentMethodConfigs: {}
         },
         stubs: {
             'sw-field': true,
+            'sw-inherit-wrapper': true,
         },
         provide: {},
     };

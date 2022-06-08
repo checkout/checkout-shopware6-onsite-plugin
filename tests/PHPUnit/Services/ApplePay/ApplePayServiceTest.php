@@ -8,7 +8,6 @@ use CheckoutCom\Shopware6\Service\ApplePay\ApplePayService;
 use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Service\MediaService;
 use CheckoutCom\Shopware6\Struct\SystemConfig\ApplePaySettingStruct;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use Exception;
 use GuzzleHttp\Client;
@@ -19,6 +18,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -82,15 +82,11 @@ class ApplePayServiceTest extends TestCase
         ]);
 
         $applePaySettings = new ApplePaySettingStruct();
-        $applePaySettings->setDomainMediaId('foo');
         $applePaySettings->setPemMediaId('foo');
         $applePaySettings->setKeyMediaId('foo');
 
-        $settings = new SettingStruct();
-        $settings->setApplePay($applePaySettings);
-
-        $this->settingFactory->method('getSettings')->willReturn(
-            $settings
+        $this->settingFactory->method('getPaymentMethodSettings')->willReturn(
+            $applePaySettings
         );
 
         $this->mediaService->method('getMedia')->willReturn(
@@ -134,11 +130,9 @@ class ApplePayServiceTest extends TestCase
     {
         $applePaySettings = new ApplePaySettingStruct();
         $applePaySettings->setKeyMediaId($mediaId);
-        $settings = new SettingStruct();
-        $settings->setApplePay($applePaySettings);
 
-        $this->settingFactory->method('getSettings')->willReturn(
-            $settings
+        $this->settingFactory->method('getPaymentMethodSettings')->willReturn(
+            $applePaySettings
         );
         if ($mediaId === null) {
             static::expectException(CheckoutComException::class);
@@ -150,23 +144,27 @@ class ApplePayServiceTest extends TestCase
     }
 
     /**
-     * @dataProvider getAppleMediaProvider
+     * @dataProvider getAppleDomainMediaProvider
      */
-    public function testGetAppleDomainMedia(?string $mediaId): void
+    public function testGetAppleDomainMedia(?array $domainMedias, bool $expectThrow): void
     {
+        $salesChannelDomain = $this->createConfiguredMock(SalesChannelDomainEntity::class, [
+            'getId' => 'foo',
+        ]);
         $applePaySettings = new ApplePaySettingStruct();
-        $applePaySettings->setDomainMediaId($mediaId);
-        $settings = new SettingStruct();
-        $settings->setApplePay($applePaySettings);
+        if ($domainMedias !== null) {
+            $applePaySettings->setDomainMedias($domainMedias);
+        }
 
-        $this->settingFactory->method('getSettings')->willReturn(
-            $settings
-        );
-        if ($mediaId === null) {
+        if ($expectThrow) {
             static::expectException(CheckoutComException::class);
         }
 
-        $media = $this->applePayService->getAppleDomainMedia($this->saleChannelContext);
+        $this->settingFactory->method('getPaymentMethodSettings')->willReturn(
+            $applePaySettings
+        );
+
+        $media = $this->applePayService->getAppleDomainMedia($salesChannelDomain, $this->saleChannelContext);
 
         static::assertInstanceOf(MediaEntity::class, $media);
     }
@@ -178,11 +176,9 @@ class ApplePayServiceTest extends TestCase
     {
         $applePaySettings = new ApplePaySettingStruct();
         $applePaySettings->setPemMediaId($mediaId);
-        $settings = new SettingStruct();
-        $settings->setApplePay($applePaySettings);
 
-        $this->settingFactory->method('getSettings')->willReturn(
-            $settings
+        $this->settingFactory->method('getPaymentMethodSettings')->willReturn(
+            $applePaySettings
         );
         if ($mediaId === null) {
             static::expectException(CheckoutComException::class);
@@ -224,6 +220,61 @@ class ApplePayServiceTest extends TestCase
             ],
             'Test has media id expect return media instance' => [
                 'foo',
+            ],
+        ];
+    }
+
+    public function getAppleDomainMediaProvider(): array
+    {
+        return [
+            'Test null media id expect throw exception' => [
+                null,
+                true,
+            ],
+            'Test not found domain Id key expect throw exception' => [
+                [
+                    [
+                        'wrong_domain_id' => 'foo',
+                        'mediaId' => 'foo',
+                    ],
+                ],
+                true,
+            ],
+            'Test domain Id null expect throw exception' => [
+                [
+                    [
+                        'domainId' => null,
+                        'mediaId' => 'foo',
+                    ],
+                ],
+                true,
+            ],
+            'Test not found media Id key expect throw exception' => [
+                [
+                    [
+                        'domainId' => 'foo',
+                        'wrong_media_id' => 'foo',
+                    ],
+                ],
+                true,
+            ],
+            'Test mediaId null expect throw exception' => [
+                [
+                    [
+                        'domainId' => 'foo',
+                        'mediaId' => null,
+                    ],
+                ],
+                true,
+            ],
+            'Test has media id expect return media instance' => [
+                [
+                    [
+                        'domainId' => 'foo',
+                        'mediaId' => 'foo',
+                    ],
+                ],
+                false,
             ],
         ];
     }

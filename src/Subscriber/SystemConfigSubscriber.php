@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace CheckoutCom\Shopware6\Subscriber;
 
-use Checkout\CheckoutApiException;
 use CheckoutCom\Shopware6\Exception\CheckoutComWebhookNotFoundException;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
 use Shopware\Core\System\SystemConfig\Event\BeforeSystemConfigChangedEvent;
 use Shopware\Core\System\SystemConfig\Event\SystemConfigChangedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Throwable;
 
 /**
  * This subscriber is used to register the webhook to Checkout whenever
@@ -56,7 +56,7 @@ class SystemConfigSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Register webhook to Checkout after updated plugin config
+     * Register webhook to checkout.com after updated plugin config
      */
     public function onChangeConfig(SystemConfigChangedEvent $event): void
     {
@@ -65,6 +65,12 @@ class SystemConfigSubscriber implements EventSubscriberInterface
         }
 
         $salesChannelId = $event->getSalesChannelId();
+        if ($event->getValue() === null) {
+            $this->setSettingWebhook(null, $salesChannelId);
+
+            return;
+        }
+
         $webhook = $this->settingsFactory->getWebhookConfig($salesChannelId);
 
         $webhookId = $webhook->getId();
@@ -83,9 +89,18 @@ class SystemConfigSubscriber implements EventSubscriberInterface
         } catch (CheckoutComWebhookNotFoundException $e) {
             // Register a new webhook when "retrieveWebhook" returns a 404 status
             $this->registerWebhook($salesChannelId);
-        } catch (CheckoutApiException $e) {
+        } catch (Throwable $e) {
             // do nothing to make sure this exception does not block any action behind
         }
+    }
+
+    private function setSettingWebhook(?array $webhookData = null, ?string $salesChannelId = null): void
+    {
+        $this->settingsFactory->set(
+            SettingsFactory::SYSTEM_CONFIG_DOMAIN . SettingsFactory::CHECKOUT_PLUGIN_CONFIG_WEBHOOK,
+            $webhookData,
+            $salesChannelId
+        );
     }
 
     private function registerWebhook(?string $salesChannelId = null): void
@@ -94,14 +109,13 @@ class SystemConfigSubscriber implements EventSubscriberInterface
             $webhook = $this->checkoutWebhookService->registerWebhook($salesChannelId);
 
             // save registered webhook data to system config
-            $this->settingsFactory->set(
-                SettingsFactory::SYSTEM_CONFIG_DOMAIN . SettingsFactory::CHECKOUT_PLUGIN_CONFIG_WEBHOOK,
+            $this->setSettingWebhook(
                 $webhook->getVars(),
                 $salesChannelId
             );
 
             $this->webhookData = $webhook->getVars();
-        } catch (CheckoutApiException $e) {
+        } catch (Throwable $e) {
             // do nothing to make sure this exception does not block any action behind
         }
     }

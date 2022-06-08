@@ -1,0 +1,60 @@
+{% block checkout_com_inherit_media_upload_wrapper %}
+    <sw-inherit-wrapper
+        :disabled="disabled"
+        :value="value"
+        :inherited-value="inheritedValue"
+        :custom-restore-inheritance-function="restoreInheritance"
+        :custom-inheritation-check-function="checkInheritance"
+        :has-parent="hasParent"
+        @input="onChangeValue"
+    >
+        <template #content="{currentValue, updateCurrentValue, isInherited, isInheritField, restoreInheritance}">
+            {% block checkout_com_inherit_media_upload_label_wrapper %}
+                <div
+                    v-if="label"
+                    class="sw-inherit-wrapper__toggle-wrapper"
+                >
+                    {% block checkout_com_inherit_media_upload_label_wrapper_field %}
+                        <sw-inheritance-switch
+                            v-if="isInheritField"
+                            class="sw-inherit-wrapper__inheritance-icon"
+                            :disabled="disabled"
+                            :is-inherited="isInherited"
+                            @inheritance-restore="onRestoreInheritance(restoreInheritance)"
+                            @inheritance-remove="onRemoveInheritance(updateCurrentValue)"
+                        />
+                    {% endblock %}
+
+                    {% block checkout_com_inherit_media_upload_label_wrapper_label %}
+                        <!-- eslint-disable-next-line vuejs-accessibility/label-has-for -->
+                        <label class="sw-inherit-wrapper__toggle-wrapper__inheritance-label">
+                            {{ label }}
+                        </label>
+                    {% endblock %}
+                </div>
+            {% endblock %}
+
+            {% block checkout_com_inherit_media_upload_upload_listener %}
+                <sw-upload-listener
+                    auto-upload
+                    :upload-tag="uploadTag"
+                    @media-upload-finish="uploadFinish($event, updateCurrentValue)"
+                />
+            {% endblock %}
+
+            {% block checkout_com_inherit_media_upload_upload_media %}
+                <checkout-com-media-compact-upload-v2
+                    variant="regular"
+                    :disabled="disabled || isInherited"
+                    :upload-tag="uploadTag"
+                    :allow-multi-select="false"
+                    :source="currentValue"
+                    :file-accept="fileAccept"
+                    :media-is-private="true"
+                    @media-drop="onMediaDropped($event, updateCurrentValue)"
+                    @media-upload-remove-image="onRemoveMedia(updateCurrentValue)"
+                />
+            {% endblock %}
+        </template>
+    </sw-inherit-wrapper>
+{% endblock %}

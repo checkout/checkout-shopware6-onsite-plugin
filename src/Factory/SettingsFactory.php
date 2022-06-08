@@ -2,30 +2,23 @@
 
 namespace CheckoutCom\Shopware6\Factory;
 
-use CheckoutCom\Shopware6\Handler\Method\ApplePayHandler;
-use CheckoutCom\Shopware6\Handler\Method\GooglePayHandler;
+use CheckoutCom\Shopware6\Exception\CheckoutComException;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Webhook;
-use CheckoutCom\Shopware6\Struct\SystemConfig\ApplePaySettingStruct;
-use CheckoutCom\Shopware6\Struct\SystemConfig\GooglePaySettingStruct;
+use CheckoutCom\Shopware6\Struct\SystemConfig\AbstractPaymentMethodSettingStruct;
 use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
-use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Throwable;
 
 class SettingsFactory
 {
     public const SYSTEM_CONFIG_DOMAIN = 'CheckoutCom.config.';
+    public const SYSTEM_COMPONENT_PAYMENT_METHOD = 'paymentMethod';
     public const CHECKOUT_PLUGIN_CONFIG_SECTION = 'checkoutPluginConfigSectionApi';
-    public const CHECKOUT_PLUGIN_CONFIG_SECTION_ORDER_STATE = 'checkoutPluginConfigSectionOrderState';
     public const CHECKOUT_PLUGIN_CONFIG_WEBHOOK = 'checkoutPluginConfigWebhook';
 
     public const SYSTEM_COMPONENT_GROUP = [
         self::CHECKOUT_PLUGIN_CONFIG_SECTION,
-        self::CHECKOUT_PLUGIN_CONFIG_SECTION_ORDER_STATE,
     ];
-
-    public const SYSTEM_COMPONENT_PAYMENT_METHOD = 'paymentMethod';
-
-    private ?SettingStruct $settings = null;
 
     private SystemConfigService $systemConfigService;
 
@@ -39,12 +32,8 @@ class SettingsFactory
      */
     public function getSettings(?string $salesChannelId = null): SettingStruct
     {
-        if ($this->settings instanceof SettingStruct) {
-            return $this->settings;
-        }
-
         $structData = [];
-        $systemConfigData = $this->systemConfigService->getDomain(self::SYSTEM_CONFIG_DOMAIN, $salesChannelId, true);
+        $systemConfigData = $this->getSystemConfigSettings($salesChannelId);
 
         foreach ($systemConfigData as $key => $value) {
             if (stripos($key, self::SYSTEM_CONFIG_DOMAIN) === false) {
@@ -54,16 +43,13 @@ class SettingsFactory
             // We only add the keys that are included in the domain.
             $configKey = substr($key, \strlen(self::SYSTEM_CONFIG_DOMAIN));
 
-            // If the key is the payment method configuration, and its value is an array,
-            // we format that value and merge it into the struct.
-            if (stripos($configKey, self::SYSTEM_COMPONENT_PAYMENT_METHOD) !== false && \is_array($value)) {
-                $structData = array_merge($structData, $this->getPaymentMethodSettings($value));
-
+            // If the key is the payment method configuration, skip it
+            if (stripos($configKey, self::SYSTEM_COMPONENT_PAYMENT_METHOD) !== false) {
                 continue;
             }
 
-            // If the config key is in the component group & it is an array, we merge it to the struct.
-            // otherwise, we just add it to the struct.
+            // If the config key is in the component group & it is an array, merge it to the struct.
+            // otherwise, just add it to the struct.
             if (\in_array($configKey, self::SYSTEM_COMPONENT_GROUP, true) && \is_array($value)) {
                 $structData = array_merge($structData, $value);
             } else {
@@ -71,9 +57,7 @@ class SettingsFactory
             }
         }
 
-        $this->settings = (new SettingStruct())->assign($structData);
-
-        return $this->settings;
+        return (new SettingStruct())->assign($structData);
     }
 
     public function getWebhookConfig(?string $salesChannelId = null): Webhook
@@ -90,6 +74,42 @@ class SettingsFactory
     }
 
     /**
+     * Get Checkout payment method settings from configuration.
+     */
+    public function getPaymentMethodSettings(string $paymentMethodConfigClassName, ?string $salesChannelId = null): AbstractPaymentMethodSettingStruct
+    {
+        try {
+            $structData = [];
+            $systemConfigData = $this->getSystemConfigSettings($salesChannelId);
+            $paymentMethodConfigDomain = $this->getPaymentMethodDomain();
+
+            /** @var AbstractPaymentMethodSettingStruct $paymentMethodSystemConfig */
+            $paymentMethodSystemConfig = new $paymentMethodConfigClassName();
+            $paymentMethodTypeKey = sprintf('%s.', $paymentMethodSystemConfig->getPaymentMethodType());
+
+            foreach ($systemConfigData as $key => $value) {
+                if (stripos($key, $paymentMethodConfigDomain) === false) {
+                    continue;
+                }
+
+                // Get the payment method domain key from the key.
+                $configKey = substr($key, \strlen($paymentMethodConfigDomain));
+                if (stripos($configKey, $paymentMethodTypeKey) === false) {
+                    continue;
+                }
+
+                // Get the payment method type key from the payment method domain key.
+                $configKey = substr($configKey, \strlen($paymentMethodTypeKey));
+                $structData[$configKey] = $value;
+            }
+
+            return $paymentMethodSystemConfig->assign($structData);
+        } catch (Throwable $e) {
+            throw new CheckoutComException($e->getMessage());
+        }
+    }
+
+    /**
      * @param array|bool|float|int|string|null $value
      */
     public function set(string $key, $value, ?string $salesChannelId = null): void
@@ -97,24 +117,13 @@ class SettingsFactory
         $this->systemConfigService->set($key, $value, $salesChannelId);
     }
 
-    private function getPaymentMethodSettings(array $paymentMethodConfigs): array
+    private function getSystemConfigSettings(?string $salesChannelId = null): array
     {
-        $paymentMethodStructs = [
-            ApplePayHandler::getPaymentMethodType() => ApplePaySettingStruct::class,
-            GooglePayHandler::getPaymentMethodType() => GooglePaySettingStruct::class,
-        ];
+        return $this->systemConfigService->getDomain(self::SYSTEM_CONFIG_DOMAIN, $salesChannelId, true);
+    }
 
-        foreach ($paymentMethodConfigs as $paymentMethodType => $paymentMethodConfig) {
-            if (!\array_key_exists($paymentMethodType, $paymentMethodStructs)) {
-                continue;
-            }
-
-            /** @var Struct $paymentMethodStruct */
-            $paymentMethodStruct = new $paymentMethodStructs[$paymentMethodType]();
-            $paymentMethodStruct->assign($paymentMethodConfig);
-            $paymentMethodConfigs[$paymentMethodType] = $paymentMethodStruct;
-        }
-
-        return $paymentMethodConfigs;
+    private function getPaymentMethodDomain(): string
+    {
+        return sprintf('%s%s.', self::SYSTEM_CONFIG_DOMAIN, self::SYSTEM_COMPONENT_PAYMENT_METHOD);
     }
 }

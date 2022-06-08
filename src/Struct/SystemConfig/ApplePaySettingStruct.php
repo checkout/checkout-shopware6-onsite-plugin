@@ -2,17 +2,22 @@
 
 namespace CheckoutCom\Shopware6\Struct\SystemConfig;
 
-use Shopware\Core\Framework\Struct\Struct;
+use CheckoutCom\Shopware6\Handler\Method\ApplePayHandler;
 
-class ApplePaySettingStruct extends Struct
+class ApplePaySettingStruct extends AbstractPaymentMethodSettingStruct
 {
     protected ?string $merchantId = null;
-
-    protected ?string $domainMediaId = null;
 
     protected ?string $keyMediaId = null;
 
     protected ?string $pemMediaId = null;
+
+    protected array $domainMedias = [];
+
+    public function getPaymentMethodType(): string
+    {
+        return ApplePayHandler::getPaymentMethodType();
+    }
 
     public function getMerchantId(): ?string
     {
@@ -22,16 +27,6 @@ class ApplePaySettingStruct extends Struct
     public function setMerchantId(?string $merchantId): void
     {
         $this->merchantId = $merchantId;
-    }
-
-    public function getDomainMediaId(): ?string
-    {
-        return $this->domainMediaId;
-    }
-
-    public function setDomainMediaId(?string $domainMediaId): void
-    {
-        $this->domainMediaId = $domainMediaId;
     }
 
     public function getKeyMediaId(): ?string
@@ -52,5 +47,15 @@ class ApplePaySettingStruct extends Struct
     public function setPemMediaId(?string $pemMediaId): void
     {
         $this->pemMediaId = $pemMediaId;
+    }
+
+    public function getDomainMedias(): array
+    {
+        return $this->domainMedias;
+    }
+
+    public function setDomainMedias(array $domainMedias): void
+    {
+        $this->domainMedias = $domainMedias;
     }
 }

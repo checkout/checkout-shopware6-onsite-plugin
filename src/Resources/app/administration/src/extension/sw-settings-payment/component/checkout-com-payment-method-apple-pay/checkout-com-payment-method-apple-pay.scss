@@ -18,11 +18,15 @@
         color: $color-darkgray-200;
     }
 
-    .checkout-com-payment-method-apple-pay-domain {
+    .checkout-com-payment-method-apple-pay-key {
         margin-bottom: 32px;
     }
 
-    .checkout-com-payment-method-apple-pay-key {
+    .checkout-com-payment-method-apple-pay-pem {
         margin-bottom: 32px;
+    }
+
+    .checkout-com-payment-method-apple-pay-domain_label-wrapper {
+        margin-bottom: 8px;
     }
 }

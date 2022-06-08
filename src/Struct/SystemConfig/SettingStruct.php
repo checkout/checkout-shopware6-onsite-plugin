@@ -23,10 +23,6 @@ class SettingStruct extends Struct
 
     protected string $orderStateForVoidedPayment = self::ORDER_STATE_SKIP;
 
-    protected ?ApplePaySettingStruct $applepay = null;
-
-    protected ?GooglePaySettingStruct $googlepay = null;
-
     protected ?Webhook $webhook = null;
 
     public function getSecretKey(): string
@@ -97,26 +93,6 @@ class SettingStruct extends Struct
     public function setOrderStateForVoidedPayment(string $orderStateForVoidedPayment): void
     {
         $this->orderStateForVoidedPayment = $orderStateForVoidedPayment;
-    }
-
-    public function getApplePay(): ApplePaySettingStruct
-    {
-        return $this->applepay ?? new ApplePaySettingStruct();
-    }
-
-    public function setApplePay(?ApplePaySettingStruct $applePay): void
-    {
-        $this->applepay = $applePay;
-    }
-
-    public function getGooglePay(): GooglePaySettingStruct
-    {
-        return $this->googlepay ?? new GooglePaySettingStruct();
-    }
-
-    public function setGooglePay(?GooglePaySettingStruct $googlePay): void
-    {
-        $this->googlepay = $googlePay;
     }
 
     public function getWebhook(): ?Webhook
