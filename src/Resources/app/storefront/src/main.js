@@ -8,7 +8,7 @@ import CheckoutComGooglePayConfirm from './checkout-com/plugins/google/google-pa
 import CheckoutComGooglePayDirect from './checkout-com/plugins/google/google-pay-direct.plugin';
 import CheckoutComGooglePayDisplay from './checkout-com/plugins/google/google-pay-display.plugin';
 
-import CheckoutComCreditCard from './checkout-com/plugins/credit-card.plugin';
+import CheckoutComCardPayment from './checkout-com/plugins/card-payment.plugin';
 
 const PluginManager = window.PluginManager;
 
@@ -25,6 +25,6 @@ PluginManager.register('CheckoutComGooglePayDirect', CheckoutComGooglePayDirect,
 PluginManager.register('CheckoutComApplePayDisplay', CheckoutComApplePayDisplay, '[data-checkout-com-apple-pay-display]');
 PluginManager.register('CheckoutComGooglePayDisplay', CheckoutComGooglePayDisplay, '[data-checkout-com-google-pay-display]');
 
-// Show credit card components in the checkout
+// Show card payments components in the checkout
 // -----------------------------------------------------------------------------
-PluginManager.register('CheckoutComCreditCard', CheckoutComCreditCard, '[data-checkout-com-credit-card]');
+PluginManager.register('CheckoutComCardPayment', CheckoutComCardPayment, '[data-checkout-com-card-payment]');

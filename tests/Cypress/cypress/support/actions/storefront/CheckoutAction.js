@@ -32,13 +32,13 @@ class CheckoutAction {
     }
 
     /**
-     * Fill data into credit card
+     * Fill data into Card Payments
      * @param name
      * @param number
      * @param expiryDate
      * @param cvv
      */
-    fillCreditCard(name, number, expiryDate, cvv) {
+    fillCardPayment(name, number, expiryDate, cvv) {
         if (name) {
             cy.get('#cardholder-name').type(name);
         }

@@ -1,5 +1,5 @@
-{% block checkout_com_credit_card_fields %}
-    {% block checkout_com_credit_card_import_frame_script %}
+{% block checkout_com_card_payment_fields %}
+    {% block checkout_com_card_payment_import_frame_script %}
         <script defer src="{{ page.extensions.checkoutCom.frameUrl }}"></script>
     {% endblock %}
 
@@ -14,21 +14,21 @@
         }
     } %}
 
-    {% block checkout_com_credit_card %}
-        <div id="checkoutComCreditCard"
-             class="checkout-com-credit-card d-none"
-             data-checkout-com-credit-card="true"
-             data-checkout-com-credit-card-options='{{ cardOptions|json_encode }}'
+    {% block checkout_com_card_payment %}
+        <div id="checkoutComCardPayment"
+             class="checkout-com-card-payment d-none"
+             data-checkout-com-card-payment="true"
+             data-checkout-com-card-payment-options='{{ cardOptions|json_encode }}'
         >
-            {% block checkout_com_credit_card_form_card_holder %}
+            {% block checkout_com_card_payment_form_card_holder %}
                 <div class="form-row">
                     <div class="form-group col">
-                        {% block checkout_com_credit_card_form_card_holder_label %}
+                        {% block checkout_com_card_payment_form_card_holder_label %}
                             <label class="form-label" for="cardholder-name">
                                 {{ "checkoutCom.components.card.cardholderNameLabel"|trans|striptags }}
                             </label>
                         {% endblock %}
-                        {% block checkout_com_credit_card_form_card_holder_input %}
+                        {% block checkout_com_card_payment_form_card_holder_input %}
                             <input id="cardholder-name" class="form-control checkout-com-field__cardholder-name"
                                    type="text"
                                    placeholder="{{ "checkoutCom.components.card.cardholderNamePlaceholder"|trans|striptags }}"
@@ -37,15 +37,15 @@
                     </div>
                 </div>
             {% endblock %}
-            {% block checkout_com_credit_card_form_card_number %}
+            {% block checkout_com_card_payment_form_card_number %}
                 <div class="form-row">
                     <div class="form-group col">
-                        {% block checkout_com_credit_card_form_card_number_label %}
+                        {% block checkout_com_card_payment_form_card_number_label %}
                             <label class="form-label" for="card-number">
                                 {{ "checkoutCom.components.card.cardNumberLabel"|trans|striptags }}{{ "general.required"|trans|sw_sanitize }}
                             </label>
                         {% endblock %}
-                        {% block checkout_com_credit_card_form_card_number_input %}
+                        {% block checkout_com_card_payment_form_card_number_input %}
                             <div class="card-number-frame form-control checkout-com-field__card-number">
                                 <div class="checkout-com-field_icon-card-container">
                                     {% sw_thumbnails 'checkout-com-icon-payment-method' with {
@@ -56,7 +56,7 @@
                                 </div>
                             </div>
                         {% endblock %}
-                        {% block checkout_com_credit_card_form_card_number_input_error %}
+                        {% block checkout_com_card_payment_form_card_number_input_error %}
                             <div class="invalid-feedback">
                                 {{ "checkoutCom.messages.card.cardNumber"|trans|striptags }}
                             </div>
@@ -64,33 +64,33 @@
                     </div>
                 </div>
             {% endblock %}
-            {% block checkout_com_credit_card_form_extra %}
+            {% block checkout_com_card_payment_form_extra %}
                 <div class="form-row">
                     <div class="form-group col-6">
-                        {% block checkout_com_credit_card_form_extra_expiry_date_label %}
+                        {% block checkout_com_card_payment_form_extra_expiry_date_label %}
                             <label class="form-label" for="expiry-date">
                                 {{ "checkoutCom.components.card.cardExpiryDateLabel"|trans|striptags }}{{ "general.required"|trans|sw_sanitize }}
                             </label>
                         {% endblock %}
-                        {% block checkout_com_credit_card_form_extra_expiry_date_input %}
+                        {% block checkout_com_card_payment_form_extra_expiry_date_input %}
                             <div class="expiry-date-frame form-control checkout-com-field__expiry-date"></div>
                         {% endblock %}
-                        {% block checkout_com_credit_card_form_extra_expiry_date_input_error %}
+                        {% block checkout_com_card_payment_form_extra_expiry_date_input_error %}
                             <div class="invalid-feedback">
                                 {{ "checkoutCom.messages.card.expiryDate"|trans|striptags }}
                             </div>
                         {% endblock %}
                     </div>
                     <div class="form-group col-6">
-                        {% block checkout_com_credit_card_form_extra_cvv_label %}
+                        {% block checkout_com_card_payment_form_extra_cvv_label %}
                             <label class="form-label" for="cvv">
                                 {{ "checkoutCom.components.card.cardCvvLabel"|trans|striptags }}{{ "general.required"|trans|sw_sanitize }}
                             </label>
                         {% endblock %}
-                        {% block checkout_com_credit_card_form_extra_cvv_input %}
+                        {% block checkout_com_card_payment_form_extra_cvv_input %}
                             <div class="cvv-frame form-control checkout-com-field__cvv"></div>
                         {% endblock %}
-                        {% block checkout_com_credit_card_form_extra_cvv_input_error %}
+                        {% block checkout_com_card_payment_form_extra_cvv_input_error %}
                             <div class="invalid-feedback">
                                 {{ "checkoutCom.messages.card.cvv"|trans|striptags }}
                             </div>

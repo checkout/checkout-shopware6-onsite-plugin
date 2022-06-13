@@ -5,19 +5,19 @@ namespace CheckoutCom\Shopware6\Tests\Handler\Method;
 use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\Source\RequestTokenSource;
-use CheckoutCom\Shopware6\Handler\Method\CreditCardHandler;
+use CheckoutCom\Shopware6\Handler\Method\CardPaymentHandler;
 use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
 use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use Exception;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
 
-class CreditCardHandlerTest extends AbstractPaymentHandlerTest
+class CardPaymentHandlerTest extends AbstractPaymentHandlerTest
 {
     public function setUp(): void
     {
         parent::setUp();
-        $this->paymentHandler = new CreditCardHandler(
+        $this->paymentHandler = new CardPaymentHandler(
             $this->translator,
             $this->dataValidator,
             $this->currencyFormatter,
@@ -29,12 +29,12 @@ class CreditCardHandlerTest extends AbstractPaymentHandlerTest
 
     public function testSnippetKey(): void
     {
-        static::assertSame('checkoutCom.paymentMethod.creditCardLabel', $this->paymentHandler->getSnippetKey());
+        static::assertSame('checkoutCom.paymentMethod.cardPaymentsLabel', $this->paymentHandler->getSnippetKey());
     }
 
     public function testPaymentMethodType(): void
     {
-        static::assertSame(PaymentSourceType::$card, CreditCardHandler::getPaymentMethodType());
+        static::assertSame(PaymentSourceType::$card, CardPaymentHandler::getPaymentMethodType());
     }
 
     public function testGetDirectShippingOptions(): void

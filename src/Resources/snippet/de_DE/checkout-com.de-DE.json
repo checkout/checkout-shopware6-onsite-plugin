@@ -6,7 +6,7 @@
     "paymentMethod": {
       "applePayLabel": "Apple Pay",
       "googlePayLabel": "Google Pay",
-      "creditCardLabel": "Kreditkarte",
+      "cardPaymentsLabel": "Kartenzahlungen",
       "giropayLabel": "Giropay",
       "p24Label": "Przelewy24",
       "sofortLabel": "Sofort",
