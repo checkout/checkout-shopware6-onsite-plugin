@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace CheckoutCom\Shopware6\Tests\Handler\Method;
 
 use Checkout\Payments\PaymentRequest;
+use Checkout\Payments\Source\Apm\RequestPayPalSource;
 use CheckoutCom\Shopware6\Handler\Method\PayPalHandler;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
-use CheckoutCom\Shopware6\Handler\Source\RequestPayPalSource;
 use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
 use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use Exception;

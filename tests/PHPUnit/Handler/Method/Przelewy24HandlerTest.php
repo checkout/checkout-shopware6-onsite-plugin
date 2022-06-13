@@ -5,9 +5,9 @@ namespace CheckoutCom\Shopware6\Tests\Handler\Method;
 
 use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\PaymentRequest;
+use Checkout\Payments\Source\Apm\RequestP24Source;
 use CheckoutCom\Shopware6\Handler\Method\Przelewy24Handler;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
-use CheckoutCom\Shopware6\Handler\Source\RequestPrzelewy24Source;
 use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
 use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use Exception;
@@ -89,7 +89,7 @@ class Przelewy24HandlerTest extends AbstractPaymentHandlerTest
         );
 
         static::assertInstanceOf(PaymentRequest::class, $paymentRequest);
-        static::assertInstanceOf(RequestPrzelewy24Source::class, $paymentRequest->source);
+        static::assertInstanceOf(RequestP24Source::class, $paymentRequest->source);
     }
 
     public function testPrepareDataForPayWithException(): void

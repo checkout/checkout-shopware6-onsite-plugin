@@ -1,7 +1,6 @@
 import Plugin from 'src/plugin-system/plugin.class';
 import ButtonLoadingIndicator from 'src/utility/loading-indicator/button-loading-indicator.util';
 import DomAccess from 'src/helper/dom-access.helper';
-import HttpClient from 'src/service/http-client.service';
 import { createTokenInput } from '../helper/utils';
 
 /**
@@ -29,7 +28,6 @@ export default class CheckoutComCreditCard extends Plugin {
     };
 
     init() {
-        this.client = new HttpClient();
         const {
             submitPaymentButtonId,
             paymentFormId,

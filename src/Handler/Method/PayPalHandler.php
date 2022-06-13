@@ -5,8 +5,8 @@ namespace CheckoutCom\Shopware6\Handler\Method;
 
 use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\PaymentRequest;
+use Checkout\Payments\Source\Apm\RequestPayPalSource;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
-use CheckoutCom\Shopware6\Handler\Source\RequestPayPalSource;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use Exception;
 use Shopware\Core\Checkout\Order\OrderEntity;
