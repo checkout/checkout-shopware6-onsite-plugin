@@ -12,6 +12,7 @@ class RequestUtil
     public const DATA_BAG_KEY = 'checkoutComDetails';
     public const DATA_JSON = 'json';
     public const DATA_TOKEN = 'token';
+    public const DATA_BIC = 'bic';
 
     /**
      * @return string|RequestDataBag|null
@@ -45,5 +46,16 @@ class RequestUtil
         }
 
         return $paymentDetails;
+    }
+
+    public static function getBic(RequestDataBag $dataBag): ?string
+    {
+        $paymentData = static::getPaymentData($dataBag);
+
+        if (!$paymentData instanceof RequestDataBag) {
+            return null;
+        }
+
+        return $paymentData->get(self::DATA_BIC);
     }
 }
