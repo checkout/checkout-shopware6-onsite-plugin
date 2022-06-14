@@ -1,0 +1,57 @@
+{% block checkout_com_sepa_fields %}
+    <div id="checkoutComSepa"
+         class="checkout-com-sepa"
+         data-checkout-com-sepa="true"
+    >
+        {% block checkout_com_sepa_form_name %}
+            <div class="form-row">
+                <div class="form-group col-6">
+                    {% block checkout_com_sepa_form_name_first_name_label %}
+                        <label class="form-label" for="sepaFirstName">
+                            {{ "account.personalFirstNameLabel"|trans|striptags }}{{ "general.required"|trans|sw_sanitize }}
+                        </label>
+                    {% endblock %}
+                    {% block checkout_com_sepa_form_name_first_name_input %}
+                        <input id="sepaFirstName" class="form-control checkout-com-field-sepa-first-name"
+                               type="text"
+                               required="required"
+                               placeholder="{{ "account.personalFirstNamePlaceholder"|trans|striptags }}"
+                        />
+                    {% endblock %}
+                </div>
+                <div class="form-group col-6">
+                    {% block checkout_com_sepa_form_name_last_name_label %}
+                        <label class="form-label" for="sepaLastName">
+                            {{ "account.personalLastNameLabel"|trans|striptags }}{{ "general.required"|trans|sw_sanitize }}
+                        </label>
+                    {% endblock %}
+                    {% block checkout_com_sepa_form_name_last_name_input %}
+                        <input id="sepaLastName" class="form-control checkout-com-field-sepa-last-name"
+                               type="text"
+                               required="required"
+                               placeholder="{{ "account.personalLastNamePlaceholder"|trans|striptags }}"
+                        />
+                    {% endblock %}
+                </div>
+            </div>
+        {% endblock %}
+        {% block checkout_com_sepa_form_iban %}
+            <div class="form-row">
+                <div class="form-group col">
+                    {% block checkout_com_sepa_form_iban_label %}
+                        <label class="form-label" for="sepaIban">
+                            {{ "checkoutCom.components.sepa.ibanLabel"|trans|striptags }}{{ "general.required"|trans|sw_sanitize }}
+                        </label>
+                    {% endblock %}
+                    {% block checkout_com_sepa_form_iban_input %}
+                        <input id="sepaIban" class="form-control checkout-com-field-sepa-iban"
+                               type="text"
+                               required="required"
+                               placeholder="{{ "checkoutCom.components.sepa.ibanPlaceholder"|trans|striptags }}"
+                        />
+                    {% endblock %}
+                </div>
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}

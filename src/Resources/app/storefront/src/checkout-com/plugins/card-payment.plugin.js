@@ -7,9 +7,6 @@ import { createTokenInput } from '../helper/utils';
  * This Class is responsible for the Card Payments integration
  */
 export default class CheckoutComCardPayment extends Plugin {
-    // The card logo MIME type is always svg
-    LOGO_MIME_TYPE = 'svg';
-
     static options = {
         localization: {
             cardNumberPlaceholder: '',
@@ -26,6 +23,8 @@ export default class CheckoutComCardPayment extends Plugin {
         submitPaymentButtonId: '#confirmOrderForm button[type="submit"]',
         prefixFieldClass: '.checkout-com-field__',
     };
+    // The card logo MIME type is always svg
+    LOGO_MIME_TYPE = 'svg';
 
     init() {
         const {
@@ -34,9 +33,7 @@ export default class CheckoutComCardPayment extends Plugin {
         } = this.options;
 
         this.submitPaymentButton = this.getElement(document, submitPaymentButtonId);
-
         this.submitButtonLoader = new ButtonLoadingIndicator(this.submitPaymentButton);
-
         this.paymentForm = this.getElement(document, paymentFormId);
 
         // We disable the form before the Frame is loaded
@@ -52,33 +49,10 @@ export default class CheckoutComCardPayment extends Plugin {
         const {
             localization,
             publicKey,
-            cardholderNameId,
         } = this.options;
 
         // Submit payment form handler
-        this.submitPaymentButton.addEventListener('click', (event) => {
-            event.preventDefault();
-
-            // checks form validity before submit
-            if (!this.paymentForm.checkValidity()) {
-                return;
-            }
-
-            const cardholderNameInput = this.getElement(this.el, cardholderNameId);
-
-            // We add the cardholder name to the form data (iframe checkout.com)
-            if (cardholderNameInput) {
-                Frames.cardholder = {
-                    name: cardholderNameInput.value,
-                };
-            }
-
-            this.createLoading();
-
-            // Submit the card Frame, to get the token instead of submitting the payment form
-            // All the card data is submitted to the checkout.com server by the iframe
-            Frames.submitCard();
-        });
+        this.submitPaymentButton.addEventListener('click', this.onSubmitPaymentClick.bind(this));
 
         Frames.init({
             publicKey,
@@ -90,6 +64,32 @@ export default class CheckoutComCardPayment extends Plugin {
             cardTokenizationFailed: this.onCardTokenizationFailed.bind(this),
             cardTokenized: this.onCardTokenized.bind(this),
         });
+    }
+
+    onSubmitPaymentClick(event) {
+        const { cardholderNameId } = this.options;
+
+        event.preventDefault();
+
+        // checks form validity before submit
+        if (!this.paymentForm.checkValidity()) {
+            return;
+        }
+
+        const cardholderNameInput = this.getElement(this.el, cardholderNameId);
+
+        // We add the cardholder name to the form data (iframe checkout.com)
+        if (cardholderNameInput) {
+            Frames.cardholder = {
+                name: cardholderNameInput.value,
+            };
+        }
+
+        this.createLoading();
+
+        // Submit the card Frame, to get the token instead of submitting the payment form
+        // All the card data is submitted to the checkout.com server by the iframe
+        Frames.submitCard();
     }
 
     onReadyFrames() {
