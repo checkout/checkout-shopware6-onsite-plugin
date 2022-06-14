@@ -35,7 +35,8 @@
       },
       "sepa": {
         "ibanLabel": "IBAN",
-        "ibanPlaceholder": "IBAN"
+        "ibanPlaceholder": "IBAN",
+        "billingDescriptor": "Thanks for shopping, your order number is %orderNumber%"
       }
     },
     "payments": {

@@ -32,10 +32,10 @@ export default class CheckoutComSepa extends Plugin {
 
     registerEvents() {
         // Submit payment form handler
-        this.submitPaymentButton.addEventListener('click', this.onSubmitPaymentClick.bind(this));
+        this.submitPaymentButton.addEventListener('click', this.onSubmitPayment.bind(this));
     }
 
-    onSubmitPaymentClick(event) {
+    onSubmitPayment(event) {
         event.preventDefault();
 
         // checks form validity before submit

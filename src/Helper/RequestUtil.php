@@ -12,6 +12,7 @@ class RequestUtil
     public const DATA_BAG_KEY = 'checkoutComDetails';
     public const DATA_JSON = 'json';
     public const DATA_TOKEN = 'token';
+    public const DATA_SOURCE = 'source';
     public const DATA_BIC = 'bic';
 
     /**
@@ -20,7 +21,6 @@ class RequestUtil
     public static function getTokenPayment(RequestDataBag $dataBag)
     {
         $paymentData = static::getPaymentData($dataBag);
-
         if (!$paymentData instanceof RequestDataBag) {
             return null;
         }
@@ -48,10 +48,22 @@ class RequestUtil
         return $paymentDetails;
     }
 
+    /**
+     * @return string|RequestDataBag|null
+     */
+    public static function getSource(RequestDataBag $dataBag)
+    {
+        $paymentData = static::getPaymentData($dataBag);
+        if (!$paymentData instanceof RequestDataBag) {
+            return null;
+        }
+
+        return $paymentData->get(self::DATA_SOURCE);
+    }
+
     public static function getBic(RequestDataBag $dataBag): ?string
     {
         $paymentData = static::getPaymentData($dataBag);
-
         if (!$paymentData instanceof RequestDataBag) {
             return null;
         }
