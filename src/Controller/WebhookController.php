@@ -5,7 +5,7 @@ namespace CheckoutCom\Shopware6\Controller;
 
 use Checkout\CheckoutAuthorizationException;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
-use CheckoutCom\Shopware6\Service\Webhook\WebhookService;
+use CheckoutCom\Shopware6\Service\Webhook\AbstractWebhookService;
 use CheckoutCom\Shopware6\Struct\WebhookReceiveDataStruct;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -31,11 +31,11 @@ class WebhookController extends AbstractController
 {
     private DataValidator $validator;
 
-    private WebhookService $webhookService;
+    private AbstractWebhookService $webhookService;
 
     private LoggerInterface $logger;
 
-    public function __construct(DataValidator $validator, WebhookService $webhookService, LoggerInterface $logger)
+    public function __construct(DataValidator $validator, AbstractWebhookService $webhookService, LoggerInterface $logger)
     {
         $this->validator = $validator;
         $this->webhookService = $webhookService;

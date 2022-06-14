@@ -1,0 +1,145 @@
+{% block checkout_com_order_detail_payment_card %}
+    <sw-card
+        class="checkout-com-order-detail-payment"
+        position-identifier="checkout-com-order-detail-payment"
+        :title="$tc('checkout-payments.order.checkoutPayments.title')"
+        :is-loading="isLoading"
+    >
+        {% block checkout_com_order_detail_payment_information %}
+            <sw-container
+                columns="repeat(auto-fit, minmax(250px, 1fr))"
+                gap="30px 30px"
+            >
+                {% block checkout_com_order_detail_payment_description_one %}
+                    <sw-description-list>
+                        {% block checkout_com_order_detail_payment_id %}
+                            <dt>{{ $tc('checkout-payments.order.checkoutPayments.paymentIDLabel') }}</dt>
+                            <dd>{{ payment.id }}</dd>
+                        {% endblock %}
+
+                        {% block checkout_com_order_detail_payment_type %}
+                            <dt>{{ $tc('checkout-payments.order.checkoutPayments.paymentTypeLabel') }}</dt>
+                            <dd class="checkout-com-uppercase">
+                                {{ payment.payment_type }}
+                            </dd>
+                        {% endblock %}
+                    </sw-description-list>
+                {% endblock %}
+
+                {% block checkout_com_order_detail_payment_description_two %}
+                    <sw-description-list>
+                        {% block checkout_com_order_detail_payment_payment_method %}
+                            <dt>{{ $tc('checkout-payments.order.checkoutPayments.paymentMethodLabel') }}</dt>
+                            <dd class="checkout-com-capitalize">
+                                {{ cardType }}
+                            </dd>
+                        {% endblock %}
+
+                        {% block checkout_com_order_detail_payment_issuing_country %}
+                            <template v-if="payment.source.issuer_country">
+                                <dt>{{ $tc('checkout-payments.order.checkoutPayments.issuingCountryLabel') }}</dt>
+                                <dd>{{ payment.source.issuer_country }}</dd>
+                            </template>
+                        {% endblock %}
+
+                        {% block checkout_com_order_detail_payment_issuing_bank %}
+                            <template v-if="payment.source.issuer">
+                                <dt>{{ $tc('checkout-payments.order.checkoutPayments.issuingBankLabel') }}</dt>
+                                <dd>{{ payment.source.issuer }}</dd>
+                            </template>
+                        {% endblock %}
+                    </sw-description-list>
+                {% endblock %}
+
+                {% block checkout_com_order_detail_payment_description_three %}
+                    <sw-description-list v-if="hasCardInformation">
+                        {% block checkout_com_order_detail_payment_card_holder_name %}
+                            <template v-if="payment.source.name">
+                                <dt>{{ $tc('checkout-payments.order.checkoutPayments.cardholderNameLabel') }}</dt>
+                                <dd>{{ payment.source.name }}</dd>
+                            </template>
+                        {% endblock %}
+
+                        {% block checkout_com_order_detail_payment_card_number %}
+                            <dt>{{ $tc('checkout-payments.order.checkoutPayments.cardNumberLabel') }}</dt>
+                            <dd>{{ cardNumberHint }}</dd>
+                        {% endblock %}
+
+                        {% block checkout_com_order_detail_payment_card_expiry_date %}
+                            <dt>{{ $tc('checkout-payments.order.checkoutPayments.cardExpiryDateLabel') }}</dt>
+                            <dd>{{ expiryDate }}</dd>
+                        {% endblock %}
+                    </sw-description-list>
+                {% endblock %}
+            </sw-container>
+        {% endblock %}
+
+        {% block checkout_com_order_detail_payment_history %}
+            <sw-container
+                v-if="payment.actions.length > 0"
+                columns="repeat(2, 1fr)"
+                gap="30px 30px"
+            >
+                {% block checkout_com_order_detail_payment_history_content %}
+                    <div class="checkout-com-order-detail-payment-action">
+                        {% block checkout_com_order_detail_payment_history_title %}
+                            <h2>{{ $tc('checkout-payments.order.checkoutPayments.paymentHistoryLabel') }}</h2>
+                        {% endblock %}
+
+                        {% block checkout_com_order_detail_payment_history_items %}
+                            <div
+                                v-for="action in payment.actions.slice().reverse()"
+                                :key="action.id"
+                                class="checkout-com-order-detail-payment-history"
+                            >
+                                {% block checkout_com_order_detail_payment_icon %}
+                                    <sw-label
+                                        appearance="circle"
+                                        class="checkout-com-order-detail-payment-history-icon-bg"
+                                        :class="getBackgroundColorFromAction(action)"
+                                    >
+                                        <sw-icon
+                                            size="16"
+                                            :name="getIconFromAction(action)"
+                                            :class="getIconColorFromAction(action)"
+                                        />
+                                    </sw-label>
+                                {% endblock %}
+
+                                {% block checkout_com_order_detail_payment_description %}
+                                    {% block  checkout_com_order_detail_payment_description_type %}
+                                        <span class="checkout-com-order-detail-payment-history-text">
+                                            {{ action.type }}
+                                        </span>
+                                    {% endblock %}
+
+                                    {% block checkout_com_order_detail_payment_description_code %}
+                                        <sw-label
+                                            v-if="!action.approved && action.response_code"
+                                            v-tooltip="{
+                                                showDelay: 300,
+                                                message: action.response_summary
+                                            }"
+                                            variant="danger"
+                                            appearance="pill"
+                                            size="small"
+                                            class="checkout-com-order-detail-payment-history-code"
+                                        >
+                                            {{ action.response_code }}
+                                        </sw-label>
+                                    {% endblock %}
+                                {% endblock %}
+
+                                {% block checkout_com_order_detail_payment_date %}
+                                    <span class="checkout-com-order-detail-payment-history-date">
+                                        {{ action.processed_on | date({hour: '2-digit', minute: '2-digit'}) }}
+                                    </span>
+                                {% endblock %}
+                            </div>
+                        {% endblock %}
+                    </div>
+                {% endblock %}
+            </sw-container>
+        {% endblock %}
+    </sw-card>
+{% endblock %}

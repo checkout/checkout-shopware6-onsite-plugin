@@ -3,6 +3,7 @@ export const DASHBOARD_LINK = {
     LIVE: 'https://hub.checkout.com/settings/channels',
 };
 
+export const ORDER_CHECKOUT_COM_CUSTOM_FIELDS = 'checkoutComPayments';
 export const CHECKOUT_DOMAIN = 'CheckoutCom.config';
 export const CHECKOUT_DOMAIN_PAYMENT_METHOD = `${CHECKOUT_DOMAIN}.paymentMethod`;
 
