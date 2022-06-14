@@ -1,61 +1,32 @@
-import Plugin from 'src/plugin-system/plugin.class';
-import ButtonLoadingIndicator from 'src/utility/loading-indicator/button-loading-indicator.util';
-import DomAccess from 'src/helper/dom-access.helper';
-import HttpClient from 'src/service/http-client.service';
-import { createSourceInput } from '../helper/utils';
+import deepmerge from 'deepmerge';
+import { createSourceInput, getInputValue } from '../helper/utils';
+import CheckoutComConfirmPaymentHandler from '../core/checkout-com-confirm-payment-handler';
 
 /**
  * This Class is responsible for the SEPA integration
  */
-export default class CheckoutComSepa extends Plugin {
-    static options = {
+export default class CheckoutComSepa extends CheckoutComConfirmPaymentHandler {
+    static options = deepmerge(CheckoutComConfirmPaymentHandler.options, {
         firstNameId: '#sepaFirstName',
         lastNameId: '#sepaLastName',
         ibanId: '#sepaIban',
-        paymentFormId: '#confirmOrderForm',
-        submitPaymentButtonId: '#confirmOrderForm button[type="submit"]',
-    };
+    });
 
-    init() {
-        this.client = new HttpClient();
-        const {
-            submitPaymentButtonId,
-            paymentFormId,
-        } = this.options;
-
-        this.submitPaymentButton = DomAccess.querySelector(document, submitPaymentButtonId, false);
-        this.submitButtonLoader = new ButtonLoadingIndicator(this.submitPaymentButton);
-        this.paymentForm = DomAccess.querySelector(document, paymentFormId, false);
-
-        this.registerEvents();
-    }
-
-    registerEvents() {
-        // Submit payment form handler
-        this.submitPaymentButton.addEventListener('click', this.onSubmitPayment.bind(this));
-    }
-
-    onSubmitPayment(event) {
-        event.preventDefault();
-
-        // checks form validity before submit
-        if (!this.paymentForm.checkValidity()) {
-            return;
-        }
-
+    onConfirmFormSubmit() {
         // Get the closest form to check if it is valid
         const closestForm = this.el.closest('form');
         if (!closestForm) {
+            this.removeLoading();
             return;
         }
 
         if (!closestForm.checkValidity()) {
             this.addElementValidate();
+            this.removeLoading();
             return;
         }
 
         this.removeElementValidate();
-        this.createLoading();
         this.submitForm();
     }
 
@@ -82,26 +53,17 @@ export default class CheckoutComSepa extends Plugin {
         return [
             {
                 field: 'firstName',
-                value: this.getInputValue(firstNameId),
+                value: getInputValue(this.el, firstNameId),
             },
             {
                 field: 'lastName',
-                value: this.getInputValue(lastNameId),
+                value: getInputValue(this.el, lastNameId),
             },
             {
                 field: 'iban',
-                value: this.getInputValue(ibanId),
+                value: getInputValue(this.el, ibanId),
             },
         ];
-    }
-
-    getInputValue(elementId) {
-        const input = DomAccess.querySelector(this.el, elementId, false);
-        if (!input || !input.value) {
-            throw new Error(`No ${elementId} found`);
-        }
-
-        return input.value;
     }
 
     addElementValidate() {
@@ -110,13 +72,5 @@ export default class CheckoutComSepa extends Plugin {
 
     removeElementValidate() {
         this.el.classList.remove('was-validated');
-    }
-
-    createLoading() {
-        this.submitButtonLoader.create();
-    }
-
-    removeLoading() {
-        this.submitButtonLoader.remove();
     }
 }

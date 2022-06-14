@@ -1,3 +1,4 @@
+import DomAccess from 'src/helper/dom-access.helper';
 import { DATA_BAG_KEY } from './constants';
 
 const createInput = (field, value) => {
@@ -15,4 +16,13 @@ export const createTokenInput = (token) => {
 
 export const createSourceInput = (field, value) => {
     return createInput(`${DATA_BAG_KEY}[source][${field}]`, value);
+};
+
+export const getInputValue = (rootElement, elementId) => {
+    const input = DomAccess.querySelector(rootElement, elementId, false);
+    if (!input || !input.value) {
+        throw new Error(`No ${elementId} found`);
+    }
+
+    return input.value;
 };

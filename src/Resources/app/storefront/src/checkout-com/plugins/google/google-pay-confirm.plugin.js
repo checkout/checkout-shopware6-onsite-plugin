@@ -31,7 +31,7 @@ export default class CheckoutComGooglePayConfirm extends CheckoutComConfirmPayme
                     tokenizationData: { token },
                 } = paymentMethodData;
 
-                return this.submitPaymentForm(JSON.parse(token));
+                return this.submitAjaxPaymentForm(JSON.parse(token));
             })
             .then((result) => {
                 if (!result) {

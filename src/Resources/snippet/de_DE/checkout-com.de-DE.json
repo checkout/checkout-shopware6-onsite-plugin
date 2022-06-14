@@ -37,6 +37,10 @@
         "ibanLabel": "IBAN",
         "ibanPlaceholder": "IBAN",
         "billingDescriptor": "Danke für Ihren Einkauf, Ihre Bestellnummer ist %orderNumber%"
+      },
+      "ideal": {
+        "bicLabel": "BIC",
+        "bicPlaceholder": "BIC"
       }
     },
     "payments": {

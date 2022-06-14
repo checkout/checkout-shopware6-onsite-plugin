@@ -7,6 +7,7 @@
     {% set METHOD_TYPE_APPLE_PAY = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\ApplePayHandler::getPaymentMethodType') %}
     {% set METHOD_TYPE_GOOGLE_PAY = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\GooglePayHandler::getPaymentMethodType') %}
     {% set METHOD_TYPE_SEPA_PAY = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\SepaHandler::getPaymentMethodType') %}
+    {% set METHOD_TYPE_IDEAL = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\IdealHandler::getPaymentMethodType') %}
 
     {% block checkout_com_payment_method %}
         <div id="checkoutComPaymentMethod{{ payment.id }}"
@@ -38,6 +39,10 @@
                 {% elseif payment.customFields.checkoutConfig.methodType == METHOD_TYPE_SEPA_PAY %}
                     {% block checkout_com_payment_method_selected_sepa %}
                         {% sw_include '@CheckoutCom/storefront/checkout-com/component/sepa-fields.html.twig' %}
+                    {% endblock %}
+                {% elseif payment.customFields.checkoutConfig.methodType == METHOD_TYPE_IDEAL %}
+                    {% block checkout_com_payment_method_selected_ideal %}
+                        {% sw_include '@CheckoutCom/storefront/checkout-com/component/ideal-fields.html.twig' %}
                     {% endblock %}
                 {% endif %}
             {% endblock %}
