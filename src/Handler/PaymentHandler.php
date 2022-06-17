@@ -6,9 +6,11 @@ use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\ThreeDsRequest;
 use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
+use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutSourceService;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
 use CheckoutCom\Shopware6\Service\Extractor\AbstractOrderExtractor;
+use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
 use CheckoutCom\Shopware6\Struct\DirectPay\AbstractShippingOptionCollection;
 use CheckoutCom\Shopware6\Struct\DirectPay\AbstractShippingOptionStruct;
 use CheckoutCom\Shopware6\Struct\DirectPay\AbstractShippingPayloadStruct;
@@ -52,6 +54,8 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
 
     protected CheckoutSourceService $checkoutSourceService;
 
+    protected CheckoutPaymentService $checkoutPaymentService;
+
     protected PaymentPayFacade $paymentPayFacade;
 
     protected PaymentFinalizeFacade $paymentFinalizeFacade;
@@ -73,6 +77,7 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
         AbstractOrderExtractor $orderExtractor,
         CheckoutTokenService $checkoutTokenService,
         CheckoutSourceService $checkoutSourceService,
+        CheckoutPaymentService $checkoutPaymentService,
         PaymentPayFacade $paymentPayFacade,
         PaymentFinalizeFacade $paymentFinalizeFacade
     ): void {
@@ -80,6 +85,7 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
         $this->orderExtractor = $orderExtractor;
         $this->checkoutTokenService = $checkoutTokenService;
         $this->checkoutSourceService = $checkoutSourceService;
+        $this->checkoutPaymentService = $checkoutPaymentService;
         $this->paymentPayFacade = $paymentPayFacade;
         $this->paymentFinalizeFacade = $paymentFinalizeFacade;
     }
@@ -195,7 +201,7 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
         SalesChannelContext $salesChannelContext
     ): void {
         try {
-            $this->paymentFinalizeFacade->finalize($transaction, $salesChannelContext);
+            $this->paymentFinalizeFacade->finalize($this, $transaction, $salesChannelContext);
         } catch (AsyncPaymentFinalizeException $ex) {
             // We catch AsyncPaymentFinalizeException, log and throw it again
             $this->logger->error(
@@ -221,6 +227,20 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
                 'Internal error exception, view the log for more information'
             );
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function capturePayment(string $checkoutPaymentId, SalesChannelContext $context): void
+    {
+        // We capture the payment from the Checkout.com API, the CheckoutApiException will be thrown if capturing is failed
+        $this->checkoutPaymentService->capturePayment($checkoutPaymentId, $context->getSalesChannelId());
+    }
+
+    public function captureWhenFinalize(): bool
+    {
+        return true;
     }
 
     /**
