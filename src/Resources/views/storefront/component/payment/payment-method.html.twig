@@ -8,6 +8,7 @@
     {% set METHOD_TYPE_GOOGLE_PAY = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\GooglePayHandler::getPaymentMethodType') %}
     {% set METHOD_TYPE_SEPA_PAY = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\SepaHandler::getPaymentMethodType') %}
     {% set METHOD_TYPE_IDEAL = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\IdealHandler::getPaymentMethodType') %}
+    {% set METHOD_TYPE_KLARNA = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\KlarnaHandler::getPaymentMethodType') %}
 
     {% block checkout_com_payment_method %}
         <div id="checkoutComPaymentMethod{{ payment.id }}"
@@ -43,6 +44,10 @@
                 {% elseif payment.customFields.checkoutConfig.methodType == METHOD_TYPE_IDEAL %}
                     {% block checkout_com_payment_method_selected_ideal %}
                         {% sw_include '@CheckoutCom/storefront/checkout-com/component/ideal-fields.html.twig' %}
+                    {% endblock %}
+                {% elseif payment.customFields.checkoutConfig.methodType == METHOD_TYPE_KLARNA %}
+                    {% block checkout_com_payment_method_selected_klarna %}
+                        {% sw_include '@CheckoutCom/storefront/checkout-com/component/klarna-widget.html.twig' %}
                     {% endblock %}
                 {% endif %}
             {% endblock %}

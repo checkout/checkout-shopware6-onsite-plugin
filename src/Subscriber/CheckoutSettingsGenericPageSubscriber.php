@@ -60,6 +60,7 @@ class CheckoutSettingsGenericPageSubscriber implements EventSubscriberInterface
     {
         $checkoutConfirmPageExtension = new ConfirmPageExtensionStruct();
         $checkoutConfirmPageExtension->setFrameUrl(Url::IFRAME_URL);
+        $checkoutConfirmPageExtension->setKlarnaCdnUrl(Url::KLARNA_CDN_URL);
         $checkoutConfirmPageExtension->setPublicKey($this->settings->getPublicKey());
         $checkoutConfirmPageExtension->setSandboxMode($this->settings->isSandboxMode());
         $checkoutConfirmPageExtension->setGooglePayMerchantId($this->googleSettings->getMerchantId());

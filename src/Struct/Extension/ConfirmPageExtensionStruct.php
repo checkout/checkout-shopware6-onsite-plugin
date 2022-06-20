@@ -8,6 +8,8 @@ class ConfirmPageExtensionStruct extends Struct
 {
     protected string $frameUrl = '';
 
+    protected string $klarnaCdnUrl = '';
+
     protected string $publicKey = '';
 
     protected bool $sandboxMode = true;
@@ -22,6 +24,16 @@ class ConfirmPageExtensionStruct extends Struct
     public function setFrameUrl(string $frameUrl): void
     {
         $this->frameUrl = $frameUrl;
+    }
+
+    public function getKlarnaCdnUrl(): string
+    {
+        return $this->klarnaCdnUrl;
+    }
+
+    public function setKlarnaCdnUrl(string $klarnaCdnUrl): void
+    {
+        $this->klarnaCdnUrl = $klarnaCdnUrl;
     }
 
     public function getPublicKey(): string
