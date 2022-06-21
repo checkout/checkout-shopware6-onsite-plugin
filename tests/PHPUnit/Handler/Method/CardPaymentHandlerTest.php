@@ -66,13 +66,16 @@ class CardPaymentHandlerTest extends AbstractPaymentHandlerTest
     /**
      * @dataProvider prepareDataForPayProvider
      */
-    public function testPrepareDataForPay(?string $token): void
+    public function testPrepareDataForPay(?string $token, bool $threeDs = false): void
     {
         $dataBag = $this->getRequestBag($token);
 
         if ($token === null) {
             static::expectException(Exception::class);
         }
+
+        $this->settingsFactory->expects(static::once())->method('get3dSecureConfig')->willReturn($threeDs);
+
         $paymentRequest = $this->paymentHandler->prepareDataForPay(
             $this->createMock(PaymentRequest::class),
             $dataBag,
@@ -90,8 +93,13 @@ class CardPaymentHandlerTest extends AbstractPaymentHandlerTest
             'Test token is not string in request data bag' => [
                 null,
             ],
-            'Test token is string expect success' => [
+            'Test token is string expect success, 3ds false' => [
                 'any token string',
+                false,
+            ],
+            'Test token is string expect success, 3ds true' => [
+                'any token string',
+                true,
             ],
         ];
     }

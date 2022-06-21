@@ -35,7 +35,7 @@ class CardPaymentHandler extends PaymentHandler
         OrderEntity $order,
         SalesChannelContext $context
     ): PaymentRequest {
-        $this->enableThreeDsRequest($paymentRequest);
+        $this->enableThreeDsRequest($paymentRequest, $context->getSalesChannelId());
 
         $paymentRequest->source = $this->buildTokenSource($dataBag, $order, $context);
 

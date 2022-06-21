@@ -4,6 +4,7 @@ namespace CheckoutCom\Shopware6\Tests\Handler;
 
 use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
+use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\RequestUtil;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
@@ -91,6 +92,11 @@ abstract class AbstractPaymentHandlerTest extends TestCase
      */
     protected $saleChannelContext;
 
+    /**
+     * @var MockObject|SettingsFactory
+     */
+    protected $settingsFactory;
+
     protected PaymentHandler $paymentHandler;
 
     public function setUp(): void
@@ -106,6 +112,7 @@ abstract class AbstractPaymentHandlerTest extends TestCase
         $this->dataValidator = $this->createMock(DataValidator::class);
         $this->currencyFormatter = $this->createMock(CurrencyFormatter::class);
         $this->systemConfigService = $this->createMock(SystemConfigService::class);
+        $this->settingsFactory = $this->createMock(SettingsFactory::class);
     }
 
     public function setServices(): void
@@ -117,7 +124,8 @@ abstract class AbstractPaymentHandlerTest extends TestCase
             $this->checkoutSourceService,
             $this->checkoutPaymentService,
             $this->paymentPayFacade,
-            $this->paymentFinalizeFacade
+            $this->paymentFinalizeFacade,
+            $this->settingsFactory
         );
     }
 

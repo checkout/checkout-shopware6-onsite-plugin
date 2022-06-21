@@ -28,8 +28,6 @@ class GiropayHandler extends PaymentHandler
         OrderEntity $order,
         SalesChannelContext $context
     ): PaymentRequest {
-        $this->enableThreeDsRequest($paymentRequest);
-
         $paymentRequest->source = $this->buildGiropaySource($order);
 
         return $paymentRequest;

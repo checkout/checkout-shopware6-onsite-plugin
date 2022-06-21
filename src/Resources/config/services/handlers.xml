@@ -21,6 +21,7 @@
                 <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService"/>
                 <argument type="service" id="CheckoutCom\Shopware6\Facade\PaymentPayFacade"/>
                 <argument type="service" id="CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade"/>
+                <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
             </call>
         </service>
 

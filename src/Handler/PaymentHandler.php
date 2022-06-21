@@ -6,6 +6,7 @@ use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\ThreeDsRequest;
 use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
+use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutSourceService;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
@@ -60,6 +61,8 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
 
     protected PaymentFinalizeFacade $paymentFinalizeFacade;
 
+    protected SettingsFactory $settingsFactory;
+
     public function __construct(
         TranslatorInterface $translator,
         DataValidator $dataValidator,
@@ -79,7 +82,8 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
         CheckoutSourceService $checkoutSourceService,
         CheckoutPaymentService $checkoutPaymentService,
         PaymentPayFacade $paymentPayFacade,
-        PaymentFinalizeFacade $paymentFinalizeFacade
+        PaymentFinalizeFacade $paymentFinalizeFacade,
+        SettingsFactory $settingsFactory
     ): void {
         $this->logger = $logger;
         $this->orderExtractor = $orderExtractor;
@@ -88,6 +92,7 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
         $this->checkoutPaymentService = $checkoutPaymentService;
         $this->paymentPayFacade = $paymentPayFacade;
         $this->paymentFinalizeFacade = $paymentFinalizeFacade;
+        $this->settingsFactory = $settingsFactory;
     }
 
     public function getPaymentMethodDisplayName(): DisplayNameTranslationCollection
@@ -246,8 +251,12 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
     /**
      * Enable 3DS for payment request
      */
-    public function enableThreeDsRequest(PaymentRequest $paymentRequest): void
+    public function enableThreeDsRequest(PaymentRequest $paymentRequest, ?string $salesChannelId = null): void
     {
+        if (!$this->settingsFactory->get3dSecureConfig($salesChannelId)) {
+            return;
+        }
+
         $threeDs = new ThreeDsRequest();
         $threeDs->enabled = true;
         $paymentRequest->three_ds = $threeDs;

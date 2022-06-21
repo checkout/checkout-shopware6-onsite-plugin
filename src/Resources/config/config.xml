@@ -11,6 +11,18 @@
     </card>
 
     <card>
+        <title>Payments</title>
+        <title lang="de-DE">Zahlungen</title>
+
+        <input-field type="bool">
+            <name>enable3dSecure</name>
+            <label>3D Secure</label>
+            <label lang="de-DE">3D-Sicherheit</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
+    </card>
+
+    <card>
         <title>Registered webhook</title>
         <title lang="de-DE">Registrierter Webhaken</title>
 

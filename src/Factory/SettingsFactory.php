@@ -15,6 +15,7 @@ class SettingsFactory
     public const SYSTEM_COMPONENT_PAYMENT_METHOD = 'paymentMethod';
     public const CHECKOUT_PLUGIN_CONFIG_SECTION = 'checkoutPluginConfigSectionApi';
     public const CHECKOUT_PLUGIN_CONFIG_WEBHOOK = 'checkoutPluginConfigWebhook';
+    public const CHECKOUT_PLUGIN_CONFIG_3DS = 'enable3dSecure';
 
     public const SYSTEM_COMPONENT_GROUP = [
         self::CHECKOUT_PLUGIN_CONFIG_SECTION,
@@ -115,6 +116,11 @@ class SettingsFactory
     public function set(string $key, $value, ?string $salesChannelId = null): void
     {
         $this->systemConfigService->set($key, $value, $salesChannelId);
+    }
+
+    public function get3dSecureConfig(?string $salesChannelId = null): bool
+    {
+        return $this->systemConfigService->getBool(self::SYSTEM_CONFIG_DOMAIN . self::CHECKOUT_PLUGIN_CONFIG_3DS, $salesChannelId);
     }
 
     private function getSystemConfigSettings(?string $salesChannelId = null): array
