@@ -18,6 +18,15 @@
             </call>
         </service>
 
+        <service id="CheckoutCom\Shopware6\Controller\OrderController" public="true">
+            <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderCheckoutService"/>
+
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
         <service id="CheckoutCom\Shopware6\Storefront\Controller\MediaController" public="true">
             <argument type="service" id="CheckoutCom\Shopware6\Service\ContextService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\MediaService"/>

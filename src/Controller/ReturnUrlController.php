@@ -2,6 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Controller;
 
+use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -29,9 +30,9 @@ class ReturnUrlController extends AbstractController
 
     private PaymentController $paymentController;
 
-    private OrderService $orderService;
+    private AbstractOrderService $orderService;
 
-    public function __construct(PaymentController $paymentController, OrderService $orderService)
+    public function __construct(PaymentController $paymentController, AbstractOrderService $orderService)
     {
         $this->paymentController = $paymentController;
         $this->orderService = $orderService;

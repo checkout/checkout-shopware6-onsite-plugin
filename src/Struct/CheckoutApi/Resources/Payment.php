@@ -23,6 +23,8 @@ class Payment extends Struct
 
     protected ?string $response_summary = null;
 
+    protected ?array $actions = [];
+
     public function getId(): string
     {
         return $this->id;
@@ -96,5 +98,10 @@ class Payment extends Struct
     public function getRedirectUrl(): ?string
     {
         return $this->getFieldLinkHref('redirect');
+    }
+
+    public function getActions(): ?array
+    {
+        return $this->actions;
     }
 }

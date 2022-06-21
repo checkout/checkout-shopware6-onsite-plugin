@@ -157,6 +157,9 @@ class PaymentPayFacade
             }
         }
 
+        // After receiving data from the checkout.com response, insert as much data as possible into our "order" custom fields
+        $this->orderService->updateCheckoutCustomFields($order, $checkoutOrderCustomFields, $salesChannelContext);
+
         // If the payment is not approved and status is not pending, throw an exception and log the error
         if (!$payment->isApproved() && $payment->getStatus() !== CheckoutPaymentService::STATUS_PENDING) {
             $this->logger->error('Checkout.com payment request failed', [
@@ -182,9 +185,6 @@ class PaymentPayFacade
 
         // Update the order status of Shopware depending on checkout.com payment status
         $this->orderService->processTransition($order, $settings, $paymentStatus, $salesChannelContext->getContext());
-
-        // After receiving data from the checkout.com response, insert as much data as possible into our "order" custom fields
-        $this->orderService->updateCheckoutCustomFields($order, $checkoutOrderCustomFields, $salesChannelContext);
 
         return $checkoutOrderCustomFields;
     }

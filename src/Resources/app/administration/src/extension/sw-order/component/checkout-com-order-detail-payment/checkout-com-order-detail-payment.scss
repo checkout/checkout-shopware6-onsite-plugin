@@ -1,0 +1,81 @@
+@import "~scss/variables";
+
+.checkout-com-order-detail-payment {
+    .sw-description-list {
+        dt {
+            padding: 0;
+        }
+
+        dd {
+            padding: 0 0 28px 0;
+        }
+
+        dt,
+        dd {
+            border-color: transparent;
+        }
+
+        .checkout-com-uppercase {
+            text-transform: uppercase;
+        }
+
+        .checkout-com-capitalize {
+            text-transform: capitalize;
+        }
+    }
+
+    .checkout-com-order-detail-payment-history {
+        display: flex;
+        padding-bottom: 10px;
+        align-items: center;
+
+        .checkout-com-order-detail-payment-history-text {
+            padding: 0 4px;
+            line-height: 22px;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .checkout-com-order-detail-payment-history-code {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .checkout-com-order-detail-payment-history-date {
+            line-height: 24px;
+            font-size: 12px;
+            margin-left: 10px;
+            flex: 1;
+            text-align: right;
+        }
+
+        .checkout-com-order-detail-payment-history-icon-bg {
+            margin-top: 0;
+            margin-bottom: 0;
+
+            &.checkout-com-order-detail-payment-history-authorization-icon-bg {
+                background: lighten($color-shopware-brand-500, 40%);
+            }
+
+            &.checkout-com-order-detail-payment-history-failed-icon-bg {
+                background: lighten($color-crimson-500, 42%);
+            }
+
+            &.checkout-com-order-detail-payment-history-capture-icon-bg {
+                background: lighten($color-emerald-500, 40%);
+            }
+        }
+
+        .checkout-com-order-detail-payment-history-failed-icon {
+            color: $color-crimson-500;
+        }
+
+        .checkout-com-order-detail-payment-history-authorization-icon {
+            color: $color-shopware-brand-500;
+        }
+
+        .checkout-com-order-detail-payment-history-capture-icon {
+            color: $color-emerald-500;
+        }
+    }
+}

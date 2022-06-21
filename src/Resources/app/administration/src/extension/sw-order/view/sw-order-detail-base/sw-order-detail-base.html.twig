@@ -1,0 +1,11 @@
+{% block sw_order_detail_base_status_card %}
+    {% parent() %}
+
+    {% block checkout_com_order_detail_payment %}
+        <checkout-com-order-detail-payment
+            v-if="hasCheckoutComConfig && checkoutComPayment"
+            :is-loading="isLoading"
+            :payment="checkoutComPayment"
+        />
+    {% endblock %}
+{% endblock %}

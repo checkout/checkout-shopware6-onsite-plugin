@@ -43,12 +43,12 @@ Component.override('sw-settings-payment-detail', {
             return paymentMethod.customFields.checkoutConfig || null;
         },
 
-        isCheckout() {
-            return this.paymentMethodCheckoutConfig && this.paymentMethodCheckoutConfig.isCheckout;
+        isCheckoutCom() {
+            return this.paymentMethodCheckoutConfig !== null;
         },
 
         isApplePay() {
-            if (!this.isCheckout) {
+            if (!this.isCheckoutCom) {
                 return false;
             }
 
@@ -56,7 +56,7 @@ Component.override('sw-settings-payment-detail', {
         },
 
         isGooglePay() {
-            if (!this.isCheckout) {
+            if (!this.isCheckoutCom) {
                 return false;
             }
 
@@ -177,7 +177,7 @@ Component.override('sw-settings-payment-detail', {
 
         getCheckoutPaymentMethodConfig(salesChannelId) {
             const configs = {};
-            if (!this.isCheckout) {
+            if (!this.isCheckoutCom) {
                 return configs;
             }
 

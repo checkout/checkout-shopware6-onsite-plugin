@@ -4,3 +4,4 @@ import './component/checkout-com-media-compact-upload-v2';
 import './component/checkout-com-inherit-media-upload';
 import './extension/sw-settings-payment';
 import './extension/sw-system-config';
+import './extension/sw-order';

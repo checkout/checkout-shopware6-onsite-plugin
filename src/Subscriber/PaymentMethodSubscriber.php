@@ -44,18 +44,21 @@ class PaymentMethodSubscriber implements EventSubscriberInterface
     {
         $checkoutComNamespace = (new ReflectionClass(CheckoutCom::class))->getNamespaceName();
 
-        $customFields = $paymentMethod->getCustomFields() ?? [];
-
-        // We check is the payment method is a Checkout.com payment method
-        $isCheckoutComPaymentMethod = strpos($paymentMethod->getHandlerIdentifier(), $checkoutComNamespace) !== false;
-        $paymentMethodCustomFields = new PaymentMethodCustomFieldsStruct($isCheckoutComPaymentMethod);
-        if ($isCheckoutComPaymentMethod) {
-            $paymentMethodType = Util::handleCallUserFunc($paymentMethod->getHandlerIdentifier() . '::getPaymentMethodType', false);
-            $paymentMethodCustomFields->setMethodType($paymentMethodType);
+        // Check if the payment method is a Checkout.com payment method, skip it
+        if (strpos($paymentMethod->getHandlerIdentifier(), $checkoutComNamespace) === false) {
+            return;
         }
 
-        $customFields[self::PAYMENT_METHOD_CUSTOM_FIELDS] = $paymentMethodCustomFields->jsonSerialize();
+        $paymentMethodCustomFields = new PaymentMethodCustomFieldsStruct();
+        $paymentMethodCustomFields->setMethodType(
+            Util::handleCallUserFunc(
+                $paymentMethod->getHandlerIdentifier() . '::getPaymentMethodType',
+                false
+            )
+        );
 
+        $customFields = $paymentMethod->getCustomFields() ?? [];
+        $customFields[self::PAYMENT_METHOD_CUSTOM_FIELDS] = $paymentMethodCustomFields->jsonSerialize();
         $paymentMethod->setCustomFields($customFields);
     }
 }

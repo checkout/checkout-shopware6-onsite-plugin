@@ -49,6 +49,20 @@
           "googleMerchantIdHelpText": "This is found in your Google Pay developer account"
         }
       }
+    },
+    "order": {
+      "checkoutPayments": {
+        "title": "Checkout.com Payments",
+        "paymentIDLabel": "Payment ID",
+        "paymentTypeLabel": "Payment type",
+        "paymentMethodLabel": "Payment method",
+        "issuingCountryLabel": "Issuing country",
+        "issuingBankLabel": "Issuing bank",
+        "cardholderNameLabel": "Cardholder name",
+        "cardNumberLabel": "Card number",
+        "cardExpiryDateLabel": "Card expiry date",
+        "paymentHistoryLabel": "Payment history"
+      }
     }
   }
 }

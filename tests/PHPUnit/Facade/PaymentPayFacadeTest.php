@@ -174,7 +174,7 @@ class PaymentPayFacadeTest extends TestCase
             }
         }
 
-        $this->orderService->expects(static::exactly($approved ? 1 : 0))
+        $this->orderService->expects(static::exactly($hasValidateError ? 0 : 1))
             ->method('updateCheckoutCustomFields');
 
         $this->orderTransactionService->expects(static::exactly($approved ? 1 : 0))
