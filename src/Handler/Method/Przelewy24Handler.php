@@ -41,7 +41,7 @@ class Przelewy24Handler extends PaymentHandler
     }
 
     /**
-     * Build token source to call the Checkout.com API
+     * Build request source to call the Checkout.com API
      *
      * @throws Exception
      */

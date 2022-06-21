@@ -87,5 +87,11 @@
             <tag name="shopware.payment.method.async"/>
             <tag name="checkout_com.shopware6.payment_handler"/>
         </service>
+
+        <!-- EPS PaymentHandler -->
+        <service id="CheckoutCom\Shopware6\Handler\Method\EpsHandler" parent="checkout_com.shopware6.handler.payment_handler">
+            <tag name="shopware.payment.method.async"/>
+            <tag name="checkout_com.shopware6.payment_handler"/>
+        </service>
     </services>
 </container>

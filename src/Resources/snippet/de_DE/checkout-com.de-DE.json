@@ -14,7 +14,8 @@
       "payPalLabel": "PayPal",
       "sepaLabel": "SEPA Direct Debit",
       "idealLabel": "iDEAL",
-      "klarnaLabel": "Klarna"
+      "klarnaLabel": "Klarna",
+      "epsLabel": "EPS"
     },
     "messages": {
       "card": {

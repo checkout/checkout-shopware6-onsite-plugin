@@ -5,24 +5,23 @@ namespace CheckoutCom\Shopware6\Handler\Method;
 
 use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\PaymentRequest;
-use Checkout\Payments\Source\Apm\RequestPayPalSource;
+use Checkout\Payments\Source\Apm\RequestEpsSource;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
-use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use Exception;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
-class PayPalHandler extends PaymentHandler
+class EpsHandler extends PaymentHandler
 {
     public function getSnippetKey(): string
     {
-        return 'checkoutCom.paymentMethod.payPalLabel';
+        return 'checkoutCom.paymentMethod.epsLabel';
     }
 
     public static function getPaymentMethodType(): string
     {
-        return PaymentSourceType::$paypal;
+        return PaymentSourceType::$eps;
     }
 
     /**
@@ -34,7 +33,7 @@ class PayPalHandler extends PaymentHandler
         OrderEntity $order,
         SalesChannelContext $context
     ): PaymentRequest {
-        $paymentRequest->source = $this->buildPayPalSource($order);
+        $paymentRequest->source = $this->buildEpsSource($order);
 
         return $paymentRequest;
     }
@@ -42,10 +41,10 @@ class PayPalHandler extends PaymentHandler
     /**
      * Build request source to call the Checkout.com API
      */
-    private function buildPayPalSource(OrderEntity $order): RequestPayPalSource
+    private function buildEpsSource(OrderEntity $order): RequestEpsSource
     {
-        $source = new RequestPayPalSource();
-        $source->invoice_number = CheckoutComUtil::buildReference($order);
+        $source = new RequestEpsSource();
+        $source->purpose = \sprintf('order_%s', $this->orderExtractor->extractOrderNumber($order));
 
         return $source;
     }
