@@ -7,6 +7,8 @@ use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
+use CheckoutCom\Shopware6\Service\CustomerService;
+use CheckoutCom\Shopware6\Service\Extractor\OrderExtractor;
 use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
 use CheckoutCom\Shopware6\Service\Order\OrderTransactionService;
@@ -37,6 +39,16 @@ class PaymentFinalizeFacadeTest extends TestCase
     protected $settingsFactory;
 
     /**
+     * @var CustomerService|MockObject
+     */
+    protected $customerService;
+
+    /**
+     * @var OrderExtractor|MockObject
+     */
+    protected $orderExtractor;
+
+    /**
      * @var OrderService|MockObject
      */
     protected $orderService;
@@ -58,6 +70,8 @@ class PaymentFinalizeFacadeTest extends TestCase
         $this->salesChannelContext = $this->getSaleChannelContext($this);
         $this->checkoutPaymentService = $this->createMock(CheckoutPaymentService::class);
         $this->settingsFactory = $this->createMock(SettingsFactory::class);
+        $this->customerService = $this->createMock(CustomerService::class);
+        $this->orderExtractor = $this->createMock(OrderExtractor::class);
         $this->orderService = $this->createMock(OrderService::class);
         $this->orderTransactionService = $this->createMock(OrderTransactionService::class);
 
@@ -66,6 +80,8 @@ class PaymentFinalizeFacadeTest extends TestCase
             $this->createMock(EventDispatcherInterface::class),
             $this->checkoutPaymentService,
             $this->settingsFactory,
+            $this->customerService,
+            $this->orderExtractor,
             $this->orderService,
             $this->orderTransactionService
         );
@@ -76,9 +92,12 @@ class PaymentFinalizeFacadeTest extends TestCase
      */
     public function testFinalize(?string $checkoutPaymentId, ?string $checkoutPaymentStatus = null): void
     {
+        $orderCustomer = $this->getOrderCustomerEntity('foo', 'bar', 'baz@example.com');
+        $orderCustomer->setCustomerId('foo');
         $order = $this->getOrder($checkoutPaymentId);
         $orderTransaction = $this->getOrderTransaction();
         $orderTransaction->setOrder($order);
+        $order->setOrderCustomer($orderCustomer);
         $transaction = new AsyncPaymentTransactionStruct($orderTransaction, $order, 'foo url');
 
         $paymentHandler = $this->createConfiguredMock(
@@ -94,6 +113,11 @@ class PaymentFinalizeFacadeTest extends TestCase
         ]);
 
         $isRunProcessTransition = 1;
+
+        $this->orderExtractor->expects(static::once())
+            ->method('extractCustomer')
+            ->willReturn($orderCustomer);
+
         if (empty($checkoutPaymentId)) {
             $isRunProcessTransition = 0;
             static::expectException(CheckoutPaymentIdNotFoundException::class);

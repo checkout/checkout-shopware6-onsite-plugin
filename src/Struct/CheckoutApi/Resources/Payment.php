@@ -17,6 +17,8 @@ class Payment extends Struct
 
     protected ?string $reference = null;
 
+    protected ?array $source = null;
+
     protected ?array $_links = null;
 
     protected ?string $response_code = null;
@@ -64,6 +66,11 @@ class Payment extends Struct
     public function getResponseCode(): ?string
     {
         return $this->response_code;
+    }
+
+    public function getSource(): ?array
+    {
+        return $this->source;
     }
 
     public function getResponseSummary(): ?string

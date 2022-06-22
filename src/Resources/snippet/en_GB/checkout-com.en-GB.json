@@ -22,10 +22,14 @@
         "cardNumber": "Please enter a valid card number.",
         "expiryDate": "Please enter a valid expiry date.",
         "cvv": "Please enter a valid cvv code."
+      },
+      "source" : {
+        "saveSource": "Save card details for future payments"
       }
     },
     "components": {
       "card": {
+        "newCardLabel" : "New card",
         "cardholderNameLabel": "Cardholder name",
         "cardNumberLabel": "Card number",
         "cardExpiryDateLabel": "Expiry date",

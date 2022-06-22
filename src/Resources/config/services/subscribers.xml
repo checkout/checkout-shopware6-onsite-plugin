@@ -8,6 +8,10 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <service id="CheckoutCom\Shopware6\Subscriber\CheckoutPaymentMethodPageSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <service id="CheckoutCom\Shopware6\Subscriber\CheckoutSettingsGenericPageSubscriber">
             <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
             <tag name="kernel.event_subscriber"/>

@@ -28,7 +28,7 @@
                     type="password"
                     :is-invalid="error.publicKey"
                     :label="$tc('checkout-payments.config.api.publicKeyLabel')"
-                    :placeholder="$tc('checkout-payments.config.api.secretKeyLabel')"
+                    :placeholder="$tc('checkout-payments.config.api.publicKeyLabel')"
                     :disabled="props.isInherited || isLoading"
                     :value="props.currentValue.publicKey"
                     @input="updateInheritedValue('publicKey', props.currentValue, $event, props.updateCurrentValue)"

@@ -13,10 +13,11 @@ import CheckoutComSepa from './checkout-com/plugins/sepa.plugin';
 import CheckoutComIdeal from './checkout-com/plugins/ideal.plugin';
 import CheckoutComKlarna from './checkout-com/plugins/klarna.plugin';
 
+import CheckoutComSourceManage from './checkout-com/plugins/source-manage.plugin';
+
 const PluginManager = window.PluginManager;
 
 // Action plugins
-// -----------------------------------------------------------------------------
 PluginManager.register('CheckoutComApplePayConfirm', CheckoutComApplePayConfirm, '[data-checkout-com-apple-pay-confirm]');
 PluginManager.register('CheckoutComGooglePayConfirm', CheckoutComGooglePayConfirm, '[data-checkout-com-google-pay-confirm]');
 
@@ -24,7 +25,6 @@ PluginManager.register('CheckoutComApplePayDirect', CheckoutComApplePayDirect, '
 PluginManager.register('CheckoutComGooglePayDirect', CheckoutComGooglePayDirect, '[data-checkout-com-google-pay-direct]');
 
 // display the payment methods
-// -----------------------------------------------------------------------------
 PluginManager.register('CheckoutComApplePayDisplay', CheckoutComApplePayDisplay, '[data-checkout-com-apple-pay-display]');
 PluginManager.register('CheckoutComGooglePayDisplay', CheckoutComGooglePayDisplay, '[data-checkout-com-google-pay-display]');
 
@@ -34,3 +34,6 @@ PluginManager.register('CheckoutComCardPayment', CheckoutComCardPayment, '[data-
 PluginManager.register('CheckoutComSepa', CheckoutComSepa, '[data-checkout-com-sepa]');
 PluginManager.register('CheckoutComIdeal', CheckoutComIdeal, '[data-checkout-com-ideal]');
 PluginManager.register('CheckoutComKlarna', CheckoutComKlarna, '[data-checkout-com-klarna]');
+
+// Source remove plugin
+PluginManager.register('CheckoutComSourceManage', CheckoutComSourceManage, '[data-checkout-com-source-manage]');

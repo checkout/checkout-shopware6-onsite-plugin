@@ -9,6 +9,7 @@
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\CustomerService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\Extractor\OrderExtractor"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderTransactionService"/>
@@ -20,6 +21,8 @@
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\CustomerService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Extractor\OrderExtractor"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderTransactionService"/>
         </service>

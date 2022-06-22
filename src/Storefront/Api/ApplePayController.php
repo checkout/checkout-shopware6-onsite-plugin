@@ -4,7 +4,6 @@ namespace CheckoutCom\Shopware6\Storefront\Api;
 
 use CheckoutCom\Shopware6\Service\ApplePay\AbstractApplePayService;
 use CheckoutCom\Shopware6\Struct\Response\MerchantSessionResponse;
-use GuzzleHttp\Exception\GuzzleException;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
@@ -63,8 +62,6 @@ class ApplePayController extends AbstractApplePayController
      *     )
      * )
      * @Route("/store-api/checkout-com/validate-merchant", name="store-api.checkout-com.validate-merchant", methods={"POST"})
-     *
-     * @throws GuzzleException
      */
     public function validateMerchant(SalesChannelContext $context, RequestDataBag $data, Request $request): MerchantSessionResponse
     {

@@ -5,7 +5,7 @@ namespace CheckoutCom\Shopware6\Subscriber;
 use CheckoutCom\Shopware6\Exception\CheckoutComException;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Helper\Url;
-use CheckoutCom\Shopware6\Struct\Extension\ConfirmPageExtensionStruct;
+use CheckoutCom\Shopware6\Struct\Extension\GenericPageExtensionStruct;
 use CheckoutCom\Shopware6\Struct\SystemConfig\GooglePaySettingStruct;
 use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use Shopware\Storefront\Page\GenericPageLoadedEvent;
@@ -58,7 +58,7 @@ class CheckoutSettingsGenericPageSubscriber implements EventSubscriberInterface
 
     private function addCheckoutSettingsToGenericPage(GenericPageLoadedEvent $event): void
     {
-        $checkoutConfirmPageExtension = new ConfirmPageExtensionStruct();
+        $checkoutConfirmPageExtension = new GenericPageExtensionStruct();
         $checkoutConfirmPageExtension->setFrameUrl(Url::IFRAME_URL);
         $checkoutConfirmPageExtension->setKlarnaCdnUrl(Url::KLARNA_CDN_URL);
         $checkoutConfirmPageExtension->setPublicKey($this->settings->getPublicKey());

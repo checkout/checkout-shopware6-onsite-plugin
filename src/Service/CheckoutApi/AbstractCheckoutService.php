@@ -8,6 +8,8 @@ use Psr\Log\LoggerInterface;
 
 abstract class AbstractCheckoutService
 {
+    public const ERROR_TOKEN_INVALID = 'token_invalid';
+
     protected LoggerInterface $logger;
 
     protected CheckoutApiFactory $checkoutApiFactory;

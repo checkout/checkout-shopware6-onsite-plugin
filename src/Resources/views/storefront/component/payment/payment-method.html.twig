@@ -1,7 +1,11 @@
 {% sw_extends '@Storefront/storefront/component/payment/payment-method.html.twig' %}
 
-{% block component_payment_method_description %}
+{% block component_payment_method_label %}
     {{ parent() }}
+
+    {% set isAccountPaymentPage = activeRoute is same as 'frontend.account.payment.page' %}
+    {% set isSelectedPaymentMethod = payment.id is same as selectedPaymentMethodId %}
+    {% set paymentMethodType = payment.customFields.checkoutConfig.methodType %}
 
     {% set METHOD_TYPE_CARD_PAYMENT = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\CardPaymentHandler::getPaymentMethodType') %}
     {% set METHOD_TYPE_APPLE_PAY = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\ApplePayHandler::getPaymentMethodType') %}
@@ -14,41 +18,51 @@
         <div id="checkoutComPaymentMethod{{ payment.id }}"
              class="checkout-com-payment-method"
              data-payment-method-id="{{ payment.id }}"
-            {% if payment.customFields.checkoutConfig.methodType == METHOD_TYPE_APPLE_PAY %}
+            {% if paymentMethodType === METHOD_TYPE_APPLE_PAY %}
                 data-apple-pay="true"
-            {% elseif payment.customFields.checkoutConfig.methodType == METHOD_TYPE_GOOGLE_PAY %}
+            {% elseif paymentMethodType === METHOD_TYPE_GOOGLE_PAY %}
                 data-google-pay="true"
             {% endif %}
         ></div>
     {% endblock %}
 
-    {% block checkout_com_payment_method_selected %}
-        {% if (payment.id is same as(selectedPaymentMethodId)) %}
-            {% block checkout_com_payment_method_card_payment_condition %}
-                {% if payment.customFields.checkoutConfig.methodType == METHOD_TYPE_CARD_PAYMENT %}
-                    {% block checkout_com_payment_method_selected_card_payment %}
-                        {% sw_include '@CheckoutCom/storefront/checkout-com/component/card-payment-fields.html.twig' %}
-                    {% endblock %}
-                {% elseif payment.customFields.checkoutConfig.methodType == METHOD_TYPE_APPLE_PAY %}
-                    {% block checkout_com_payment_method_selected_apple_pay_confirm %}
-                        {% sw_include '@CheckoutCom/storefront/checkout-com/component/apple/apple-pay-confirm.html.twig' %}
-                    {% endblock %}
-                {% elseif payment.customFields.checkoutConfig.methodType == METHOD_TYPE_GOOGLE_PAY %}
-                    {% block checkout_com_payment_method_selected_google_pay_confirm %}
-                        {% sw_include '@CheckoutCom/storefront/checkout-com/component/google/google-pay-confirm.html.twig' %}
-                    {% endblock %}
-                {% elseif payment.customFields.checkoutConfig.methodType == METHOD_TYPE_SEPA_PAY %}
-                    {% block checkout_com_payment_method_selected_sepa %}
-                        {% sw_include '@CheckoutCom/storefront/checkout-com/component/sepa-fields.html.twig' %}
-                    {% endblock %}
-                {% elseif payment.customFields.checkoutConfig.methodType == METHOD_TYPE_IDEAL %}
-                    {% block checkout_com_payment_method_selected_ideal %}
-                        {% sw_include '@CheckoutCom/storefront/checkout-com/component/ideal-fields.html.twig' %}
-                    {% endblock %}
-                {% elseif payment.customFields.checkoutConfig.methodType == METHOD_TYPE_KLARNA %}
-                    {% block checkout_com_payment_method_selected_klarna %}
-                        {% sw_include '@CheckoutCom/storefront/checkout-com/component/klarna-widget.html.twig' %}
-                    {% endblock %}
+    {% block checkout_com_payment_method_form %}
+        {% if paymentMethodType == METHOD_TYPE_CARD_PAYMENT %}
+            {% block checkout_com_payment_method_form_card_payment_confirm %}
+                {% if isSelectedPaymentMethod or isAccountPaymentPage %}
+                    {% sw_include '@CheckoutCom/storefront/checkout-com/component/card-payment-fields.html.twig' with {
+                        'isAccountPaymentPage': isAccountPaymentPage
+                    } %}
+                {% endif %}
+            {% endblock %}
+        {% elseif paymentMethodType == METHOD_TYPE_APPLE_PAY %}
+            {% block checkout_com_payment_method_form_apple_pay_confirm %}
+                {% if isSelectedPaymentMethod %}
+                    {% sw_include '@CheckoutCom/storefront/checkout-com/component/apple/apple-pay-confirm.html.twig' %}
+                {% endif %}
+            {% endblock %}
+        {% elseif paymentMethodType == METHOD_TYPE_GOOGLE_PAY %}
+            {% block checkout_com_payment_method_form_google_pay_confirm %}
+                {% if isSelectedPaymentMethod %}
+                    {% sw_include '@CheckoutCom/storefront/checkout-com/component/google/google-pay-confirm.html.twig' %}
+                {% endif %}
+            {% endblock %}
+        {% elseif paymentMethodType == METHOD_TYPE_SEPA_PAY %}
+            {% block checkout_com_payment_method_form_sepa_confirm %}
+                {% if isSelectedPaymentMethod %}
+                    {% sw_include '@CheckoutCom/storefront/checkout-com/component/sepa-fields.html.twig' %}
+                {% endif %}
+            {% endblock %}
+        {% elseif paymentMethodType == METHOD_TYPE_IDEAL %}
+            {% block checkout_com_payment_method_form_ideal_confirm %}
+                {% if isSelectedPaymentMethod %}
+                    {% sw_include '@CheckoutCom/storefront/checkout-com/component/ideal-fields.html.twig' %}
+                {% endif %}
+            {% endblock %}
+        {% elseif paymentMethodType == METHOD_TYPE_KLARNA %}
+            {% block checkout_com_payment_method_form_klarna_confirm %}
+                {% if isSelectedPaymentMethod %}
+                    {% sw_include '@CheckoutCom/storefront/checkout-com/component/klarna-widget.html.twig' %}
                 {% endif %}
             {% endblock %}
         {% endif %}

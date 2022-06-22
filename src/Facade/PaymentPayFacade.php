@@ -9,7 +9,10 @@ use CheckoutCom\Shopware6\Event\CheckoutRequestPaymentEvent;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
+use CheckoutCom\Shopware6\Helper\RequestUtil;
+use CheckoutCom\Shopware6\Service\CheckoutApi\AbstractCheckoutService;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
+use CheckoutCom\Shopware6\Service\CustomerService;
 use CheckoutCom\Shopware6\Service\Extractor\AbstractOrderExtractor;
 use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
 use CheckoutCom\Shopware6\Service\Order\AbstractOrderTransactionService;
@@ -42,6 +45,8 @@ class PaymentPayFacade
 
     private CheckoutPaymentService $checkoutPaymentService;
 
+    private CustomerService $customerService;
+
     private AbstractOrderExtractor $orderExtractor;
 
     private AbstractOrderService $orderService;
@@ -55,6 +60,7 @@ class PaymentPayFacade
         EventDispatcherInterface $eventDispatcher,
         SettingsFactory $settingsFactory,
         CheckoutPaymentService $checkoutPaymentService,
+        CustomerService $customerService,
         AbstractOrderExtractor $orderExtractor,
         AbstractOrderService $orderService,
         AbstractOrderTransactionService $orderTransactionService,
@@ -64,6 +70,7 @@ class PaymentPayFacade
         $this->eventDispatcher = $eventDispatcher;
         $this->settingsFactory = $settingsFactory;
         $this->checkoutPaymentService = $checkoutPaymentService;
+        $this->customerService = $customerService;
         $this->orderExtractor = $orderExtractor;
         $this->orderService = $orderService;
         $this->orderTransactionService = $orderTransactionService;
@@ -143,17 +150,25 @@ class PaymentPayFacade
         // In case of an empty checkout payment ID, we create a new payment at Checkout.com
         // otherwise, we're getting the payment details from Checkout.com
         if (empty($checkoutPaymentId)) {
-            $payment = $this->createCheckoutPayment($paymentHandler, $dataBag, $transaction, $order, $salesChannelContext);
-
-            $checkoutOrderCustomFields->setCheckoutPaymentId($payment->getId());
-            $checkoutOrderCustomFields->setCheckoutReturnUrl($payment->getRedirectUrl());
+            $payment = $this->createCheckoutPayment(
+                $checkoutOrderCustomFields,
+                $paymentHandler,
+                $dataBag,
+                $transaction,
+                $order,
+                $salesChannelContext
+            );
         } else {
             $payment = $this->checkoutPaymentService->getPaymentDetails($checkoutPaymentId, $salesChannelContext->getSalesChannelId());
             if ($payment->isFailed()) {
-                $payment = $this->createCheckoutPayment($paymentHandler, $dataBag, $transaction, $order, $salesChannelContext);
-
-                $checkoutOrderCustomFields->setCheckoutPaymentId($payment->getId());
-                $checkoutOrderCustomFields->setCheckoutReturnUrl($payment->getRedirectUrl());
+                $payment = $this->createCheckoutPayment(
+                    $checkoutOrderCustomFields,
+                    $paymentHandler,
+                    $dataBag,
+                    $transaction,
+                    $order,
+                    $salesChannelContext
+                );
             }
         }
 
@@ -243,6 +258,7 @@ class PaymentPayFacade
      * @throws Exception
      */
     private function createCheckoutPayment(
+        OrderCustomFieldsStruct $checkoutOrderCustomFields,
         PaymentHandler $paymentHandler,
         RequestDataBag $dataBag,
         AsyncPaymentTransactionStruct $transaction,
@@ -254,8 +270,52 @@ class PaymentPayFacade
 
         $this->eventDispatcher->dispatch(new CheckoutRequestPaymentEvent($paymentRequest, $paymentHandler, $transaction, $salesChannelContext));
 
-        // Call the API to create a payment at checkout.com
-        return $this->checkoutPaymentService->requestPayment($paymentRequest, $salesChannelContext->getSalesChannelId());
+        try {
+            // Call the API to create a payment at checkout.com
+            $payment = $this->checkoutPaymentService->requestPayment($paymentRequest, $salesChannelContext->getSalesChannelId());
+
+            $checkoutOrderCustomFields->setShouldSaveSource(RequestUtil::getShouldSaveSource($dataBag));
+            $checkoutOrderCustomFields->setCheckoutPaymentId($payment->getId());
+            $checkoutOrderCustomFields->setCheckoutReturnUrl($payment->getRedirectUrl());
+
+            return $payment;
+        } catch (CheckoutApiException $e) {
+            $sourceId = RequestUtil::getSourceIdPayment($dataBag);
+            if (!\is_string($sourceId)) {
+                // If sourceId is not string, it means the request is not for sourceId request, keep throw the exception
+                throw $e;
+            }
+
+            // Remove the source from customer if this source is invalid
+            if ($this->isTokenInvalid($e)) {
+                $orderCustomer = $this->orderExtractor->extractCustomer($order);
+                $customerId = $orderCustomer->getCustomerId();
+                if (empty($customerId)) {
+                    throw new Exception('Customer ID not found');
+                }
+
+                $customer = $this->customerService->getCustomer($customerId, $salesChannelContext->getContext());
+
+                $this->customerService->removeCustomerSource($sourceId, $customer, $salesChannelContext);
+            }
+
+            throw $e;
+        }
+    }
+
+    private function isTokenInvalid(CheckoutApiException $e): bool
+    {
+        $errorDetails = $e->error_details;
+        if (empty($errorDetails)) {
+            return false;
+        }
+
+        $errorCodes = $errorDetails['error_codes'] ?? [];
+        if (empty($errorCodes)) {
+            return false;
+        }
+
+        return \in_array(AbstractCheckoutService::ERROR_TOKEN_INVALID, $errorCodes, true);
     }
 
     private function generateReturnUrl(string $orderId, SalesChannelContext $context): string

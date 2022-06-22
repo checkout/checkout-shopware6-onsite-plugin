@@ -1,13 +1,16 @@
-import Plugin from 'src/plugin-system/plugin.class';
-import ButtonLoadingIndicator from 'src/utility/loading-indicator/button-loading-indicator.util';
+import deepmerge from 'deepmerge';
 import DomAccess from 'src/helper/dom-access.helper';
-import { createTokenInput } from '../helper/utils';
+import CheckoutComSourcePaymentHandler from '../core/checkout-com-source-payment-handler';
+import { createShouldSaveSourceInput, createTokenInput } from '../helper/utils';
 
 /**
  * This Class is responsible for the Card Payments integration
  */
-export default class CheckoutComCardPayment extends Plugin {
-    static options = {
+export default class CheckoutComCardPayment extends CheckoutComSourcePaymentHandler {
+    // The card logo MIME type is always svg
+    LOGO_MIME_TYPE = 'svg';
+
+    static options = deepmerge(CheckoutComSourcePaymentHandler.options, {
         localization: {
             cardNumberPlaceholder: '',
             expiryMonthPlaceholder: '',
@@ -19,40 +22,23 @@ export default class CheckoutComCardPayment extends Plugin {
         publicKey: null,
         iconPaymentMethodId: '#checkoutComIconPaymentMethod',
         cardholderNameId: '#cardholder-name',
-        paymentFormId: '#confirmOrderForm',
-        submitPaymentButtonId: '#confirmOrderForm button[type="submit"]',
         prefixFieldClass: '.checkout-com-field__',
-    };
-    // The card logo MIME type is always svg
-    LOGO_MIME_TYPE = 'svg';
+    });
 
     init() {
-        const {
-            submitPaymentButtonId,
-            paymentFormId,
-        } = this.options;
-
-        this.submitPaymentButton = this.getElement(document, submitPaymentButtonId);
-        this.submitButtonLoader = new ButtonLoadingIndicator(this.submitPaymentButton);
-        this.paymentForm = this.getElement(document, paymentFormId);
-
-        // We disable the form before the Frame is loaded
-        this.disableForm();
-        this.registerEvents();
+        super.init();
+        this.initFrame();
     }
 
     getElement(rootSelector, selector) {
         return DomAccess.querySelector(rootSelector, selector, false);
     }
 
-    registerEvents() {
+    initFrame() {
         const {
             localization,
             publicKey,
         } = this.options;
-
-        // Submit payment form handler
-        this.submitPaymentButton.addEventListener('click', this.onSubmitPayment.bind(this));
 
         Frames.init({
             publicKey,
@@ -66,16 +52,21 @@ export default class CheckoutComCardPayment extends Plugin {
         });
     }
 
-    onSubmitPayment(event) {
-        const { cardholderNameId } = this.options;
-
-        event.preventDefault();
-
-        // checks form validity before submit
-        if (!this.paymentForm.checkValidity()) {
+    onSourceChange(sourceValue) {
+        if (sourceValue !== null) {
+            this.enableForm();
             return;
         }
 
+        this.onCardValidationChanged({
+            isValid: Frames.isCardValid(),
+        });
+    }
+
+    onConfirmFormSubmit() {
+        const {
+            cardholderNameId,
+        } = this.options;
         const cardholderNameInput = this.getElement(this.el, cardholderNameId);
 
         // We add the cardholder name to the form data (iframe checkout.com)
@@ -119,6 +110,11 @@ export default class CheckoutComCardPayment extends Plugin {
      * @param isValid {boolean}
      */
     onCardValidationChanged({ isValid }) {
+        const sourceValue = this.getSourceInputValue();
+        if (sourceValue !== null) {
+            return;
+        }
+
         if (isValid) {
             this.enableForm();
         } else {
@@ -167,11 +163,9 @@ export default class CheckoutComCardPayment extends Plugin {
      * @param token {string}
      */
     onCardTokenized({ token }) {
-        const input = createTokenInput(token);
-
-        // Add the token input to the form
         // It will be sent to the server along with the form.
-        this.paymentForm.append(input);
+        this.paymentForm.append(createTokenInput(token));
+        this.paymentForm.append(createShouldSaveSourceInput(this.shouldSaveSource()));
 
         // Continue to submit shopware payment form
         this.paymentForm.submit();
@@ -195,13 +189,5 @@ export default class CheckoutComCardPayment extends Plugin {
 
     enableForm() {
         this.submitPaymentButton.disabled = false;
-    }
-
-    createLoading() {
-        this.submitButtonLoader.create();
-    }
-
-    removeLoading() {
-        this.submitButtonLoader.remove();
     }
 }

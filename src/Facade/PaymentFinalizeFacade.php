@@ -7,9 +7,14 @@ use CheckoutCom\Shopware6\Exception\CheckoutPaymentIdNotFoundException;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
+use CheckoutCom\Shopware6\Service\CustomerService;
+use CheckoutCom\Shopware6\Service\Extractor\AbstractOrderExtractor;
 use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
 use CheckoutCom\Shopware6\Service\Order\AbstractOrderTransactionService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
+use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
+use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\PaymentSource;
+use CheckoutCom\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
@@ -28,6 +33,10 @@ class PaymentFinalizeFacade
 
     private SettingsFactory $settingsFactory;
 
+    private CustomerService $customerService;
+
+    private AbstractOrderExtractor $orderExtractor;
+
     private AbstractOrderService $orderService;
 
     private AbstractOrderTransactionService $orderTransactionService;
@@ -37,6 +46,8 @@ class PaymentFinalizeFacade
         EventDispatcherInterface $eventDispatcher,
         CheckoutPaymentService $checkoutPaymentService,
         SettingsFactory $settingsFactory,
+        CustomerService $customerService,
+        AbstractOrderExtractor $orderExtractor,
         AbstractOrderService $orderService,
         AbstractOrderTransactionService $orderTransactionService
     ) {
@@ -44,6 +55,8 @@ class PaymentFinalizeFacade
         $this->eventDispatcher = $eventDispatcher;
         $this->checkoutPaymentService = $checkoutPaymentService;
         $this->settingsFactory = $settingsFactory;
+        $this->customerService = $customerService;
+        $this->orderExtractor = $orderExtractor;
         $this->orderService = $orderService;
         $this->orderTransactionService = $orderTransactionService;
     }
@@ -57,6 +70,12 @@ class PaymentFinalizeFacade
         SalesChannelContext $salesChannelContext
     ): void {
         $order = $transaction->getOrder();
+        $orderCustomer = $this->orderExtractor->extractCustomer($order);
+        $customerId = $orderCustomer->getCustomerId();
+        if (empty($customerId)) {
+            throw new Exception('Customer ID not found');
+        }
+
         $orderTransaction = $transaction->getOrderTransaction();
         $checkoutOrderCustomFields = OrderService::getCheckoutOrderCustomFields($order);
 
@@ -111,5 +130,27 @@ class PaymentFinalizeFacade
 
         // Update the order status of Shopware depending on checkout.com payment status
         $this->orderService->processTransition($order, $settings, $paymentStatus, $salesChannelContext->getContext());
+
+        $this->saveCustomerSource($customerId, $checkoutOrderCustomFields, $payment, $salesChannelContext);
+    }
+
+    private function saveCustomerSource(
+        string $customerId,
+        OrderCustomFieldsStruct $checkoutOrderCustomFields,
+        Payment $payment,
+        SalesChannelContext $salesChannelContext
+    ): void {
+        if (!$checkoutOrderCustomFields->isShouldSaveSource()) {
+            return;
+        }
+
+        $source = $payment->getSource();
+        if (empty($source)) {
+            return;
+        }
+
+        $paymentSource = (new PaymentSource())->assign($source);
+
+        $this->customerService->saveCustomerSource($customerId, $paymentSource, $salesChannelContext);
     }
 }

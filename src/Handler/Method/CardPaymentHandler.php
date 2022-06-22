@@ -4,6 +4,8 @@ namespace CheckoutCom\Shopware6\Handler\Method;
 
 use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\PaymentRequest;
+use Checkout\Payments\Source\AbstractRequestSource;
+use Checkout\Payments\Source\RequestIdSource;
 use Checkout\Payments\Source\RequestTokenSource;
 use CheckoutCom\Shopware6\Exception\CheckoutInvalidTokenException;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
@@ -37,18 +39,25 @@ class CardPaymentHandler extends PaymentHandler
     ): PaymentRequest {
         $this->enableThreeDsRequest($paymentRequest, $context->getSalesChannelId());
 
-        $paymentRequest->source = $this->buildTokenSource($dataBag, $order, $context);
+        $paymentRequest->source = $this->buildSource($dataBag, $order, $context);
 
         return $paymentRequest;
     }
 
     /**
-     * Build token source to call the Checkout.com API
+     * Build source to call the Checkout.com API
      *
      * @throws Exception
      */
-    private function buildTokenSource(RequestDataBag $dataBag, OrderEntity $order, SalesChannelContext $context): RequestTokenSource
+    private function buildSource(RequestDataBag $dataBag, OrderEntity $order, SalesChannelContext $context): AbstractRequestSource
     {
+        $requestIdSource = $this->getRequestIdSource($dataBag);
+
+        // If the data bag has a SourceId, we use it to build source
+        if ($requestIdSource instanceof RequestIdSource) {
+            return $requestIdSource;
+        }
+
         $token = RequestUtil::getTokenPayment($dataBag);
         if (!\is_string($token)) {
             throw new CheckoutInvalidTokenException(static::getPaymentMethodType());
