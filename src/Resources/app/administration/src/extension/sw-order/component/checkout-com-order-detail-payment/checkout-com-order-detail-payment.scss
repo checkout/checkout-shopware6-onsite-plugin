@@ -61,7 +61,8 @@
                 background: lighten($color-crimson-500, 42%);
             }
 
-            &.checkout-com-order-detail-payment-history-capture-icon-bg {
+            &.checkout-com-order-detail-payment-history-capture-icon-bg,
+            &.checkout-com-order-detail-payment-history-refund-icon-bg {
                 background: lighten($color-emerald-500, 40%);
             }
         }
@@ -74,7 +75,8 @@
             color: $color-shopware-brand-500;
         }
 
-        .checkout-com-order-detail-payment-history-capture-icon {
+        .checkout-com-order-detail-payment-history-capture-icon,
+        .checkout-com-order-detail-payment-history-refund-icon {
             color: $color-emerald-500;
         }
     }

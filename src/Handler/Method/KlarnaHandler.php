@@ -12,31 +12,26 @@ use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use CheckoutCom\Shopware6\Helper\RequestUtil;
 use CheckoutCom\Shopware6\Service\Klarna\KlarnaService;
+use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
 use Exception;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
-use Shopware\Core\Framework\Validation\DataValidator;
-use Shopware\Core\System\Currency\CurrencyFormatter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class KlarnaHandler extends PaymentHandler
 {
     private KlarnaService $klarnaService;
 
-    public function __construct(
-        TranslatorInterface $translator,
-        DataValidator $dataValidator,
-        CurrencyFormatter $currencyFormatter,
-        SystemConfigService $systemConfigService,
-        KlarnaService $klarnaService
-    ) {
-        parent::__construct($translator, $dataValidator, $currencyFormatter, $systemConfigService);
+    private AbstractOrderService $orderService;
 
+    public function setCustomServices(
+        KlarnaService $klarnaService,
+        AbstractOrderService $orderService
+    ): void {
         $this->klarnaService = $klarnaService;
+        $this->orderService = $orderService;
     }
 
     public function getSnippetKey(): string
@@ -94,15 +89,34 @@ class KlarnaHandler extends PaymentHandler
         $source->locale = $this->klarnaService->getLocaleFromLanguageId($context);
         $source->purchase_country = $purchaseCountry;
         $source->tax_amount = CheckoutComUtil::formatPriceCheckout(
-            $order->getAmountTotal() - $order->getAmountNet(),
+            $order->getPrice()->getCalculatedTaxes()->getAmount(),
             $currencyIso
         );
         $source->billing_address = $this->buildShippingAddress($orderCustomer, $billingAddress);
-
-        $orderLineItems = $this->orderExtractor->extractOrderLineItems($order);
-        $source->products = $this->klarnaService->buildProductData($orderLineItems, $currencyIso);
+        $source->products = $this->buildKlarnaProducts(
+            $order->getId(),
+            $currencyIso,
+            $context
+        );
 
         return $source;
+    }
+
+    private function buildKlarnaProducts(string $orderId, string $currencyIso, SalesChannelContext $context): array
+    {
+        $order = $this->orderService->getOrder(
+            $context->getContext(),
+            $orderId,
+            [
+                'lineItems',
+                'deliveries.shippingMethod',
+            ]
+        );
+
+        return $this->klarnaService->buildProductData(
+            CheckoutComUtil::buildLineItemTotalPrice($order),
+            $currencyIso
+        );
     }
 
     /**

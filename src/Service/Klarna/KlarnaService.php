@@ -6,12 +6,16 @@ namespace CheckoutCom\Shopware6\Service\Klarna;
 use Checkout\Payments\Source\Apm\KlarnaProduct;
 use CheckoutCom\Shopware6\Exception\CheckoutComKlarnaException;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
+use CheckoutCom\Shopware6\Struct\LineItemTotalPrice;
+use Shopware\Core\Checkout\Cart\Delivery\Struct\Delivery;
+use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
@@ -97,14 +101,23 @@ class KlarnaService
         return $this->getPurchaseCountryIsoCode($billingAddress);
     }
 
+    public function buildProductData(LineItemTotalPrice $lineItemTotalPrice, string $currencyIsoCode): array
+    {
+        return array_merge(
+            $this->buildProductLineItem($lineItemTotalPrice->getLineItems(), $currencyIsoCode),
+            $this->buildProductShippingItem($lineItemTotalPrice->getDeliveries(), $currencyIsoCode)
+        );
+    }
+
     /**
-     * @param OrderLineItemCollection|LineItemCollection|Collection $lineItems
-     *
-     * @return array<KlarnaProduct>
+     * @param OrderLineItemCollection|LineItemCollection|null $lineItems
      */
-    public function buildProductData(Collection $lineItems, string $currencyIsoCode): array
+    private function buildProductLineItem(?Collection $lineItems, string $currencyIsoCode): array
     {
         $results = [];
+        if (empty($lineItems)) {
+            return $results;
+        }
 
         /** @var LineItem|OrderLineItemEntity $lineItem */
         foreach ($lineItems as $lineItem) {
@@ -124,6 +137,43 @@ class KlarnaService
             $product->unit_price = CheckoutComUtil::formatPriceCheckout($price->getUnitPrice(), $currencyIsoCode);
             $product->tax_rate = (int) $calculatedTax->getTaxRate() * 100;
             $product->total_amount = CheckoutComUtil::formatPriceCheckout($price->getTotalPrice(), $currencyIsoCode);
+            $product->total_tax_amount = CheckoutComUtil::formatPriceCheckout($calculatedTax->getTax(), $currencyIsoCode);
+
+            $results[] = $product;
+        }
+
+        return $results;
+    }
+
+    /**
+     * @param DeliveryCollection|OrderDeliveryCollection|null $deliveries
+     */
+    private function buildProductShippingItem(?Collection $deliveries, string $currencyIsoCode): array
+    {
+        $results = [];
+        if (empty($deliveries)) {
+            return $results;
+        }
+
+        /** @var Delivery $delivery */
+        foreach ($deliveries as $delivery) {
+            $shippingCosts = $delivery->getShippingCosts();
+            $grossPrice = $shippingCosts->getUnitPrice();
+            if ($grossPrice <= 0) {
+                continue;
+            }
+
+            $calculatedTax = $shippingCosts->getCalculatedTaxes()->first();
+            if (!$calculatedTax) {
+                continue;
+            }
+
+            $product = new KlarnaProduct();
+            $product->name = $delivery->getShippingMethod()->getName() ?? '';
+            $product->quantity = $shippingCosts->getQuantity();
+            $product->unit_price = CheckoutComUtil::formatPriceCheckout($grossPrice, $currencyIsoCode);
+            $product->tax_rate = (int) $calculatedTax->getTaxRate() * 100;
+            $product->total_amount = CheckoutComUtil::formatPriceCheckout($grossPrice, $currencyIsoCode);
             $product->total_tax_amount = CheckoutComUtil::formatPriceCheckout($calculatedTax->getTax(), $currencyIsoCode);
 
             $results[] = $product;

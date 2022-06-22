@@ -5,7 +5,6 @@ namespace CheckoutCom\Shopware6\Service\Extractor;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
-use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
@@ -24,8 +23,6 @@ abstract class AbstractOrderExtractor
     abstract public function extractShippingAddress(OrderEntity $order, SalesChannelContext $context): OrderAddressEntity;
 
     abstract public function extractCurrency(OrderEntity $order): CurrencyEntity;
-
-    abstract public function extractOrderLineItems(OrderEntity $order): OrderLineItemCollection;
 
     abstract public function extractOrderDelivery(OrderEntity $order): OrderDeliveryEntity;
 

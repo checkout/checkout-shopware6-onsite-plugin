@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace CheckoutCom\Shopware6\Struct;
 
+use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Framework\Struct\Collection;
 use Shopware\Core\Framework\Struct\Struct;
@@ -17,6 +19,11 @@ class LineItemTotalPrice extends Struct
      * @var OrderLineItemCollection|LineItemCollection|null
      */
     protected ?Collection $lineItems = null;
+
+    /**
+     * @var OrderDeliveryCollection|DeliveryCollection|null
+     */
+    protected ?Collection $deliveries = null;
 
     public function getPrice(): CartPrice
     {
@@ -42,5 +49,21 @@ class LineItemTotalPrice extends Struct
     public function setLineItems(?Collection $lineItems): void
     {
         $this->lineItems = $lineItems;
+    }
+
+    /**
+     * @return DeliveryCollection|OrderDeliveryCollection|null
+     */
+    public function getDeliveries()
+    {
+        return $this->deliveries;
+    }
+
+    /**
+     * @param DeliveryCollection|OrderDeliveryCollection|null $deliveries
+     */
+    public function setDeliveries($deliveries): void
+    {
+        $this->deliveries = $deliveries;
     }
 }

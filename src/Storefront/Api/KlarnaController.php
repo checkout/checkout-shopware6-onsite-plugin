@@ -100,12 +100,19 @@ class KlarnaController extends AbstractController
     {
         $orderId = $data->get('orderId');
         if (empty($orderId)) {
-            return CheckoutComUtil::buildLineItemTotalPriceFromCart($cart);
+            return CheckoutComUtil::buildLineItemTotalPrice($cart);
         }
 
-        $order = $this->orderService->getOrder($context->getContext(), $orderId, ['lineItems']);
+        $order = $this->orderService->getOrder(
+            $context->getContext(),
+            $orderId,
+            [
+                'lineItems',
+                'deliveries.shippingMethod',
+            ]
+        );
 
-        return CheckoutComUtil::buildLineItemTotalPriceFromOrder($order);
+        return CheckoutComUtil::buildLineItemTotalPrice($order);
     }
 
     private function getCreateCreditSessionValidation(): DataValidationDefinition
