@@ -16,6 +16,7 @@ use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 
 class CheckoutComUtil
@@ -78,25 +79,16 @@ class CheckoutComUtil
     }
 
     /**
-     * Build our line item total price struct from the Shopware cart
+     * Build our line item total price struct from the Shopware cart/order
+     *
+     * @param Cart|OrderEntity $cart
      */
-    public static function buildLineItemTotalPriceFromCart(Cart $cart): LineItemTotalPrice
+    public static function buildLineItemTotalPrice(Struct $cart): LineItemTotalPrice
     {
         $lineItemTotalPrice = new LineItemTotalPrice();
         $lineItemTotalPrice->setPrice($cart->getPrice());
         $lineItemTotalPrice->setLineItems($cart->getLineItems());
-
-        return $lineItemTotalPrice;
-    }
-
-    /**
-     * Build our line item total price struct from the Shopware order entity
-     */
-    public static function buildLineItemTotalPriceFromOrder(OrderEntity $order): LineItemTotalPrice
-    {
-        $lineItemTotalPrice = new LineItemTotalPrice();
-        $lineItemTotalPrice->setPrice($order->getPrice());
-        $lineItemTotalPrice->setLineItems($order->getLineItems());
+        $lineItemTotalPrice->setDeliveries($cart->getDeliveries());
 
         return $lineItemTotalPrice;
     }

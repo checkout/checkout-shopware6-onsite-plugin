@@ -8,6 +8,7 @@ const {
 const icons = {
     failed: 'small-default-x-line-small',
     capture: 'small-default-checkmark-line-small',
+    refund: 'small-default-checkmark-line-small',
     authorization: 'small-default-circle-small',
 };
 

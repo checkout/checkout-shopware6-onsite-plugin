@@ -9,7 +9,6 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
-use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\EntityNotFoundException;
@@ -121,21 +120,6 @@ class OrderExtractor extends AbstractOrderExtractor
         }
 
         return $currency;
-    }
-
-    public function extractOrderLineItems(OrderEntity $order): OrderLineItemCollection
-    {
-        $lineItems = $order->getLineItems();
-        if (!$lineItems instanceof OrderLineItemCollection) {
-            $message = sprintf('Could not line items from order ID: %s', $order->getId());
-            $this->logger->error($message, [
-                'function' => __FUNCTION__,
-            ]);
-
-            throw new Exception($message);
-        }
-
-        return $lineItems;
     }
 
     public function extractOrderDelivery(OrderEntity $order): OrderDeliveryEntity

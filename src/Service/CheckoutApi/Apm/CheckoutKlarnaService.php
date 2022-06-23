@@ -132,10 +132,10 @@ class CheckoutKlarnaService extends AbstractCheckoutService
         $request->locale = $this->klarnaService->getLocaleFromLanguageId($context);
         $request->amount = CheckoutComUtil::formatPriceCheckout($cartPrice->getTotalPrice(), $currency->getIsoCode());
         $request->tax_amount = CheckoutComUtil::formatPriceCheckout(
-            $cartPrice->getTotalPrice() - $cartPrice->getNetPrice(),
+            $cartPrice->getCalculatedTaxes()->getAmount(),
             $currency->getIsoCode()
         );
-        $request->products = $this->klarnaService->buildProductData($lineItems, $currency->getIsoCode());
+        $request->products = $this->klarnaService->buildProductData($lineItemTotalPrice, $currency->getIsoCode());
 
         return $request;
     }
@@ -149,7 +149,10 @@ class CheckoutKlarnaService extends AbstractCheckoutService
 
         $klarna = new Klarna();
         $klarna->description = CheckoutComUtil::buildReference($order);
-        $klarna->products = $this->klarnaService->buildProductData($this->orderExtractor->extractOrderLineItems($order), $currency->getIsoCode());
+        $klarna->products = $this->klarnaService->buildProductData(
+            CheckoutComUtil::buildLineItemTotalPrice($order),
+            $currency->getIsoCode()
+        );
         $klarna->shipping_info = $this->klarnaService->buildShippingInfo(
             $this->orderExtractor->extractOrderDelivery($order),
             $this->orderExtractor->extractOrderShippingMethod($order)
