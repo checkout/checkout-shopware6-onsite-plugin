@@ -2,10 +2,10 @@
 
 namespace CheckoutCom\Shopware6\Subscriber;
 
-use CheckoutCom\Shopware6\CheckoutCom;
+use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\Util;
+use CheckoutCom\Shopware6\Service\PaymentMethodService;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\PaymentMethodCustomFieldsStruct;
-use ReflectionClass;
 use Shopware\Core\Checkout\Payment\PaymentEvents;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityLoadedEvent;
@@ -15,6 +15,13 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class PaymentMethodSubscriber implements EventSubscriberInterface
 {
     public const PAYMENT_METHOD_CUSTOM_FIELDS = 'checkoutConfig';
+
+    private PaymentMethodService $paymentMethodService;
+
+    public function __construct(PaymentMethodService $paymentMethodService)
+    {
+        $this->paymentMethodService = $paymentMethodService;
+    }
 
     public static function getSubscribedEvents(): array
     {
@@ -42,10 +49,11 @@ class PaymentMethodSubscriber implements EventSubscriberInterface
 
     private function setCustomFieldsPaymentMethod(PaymentMethodEntity $paymentMethod): void
     {
-        $checkoutComNamespace = (new ReflectionClass(CheckoutCom::class))->getNamespaceName();
+        $paymentHandler = $this->paymentMethodService->getPaymentHandlersByHandlerIdentifier(
+            $paymentMethod->getHandlerIdentifier()
+        );
 
-        // Check if the payment method is a Checkout.com payment method, skip it
-        if (strpos($paymentMethod->getHandlerIdentifier(), $checkoutComNamespace) === false) {
+        if (!$paymentHandler instanceof PaymentHandler) {
             return;
         }
 
@@ -56,6 +64,7 @@ class PaymentMethodSubscriber implements EventSubscriberInterface
                 false
             )
         );
+        $paymentMethodCustomFields->setShouldManualCapture($paymentHandler->shouldManualCapture());
 
         $customFields = $paymentMethod->getCustomFields() ?? [];
         $customFields[self::PAYMENT_METHOD_CUSTOM_FIELDS] = $paymentMethodCustomFields->jsonSerialize();

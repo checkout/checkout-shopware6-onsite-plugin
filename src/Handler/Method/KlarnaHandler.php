@@ -18,6 +18,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class KlarnaHandler extends PaymentHandler
@@ -47,6 +48,21 @@ class KlarnaHandler extends PaymentHandler
     public function captureWhenFinalize(): bool
     {
         return false;
+    }
+
+    public function capturePayment(string $checkoutPaymentId, OrderEntity $order): void
+    {
+        $this->klarnaService->capturePayment($checkoutPaymentId, $order);
+    }
+
+    public function shouldManualCapture(): bool
+    {
+        return true;
+    }
+
+    public function shouldCaptureAfterShipping(): bool
+    {
+        return true;
     }
 
     /**
@@ -82,11 +98,11 @@ class KlarnaHandler extends PaymentHandler
         $currencyIso = $currency->getIsoCode();
 
         /** @var Country $purchaseCountry */
-        $purchaseCountry = $this->klarnaService->getPurchaseCountryIsoCodeFromOrder($order);
+        $purchaseCountry = $this->countryService->getPurchaseCountryIsoCodeFromOrder($order);
 
         $source = new RequestKlarnaSource();
         $source->authorization_token = $token;
-        $source->locale = $this->klarnaService->getLocaleFromLanguageId($context);
+        $source->locale = $this->contextService->getLocaleCode($context);
         $source->purchase_country = $purchaseCountry;
         $source->tax_amount = CheckoutComUtil::formatPriceCheckout(
             $order->getPrice()->getCalculatedTaxes()->getAmount(),
@@ -126,6 +142,12 @@ class KlarnaHandler extends PaymentHandler
         OrderCustomerEntity $orderCustomer,
         OrderAddressEntity $addressEntity
     ): array {
+        $countryState = $addressEntity->getCountryState();
+        $region = null;
+        if ($countryState instanceof CountryStateEntity) {
+            $region = $this->countryService->getCountryStateCode($countryState);
+        }
+
         return [
             'city' => $addressEntity->getCity(),
             'country' => $addressEntity->getCountry() !== null ? $addressEntity->getCountry()->getIso() : null,
@@ -133,7 +155,7 @@ class KlarnaHandler extends PaymentHandler
             'family_name' => $orderCustomer->getLastName(),
             'given_name' => $orderCustomer->getFirstName(),
             'postal_code' => $addressEntity->getZipcode(),
-            'region' => CheckoutComUtil::getCountryStateCode($addressEntity->getCountryState()),
+            'region' => $region,
             'street_address' => $addressEntity->getStreet(),
             'street_address2' => $addressEntity->getAdditionalAddressLine1(),
         ];

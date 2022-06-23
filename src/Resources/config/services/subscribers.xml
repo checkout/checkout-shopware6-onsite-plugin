@@ -5,6 +5,8 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <service id="CheckoutCom\Shopware6\Subscriber\PaymentMethodSubscriber">
+            <argument type="service" id="CheckoutCom\Shopware6\Service\PaymentMethodService"/>
+
             <tag name="kernel.event_subscriber"/>
         </service>
 
@@ -38,11 +40,11 @@
         </service>
 
         <service id="CheckoutCom\Shopware6\Subscriber\OrderStateMachineSubscriber">
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\PaymentMethodService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderTransactionService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderTransactionService"/>
 
             <tag name="kernel.event_subscriber"/>
         </service>

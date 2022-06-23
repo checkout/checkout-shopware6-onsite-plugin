@@ -63,8 +63,11 @@ abstract class AbstractCheckoutTest extends TestCase
         ]);
     }
 
-    protected function handleTestCheckoutRequest(
-        bool $expectThrowException,
+    /**
+     * Fake test for the case call api should success/failed
+     */
+    protected function handleCheckoutRequestShouldThrowException(
+        bool $apiShouldThrowException,
         string $requestMethod,
         array $result = [],
         int $code = 500
@@ -74,13 +77,13 @@ abstract class AbstractCheckoutTest extends TestCase
         $checkoutApiException->error_details = [];
         $this->apiClient
             ->method($requestMethod)
-            ->willReturn($expectThrowException ? static::throwException($checkoutApiException) : $result);
+            ->willReturn($apiShouldThrowException ? static::throwException($checkoutApiException) : $result);
 
-        if ($expectThrowException) {
+        if ($apiShouldThrowException) {
             static::expectException(CheckoutApiException::class);
         }
 
-        $this->logger->expects(static::exactly($expectThrowException ? 1 : 0))
+        $this->logger->expects(static::exactly($apiShouldThrowException ? 1 : 0))
             ->method('critical');
     }
 }

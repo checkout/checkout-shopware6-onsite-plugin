@@ -30,17 +30,7 @@ Component.override('sw-settings-payment-detail', {
 
     computed: {
         paymentMethodCheckoutConfig() {
-            const { paymentMethod } = this;
-
-            if (!paymentMethod) {
-                return null;
-            }
-
-            if (!paymentMethod.customFields) {
-                return null;
-            }
-
-            return paymentMethod.customFields.checkoutConfig || null;
+            return this.paymentMethod?.customFields?.checkoutConfig || null;
         },
 
         isCheckoutCom() {

@@ -18,3 +18,7 @@ export const PAYMENT_METHOD_TYPE = {
     APPLE_PAY: 'applepay',
     GOOGLE_PAY: 'googlepay',
 };
+
+export const CHECKOUT_STATUS = {
+    AUTHORIZED: 'Authorized',
+};

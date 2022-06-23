@@ -11,6 +11,7 @@ use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use Exception;
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
@@ -58,6 +59,60 @@ class PaymentMethodServiceTest extends TestCase
         $paymentHandler = $paymentMethodService->getPaymentHandlersByType($paymentMethodType);
 
         static::assertInstanceOf(PaymentHandler::class, $paymentHandler);
+    }
+
+    public function testGetPaymentHandlersByHandlerIdentifier(): void
+    {
+        $paymentHandler = $this->createConfiguredMock(CardPaymentHandler::class, [
+            'getClassName' => CardPaymentHandler::class,
+        ]);
+
+        $paymentMethodRepository = $this->createMock(EntityRepository::class);
+        $pluginIdProvider = $this->createMock(PluginIdProvider::class);
+
+        $paymentMethodService = new PaymentMethodService(
+            [$paymentHandler],
+            $paymentMethodRepository,
+            $pluginIdProvider
+        );
+
+        $expect = $paymentMethodService->getPaymentHandlersByHandlerIdentifier(CardPaymentHandler::class);
+        static::assertInstanceOf(PaymentHandler::class, $expect);
+    }
+
+    /**
+     * @dataProvider getPaymentHandlerByOrderTransactionProvider
+     */
+    public function testGetPaymentHandlerByOrderTransaction(bool $hasPaymentMethod): void
+    {
+        $paymentMethod = $this->createConfiguredMock(PaymentMethodEntity::class, [
+            'getHandlerIdentifier' => CardPaymentHandler::class,
+        ]);
+
+        $orderTransaction = $this->createConfiguredMock(OrderTransactionEntity::class, [
+            'getPaymentMethod' => $hasPaymentMethod ? $paymentMethod : null,
+        ]);
+
+        $paymentHandler = $this->createConfiguredMock(CardPaymentHandler::class, [
+            'getClassName' => CardPaymentHandler::class,
+        ]);
+
+        $paymentMethodRepository = $this->createMock(EntityRepository::class);
+        $pluginIdProvider = $this->createMock(PluginIdProvider::class);
+
+        $paymentMethodService = new PaymentMethodService(
+            [$paymentHandler],
+            $paymentMethodRepository,
+            $pluginIdProvider
+        );
+
+        $expect = $paymentMethodService->getPaymentHandlerByOrderTransaction($orderTransaction);
+
+        if ($hasPaymentMethod) {
+            static::assertInstanceOf(PaymentHandler::class, $expect);
+        } else {
+            static::assertNull($expect);
+        }
     }
 
     /**
@@ -141,6 +196,18 @@ class PaymentMethodServiceTest extends TestCase
                     ]),
                 ],
                 'paymentMethodType' => CardPaymentHandler::getPaymentMethodType(),
+                true,
+            ],
+        ];
+    }
+
+    public function getPaymentHandlerByOrderTransactionProvider(): array
+    {
+        return [
+            'Test not found payment method entity' => [
+                false,
+            ],
+            'Test found payment handler' => [
                 true,
             ],
         ];

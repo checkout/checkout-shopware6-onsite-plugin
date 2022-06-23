@@ -25,7 +25,7 @@ class CheckoutTokenServiceTest extends AbstractCheckoutTest
      */
     public function testRequestWalletToken(bool $expectThrowException): void
     {
-        $this->handleTestCheckoutRequest($expectThrowException, 'post');
+        $this->handleCheckoutRequestShouldThrowException($expectThrowException, 'post');
 
         $walletTokenRequest = new ApplePayTokenRequest();
         $token = $this->checkoutTokenService->requestWalletToken(
@@ -41,7 +41,7 @@ class CheckoutTokenServiceTest extends AbstractCheckoutTest
      */
     public function testRequestCardToken(bool $expectThrowException): void
     {
-        $this->handleTestCheckoutRequest($expectThrowException, 'post');
+        $this->handleCheckoutRequestShouldThrowException($expectThrowException, 'post');
 
         $cardTokenRequest = new CardTokenRequest();
         $token = $this->checkoutTokenService->requestCardToken(

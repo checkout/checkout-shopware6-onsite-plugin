@@ -22,9 +22,9 @@ class CheckoutPaymentServiceTest extends AbstractCheckoutTest
     /**
      * @dataProvider requestCheckoutApiProvider
      */
-    public function testRequestPayment(bool $expectThrowException): void
+    public function testRequestPayment(bool $apiShouldThrowException): void
     {
-        $this->handleTestCheckoutRequest($expectThrowException, 'post');
+        $this->handleCheckoutRequestShouldThrowException($apiShouldThrowException, 'post');
 
         $paymentRequest = new PaymentRequest();
         $payment = $this->checkoutPaymentService->requestPayment(
@@ -38,9 +38,9 @@ class CheckoutPaymentServiceTest extends AbstractCheckoutTest
     /**
      * @dataProvider requestCheckoutApiProvider
      */
-    public function testGetPaymentDetails(bool $expectThrowException): void
+    public function testGetPaymentDetails(bool $apiShouldThrowException): void
     {
-        $this->handleTestCheckoutRequest($expectThrowException, 'get');
+        $this->handleCheckoutRequestShouldThrowException($apiShouldThrowException, 'get');
 
         $payment = $this->checkoutPaymentService->getPaymentDetails(
             'foo',
@@ -53,9 +53,24 @@ class CheckoutPaymentServiceTest extends AbstractCheckoutTest
     /**
      * @dataProvider requestCheckoutApiProvider
      */
-    public function testCapturePayment(bool $expectThrowException): void
+    public function testGetPaymentActions(bool $apiShouldThrowException): void
     {
-        $this->handleTestCheckoutRequest($expectThrowException, 'post');
+        $this->handleCheckoutRequestShouldThrowException($apiShouldThrowException, 'get');
+
+        $expect = $this->checkoutPaymentService->getPaymentActions(
+            'foo',
+            $this->salesChannelContext->getSalesChannelId()
+        );
+
+        static::assertIsArray($expect);
+    }
+
+    /**
+     * @dataProvider requestCheckoutApiProvider
+     */
+    public function testCapturePayment(bool $apiShouldThrowException): void
+    {
+        $this->handleCheckoutRequestShouldThrowException($apiShouldThrowException, 'post');
 
         $this->checkoutPaymentService->capturePayment(
             'foo',
@@ -66,9 +81,9 @@ class CheckoutPaymentServiceTest extends AbstractCheckoutTest
     /**
      * @dataProvider requestCheckoutApiProvider
      */
-    public function testRefundPayment(bool $expectThrowException): void
+    public function testRefundPayment(bool $apiShouldThrowException): void
     {
-        $this->handleTestCheckoutRequest($expectThrowException, 'post');
+        $this->handleCheckoutRequestShouldThrowException($apiShouldThrowException, 'post');
 
         $this->checkoutPaymentService->refundPayment(
             'foo',

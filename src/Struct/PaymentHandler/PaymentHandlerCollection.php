@@ -16,6 +16,14 @@ class PaymentHandlerCollection extends Collection
         })->first();
     }
 
+    public function getByHandlerIdentifier(string $handlerIdentifier): ?PaymentHandler
+    {
+        return $this->filter(function ($paymentHandler) use ($handlerIdentifier) {
+            /* @var PaymentHandler $paymentHandler */
+            return $paymentHandler->getClassName() === $handlerIdentifier;
+        })->first();
+    }
+
     public function hasHandlerIdentifier(string $handlerIdentifier): bool
     {
         /** @var PaymentHandler $element */

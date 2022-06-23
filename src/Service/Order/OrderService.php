@@ -152,12 +152,16 @@ class OrderService extends AbstractOrderService
         return $order;
     }
 
-    public function getOrder(Context $context, string $orderId, array $associations = []): OrderEntity
+    public function getOrder(Context $context, string $orderId, array $associations = [], ?callable $criteriaCallback = null): OrderEntity
     {
         $criteria = new Criteria([$orderId]);
         $criteria->setLimit(1);
         foreach ($associations as $association) {
             $criteria->addAssociation($association);
+        }
+
+        if ($criteriaCallback !== null) {
+            $criteriaCallback($criteria);
         }
 
         $order = $this->orderRepository->search($criteria, $context)->first();

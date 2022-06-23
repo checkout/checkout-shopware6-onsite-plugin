@@ -10,6 +10,8 @@ use CheckoutCom\Shopware6\Helper\RequestUtil;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutSourceService;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
+use CheckoutCom\Shopware6\Service\ContextService;
+use CheckoutCom\Shopware6\Service\CountryService;
 use CheckoutCom\Shopware6\Service\Extractor\AbstractOrderExtractor;
 use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Struct\PaymentHandler\HandlerPrepareProcessStruct;
@@ -36,6 +38,16 @@ abstract class AbstractPaymentHandlerTest extends TestCase
 {
     use OrderTrait;
     use ContextTrait;
+
+    /**
+     * @var CountryService|MockObject
+     */
+    protected $countryService;
+
+    /**
+     * @var ContextService|MockObject
+     */
+    protected $contextService;
 
     /**
      * @var AbstractOrderExtractor|MockObject
@@ -102,6 +114,8 @@ abstract class AbstractPaymentHandlerTest extends TestCase
     public function setUp(): void
     {
         $this->saleChannelContext = $this->getSaleChannelContext($this);
+        $this->countryService = $this->createMock(CountryService::class);
+        $this->contextService = $this->createMock(ContextService::class);
         $this->orderExtractor = $this->createMock(AbstractOrderExtractor::class);
         $this->checkoutTokenService = $this->createMock(CheckoutTokenService::class);
         $this->checkoutSourceService = $this->createMock(CheckoutSourceService::class);
@@ -119,6 +133,8 @@ abstract class AbstractPaymentHandlerTest extends TestCase
     {
         $this->paymentHandler->setServices(
             $this->createMock(LoggerService::class),
+            $this->countryService,
+            $this->contextService,
             $this->orderExtractor,
             $this->checkoutTokenService,
             $this->checkoutSourceService,

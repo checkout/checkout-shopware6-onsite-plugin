@@ -10,7 +10,6 @@ use CheckoutCom\Shopware6\Service\Cart\AbstractCartService;
 use CheckoutCom\Shopware6\Service\ContextService;
 use CheckoutCom\Shopware6\Service\CountryService;
 use CheckoutCom\Shopware6\Service\CustomerService;
-use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
 use CheckoutCom\Shopware6\Service\PaymentMethodService;
 use CheckoutCom\Shopware6\Service\ShippingMethodService;
@@ -20,6 +19,7 @@ use CheckoutCom\Shopware6\Struct\Request\RegisterAndLoginGuestRequest;
 use CheckoutCom\Shopware6\Struct\Response\DirectProcessResponse;
 use CheckoutCom\Shopware6\Struct\Response\DirectShippingResponse;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Payment\PaymentService;
@@ -41,7 +41,7 @@ class DirectPayFacade
 
     private PaymentService $paymentService;
 
-    private LoggerService $logger;
+    private LoggerInterface $logger;
 
     private AbstractOrderService $orderService;
 
@@ -62,7 +62,7 @@ class DirectPayFacade
     public function __construct(
         RouterInterface $router,
         PaymentService $paymentService,
-        LoggerService $loggerService,
+        LoggerInterface $loggerService,
         AbstractOrderService $orderService,
         ContextService $contextService,
         AbstractCartService $cartService,

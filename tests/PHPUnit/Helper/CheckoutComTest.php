@@ -8,6 +8,7 @@ use Checkout\Common\CustomerRequest;
 use Checkout\Payments\ShippingDetails;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
+use CheckoutCom\Shopware6\Struct\LineItemTotalPrice;
 use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
 use Exception;
 use PHPUnit\Framework\TestCase;
@@ -87,6 +88,14 @@ class CheckoutComTest extends TestCase
         static::assertInstanceOf(CustomerRequest::class, $checkoutCustomer);
         static::assertSame($fullName, $checkoutCustomer->name);
         static::assertSame($email, $checkoutCustomer->email);
+    }
+
+    public function testBuildLineItemTotalPrice(): void
+    {
+        $cart = new Cart('foo', 'bar');
+        $lineItemTotal = CheckoutComUtil::buildLineItemTotalPrice($cart);
+
+        static::assertInstanceOf(LineItemTotalPrice::class, $lineItemTotal);
     }
 
     /**

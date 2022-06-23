@@ -40,7 +40,27 @@ Component.override('sw-order-detail-base', {
         };
     },
 
+    created() {
+        this.registerCheckoutComListener();
+    },
+
+    destroyed() {
+        this.destroyedCheckoutComComponent();
+    },
+
     methods: {
+        registerCheckoutComListener() {
+            this.$root.$on('checkout-order-update', this.onCheckoutOrderUpdate);
+        },
+
+        destroyedCheckoutComComponent() {
+            this.$root.$off('checkout-order-update', this.onCheckoutOrderUpdate);
+        },
+
+        onCheckoutOrderUpdate() {
+            this.reloadEntityData();
+        },
+
         async getCheckoutComPayment() {
             if (!this.hasCheckoutComConfig) {
                 return;
@@ -48,7 +68,10 @@ Component.override('sw-order-detail-base', {
 
             try {
                 this.$emit('loading-change', true);
-                this.checkoutComPayment = await this.checkoutOrderService.getCheckoutComPayment(this.order.id);
+                const checkoutComPayment = await this.checkoutOrderService.getCheckoutComPayment(this.order.id);
+
+                this.$root.$emit('checkout-payment-change', checkoutComPayment, this.order);
+                this.checkoutComPayment = checkoutComPayment;
             } catch (error) {
                 this.createNotificationError({
                     message: this.$tc('global.notification.unspecifiedSaveErrorMessage'),

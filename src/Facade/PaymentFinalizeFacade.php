@@ -117,7 +117,7 @@ class PaymentFinalizeFacade
         }
 
         if ($payment->getStatus() === CheckoutPaymentService::STATUS_AUTHORIZED && $paymentHandler->captureWhenFinalize()) {
-            $paymentHandler->capturePayment($checkoutPaymentId, $salesChannelContext);
+            $paymentHandler->capturePayment($checkoutPaymentId, $order);
             $paymentStatus = CheckoutPaymentService::STATUS_CAPTURED;
         }
 

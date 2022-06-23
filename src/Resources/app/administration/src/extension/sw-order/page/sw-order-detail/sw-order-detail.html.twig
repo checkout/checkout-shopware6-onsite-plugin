@@ -1,0 +1,17 @@
+{% block sw_order_detail_actions_slot_smart_bar_actions %}
+    {% parent() %}
+
+    <sw-button
+        v-if="shouldManualCapture"
+        v-tooltip="{
+            message: $tc('sw-privileges.tooltip.warning'),
+            disabled: acl.can('order.editor'),
+            showOnDisabledElements: true
+        }"
+        class="checkout-com-order-button"
+        :disabled="isLoading || !acl.can('order.editor')"
+        @click="onCapture"
+    >
+        {{ $tc('checkout-payments.order.general.captureLabel') }}
+    </sw-button>
+{% endblock %}

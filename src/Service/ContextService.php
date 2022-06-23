@@ -4,7 +4,12 @@ namespace CheckoutCom\Shopware6\Service;
 
 use CheckoutCom\Shopware6\Exception\CheckoutComException;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Content\Newsletter\Exception\SalesChannelDomainNotFoundException;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\Language\LanguageEntity;
+use Shopware\Core\System\Locale\LocaleEntity;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainCollection;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
@@ -15,11 +20,17 @@ class ContextService
 {
     private LoggerInterface $logger;
 
+    private EntityRepositoryInterface $languageRepository;
+
     private SalesChannelContextService $salesChannelContextService;
 
-    public function __construct(LoggerInterface $logger, SalesChannelContextService $salesChannelContextService)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        EntityRepositoryInterface $languageRepository,
+        SalesChannelContextService $salesChannelContextService
+    ) {
         $this->logger = $logger;
+        $this->languageRepository = $languageRepository;
         $this->salesChannelContextService = $salesChannelContextService;
     }
 
@@ -55,5 +66,28 @@ class ContextService
         }
 
         return $domain;
+    }
+
+    public function getLocaleCode(SalesChannelContext $context): string
+    {
+        $customer = $context->getCustomer();
+        if (!$customer instanceof CustomerEntity) {
+            throw new CheckoutComException('Can not get locale. Customer is null');
+        }
+
+        $criteria = new Criteria([$customer->getLanguageId()]);
+        $criteria->addAssociation('locale');
+        $language = $this->languageRepository->search($criteria, $context->getContext())->first();
+
+        if (!$language instanceof LanguageEntity) {
+            throw new CheckoutComException('Customer locale not found.');
+        }
+
+        $locale = $language->getLocale();
+        if (!$locale instanceof LocaleEntity) {
+            throw new CheckoutComException('Customer locale not found.');
+        }
+
+        return $locale->getCode();
     }
 }

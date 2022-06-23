@@ -32,6 +32,22 @@ class CheckoutOrderService extends ApiService {
                 return ApiService.handleResponse(response);
             });
     }
+
+    /**
+     * Capture checkout.com payment by the order id
+     *
+     * @param orderId {string}
+     * @returns {*}
+     */
+    capturePayment(orderId) {
+        const headers = this.getBasicHeaders();
+
+        return this.httpClient
+            .post(`${this.getApiBasePath()}/capture`, { orderId }, { headers })
+            .then((response) => {
+                return ApiService.handleResponse(response);
+            });
+    }
 }
 
 export default CheckoutOrderService;
