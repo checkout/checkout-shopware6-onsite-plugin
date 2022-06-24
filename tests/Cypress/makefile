@@ -8,7 +8,7 @@ help:
 # ---------------------------------------------------------------------------------------------
 
 install: ## Installs all dependencies
-	npm install cypress --save-dev --save .
+	npm install cypress@9.6.0 --save-dev --save .
 	npm install @shopware-ag/e2e-testsuite-platform --save .
 	npm install webpack@4.18.1 --save-dev --save .
 	npm install @cypress/webpack-preprocessor --save-dev --save .
