@@ -34,9 +34,9 @@ class CheckoutPaymentService extends AbstractCheckoutService
 
             return (new Payment())->assign($payment);
         } catch (CheckoutApiException $e) {
-            $errorMessage = $this->modifyAndLogMessage($e, __FUNCTION__);
+            $this->logMessage($e, __FUNCTION__);
 
-            throw new CheckoutApiException($errorMessage);
+            throw $e;
         }
     }
 
@@ -52,9 +52,9 @@ class CheckoutPaymentService extends AbstractCheckoutService
 
             return (new Payment())->assign($paymentDetail);
         } catch (CheckoutApiException $e) {
-            $errorMessage = $this->modifyAndLogMessage($e, __FUNCTION__, ['paymentId' => $paymentId]);
+            $this->logMessage($e, __FUNCTION__, ['paymentId' => $paymentId]);
 
-            throw new CheckoutApiException($errorMessage);
+            throw $e;
         }
     }
 
@@ -70,9 +70,9 @@ class CheckoutPaymentService extends AbstractCheckoutService
 
             return $paymentAction['items'] ?? [];
         } catch (CheckoutApiException $e) {
-            $errorMessage = $this->modifyAndLogMessage($e, __FUNCTION__, ['paymentId' => $paymentId]);
+            $this->logMessage($e, __FUNCTION__, ['paymentId' => $paymentId]);
 
-            throw new CheckoutApiException($errorMessage);
+            throw $e;
         }
     }
 
@@ -86,9 +86,9 @@ class CheckoutPaymentService extends AbstractCheckoutService
         try {
             $checkoutApi->getPaymentsClient()->capturePayment($paymentId);
         } catch (CheckoutApiException $e) {
-            $errorMessage = $this->modifyAndLogMessage($e, __FUNCTION__, ['paymentId' => $paymentId]);
+            $this->logMessage($e, __FUNCTION__, ['paymentId' => $paymentId]);
 
-            throw new CheckoutApiException($errorMessage);
+            throw $e;
         }
     }
 
@@ -102,9 +102,9 @@ class CheckoutPaymentService extends AbstractCheckoutService
         try {
             $checkoutApi->getPaymentsClient()->refundPayment($paymentId);
         } catch (CheckoutApiException $e) {
-            $errorMessage = $this->modifyAndLogMessage($e, __FUNCTION__, ['paymentId' => $paymentId]);
+            $this->logMessage($e, __FUNCTION__, ['paymentId' => $paymentId]);
 
-            throw new CheckoutApiException($errorMessage);
+            throw $e;
         }
     }
 }

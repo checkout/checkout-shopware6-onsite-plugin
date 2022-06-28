@@ -20,9 +20,9 @@ class CheckoutSourceService extends AbstractCheckoutService
 
             return (new Source())->assign($response);
         } catch (CheckoutApiException $e) {
-            $errorMessage = $this->modifyAndLogMessage($e, __FUNCTION__);
+            $this->logMessage($e, __FUNCTION__);
 
-            throw new CheckoutApiException($errorMessage);
+            throw $e;
         }
     }
 }

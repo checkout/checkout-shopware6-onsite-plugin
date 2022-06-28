@@ -3,6 +3,7 @@
 namespace CheckoutCom\Shopware6\Service\CheckoutApi;
 
 use Checkout\CheckoutApiException;
+use Checkout\Tokens\CardTokenRequest;
 use Checkout\Tokens\WalletTokenRequest;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Token;
 
@@ -20,9 +21,27 @@ class CheckoutTokenService extends AbstractCheckoutService
 
             return (new Token())->assign($tokenResponse);
         } catch (CheckoutApiException $e) {
-            $errorMessage = $this->modifyAndLogMessage($e, __FUNCTION__);
+            $this->logMessage($e, __FUNCTION__);
 
-            throw new CheckoutApiException($errorMessage);
+            throw $e;
+        }
+    }
+
+    /**
+     * @throws CheckoutApiException
+     */
+    public function requestCardToken(CardTokenRequest $cardTokenRequest, string $salesChannelId): Token
+    {
+        $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
+
+        try {
+            $tokenResponse = $checkoutApi->getTokensClient()->requestCardToken($cardTokenRequest);
+
+            return (new Token())->assign($tokenResponse);
+        } catch (CheckoutApiException $e) {
+            $this->logMessage($e, __FUNCTION__);
+
+            throw $e;
         }
     }
 }

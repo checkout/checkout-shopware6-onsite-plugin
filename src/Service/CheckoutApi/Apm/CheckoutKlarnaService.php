@@ -55,9 +55,9 @@ class CheckoutKlarnaService extends AbstractCheckoutService
 
             return (new CreditSessionStruct())->assign($response);
         } catch (CheckoutApiException $e) {
-            $errorMessage = $this->modifyAndLogMessage($e, __FUNCTION__);
+            $this->logMessage($e, __FUNCTION__);
 
-            throw new CheckoutApiException($errorMessage);
+            throw $e;
         }
     }
 
@@ -78,9 +78,9 @@ class CheckoutKlarnaService extends AbstractCheckoutService
 
             return (new CreditSessionStruct())->assign($response);
         } catch (CheckoutApiException $e) {
-            $errorMessage = $this->modifyAndLogMessage($e, __FUNCTION__);
+            $this->logMessage($e, __FUNCTION__);
 
-            throw new CheckoutApiException($errorMessage);
+            throw $e;
         }
     }
 
@@ -101,9 +101,9 @@ class CheckoutKlarnaService extends AbstractCheckoutService
 
             return (new CreditSessionStruct())->assign($response);
         } catch (CheckoutApiException $e) {
-            $errorMessage = $this->modifyAndLogMessage($e, __FUNCTION__);
+            $this->logMessage($e, __FUNCTION__);
 
-            throw new CheckoutApiException($errorMessage);
+            throw $e;
         }
     }
 

@@ -100,6 +100,13 @@
             <argument type="service" id="CheckoutCom\Shopware6\Service\MediaService"/>
         </service>
 
+        <!--    CREDIT CARD    -->
+        <service id="CheckoutCom\Shopware6\Service\CreditCard\CreditCardService">
+            <argument type="service" id="checkout_com.shopware6.logger"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService"/>
+        </service>
+
         <!--    TRANSITION    -->
         <service id="CheckoutCom\Shopware6\Service\Transition\TransitionService">
             <argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>

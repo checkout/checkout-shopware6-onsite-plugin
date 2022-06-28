@@ -4,6 +4,7 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
+        <!--    ADMIN API    -->
         <service id="CheckoutCom\Shopware6\Controller\ConfigController" public="true">
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
@@ -27,16 +28,6 @@
             </call>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Storefront\Controller\MediaController" public="true">
-            <argument type="service" id="CheckoutCom\Shopware6\Service\ContextService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\MediaService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\ApplePay\ApplePayService"/>
-
-            <call method="setContainer">
-                <argument type="service" id="service_container"/>
-            </call>
-        </service>
-
         <service id="CheckoutCom\Shopware6\Controller\ReturnUrlController" public="true">
             <argument type="service" id="Shopware\Core\Checkout\Payment\Controller\PaymentController"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
@@ -54,6 +45,27 @@
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
+        </service>
+
+        <!--    STOREFRONT     -->
+        <service id="CheckoutCom\Shopware6\Storefront\Controller\MediaController" public="true">
+            <argument type="service" id="CheckoutCom\Shopware6\Service\ContextService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\MediaService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\ApplePay\ApplePayService"/>
+
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <!--     STOREFRONT API   -->
+        <service id="CheckoutCom\Shopware6\Storefront\Api\CreditCardController" public="true">
+            <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\CreditCard\CreditCardService"/>
+        </service>
+
+        <service id="CheckoutCom\Shopware6\Storefront\Api\ConfigController" public="true">
+            <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
         </service>
 
         <service id="CheckoutCom\Shopware6\Storefront\Api\ApplePayController" public="true">

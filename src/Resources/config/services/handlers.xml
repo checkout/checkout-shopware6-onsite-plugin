@@ -69,8 +69,6 @@
 
         <!-- SEPA PaymentHandler -->
         <service id="CheckoutCom\Shopware6\Handler\Method\SepaHandler" parent="checkout_com.shopware6.handler.payment_handler">
-            <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutSourceService"/>
-
             <tag name="shopware.payment.method.async"/>
             <tag name="checkout_com.shopware6.payment_handler"/>
         </service>
