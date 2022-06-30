@@ -82,17 +82,7 @@ class OrderCheckoutService extends AbstractOrderCheckoutService
 
     public function capturePayment(string $orderId, Context $context): void
     {
-        $order = $this->orderService->getOrder($context, $orderId, [
-            'transactions.paymentMethod',
-            'lineItems',
-            'currency',
-            'deliveries.shippingOrderAddress.country',
-            'deliveries.shippingMethod',
-            'billingAddress.country',
-        ], function (Criteria $criteria): void {
-            $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
-        });
-
+        $order = $this->getOrder($orderId, $context);
         $orderCustomFields = OrderService::getCheckoutOrderCustomFields($order);
         $checkoutPaymentId = $orderCustomFields->getCheckoutPaymentId();
         if (empty($checkoutPaymentId)) {
@@ -106,8 +96,9 @@ class OrderCheckoutService extends AbstractOrderCheckoutService
 
         try {
             $payment = $this->checkoutPaymentService->getPaymentDetails($checkoutPaymentId, $order->getSalesChannelId());
-
             if ($payment->getStatus() !== CheckoutPaymentService::STATUS_AUTHORIZED) {
+                $this->logger->warning(sprintf('Checkout payment status is not authorized to capture for the order ID: %s', $orderId));
+
                 return;
             }
 
@@ -119,11 +110,62 @@ class OrderCheckoutService extends AbstractOrderCheckoutService
             $this->orderTransactionService->processTransition($orderTransaction, CheckoutPaymentService::STATUS_CAPTURED, $context);
             $this->orderService->processTransition($order, $settings, CheckoutPaymentService::STATUS_CAPTURED, $context);
         } catch (Throwable $ex) {
-            $message = sprintf('Error while getting payment details for order ID: %s, checkoutPaymentId: %s', $orderId, $checkoutPaymentId);
+            $message = sprintf('Error while capture payment for order ID: %s, checkoutPaymentId: %s', $orderId, $checkoutPaymentId);
             $this->logger->error($message);
 
             throw new CheckoutComException($message);
         }
+    }
+
+    public function voidPayment(string $orderId, Context $context): void
+    {
+        $order = $this->getOrder($orderId, $context);
+        $orderCustomFields = OrderService::getCheckoutOrderCustomFields($order);
+        $checkoutPaymentId = $orderCustomFields->getCheckoutPaymentId();
+        if (empty($checkoutPaymentId)) {
+            $this->logger->error(sprintf('Error while getting checkoutPaymentId from custom fields of order ID: %s', $orderId));
+
+            throw new CheckoutPaymentIdNotFoundException($order);
+        }
+
+        $orderTransaction = $this->getOrderTransaction($order);
+        $paymentHandler = $this->getPaymentHandler($orderTransaction);
+
+        try {
+            $payment = $this->checkoutPaymentService->getPaymentDetails($checkoutPaymentId, $order->getSalesChannelId());
+            if ($payment->getStatus() !== CheckoutPaymentService::STATUS_AUTHORIZED) {
+                $this->logger->warning(sprintf('Checkout payment status is not authorized to void for the order ID: %s', $orderId));
+
+                return;
+            }
+
+            $paymentHandler->voidPayment($checkoutPaymentId, $order);
+
+            // Get plugin settings
+            $settings = $this->settingsFactory->getSettings($order->getSalesChannelId());
+
+            $this->orderTransactionService->processTransition($orderTransaction, CheckoutPaymentService::STATUS_VOID, $context);
+            $this->orderService->processTransition($order, $settings, CheckoutPaymentService::STATUS_VOID, $context);
+        } catch (Throwable $ex) {
+            $message = sprintf('Error while void payment for order ID: %s, checkoutPaymentId: %s', $orderId, $checkoutPaymentId);
+            $this->logger->error($message);
+
+            throw new CheckoutComException($message);
+        }
+    }
+
+    private function getOrder(string $orderId, Context $context): OrderEntity
+    {
+        return $this->orderService->getOrder($context, $orderId, [
+            'transactions.paymentMethod',
+            'lineItems',
+            'currency',
+            'deliveries.shippingOrderAddress.country',
+            'deliveries.shippingMethod',
+            'billingAddress.country',
+        ], function (Criteria $criteria): void {
+            $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
+        });
     }
 
     private function getOrderTransaction(OrderEntity $order): OrderTransactionEntity

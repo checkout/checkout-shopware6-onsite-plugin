@@ -1,17 +1,48 @@
 {% block sw_order_detail_actions_slot_smart_bar_actions %}
     {% parent() %}
 
-    <sw-button
-        v-if="shouldManualCapture"
-        v-tooltip="{
-            message: $tc('sw-privileges.tooltip.warning'),
-            disabled: acl.can('order.editor'),
-            showOnDisabledElements: true
-        }"
-        class="checkout-com-order-button"
-        :disabled="isLoading || !acl.can('order.editor')"
-        @click="onCapture"
-    >
-        {{ $tc('checkout-payments.order.general.captureLabel') }}
-    </sw-button>
+    {% block checkout_com_order_detail_smart_bar_capture %}
+        <div
+            v-if="shouldManualCapture"
+            class="checkout-com-order-button"
+        >
+            {% block checkout_com_order_detail_smart_bar_capture_button %}
+                <sw-button
+                    v-tooltip="{
+                        message: $tc('sw-privileges.tooltip.warning'),
+                        disabled: acl.can('order.editor'),
+                        showOnDisabledElements: true
+                    }"
+                    class="checkout-com-order-button-capture"
+                    :disabled="isLoading || !acl.can('order.editor')"
+                    @click="onCapture"
+                >
+                    {{ $tc('checkout-payments.order.general.captureLabel') }}
+                </sw-button>
+            {% endblock %}
+        </div>
+    {% endblock %}
+
+    {% block checkout_com_order_detail_smart_bar_void %}
+        <div
+            v-if="shouldManualVoid"
+            class="checkout-com-order-button"
+        >
+            {% block checkout_com_order_detail_smart_bar_void_button %}
+                <sw-button
+                    v-tooltip="{
+                        message: $tc('sw-privileges.tooltip.warning'),
+                        disabled: acl.can('order.editor'),
+                        showOnDisabledElements: true
+                    }"
+                    class="checkout-com-order-button-void"
+                    variant="ghost-danger"
+                    :disabled="isLoading || !acl.can('order.editor')"
+                    @click="onVoid"
+                >
+                    {{ $tc('checkout-payments.order.general.voidLabel') }}
+                </sw-button>
+            {% endblock %}
+        </div>
+    {% endblock %}
 {% endblock %}

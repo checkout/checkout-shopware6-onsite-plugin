@@ -6,6 +6,7 @@ use Checkout\Apm\Klarna\CreditSessionRequest;
 use Checkout\Apm\Klarna\Klarna;
 use Checkout\Apm\Klarna\OrderCaptureRequest;
 use Checkout\CheckoutApiException;
+use Checkout\Payments\VoidRequest;
 use CheckoutCom\Shopware6\Service\CheckoutApi\AbstractCheckoutService;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\Klarna\CreditSessionStruct;
 
@@ -42,6 +43,24 @@ class CheckoutKlarnaService extends AbstractCheckoutService
 
         try {
             $checkoutApi->getKlarnaClient()->capturePayment($paymentId, $orderCaptureRequest);
+        } catch (CheckoutApiException $e) {
+            $this->logMessage($e, __FUNCTION__);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Call Checkout Klarna API to void the payment
+     *
+     * @throws CheckoutApiException
+     */
+    public function voidPayment(string $paymentId, VoidRequest $voidRequest, string $salesChannelId): void
+    {
+        $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
+
+        try {
+            $checkoutApi->getKlarnaClient()->voidPayment($paymentId, $voidRequest);
         } catch (CheckoutApiException $e) {
             $this->logMessage($e, __FUNCTION__);
 

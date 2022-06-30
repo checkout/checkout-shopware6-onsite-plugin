@@ -71,6 +71,26 @@ class OrderController extends AbstractController
         ]);
     }
 
+    /**
+     * Void checkout.com payment by the order id
+     *
+     * @Route("/api/_action/checkout-com/order/void", name="api.action.checkout-com.order.void", methods={"POST"})
+     */
+    public function voidPayment(RequestDataBag $data, Context $context): JsonResponse
+    {
+        $dataValidation = $this->getVoidPaymentValidation();
+        $this->dataValidator->validate($data->all(), $dataValidation);
+
+        $this->orderCheckoutService->voidPayment(
+            $data->get('orderId'),
+            $context
+        );
+
+        return new JsonResponse([
+            'success' => true,
+        ]);
+    }
+
     public function getCheckoutComPaymentValidation(): DataValidationDefinition
     {
         $definition = new DataValidationDefinition('checkout_com.order.payment');
@@ -83,6 +103,15 @@ class OrderController extends AbstractController
     public function getCapturePaymentValidation(): DataValidationDefinition
     {
         $definition = new DataValidationDefinition('checkout_com.order.capture');
+
+        $definition->add('orderId', new Type('string'), new NotBlank());
+
+        return $definition;
+    }
+
+    public function getVoidPaymentValidation(): DataValidationDefinition
+    {
+        $definition = new DataValidationDefinition('checkout_com.order.void');
 
         $definition->add('orderId', new Type('string'), new NotBlank());
 

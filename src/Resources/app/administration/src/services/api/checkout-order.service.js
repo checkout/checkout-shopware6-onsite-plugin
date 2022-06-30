@@ -48,6 +48,22 @@ class CheckoutOrderService extends ApiService {
                 return ApiService.handleResponse(response);
             });
     }
+
+    /**
+     * Void checkout.com payment by the order id
+     *
+     * @param orderId {string}
+     * @returns {*}
+     */
+    voidPayment(orderId) {
+        const headers = this.getBasicHeaders();
+
+        return this.httpClient
+            .post(`${this.getApiBasePath()}/void`, { orderId }, { headers })
+            .then((response) => {
+                return ApiService.handleResponse(response);
+            });
+    }
 }
 
 export default CheckoutOrderService;
