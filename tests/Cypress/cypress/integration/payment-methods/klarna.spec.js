@@ -72,6 +72,9 @@ describe('Testing Storefront Klarna Payment', () => {
 
             checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
 
+            // Wait for the Klarna iframe is fully loaded
+            cy.wait(3000);
+
             // Fill in necessary information
             klarnaRepository.getDateOfBirthInput().type('01011990');
             klarnaRepository.getApproveButton().click();

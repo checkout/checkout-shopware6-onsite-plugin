@@ -52,7 +52,7 @@ class KlarnaRepository {
      * @returns {*}
      */
     getDateOfBirthInput() {
-        return cy.getIframeBody('iframe[id="klarna-checkoutcomklarnainstance-fullscreen"]').find('input[name="dateOfBirth"]');
+        return cy.getIframeBody('iframe[id="klarna-checkoutcomklarnainstance-fullscreen"]').find('#baseaccount_kp-purchase-approval-form-date-of-birth');
     }
 
     /**
