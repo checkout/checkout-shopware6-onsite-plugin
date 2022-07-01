@@ -63,18 +63,28 @@ class CardPaymentHandlerTest extends AbstractPaymentHandlerTest
         );
     }
 
-    /**
-     * @dataProvider prepareDataForPayProvider
-     */
-    public function testPrepareDataForPay(?string $token, bool $threeDs = false): void
+    public function testPrepareDataForPayOfShouldSaveSource(): void
     {
-        $dataBag = $this->getRequestBag($token);
+        $dataBag = $this->getRequestBag('foo', true);
 
-        if ($token === null) {
-            static::expectException(Exception::class);
-        }
+        $this->settingsFactory->expects(static::never())->method('get3dSecureConfig');
 
-        $this->settingsFactory->expects(static::once())->method('get3dSecureConfig')->willReturn($threeDs);
+        $paymentRequest = $this->paymentHandler->prepareDataForPay(
+            $this->createMock(PaymentRequest::class),
+            $dataBag,
+            $this->createMock(OrderEntity::class),
+            $this->saleChannelContext
+        );
+
+        static::assertInstanceOf(PaymentRequest::class, $paymentRequest);
+        static::assertInstanceOf(RequestTokenSource::class, $paymentRequest->source);
+    }
+
+    public function testPrepareDataForPay(): void
+    {
+        $dataBag = $this->getRequestBag('foo', false);
+
+        $this->settingsFactory->expects(static::once())->method('get3dSecureConfig')->willReturn(true);
 
         $paymentRequest = $this->paymentHandler->prepareDataForPay(
             $this->createMock(PaymentRequest::class),

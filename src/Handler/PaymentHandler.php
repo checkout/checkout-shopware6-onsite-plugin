@@ -287,15 +287,17 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
     /**
      * Enable 3DS for payment request
      */
-    public function enableThreeDsRequest(PaymentRequest $paymentRequest, ?string $salesChannelId = null): void
+    public function enableThreeDsRequest(RequestDataBag $dataBag, PaymentRequest $paymentRequest, string $salesChannelId): PaymentRequest
     {
         if (!$this->settingsFactory->get3dSecureConfig($salesChannelId)) {
-            return;
+            return $paymentRequest;
         }
 
         $threeDs = new ThreeDsRequest();
         $threeDs->enabled = true;
         $paymentRequest->three_ds = $threeDs;
+
+        return $paymentRequest;
     }
 
     /**

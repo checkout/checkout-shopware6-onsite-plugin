@@ -234,10 +234,11 @@ abstract class AbstractPaymentHandlerTest extends TestCase
         ];
     }
 
-    protected function getRequestBag($token = null): RequestDataBag
+    protected function getRequestBag($token = null, ?bool $shouldSaveSource = false): RequestDataBag
     {
         $paymentDetails = new RequestDataBag();
         $paymentDetails->set(RequestUtil::DATA_TOKEN, $token);
+        $paymentDetails->set(RequestUtil::DATA_SHOULD_SAVE_SOURCE, $shouldSaveSource);
         $requestBag = new RequestDataBag();
         $requestBag->set(RequestUtil::DATA_BAG_KEY, $paymentDetails);
 
