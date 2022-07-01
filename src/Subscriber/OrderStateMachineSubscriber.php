@@ -4,127 +4,98 @@ namespace CheckoutCom\Shopware6\Subscriber;
 
 use Checkout\CheckoutApiException;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
-use CheckoutCom\Shopware6\Helper\Util;
-use CheckoutCom\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService;
+use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
 use CheckoutCom\Shopware6\Service\Order\AbstractOrderTransactionService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
+use CheckoutCom\Shopware6\Service\PaymentMethodService;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
 use Exception;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Event\OrderStateMachineStateChangeEvent;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Framework\Api\Context\AdminApiSource;
-use Shopware\Core\System\StateMachine\Event\StateMachineStateChangeEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class OrderStateMachineSubscriber implements EventSubscriberInterface
 {
-    private AbstractOrderService $orderService;
+    private PaymentMethodService $paymentMethodService;
 
     private SettingsFactory $settingsFactory;
 
-    private AbstractOrderTransactionService $orderTransactionService;
-
     private CheckoutPaymentService $checkoutPaymentService;
 
-    private CheckoutKlarnaService $checkoutKlarnaService;
+    private AbstractOrderService $orderService;
+
+    private AbstractOrderTransactionService $orderTransactionService;
 
     public function __construct(
-        AbstractOrderService $orderService,
+        PaymentMethodService $paymentMethodService,
         SettingsFactory $settingsFactory,
-        AbstractOrderTransactionService $orderTransactionService,
         CheckoutPaymentService $checkoutPaymentService,
-        CheckoutKlarnaService $checkoutKlarnaService
+        AbstractOrderService $orderService,
+        AbstractOrderTransactionService $orderTransitionService
     ) {
-        $this->orderService = $orderService;
+        $this->paymentMethodService = $paymentMethodService;
         $this->settingsFactory = $settingsFactory;
-        $this->orderTransactionService = $orderTransactionService;
         $this->checkoutPaymentService = $checkoutPaymentService;
-        $this->checkoutKlarnaService = $checkoutKlarnaService;
+        $this->orderService = $orderService;
+        $this->orderTransactionService = $orderTransitionService;
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            'state_machine.order_transaction.state_changed' => 'onOrderTransactionStateChange',
             'state_enter.order_delivery.state.shipped' => 'onOrderDeliveryEnterStateShipped',
         ];
     }
 
     /**
-     * @throws Exception
-     */
-    public function onOrderTransactionStateChange(StateMachineStateChangeEvent $event): void
-    {
-        // We only listen event at Admin side
-        if (!($event->getContext()->getSource() instanceof AdminApiSource)) {
-            return;
-        }
-
-        $this->handleProcessTransaction($event);
-    }
-
-    /**
      * @throws CheckoutApiException
+     * @throws Exception
      */
     public function onOrderDeliveryEnterStateShipped(OrderStateMachineStateChangeEvent $event): void
     {
         $order = $event->getOrder();
-        $checkoutCustomField = OrderService::getCheckoutOrderCustomFields($order);
-        $paymentId = $checkoutCustomField->getCheckoutPaymentId();
-
-        if (!$paymentId) {
+        $orderTransaction = $this->getOrderTransaction($order);
+        if (!$orderTransaction instanceof OrderTransactionEntity) {
             return;
         }
 
-        $this->checkoutKlarnaService->capturePayment($paymentId, $event->getSalesChannelId(), $order);
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function handleProcessTransaction(StateMachineStateChangeEvent $event): void
-    {
-        // We build transaction state name
-        $orderTransactionRefunded = Util::buildSideEnterStateEventName(
-            OrderTransactionStates::STATE_MACHINE,
-            OrderTransactionStates::STATE_REFUNDED,
-        );
-        // @TODO maybe we will handle a partial refund here
-
-        if ($event->getStateEventName() === $orderTransactionRefunded) {
-            $this->handleOrderTransactionRefunded($event);
+        $paymentHandler = $this->paymentMethodService->getPaymentHandlerByOrderTransaction($orderTransaction);
+        if (!$paymentHandler instanceof PaymentHandler || !$paymentHandler->shouldCaptureAfterShipping()) {
+            return;
         }
-    }
 
-    /**
-     * @throws Exception
-     */
-    private function handleOrderTransactionRefunded(StateMachineStateChangeEvent $event): void
-    {
-        $orderTransaction = $this->orderTransactionService->getTransaction($event->getTransition()->getEntityId(), $event->getContext());
-
-        /** @var OrderEntity $order */
-        $order = $orderTransaction->getOrder();
+        // We get payment detail from checkout.com API
+        $payment = $this->getCheckoutPaymentDetail($order, $order->getSalesChannelId());
+        if (!$payment instanceof Payment || $payment->getStatus() !== CheckoutPaymentService::STATUS_AUTHORIZED) {
+            return;
+        }
 
         // Get plugin settings
         $settings = $this->settingsFactory->getSettings($order->getSalesChannelId());
 
-        // We get payment detail from checkout.com API
-        $payment = $this->getCheckoutPaymentDetail($order, $order->getSalesChannelId());
+        // Capture the payment from Checkout.com
+        $paymentHandler->capturePayment($payment->getId(), $order);
 
-        // We skip if it is not a checkout.com payment
-        if (!$payment instanceof Payment) {
-            return;
+        $this->orderTransactionService->processTransition($orderTransaction, CheckoutPaymentService::STATUS_CAPTURED, $event->getContext());
+        $this->orderService->processTransition($order, $settings, CheckoutPaymentService::STATUS_CAPTURED, $event->getContext());
+    }
+
+    private function getOrderTransaction(OrderEntity $order): ?OrderTransactionEntity
+    {
+        $orderTransactions = $order->getTransactions();
+        if (!$orderTransactions instanceof OrderTransactionCollection) {
+            return null;
         }
 
-        // We refund this payment from checkout.com API
-        $this->checkoutPaymentService->refundPayment($payment->getId(), $order->getSalesChannelId());
+        $orderTransactions->sort(function (OrderTransactionEntity $a, OrderTransactionEntity $b): int {
+            return $a->getCreatedAt() <=> $b->getCreatedAt();
+        });
 
-        // We update the order payment status
-        $this->orderService->processTransition($order, $settings, CheckoutPaymentService::STATUS_REFUNDED, $event->getContext());
+        return $orderTransactions->last();
     }
 
     /**

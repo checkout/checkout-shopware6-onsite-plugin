@@ -16,9 +16,9 @@
             <argument type="service" id="Shopware\Core\Framework\Plugin\Util\PluginIdProvider"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\ContextService"
-                 public="true">
+        <service id="CheckoutCom\Shopware6\Service\ContextService">
             <argument type="service" id="monolog.logger.checkout_com"/>
+            <argument type="service" id="language.repository"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
         </service>
 
@@ -63,7 +63,10 @@
         <service id="CheckoutCom\Shopware6\Service\Order\OrderCheckoutService">
             <argument type="service" id="checkout_com.shopware6.logger"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderTransactionService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\PaymentMethodService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
         </service>
 
         <service id="CheckoutCom\Shopware6\Service\Order\OrderTransactionService">
@@ -150,12 +153,13 @@
 
         <service id="CheckoutCom\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService"
                  parent="checkout_com.shopware6.service.checkout_api.abstract_checkout_service">
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Klarna\KlarnaService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Extractor\OrderExtractor"/>
         </service>
 
         <service id="CheckoutCom\Shopware6\Service\Klarna\KlarnaService">
-            <argument type="service" id="language.repository"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\ContextService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\CountryService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Extractor\OrderExtractor"/>
         </service>
 
         <!--   EXTRACTOR    -->

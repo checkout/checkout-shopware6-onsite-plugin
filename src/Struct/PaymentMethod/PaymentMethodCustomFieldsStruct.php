@@ -8,6 +8,8 @@ class PaymentMethodCustomFieldsStruct extends Struct
 {
     protected ?string $methodType;
 
+    protected ?bool $shouldManualCapture;
+
     public function getMethodType(): ?string
     {
         return $this->methodType;
@@ -16,5 +18,15 @@ class PaymentMethodCustomFieldsStruct extends Struct
     public function setMethodType(?string $methodType): void
     {
         $this->methodType = $methodType;
+    }
+
+    public function getShouldManualCapture(): ?bool
+    {
+        return $this->shouldManualCapture;
+    }
+
+    public function setShouldManualCapture(?bool $shouldManualCapture): void
+    {
+        $this->shouldManualCapture = $shouldManualCapture;
     }
 }

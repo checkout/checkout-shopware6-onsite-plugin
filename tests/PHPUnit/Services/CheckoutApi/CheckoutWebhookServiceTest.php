@@ -47,10 +47,10 @@ class CheckoutWebhookServiceTest extends AbstractCheckoutTest
     /**
      * @dataProvider requestCheckoutApiProvider
      */
-    public function testRegisterWebhook(bool $expectThrowException): void
+    public function testRegisterWebhook(bool $apiShouldThrowException): void
     {
-        $this->handleTestCheckoutRequest(
-            $expectThrowException,
+        $this->handleCheckoutRequestShouldThrowException(
+            $apiShouldThrowException,
             'post',
             [
                 'id' => 'test',
@@ -67,10 +67,10 @@ class CheckoutWebhookServiceTest extends AbstractCheckoutTest
     /**
      * @dataProvider requestCheckoutApiProvider
      */
-    public function testRetrieveWebhook(bool $expectThrowException, int $code = 500): void
+    public function testRetrieveWebhook(bool $apiShouldThrowException, int $code = 500): void
     {
-        $this->handleTestCheckoutRequest(
-            $expectThrowException,
+        $this->handleCheckoutRequestShouldThrowException(
+            $apiShouldThrowException,
             'get',
             [
                 'id' => 'test',
@@ -79,7 +79,7 @@ class CheckoutWebhookServiceTest extends AbstractCheckoutTest
             $code
         );
 
-        if ($expectThrowException && $code === 404) {
+        if ($apiShouldThrowException && $code === 404) {
             static::expectException(CheckoutComWebhookNotFoundException::class);
         }
 

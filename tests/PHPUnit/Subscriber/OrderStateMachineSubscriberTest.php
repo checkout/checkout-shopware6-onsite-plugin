@@ -3,34 +3,32 @@
 namespace CheckoutCom\Shopware6\Tests\Subscriber;
 
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
-use CheckoutCom\Shopware6\Helper\Util;
-use CheckoutCom\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService;
+use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
 use CheckoutCom\Shopware6\Service\Order\OrderTransactionService;
+use CheckoutCom\Shopware6\Service\PaymentMethodService;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
 use CheckoutCom\Shopware6\Subscriber\OrderStateMachineSubscriber;
+use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
-use Shopware\Core\Framework\Api\Context\AdminApiSource;
-use Shopware\Core\Framework\Api\Context\ContextSource;
-use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
-use Shopware\Core\Framework\Context;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
+use Shopware\Core\Checkout\Order\Event\OrderStateMachineStateChangeEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\StateMachine\Event\StateMachineStateChangeEvent;
 
 class OrderStateMachineSubscriberTest extends TestCase
 {
     use OrderTrait;
+    use ContextTrait;
 
     private OrderStateMachineSubscriber $subscriber;
 
     /**
-     * @var OrderService|MockObject
+     * @var PaymentMethodService|MockObject
      */
-    private $orderService;
+    private $paymentMethodService;
 
     /**
      * @var SettingsFactory|MockObject
@@ -38,131 +36,139 @@ class OrderStateMachineSubscriberTest extends TestCase
     private $settingsFactory;
 
     /**
-     * @var OrderTransactionService|MockObject
-     */
-    private $orderTransactionService;
-
-    /**
      * @var CheckoutPaymentService|MockObject
      */
     private $checkoutPaymentService;
 
     /**
-     * @var CheckoutKlarnaService|MockObject
+     * @var OrderService|MockObject
      */
-    private $checkoutKlarnaService;
+    private $orderService;
 
-    private SalesChannelContext $salesChannelContext;
+    /**
+     * @var OrderTransactionService|MockObject
+     */
+    private $orderTransactionService;
+
+    /**
+     * @var MockObject|SalesChannelContext
+     */
+    private $salesChannelContext;
 
     public function setUp(): void
     {
-        $this->orderService = $this->createMock(OrderService::class);
-        $this->settingsFactory = $this->createMock(SettingsFactory::class);
-        $this->orderTransactionService = $this->createMock(OrderTransactionService::class);
+        $this->paymentMethodService = $this->createMock(PaymentMethodService::class);
         $this->checkoutPaymentService = $this->createMock(CheckoutPaymentService::class);
-        $this->checkoutKlarnaService = $this->createMock(CheckoutKlarnaService::class);
+        $this->settingsFactory = $this->createMock(SettingsFactory::class);
+        $this->orderService = $this->createMock(OrderService::class);
+        $this->orderTransactionService = $this->createMock(OrderTransactionService::class);
+        $this->salesChannelContext = $this->getSaleChannelContext($this);
         $this->subscriber = new OrderStateMachineSubscriber(
-            $this->orderService,
+            $this->paymentMethodService,
             $this->settingsFactory,
-            $this->orderTransactionService,
             $this->checkoutPaymentService,
-            $this->checkoutKlarnaService
+            $this->orderService,
+            $this->orderTransactionService,
         );
     }
 
     public function testListeningOnCorrectEvent(): void
     {
-        static::assertArrayHasKey('state_machine.order_transaction.state_changed', OrderStateMachineSubscriber::getSubscribedEvents());
+        static::assertArrayHasKey('state_enter.order_delivery.state.shipped', OrderStateMachineSubscriber::getSubscribedEvents());
     }
 
     /**
-     * @dataProvider onOrderTransactionStateChangeProvider
+     * @dataProvider onOrderDeliveryEnterStateShippedProvider
      */
-    public function testOnOrderTransactionStateChange(ContextSource $source, string $stateEventName, ?string $checkoutPaymentId): void
-    {
-        $refundedStateName = Util::buildSideEnterStateEventName(
-            OrderTransactionStates::STATE_MACHINE,
-            OrderTransactionStates::STATE_REFUNDED
-        );
-        $isAdminSource = $source instanceof AdminApiSource;
-        $invokedTransactionRefunded = $isAdminSource && $refundedStateName === $stateEventName;
-
-        $hasCheckoutPaymentId = !empty($checkoutPaymentId);
-
-        $order = $this->getOrder($checkoutPaymentId);
-        $orderTransaction = $this->getOrderTransaction();
-        $orderTransaction->setOrder($order);
-
-        $payment = (new Payment())->assign(['id' => 'foo']);
-
-        $context = $this->createConfiguredMock(Context::class, [
-            'getSource' => $source,
+    public function testOnOrderDeliveryEnterStateShipped(
+        bool $hasOrderTransaction,
+        bool $shouldCaptureAfterShipping,
+        bool $hasCheckoutPaymentId,
+        string $paymentStatus
+    ): void {
+        $paymentHandler = $this->createConfiguredMock(PaymentHandler::class, [
+            'shouldCaptureAfterShipping' => $shouldCaptureAfterShipping,
         ]);
 
-        $event = $this->createConfiguredMock(StateMachineStateChangeEvent::class, [
-            'getContext' => $context,
-        ]);
+        $this->paymentMethodService->expects(static::exactly($hasOrderTransaction ? 1 : 0))
+            ->method('getPaymentHandlerByOrderTransaction')
+            ->willReturn($paymentHandler);
 
-        $event->expects(static::exactly($isAdminSource ? 1 : 0))
-            ->method('getStateEventName')
-            ->willReturn($stateEventName);
+        $successCapture = $paymentStatus === CheckoutPaymentService::STATUS_AUTHORIZED && $shouldCaptureAfterShipping && $hasCheckoutPaymentId;
 
-        $this->orderTransactionService->expects(static::exactly($invokedTransactionRefunded ? 1 : 0))
-            ->method('getTransaction')
-            ->willReturn($orderTransaction);
+        if ($hasCheckoutPaymentId) {
+            $payment = $this->createConfiguredMock(Payment::class, [
+                'getStatus' => $paymentStatus,
+            ]);
 
-        $this->checkoutPaymentService->expects(static::exactly($hasCheckoutPaymentId ? 1 : 0))
-            ->method('getPaymentDetails')
-            ->willReturn($payment);
+            $this->checkoutPaymentService->expects(static::exactly(1))
+                ->method('getPaymentDetails')
+                ->willReturn($payment);
+        } else {
+            $this->checkoutPaymentService->expects(static::exactly(0))
+                ->method('getPaymentDetails');
+        }
 
-        $this->checkoutPaymentService->expects(static::exactly($hasCheckoutPaymentId ? 1 : 0))
-            ->method('refundPayment');
+        $paymentHandler->expects(static::exactly($successCapture ? 1 : 0))
+            ->method('capturePayment');
 
-        $this->orderService->expects(static::exactly($hasCheckoutPaymentId ? 1 : 0))
+        $this->settingsFactory->expects(static::exactly($successCapture ? 1 : 0))
+            ->method('getSettings');
+
+        $this->orderService->expects(static::exactly($successCapture ? 1 : 0))
             ->method('processTransition');
 
-        $this->subscriber->onOrderTransactionStateChange($event);
+        $this->orderTransactionService->expects(static::exactly($successCapture ? 1 : 0))
+            ->method('processTransition');
+
+        $orderTransaction = $this->getOrderTransaction();
+
+        $order = $this->getOrder($hasCheckoutPaymentId ? 'foo' : null);
+        if ($hasOrderTransaction) {
+            $order->setTransactions(new OrderTransactionCollection([$orderTransaction]));
+        }
+
+        $event = new OrderStateMachineStateChangeEvent(
+            'shipped',
+            $order,
+            $this->salesChannelContext->getContext()
+        );
+
+        $this->subscriber->onOrderDeliveryEnterStateShipped($event);
     }
 
-    public function onOrderTransactionStateChangeProvider(): array
+    public function onOrderDeliveryEnterStateShippedProvider(): array
     {
         return [
-            'Test it is not admin api source' => [
-                $this->createMock(SalesChannelApiSource::class),
-                '',
-                null,
+            'Test empty order transactions' => [
+                false,
+                false,
+                false,
+                CheckoutPaymentService::STATUS_VOID,
             ],
-            'Test it is not order transaction refunded' => [
-                $this->createMock(AdminApiSource::class),
-                Util::buildSideEnterStateEventName(
-                    OrderTransactionStates::STATE_MACHINE,
-                    OrderTransactionStates::STATE_OPEN
-                ),
-                null,
+            'Test should not capture on shipped' => [
+                true,
+                false,
+                false,
+                CheckoutPaymentService::STATUS_VOID,
             ],
-            'Test get transaction but order transaction does not found' => [
-                $this->createMock(AdminApiSource::class),
-                Util::buildSideEnterStateEventName(
-                    OrderTransactionStates::STATE_MACHINE,
-                    OrderTransactionStates::STATE_REFUNDED
-                ),
-                null,
+            'Test empty checkout order ID' => [
+                true,
+                true,
+                false,
+                CheckoutPaymentService::STATUS_VOID,
             ],
-            'Test order does not have checkout payment id' => [
-                $this->createMock(AdminApiSource::class),
-                Util::buildSideEnterStateEventName(
-                    OrderTransactionStates::STATE_MACHINE,
-                    OrderTransactionStates::STATE_REFUNDED
-                ),
-                null,
+            'Test payment status is not authorized' => [
+                true,
+                true,
+                true,
+                CheckoutPaymentService::STATUS_VOID,
             ],
-            'Test process refunded success' => [
-                $this->createMock(AdminApiSource::class),
-                Util::buildSideEnterStateEventName(
-                    OrderTransactionStates::STATE_MACHINE,
-                    OrderTransactionStates::STATE_REFUNDED
-                ),
-                'foo',
+            'Test capture success' => [
+                true,
+                true,
+                true,
+                CheckoutPaymentService::STATUS_AUTHORIZED,
             ],
         ];
     }

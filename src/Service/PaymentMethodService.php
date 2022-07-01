@@ -11,6 +11,7 @@ use CheckoutCom\Shopware6\Struct\PaymentMethod\InstallablePaymentMethodStruct;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\InstalledPaymentMethodCollection;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\InstalledPaymentMethodStruct;
 use Exception;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -48,6 +49,21 @@ class PaymentMethodService
         }
 
         return $paymentHandler;
+    }
+
+    public function getPaymentHandlersByHandlerIdentifier(string $handlerIdentifier): ?PaymentHandler
+    {
+        return $this->installablePaymentHandlers->getByHandlerIdentifier($handlerIdentifier);
+    }
+
+    public function getPaymentHandlerByOrderTransaction(OrderTransactionEntity $orderTransaction): ?PaymentHandler
+    {
+        $paymentMethod = $orderTransaction->getPaymentMethod();
+        if (!$paymentMethod instanceof PaymentMethodEntity) {
+            return null;
+        }
+
+        return $this->getPaymentHandlersByHandlerIdentifier($paymentMethod->getHandlerIdentifier());
     }
 
     /**

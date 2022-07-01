@@ -2,13 +2,20 @@
 
 namespace CheckoutCom\Shopware6\Twig;
 
-use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
+use CheckoutCom\Shopware6\Service\CountryService;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
 class CountryStateCodeExtension extends AbstractExtension
 {
+    private CountryService $countryService;
+
+    public function __construct(CountryService $countryService)
+    {
+        $this->countryService = $countryService;
+    }
+
     public function getFilters(): array
     {
         return [
@@ -18,6 +25,10 @@ class CountryStateCodeExtension extends AbstractExtension
 
     public function getCountryStateCode(?CountryStateEntity $countryStateEntity): ?string
     {
-        return CheckoutComUtil::getCountryStateCode($countryStateEntity);
+        if (!$countryStateEntity instanceof CountryStateEntity) {
+            return null;
+        }
+
+        return $this->countryService->getCountryStateCode($countryStateEntity);
     }
 }

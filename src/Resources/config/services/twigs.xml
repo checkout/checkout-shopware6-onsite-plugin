@@ -9,6 +9,7 @@
         </service>
 
         <service id="CheckoutCom\Shopware6\Twig\CountryStateCodeExtension">
+            <argument type="service" id="CheckoutCom\Shopware6\Service\CountryService"/>
             <tag name="twig.extension"/>
         </service>
 

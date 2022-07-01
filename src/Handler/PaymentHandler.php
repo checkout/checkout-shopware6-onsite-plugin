@@ -12,6 +12,8 @@ use CheckoutCom\Shopware6\Helper\RequestUtil;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutSourceService;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
+use CheckoutCom\Shopware6\Service\ContextService;
+use CheckoutCom\Shopware6\Service\CountryService;
 use CheckoutCom\Shopware6\Service\Extractor\AbstractOrderExtractor;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
 use CheckoutCom\Shopware6\Struct\DirectPay\AbstractShippingOptionCollection;
@@ -42,6 +44,10 @@ use Throwable;
 abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
 {
     protected LoggerInterface $logger;
+
+    protected CountryService $countryService;
+
+    protected ContextService $contextService;
 
     protected TranslatorInterface $translator;
 
@@ -79,6 +85,8 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
 
     public function setServices(
         LoggerInterface $logger,
+        CountryService $countryService,
+        ContextService $contextService,
         AbstractOrderExtractor $orderExtractor,
         CheckoutTokenService $checkoutTokenService,
         CheckoutSourceService $checkoutSourceService,
@@ -88,6 +96,8 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
         SettingsFactory $settingsFactory
     ): void {
         $this->logger = $logger;
+        $this->countryService = $countryService;
+        $this->contextService = $contextService;
         $this->orderExtractor = $orderExtractor;
         $this->checkoutTokenService = $checkoutTokenService;
         $this->checkoutSourceService = $checkoutSourceService;
@@ -239,15 +249,25 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
     /**
      * @throws Exception
      */
-    public function capturePayment(string $checkoutPaymentId, SalesChannelContext $context): void
+    public function capturePayment(string $checkoutPaymentId, OrderEntity $order): void
     {
         // We capture the payment from the Checkout.com API, the CheckoutApiException will be thrown if capturing is failed
-        $this->checkoutPaymentService->capturePayment($checkoutPaymentId, $context->getSalesChannelId());
+        $this->checkoutPaymentService->capturePayment($checkoutPaymentId, $order->getSalesChannelId());
     }
 
     public function captureWhenFinalize(): bool
     {
         return true;
+    }
+
+    public function shouldManualCapture(): bool
+    {
+        return false;
+    }
+
+    public function shouldCaptureAfterShipping(): bool
+    {
+        return false;
     }
 
     /**

@@ -3,102 +3,88 @@ declare(strict_types=1);
 
 namespace CheckoutCom\Shopware6\Service\Klarna;
 
+use Checkout\Apm\Klarna\CreditSessionRequest;
+use Checkout\Apm\Klarna\Klarna;
+use Checkout\Apm\Klarna\OrderCaptureRequest;
+use Checkout\CheckoutApiException;
+use Checkout\Common\Country;
+use Checkout\Common\Currency;
 use Checkout\Payments\Source\Apm\KlarnaProduct;
-use CheckoutCom\Shopware6\Exception\CheckoutComKlarnaException;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
+use CheckoutCom\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService;
+use CheckoutCom\Shopware6\Service\ContextService;
+use CheckoutCom\Shopware6\Service\CountryService;
+use CheckoutCom\Shopware6\Service\Extractor\AbstractOrderExtractor;
 use CheckoutCom\Shopware6\Struct\LineItemTotalPrice;
+use CheckoutCom\Shopware6\Struct\PaymentMethod\Klarna\CreditSessionStruct;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\Delivery;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
-use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
-use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Struct\Collection;
-use Shopware\Core\System\Country\CountryEntity;
-use Shopware\Core\System\Language\LanguageEntity;
-use Shopware\Core\System\Locale\LocaleEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class KlarnaService
 {
-    private EntityRepositoryInterface $languageRepository;
+    private ContextService $contextService;
 
-    public function __construct(EntityRepositoryInterface $languageRepository)
+    private CountryService $countryService;
+
+    private CheckoutKlarnaService $checkoutKlarnaService;
+
+    private AbstractOrderExtractor $orderExtractor;
+
+    public function __construct(
+        ContextService $contextService,
+        CountryService $countryService,
+        CheckoutKlarnaService $checkoutKlarnaService,
+        AbstractOrderExtractor $orderExtractor
+    ) {
+        $this->contextService = $contextService;
+        $this->countryService = $countryService;
+        $this->checkoutKlarnaService = $checkoutKlarnaService;
+        $this->orderExtractor = $orderExtractor;
+    }
+
+    /**
+     * @throws CheckoutApiException
+     */
+    public function createCreditSession(LineItemTotalPrice $lineItemTotalPrice, SalesChannelContext $context): CreditSessionStruct
     {
-        $this->languageRepository = $languageRepository;
+        return $this->checkoutKlarnaService->createCreditSession(
+            $this->buildCreditSessionRequest($lineItemTotalPrice, $context),
+            $context->getSalesChannelId()
+        );
+    }
+
+    /**
+     * @throws CheckoutApiException
+     */
+    public function capturePayment(string $paymentId, OrderEntity $order): void
+    {
+        $this->checkoutKlarnaService->capturePayment(
+            $paymentId,
+            $this->buildCapturePaymentRequest($order),
+            $order->getSalesChannelId()
+        );
     }
 
     public function buildShippingInfo(OrderDeliveryEntity $orderDelivery, ShippingMethodEntity $shippingMethod): array
     {
-        $shippingInfo['shipping_company'] = $shippingMethod->getName();
-        $shippingInfo['shipping_method'] = $shippingMethod->getName();
-        $shippingInfo['tracking_number'] = implode(',', $orderDelivery->getTrackingCodes());
-        $shippingInfo['tracking_uri'] = $shippingMethod->getTrackingUrl();
-
-        return $shippingInfo;
-    }
-
-    public function getLocaleFromLanguageId(SalesChannelContext $context): string
-    {
-        $customer = $context->getCustomer();
-        if (!$customer instanceof CustomerEntity) {
-            throw new CheckoutComKlarnaException('Can\'t get locale. Customer is null');
-        }
-
-        $criteria = new Criteria([$customer->getLanguageId()]);
-        $criteria->addAssociation('locale');
-        $language = $this->languageRepository->search($criteria, $context->getContext())->first();
-
-        if (!$language instanceof LanguageEntity) {
-            throw new CheckoutComKlarnaException('Customer locale not found.');
-        }
-
-        $locale = $language->getLocale();
-        if (!$locale instanceof LocaleEntity) {
-            throw new CheckoutComKlarnaException('Customer locale not found.');
-        }
-
-        return $locale->getCode();
-    }
-
-    public function getPurchaseCountryIsoCodeFromOrder(OrderEntity $order): string
-    {
-        $billingAddress = $order->getBillingAddress();
-        if (!$billingAddress instanceof OrderAddressEntity) {
-            throw new CheckoutComKlarnaException('Can\'t get purchase country iso code. Order billing address is null');
-        }
-
-        $country = $billingAddress->getCountry();
-        if (!$country instanceof CountryEntity) {
-            throw new CheckoutComKlarnaException('Can\'t get purchase country iso code. Order country is null');
-        }
-
-        return $this->getPurchaseCountryIsoCode($billingAddress);
-    }
-
-    public function getPurchaseCountryIsoCodeFromContext(SalesChannelContext $context): string
-    {
-        $customer = $context->getCustomer();
-        if (!$customer instanceof CustomerEntity) {
-            throw new CheckoutComKlarnaException('Can\'t get purchase country iso code. Customer is null');
-        }
-
-        $billingAddress = $customer->getDefaultBillingAddress();
-        if (!$billingAddress instanceof CustomerAddressEntity) {
-            throw new CheckoutComKlarnaException('Can\'t get purchase country iso code. Customer billing address is null');
-        }
-
-        return $this->getPurchaseCountryIsoCode($billingAddress);
+        return [
+            [
+                'shipping_company' => $shippingMethod->getName() ?? '',
+                'tracking_number' => implode(',', $orderDelivery->getTrackingCodes()),
+                'tracking_uri' => $shippingMethod->getTrackingUrl() ?? '',
+            ],
+        ];
     }
 
     public function buildProductData(LineItemTotalPrice $lineItemTotalPrice, string $currencyIsoCode): array
@@ -115,7 +101,7 @@ class KlarnaService
     private function buildProductLineItem(?Collection $lineItems, string $currencyIsoCode): array
     {
         $results = [];
-        if (empty($lineItems)) {
+        if (empty($lineItems) || $lineItems->count() === 0) {
             return $results;
         }
 
@@ -151,7 +137,7 @@ class KlarnaService
     private function buildProductShippingItem(?Collection $deliveries, string $currencyIsoCode): array
     {
         $results = [];
-        if (empty($deliveries)) {
+        if (empty($deliveries) || $deliveries->count() === 0) {
             return $results;
         }
 
@@ -183,20 +169,57 @@ class KlarnaService
     }
 
     /**
-     * @param OrderAddressEntity|CustomerAddressEntity $billingAddress
+     * Build request data to create the credit session
      */
-    private function getPurchaseCountryIsoCode($billingAddress): string
+    private function buildCreditSessionRequest(LineItemTotalPrice $lineItemTotalPrice, SalesChannelContext $context): CreditSessionRequest
     {
-        $country = $billingAddress->getCountry();
-        if (!$country instanceof CountryEntity) {
-            throw new CheckoutComKlarnaException('Can\'t get purchase country iso code. Billing address\'s country is null');
-        }
+        $currency = $context->getCurrency();
 
-        $isoCode = $country->getIso();
-        if (!$isoCode || \strlen($isoCode) !== 2) {
-            throw new CheckoutComKlarnaException('Can\'t get purchase country iso code. Invalid iso code is null');
-        }
+        /** @var Currency $requestCurrency */
+        $requestCurrency = $currency->getIsoCode();
+        $cartPrice = $lineItemTotalPrice->getPrice();
 
-        return $isoCode;
+        /** @var Country $purchaseCountry */
+        $purchaseCountry = $this->countryService->getPurchaseCountryIsoCodeFromContext($context);
+
+        $request = new CreditSessionRequest();
+        $request->purchase_country = $purchaseCountry;
+        $request->currency = $requestCurrency;
+        $request->locale = $this->contextService->getLocaleCode($context);
+        $request->amount = CheckoutComUtil::formatPriceCheckout($cartPrice->getTotalPrice(), $currency->getIsoCode());
+        $request->tax_amount = CheckoutComUtil::formatPriceCheckout(
+            $cartPrice->getCalculatedTaxes()->getAmount(),
+            $currency->getIsoCode()
+        );
+        $request->products = $this->buildProductData($lineItemTotalPrice, $currency->getIsoCode());
+
+        return $request;
+    }
+
+    /**
+     * Build request data to capture the payment
+     */
+    private function buildCapturePaymentRequest(OrderEntity $order): OrderCaptureRequest
+    {
+        $currency = $this->orderExtractor->extractCurrency($order);
+
+        $klarna = new Klarna();
+        $klarna->description = CheckoutComUtil::buildReference($order);
+        $klarna->products = $this->buildProductData(
+            CheckoutComUtil::buildLineItemTotalPrice($order),
+            $currency->getIsoCode()
+        );
+        $klarna->shipping_info = $this->buildShippingInfo(
+            $this->orderExtractor->extractOrderDelivery($order),
+            $this->orderExtractor->extractOrderShippingMethod($order)
+        );
+        $klarna->shipping_delay = 0;
+
+        $request = new OrderCaptureRequest();
+        $request->amount = CheckoutComUtil::formatPriceCheckout($order->getAmountTotal(), $currency->getIsoCode());
+        $request->reference = (int) $this->orderExtractor->extractOrderNumber($order);
+        $request->klarna = $klarna;
+
+        return $request;
     }
 }

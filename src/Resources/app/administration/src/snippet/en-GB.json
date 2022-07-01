@@ -51,6 +51,9 @@
       }
     },
     "order": {
+      "general": {
+        "captureLabel": "Capture"
+      },
       "checkoutPayments": {
         "title": "Checkout.com Payments",
         "paymentIDLabel": "Payment ID",

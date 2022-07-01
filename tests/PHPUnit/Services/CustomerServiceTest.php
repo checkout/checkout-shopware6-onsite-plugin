@@ -3,8 +3,10 @@
 namespace CheckoutCom\Shopware6\Tests\Services;
 
 use CheckoutCom\Shopware6\Exception\SalutationNotFoundException;
+use CheckoutCom\Shopware6\Handler\Method\CardPaymentHandler;
 use CheckoutCom\Shopware6\Service\CustomerService;
 use CheckoutCom\Shopware6\Service\LoggerService;
+use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\PaymentSource;
 use CheckoutCom\Shopware6\Struct\Customer\RegisterAndLoginGuestStruct;
 use CheckoutCom\Shopware6\Struct\Request\RegisterAndLoginGuestRequest;
 use CheckoutCom\Shopware6\Tests\Fakes\FakeEntityRepository;
@@ -18,6 +20,7 @@ use Shopware\Core\Checkout\Customer\Exception\CustomerNotFoundByIdException;
 use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
 use Shopware\Core\Checkout\Customer\SalesChannel\CustomerResponse;
 use Shopware\Core\Content\Newsletter\Exception\SalesChannelDomainNotFoundException;
+use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
 use Shopware\Core\PlatformRequest;
@@ -200,6 +203,58 @@ class CustomerServiceTest extends TestCase
         static::assertInstanceOf(SalutationEntity::class, $salutation);
     }
 
+    public function testRemoveCustomerSource(): void
+    {
+        $customer = $this->getCustomer();
+
+        $event = $this->createMock(EntityWrittenContainerEvent::class);
+        $this->customerRepository->entityWrittenContainerEvents[] = $event;
+
+        $this->customerService->removeCustomerSource('foo', $customer, $this->salesChannelContext);
+        static::assertNotEmpty($this->customerRepository->data);
+    }
+
+    public function testSaveCustomerSource(): void
+    {
+        $paymentSource = (new PaymentSource())->assign([
+            'id' => 'foo',
+            'type' => CardPaymentHandler::getPaymentMethodType(),
+        ]);
+
+        $mockCustomer = $this->createConfiguredMock(CustomerEntity::class, [
+            'getId' => 'foo',
+        ]);
+
+        $search = $this->createConfiguredMock(EntitySearchResult::class, [
+            'first' => $mockCustomer,
+        ]);
+
+        $this->customerRepository->entitySearchResults[] = $search;
+
+        $event = $this->createMock(EntityWrittenContainerEvent::class);
+        $this->customerRepository->entityWrittenContainerEvents[] = $event;
+
+        $this->customerService->saveCustomerSource('foo', $paymentSource, $this->salesChannelContext);
+        static::assertNotEmpty($this->customerRepository->data);
+    }
+
+    public function testUpdateCheckoutCustomFields(): void
+    {
+        $customer = $this->getCustomer();
+
+        // Get existing custom fields
+        $checkoutSourceCustomFields = CustomerService::getCheckoutSourceCustomFields($customer);
+
+        $event = $this->createMock(EntityWrittenContainerEvent::class);
+        $this->customerRepository->entityWrittenContainerEvents[] = $event;
+
+        $this->customerService->updateCheckoutCustomFields($customer, $checkoutSourceCustomFields, $this->salesChannelContext);
+
+        static::assertNotEmpty($this->customerRepository->data);
+        static::assertArrayHasKey('customFields', $this->customerRepository->data[0][0]);
+        static::assertArrayHasKey(CustomerService::CHECKOUT_SOURCE_CUSTOM_FIELDS, $this->customerRepository->data[0][0]['customFields']);
+    }
+
     public function checkoutCustomerCustomFieldsProvider(): array
     {
         return [
@@ -270,5 +325,22 @@ class CustomerServiceTest extends TestCase
                 true,
             ],
         ];
+    }
+
+    private function getCustomer(): CustomerEntity
+    {
+        $customer = new CustomerEntity();
+        $customer->setId('foo');
+        $customer->setCustomFields([
+            CustomerService::CHECKOUT_SOURCE_CUSTOM_FIELDS => [
+                CardPaymentHandler::getPaymentMethodType() => [
+                    ['id' => 'foo'],
+                    ['id' => 'bar'],
+                ],
+                'foo' => 'bar',
+            ],
+        ]);
+
+        return $customer;
     }
 }

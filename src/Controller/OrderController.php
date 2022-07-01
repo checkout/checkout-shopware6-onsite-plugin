@@ -51,9 +51,38 @@ class OrderController extends AbstractController
         return new JsonResponse($payment->jsonSerialize());
     }
 
+    /**
+     * Capture checkout.com payment by the order id
+     *
+     * @Route("/api/_action/checkout-com/order/capture", name="api.action.checkout-com.order.capture", methods={"POST"})
+     */
+    public function capturePayment(RequestDataBag $data, Context $context): JsonResponse
+    {
+        $dataValidation = $this->getCapturePaymentValidation();
+        $this->dataValidator->validate($data->all(), $dataValidation);
+
+        $this->orderCheckoutService->capturePayment(
+            $data->get('orderId'),
+            $context
+        );
+
+        return new JsonResponse([
+            'success' => true,
+        ]);
+    }
+
     public function getCheckoutComPaymentValidation(): DataValidationDefinition
     {
         $definition = new DataValidationDefinition('checkout_com.order.payment');
+
+        $definition->add('orderId', new Type('string'), new NotBlank());
+
+        return $definition;
+    }
+
+    public function getCapturePaymentValidation(): DataValidationDefinition
+    {
+        $definition = new DataValidationDefinition('checkout_com.order.capture');
 
         $definition->add('orderId', new Type('string'), new NotBlank());
 

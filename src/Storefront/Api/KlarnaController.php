@@ -5,7 +5,7 @@ namespace CheckoutCom\Shopware6\Storefront\Api;
 
 use CheckoutCom\Shopware6\Exception\CheckoutComException;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
-use CheckoutCom\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService;
+use CheckoutCom\Shopware6\Service\Klarna\KlarnaService;
 use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
 use CheckoutCom\Shopware6\Struct\LineItemTotalPrice;
 use CheckoutCom\Shopware6\Struct\Response\CreditSessionResponse;
@@ -37,18 +37,18 @@ class KlarnaController extends AbstractController
 
     private AbstractOrderService $orderService;
 
-    private CheckoutKlarnaService $checkoutKlarnaService;
+    private KlarnaService $klarnaService;
 
     public function __construct(
         DataValidator $dataValidator,
         LoggerInterface $logger,
         AbstractOrderService $orderService,
-        CheckoutKlarnaService $checkoutKlarnaService
+        KlarnaService $klarnaService
     ) {
         $this->dataValidator = $dataValidator;
         $this->logger = $logger;
         $this->orderService = $orderService;
-        $this->checkoutKlarnaService = $checkoutKlarnaService;
+        $this->klarnaService = $klarnaService;
     }
 
     /**
@@ -83,7 +83,7 @@ class KlarnaController extends AbstractController
             $dataValidation = $this->getCreateCreditSessionValidation();
             $this->dataValidator->validate($data->all(), $dataValidation);
 
-            $response = $this->checkoutKlarnaService->createCreditSession(
+            $response = $this->klarnaService->createCreditSession(
                 $this->getLineItemTotalPrice($data, $cart, $context),
                 $context
             );

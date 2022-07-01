@@ -51,6 +51,9 @@
       }
     },
     "order": {
+      "general": {
+        "captureLabel": "Erfassung"
+      },
       "checkoutPayments": {
         "title": "Checkout.com Zahlungen",
         "paymentIDLabel": "Zahlungs ID",

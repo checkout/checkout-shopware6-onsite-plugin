@@ -25,7 +25,7 @@ class CheckoutSourceServiceTest extends AbstractCheckoutTest
      */
     public function testCreateSepaSource(bool $expectThrowException): void
     {
-        $this->handleTestCheckoutRequest($expectThrowException, 'post');
+        $this->handleCheckoutRequestShouldThrowException($expectThrowException, 'post');
 
         $sepaSourceRequest = new SepaSourceRequest();
         $source = $this->checkoutSourceService->createSepaSource(

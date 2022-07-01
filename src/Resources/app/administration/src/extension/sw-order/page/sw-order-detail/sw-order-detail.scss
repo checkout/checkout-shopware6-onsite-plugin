@@ -1,0 +1,26 @@
+@import '~scss/variables';
+
+.checkout-com-order-button {
+    background: transparent;
+    border-color: $color-emerald-500;
+    color: $color-emerald-500;
+
+    &:hover {
+        background: $color-emerald-50;
+    }
+
+    &:active {
+        background: $color-emerald-100;
+    }
+
+    &:disabled,
+    &.sw-button--disabled {
+        background-color: transparent;
+        border-color: $color-emerald-200;
+        color: $color-emerald-200;
+
+        .sw-icon {
+            color: $color-emerald-200;
+        }
+    }
+}
