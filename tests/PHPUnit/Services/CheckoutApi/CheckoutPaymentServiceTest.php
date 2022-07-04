@@ -81,6 +81,19 @@ class CheckoutPaymentServiceTest extends AbstractCheckoutTest
     /**
      * @dataProvider requestCheckoutApiProvider
      */
+    public function testVoidPayment(bool $apiShouldThrowException): void
+    {
+        $this->handleCheckoutRequestShouldThrowException($apiShouldThrowException, 'post');
+
+        $this->checkoutPaymentService->voidPayment(
+            'foo',
+            $this->salesChannelContext->getSalesChannelId()
+        );
+    }
+
+    /**
+     * @dataProvider requestCheckoutApiProvider
+     */
     public function testRefundPayment(bool $apiShouldThrowException): void
     {
         $this->handleCheckoutRequestShouldThrowException($apiShouldThrowException, 'post');

@@ -10,6 +10,8 @@ class PaymentMethodCustomFieldsStruct extends Struct
 
     protected ?bool $shouldManualCapture;
 
+    protected ?bool $shouldManualVoid;
+
     public function getMethodType(): ?string
     {
         return $this->methodType;
@@ -28,5 +30,15 @@ class PaymentMethodCustomFieldsStruct extends Struct
     public function setShouldManualCapture(?bool $shouldManualCapture): void
     {
         $this->shouldManualCapture = $shouldManualCapture;
+    }
+
+    public function getShouldManualVoid(): ?bool
+    {
+        return $this->shouldManualVoid;
+    }
+
+    public function setShouldManualVoid(?bool $shouldManualVoid): void
+    {
+        $this->shouldManualVoid = $shouldManualVoid;
     }
 }

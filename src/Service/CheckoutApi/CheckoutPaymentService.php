@@ -95,6 +95,22 @@ class CheckoutPaymentService extends AbstractCheckoutService
     /**
      * @throws CheckoutApiException
      */
+    public function voidPayment(string $paymentId, string $salesChannelId): void
+    {
+        $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
+
+        try {
+            $checkoutApi->getPaymentsClient()->voidPayment($paymentId);
+        } catch (CheckoutApiException $e) {
+            $this->logMessage($e, __FUNCTION__, ['paymentId' => $paymentId]);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * @throws CheckoutApiException
+     */
     public function refundPayment(string $paymentId, string $salesChannelId): void
     {
         $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);

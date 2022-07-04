@@ -68,6 +68,10 @@ Component.register('checkout-com-order-detail-payment', {
                 source.expiry_year,
             ].join('/');
         },
+
+        paymentActions() {
+            return this.payment.actions.slice().reverse();
+        },
     },
 
     methods: {

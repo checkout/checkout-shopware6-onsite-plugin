@@ -65,6 +65,7 @@ class PaymentMethodSubscriber implements EventSubscriberInterface
             )
         );
         $paymentMethodCustomFields->setShouldManualCapture($paymentHandler->shouldManualCapture());
+        $paymentMethodCustomFields->setShouldManualVoid($paymentHandler->shouldManualVoid());
 
         $customFields = $paymentMethod->getCustomFields() ?? [];
         $customFields[self::PAYMENT_METHOD_CUSTOM_FIELDS] = $paymentMethodCustomFields->jsonSerialize();

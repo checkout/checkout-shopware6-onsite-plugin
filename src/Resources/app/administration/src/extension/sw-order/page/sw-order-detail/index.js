@@ -35,6 +35,10 @@ Component.override('sw-order-detail', {
             return this.checkoutComOrder?.transactions?.last()?.paymentMethod;
         },
 
+        paymentMethodCheckoutConfig() {
+            return this.checkoutComPaymentMethod?.customFields?.checkoutConfig;
+        },
+
         shouldManualCapture() {
             if (this.isEditing) {
                 return false;
@@ -44,16 +48,29 @@ Component.override('sw-order-detail', {
                 return false;
             }
 
-            const paymentMethod = this.checkoutComPaymentMethod;
-            if (!paymentMethod) {
+            const paymentMethodCheckoutConfig = this.paymentMethodCheckoutConfig;
+            if (!paymentMethodCheckoutConfig) {
                 return false;
             }
 
-            if (!paymentMethod.customFields.hasOwnProperty('checkoutConfig')) {
+            return paymentMethodCheckoutConfig.shouldManualCapture;
+        },
+
+        shouldManualVoid() {
+            if (this.isEditing) {
                 return false;
             }
 
-            return paymentMethod.customFields.checkoutConfig.shouldManualCapture;
+            if (!this.isAuthorizedPayment) {
+                return false;
+            }
+
+            const paymentMethodCheckoutConfig = this.paymentMethodCheckoutConfig;
+            if (!paymentMethodCheckoutConfig) {
+                return false;
+            }
+
+            return paymentMethodCheckoutConfig.shouldManualVoid;
         },
     },
 
@@ -83,6 +100,20 @@ Component.override('sw-order-detail', {
             try {
                 this.isLoading = true;
                 await this.checkoutOrderService.capturePayment(this.orderId);
+
+                this.$root.$emit('checkout-order-update');
+            } catch (error) {
+                this.createNotificationError({
+                    message: this.$tc('global.notification.unspecifiedSaveErrorMessage'),
+                });
+                this.isLoading = false;
+            }
+        },
+
+        async onVoid() {
+            try {
+                this.isLoading = true;
+                await this.checkoutOrderService.voidPayment(this.orderId);
 
                 this.$root.$emit('checkout-order-update');
             } catch (error) {

@@ -88,8 +88,8 @@
 
                         {% block checkout_com_order_detail_payment_history_items %}
                             <div
-                                v-for="action in payment.actions.slice().reverse()"
-                                :key="action.id"
+                                v-for="(action, index) in paymentActions"
+                                :key="`${index}_${action.id}`"
                                 class="checkout-com-order-detail-payment-history"
                             >
                                 {% block checkout_com_order_detail_payment_icon %}

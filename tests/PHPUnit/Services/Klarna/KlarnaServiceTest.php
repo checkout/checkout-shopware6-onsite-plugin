@@ -111,6 +111,9 @@ class KlarnaServiceTest extends TestCase
             ->method('getPurchaseCountryIsoCodeFromContext')
             ->willReturn('foo');
 
+        $this->checkoutKlarnaService->expects(static::once())
+            ->method('createCreditSession');
+
         $this->klarnaService->createCreditSession(
             $lineItemTotalPrice,
             $this->salesChannelContext
@@ -130,7 +133,26 @@ class KlarnaServiceTest extends TestCase
             ->method('extractCurrency')
             ->willReturn($currency);
 
+        $this->checkoutKlarnaService->expects(static::once())
+            ->method('capturePayment');
+
         $this->klarnaService->capturePayment(
+            'foo',
+            $order
+        );
+    }
+
+    public function testVoidPayment(): void
+    {
+        $order = $this->getOrder();
+
+        $this->orderExtractor->expects(static::once())
+            ->method('extractOrderNumber');
+
+        $this->checkoutKlarnaService->expects(static::once())
+            ->method('voidPayment');
+
+        $this->klarnaService->voidPayment(
             'foo',
             $order
         );

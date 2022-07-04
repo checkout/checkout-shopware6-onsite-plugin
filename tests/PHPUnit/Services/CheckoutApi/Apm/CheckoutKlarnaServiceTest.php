@@ -4,6 +4,7 @@ namespace CheckoutCom\Shopware6\Tests\Services\CheckoutApi\Apm;
 
 use Checkout\Apm\Klarna\CreditSessionRequest;
 use Checkout\Apm\Klarna\OrderCaptureRequest;
+use Checkout\Payments\VoidRequest;
 use CheckoutCom\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\Klarna\CreditSessionStruct;
 use CheckoutCom\Shopware6\Tests\Services\CheckoutApi\AbstractCheckoutTest;
@@ -48,6 +49,21 @@ class CheckoutKlarnaServiceTest extends AbstractCheckoutTest
         $this->checkoutKlarnaService->capturePayment(
             'foo',
             $orderCaptureRequest,
+            $this->salesChannelContext->getSalesChannelId()
+        );
+    }
+
+    /**
+     * @dataProvider requestCheckoutApiProvider
+     */
+    public function testVoidPayment(bool $apiShouldThrowException): void
+    {
+        $this->handleCheckoutRequestShouldThrowException($apiShouldThrowException, 'post');
+
+        $voidRequest = new VoidRequest();
+        $this->checkoutKlarnaService->voidPayment(
+            'foo',
+            $voidRequest,
             $this->salesChannelContext->getSalesChannelId()
         );
     }

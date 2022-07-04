@@ -10,6 +10,7 @@ use Checkout\CheckoutApiException;
 use Checkout\Common\Country;
 use Checkout\Common\Currency;
 use Checkout\Payments\Source\Apm\KlarnaProduct;
+use Checkout\Payments\VoidRequest;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use CheckoutCom\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService;
 use CheckoutCom\Shopware6\Service\ContextService;
@@ -72,6 +73,18 @@ class KlarnaService
         $this->checkoutKlarnaService->capturePayment(
             $paymentId,
             $this->buildCapturePaymentRequest($order),
+            $order->getSalesChannelId()
+        );
+    }
+
+    /**
+     * @throws CheckoutApiException
+     */
+    public function voidPayment(string $paymentId, OrderEntity $order): void
+    {
+        $this->checkoutKlarnaService->voidPayment(
+            $paymentId,
+            $this->buildVoidPaymentRequest($order),
             $order->getSalesChannelId()
         );
     }
@@ -219,6 +232,17 @@ class KlarnaService
         $request->amount = CheckoutComUtil::formatPriceCheckout($order->getAmountTotal(), $currency->getIsoCode());
         $request->reference = (int) $this->orderExtractor->extractOrderNumber($order);
         $request->klarna = $klarna;
+
+        return $request;
+    }
+
+    /**
+     * Build request data to void the payment
+     */
+    private function buildVoidPaymentRequest(OrderEntity $order): VoidRequest
+    {
+        $request = new VoidRequest();
+        $request->reference = $this->orderExtractor->extractOrderNumber($order);
 
         return $request;
     }

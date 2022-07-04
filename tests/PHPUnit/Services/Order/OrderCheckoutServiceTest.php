@@ -84,110 +84,63 @@ class OrderCheckoutServiceTest extends TestCase
         $this->orderCheckoutService->getDecorated();
     }
 
-    /**
-     * @dataProvider getCheckoutPaymentProvider
-     */
-    public function testGetCheckoutPayment(bool $hasCheckoutOrderId, bool $throwException): void
+    public function testGetCheckoutPaymentOfNullCheckoutOrderId(): void
     {
-        $order = $this->getOrder($hasCheckoutOrderId ? 'foo' : null);
+        $order = $this->getOrder();
 
         $this->orderService->expects(static::once())
             ->method('getOrder')
             ->willReturn($order);
 
-        if (!$hasCheckoutOrderId) {
-            static::expectException(CheckoutPaymentIdNotFoundException::class);
-        } else {
-            if ($throwException) {
-                $this->checkoutPaymentService->expects(static::once())
-                    ->method('getPaymentDetails')
-                    ->willThrowException(new CheckoutComException('foo'));
+        static::expectException(CheckoutPaymentIdNotFoundException::class);
 
-                static::expectException(CheckoutComException::class);
-            } else {
-                $payment = new Payment();
+        $this->orderCheckoutService->getCheckoutPayment($order->getId(), $this->salesChannelContext->getContext());
+    }
 
-                $this->checkoutPaymentService->expects(static::once())
-                    ->method('getPaymentDetails')
-                    ->willReturn($payment);
-                $this->checkoutPaymentService->expects(static::once())
-                    ->method('getPaymentActions')
-                    ->willReturn([]);
-            }
-        }
+    public function testGetCheckoutPaymentShouldThrowException(): void
+    {
+        $order = $this->getOrder('foo');
+
+        $this->orderService->expects(static::once())
+            ->method('getOrder')
+            ->willReturn($order);
+
+        $this->checkoutPaymentService->expects(static::once())
+            ->method('getPaymentDetails')
+            ->willThrowException(new CheckoutComException('foo'));
+
+        static::expectException(CheckoutComException::class);
+
+        $this->orderCheckoutService->getCheckoutPayment($order->getId(), $this->salesChannelContext->getContext());
+    }
+
+    public function testGetCheckoutPayment(): void
+    {
+        $order = $this->getOrder('foo');
+
+        $this->orderService->expects(static::once())
+            ->method('getOrder')
+            ->willReturn($order);
+
+        $payment = new Payment();
+
+        $this->checkoutPaymentService->expects(static::once())
+            ->method('getPaymentDetails')
+            ->willReturn($payment);
+        $this->checkoutPaymentService->expects(static::once())
+            ->method('getPaymentActions')
+            ->willReturn([]);
 
         $expect = $this->orderCheckoutService->getCheckoutPayment($order->getId(), $this->salesChannelContext->getContext());
 
         static::assertInstanceOf(Payment::class, $expect);
     }
 
-    /**
-     * @dataProvider capturePaymentProvider
-     */
-    public function testCapturePayment(
-        bool $hasCheckoutOrderId,
-        bool $hasOrderTransactionCollection,
-        bool $hasOrderTransactionEntity,
-        bool $hasPaymentHandler,
-        bool $hasPaymentDetail,
-        string $paymentStatus
-    ): void {
-        $paymentHandler = $this->createMock(PaymentHandler::class);
-        $order = $this->getOrder($hasCheckoutOrderId ? 'foo' : null);
+    public function testCapturePaymentOfNullCheckoutOrderId(): void
+    {
+        $order = $this->getOrder();
 
-        if (!$hasCheckoutOrderId) {
-            static::expectException(CheckoutPaymentIdNotFoundException::class);
-        } else {
-            if (!$hasOrderTransactionCollection) {
-                static::expectException(InvalidOrderException::class);
-            } else {
-                $orderTransaction = $this->getOrderTransaction();
-                $orderTransactionCollection = new OrderTransactionCollection();
-
-                if (!$hasOrderTransactionEntity) {
-                    static::expectException(InvalidOrderException::class);
-                } else {
-                    $orderTransactionCollection->add($orderTransaction);
-
-                    if (!$hasPaymentHandler) {
-                        static::expectException(CheckoutComException::class);
-                    } else {
-                        $this->paymentMethodService->expects(static::once())
-                            ->method('getPaymentHandlerByOrderTransaction')
-                            ->willReturn($paymentHandler);
-
-                        if (!$hasPaymentDetail) {
-                            $this->checkoutPaymentService->expects(static::once())
-                                ->method('getPaymentDetails')
-                                ->willThrowException(new Exception('foo'));
-
-                            static::expectException(CheckoutComException::class);
-                        } else {
-                            $payment = $this->createConfiguredMock(Payment::class, [
-                                'getStatus' => $paymentStatus,
-                            ]);
-
-                            $this->checkoutPaymentService->expects(static::once())
-                                ->method('getPaymentDetails')
-                                ->willReturn($payment);
-
-                            $isAuthorized = $paymentStatus === CheckoutPaymentService::STATUS_AUTHORIZED;
-
-                            $this->settingFactory->expects(static::exactly($isAuthorized ? 1 : 0))
-                                ->method('getSettings');
-
-                            $this->orderService->expects(static::exactly($isAuthorized ? 1 : 0))
-                                ->method('processTransition');
-
-                            $this->orderTransitionService->expects(static::exactly($isAuthorized ? 1 : 0))
-                                ->method('processTransition');
-                        }
-                    }
-                }
-
-                $order->setTransactions($orderTransactionCollection);
-            }
-        }
+        static::expectException(CheckoutPaymentIdNotFoundException::class);
 
         $this->orderService->expects(static::once())
             ->method('getOrder')
@@ -196,81 +149,268 @@ class OrderCheckoutServiceTest extends TestCase
         $this->orderCheckoutService->capturePayment($order->getId(), $this->salesChannelContext->getContext());
     }
 
-    public function getCheckoutPaymentProvider(): array
+    public function testCapturePaymentOfNullOrderTransactionCollection(): void
     {
-        return [
-            'Test not found checkout order ID' => [
-                false,
-                true,
-            ],
-            'Test call api Failed' => [
-                true,
-                true,
-            ],
-            'Test call api success' => [
-                true,
-                false,
-            ],
-        ];
+        $order = $this->getOrder('foo');
+
+        static::expectException(InvalidOrderException::class);
+
+        $this->orderService->expects(static::once())
+            ->method('getOrder')
+            ->willReturn($order);
+
+        $this->orderCheckoutService->capturePayment($order->getId(), $this->salesChannelContext->getContext());
+    }
+
+    public function testCapturePaymentOfNullOrderTransactionEntity(): void
+    {
+        $order = $this->getOrder('foo');
+        $order->setTransactions(new OrderTransactionCollection());
+
+        static::expectException(InvalidOrderException::class);
+
+        $this->orderService->expects(static::once())
+            ->method('getOrder')
+            ->willReturn($order);
+
+        $this->orderCheckoutService->capturePayment($order->getId(), $this->salesChannelContext->getContext());
+    }
+
+    public function testCapturePaymentOfNullPaymentHandler(): void
+    {
+        $order = $this->getOrder('foo');
+        $orderTransaction = $this->getOrderTransaction();
+        $orderTransactionCollection = new OrderTransactionCollection();
+        $orderTransactionCollection->add($orderTransaction);
+        $order->setTransactions($orderTransactionCollection);
+
+        static::expectException(CheckoutComException::class);
+
+        $this->orderService->expects(static::once())
+            ->method('getOrder')
+            ->willReturn($order);
+
+        $this->orderCheckoutService->capturePayment($order->getId(), $this->salesChannelContext->getContext());
+    }
+
+    public function testCapturePaymentOfNullPaymentDetail(): void
+    {
+        $paymentHandler = $this->createMock(PaymentHandler::class);
+        $order = $this->getOrder('foo');
+        $orderTransaction = $this->getOrderTransaction();
+        $orderTransactionCollection = new OrderTransactionCollection();
+        $orderTransactionCollection->add($orderTransaction);
+        $order->setTransactions($orderTransactionCollection);
+
+        $this->paymentMethodService->expects(static::once())
+            ->method('getPaymentHandlerByOrderTransaction')
+            ->willReturn($paymentHandler);
+
+        $this->checkoutPaymentService->expects(static::once())
+            ->method('getPaymentDetails')
+            ->willThrowException(new Exception('foo'));
+
+        static::expectException(CheckoutComException::class);
+
+        $this->orderService->expects(static::once())
+            ->method('getOrder')
+            ->willReturn($order);
+
+        $this->orderCheckoutService->capturePayment($order->getId(), $this->salesChannelContext->getContext());
+    }
+
+    /**
+     * @dataProvider capturePaymentProvider
+     */
+    public function testCapturePayment(string $paymentStatus): void
+    {
+        $paymentHandler = $this->createMock(PaymentHandler::class);
+        $order = $this->getOrder('foo');
+        $orderTransaction = $this->getOrderTransaction();
+        $orderTransactionCollection = new OrderTransactionCollection();
+        $orderTransactionCollection->add($orderTransaction);
+        $order->setTransactions($orderTransactionCollection);
+
+        $this->paymentMethodService->expects(static::once())
+            ->method('getPaymentHandlerByOrderTransaction')
+            ->willReturn($paymentHandler);
+
+        $payment = $this->createConfiguredMock(Payment::class, [
+            'getStatus' => $paymentStatus,
+        ]);
+
+        $this->checkoutPaymentService->expects(static::once())
+            ->method('getPaymentDetails')
+            ->willReturn($payment);
+
+        $isAuthorized = $paymentStatus === CheckoutPaymentService::STATUS_AUTHORIZED;
+
+        $paymentHandler->expects(static::exactly($isAuthorized ? 1 : 0))
+            ->method('capturePayment');
+
+        $this->settingFactory->expects(static::exactly($isAuthorized ? 1 : 0))
+            ->method('getSettings');
+
+        $this->orderService->expects(static::exactly($isAuthorized ? 1 : 0))
+            ->method('processTransition');
+
+        $this->orderTransitionService->expects(static::exactly($isAuthorized ? 1 : 0))
+            ->method('processTransition');
+
+        $this->orderService->expects(static::once())
+            ->method('getOrder')
+            ->willReturn($order);
+
+        $this->orderCheckoutService->capturePayment($order->getId(), $this->salesChannelContext->getContext());
+    }
+
+    public function testVoidPaymentOfNullCheckoutOrderId(): void
+    {
+        $order = $this->getOrder();
+
+        static::expectException(CheckoutPaymentIdNotFoundException::class);
+
+        $this->orderService->expects(static::once())
+            ->method('getOrder')
+            ->willReturn($order);
+
+        $this->orderCheckoutService->voidPayment($order->getId(), $this->salesChannelContext->getContext());
+    }
+
+    public function testVoidPaymentOfNullOrderTransactionCollection(): void
+    {
+        $order = $this->getOrder('foo');
+
+        static::expectException(InvalidOrderException::class);
+
+        $this->orderService->expects(static::once())
+            ->method('getOrder')
+            ->willReturn($order);
+
+        $this->orderCheckoutService->voidPayment($order->getId(), $this->salesChannelContext->getContext());
+    }
+
+    public function testVoidPaymentOfNullOrderTransactionEntity(): void
+    {
+        $order = $this->getOrder('foo');
+        $order->setTransactions(new OrderTransactionCollection());
+
+        static::expectException(InvalidOrderException::class);
+
+        $this->orderService->expects(static::once())
+            ->method('getOrder')
+            ->willReturn($order);
+
+        $this->orderCheckoutService->voidPayment($order->getId(), $this->salesChannelContext->getContext());
+    }
+
+    public function testVoidPaymentOfNullPaymentHandler(): void
+    {
+        $order = $this->getOrder('foo');
+        $orderTransaction = $this->getOrderTransaction();
+        $orderTransactionCollection = new OrderTransactionCollection();
+        $orderTransactionCollection->add($orderTransaction);
+        $order->setTransactions($orderTransactionCollection);
+
+        static::expectException(CheckoutComException::class);
+
+        $this->orderService->expects(static::once())
+            ->method('getOrder')
+            ->willReturn($order);
+
+        $this->orderCheckoutService->voidPayment($order->getId(), $this->salesChannelContext->getContext());
+    }
+
+    public function testVoidPaymentOfNullPaymentDetail(): void
+    {
+        $paymentHandler = $this->createMock(PaymentHandler::class);
+        $order = $this->getOrder('foo');
+        $orderTransaction = $this->getOrderTransaction();
+        $orderTransactionCollection = new OrderTransactionCollection();
+        $orderTransactionCollection->add($orderTransaction);
+        $order->setTransactions($orderTransactionCollection);
+
+        $this->paymentMethodService->expects(static::once())
+            ->method('getPaymentHandlerByOrderTransaction')
+            ->willReturn($paymentHandler);
+
+        $this->checkoutPaymentService->expects(static::once())
+            ->method('getPaymentDetails')
+            ->willThrowException(new Exception('foo'));
+
+        static::expectException(CheckoutComException::class);
+
+        $this->orderService->expects(static::once())
+            ->method('getOrder')
+            ->willReturn($order);
+
+        $this->orderCheckoutService->voidPayment($order->getId(), $this->salesChannelContext->getContext());
+    }
+
+    /**
+     * @dataProvider voidPaymentProvider
+     */
+    public function testVoidPayment(string $paymentStatus): void
+    {
+        $paymentHandler = $this->createMock(PaymentHandler::class);
+        $order = $this->getOrder('foo');
+        $orderTransaction = $this->getOrderTransaction();
+        $orderTransactionCollection = new OrderTransactionCollection();
+        $orderTransactionCollection->add($orderTransaction);
+        $order->setTransactions($orderTransactionCollection);
+
+        $this->paymentMethodService->expects(static::once())
+            ->method('getPaymentHandlerByOrderTransaction')
+            ->willReturn($paymentHandler);
+
+        $payment = $this->createConfiguredMock(Payment::class, [
+            'getStatus' => $paymentStatus,
+        ]);
+
+        $this->checkoutPaymentService->expects(static::once())
+            ->method('getPaymentDetails')
+            ->willReturn($payment);
+
+        $isAuthorized = $paymentStatus === CheckoutPaymentService::STATUS_AUTHORIZED;
+
+        $paymentHandler->expects(static::exactly($isAuthorized ? 1 : 0))
+            ->method('voidPayment');
+
+        $this->settingFactory->expects(static::exactly($isAuthorized ? 1 : 0))
+            ->method('getSettings');
+
+        $this->orderService->expects(static::exactly($isAuthorized ? 1 : 0))
+            ->method('processTransition');
+
+        $this->orderTransitionService->expects(static::exactly($isAuthorized ? 1 : 0))
+            ->method('processTransition');
+
+        $this->orderService->expects(static::once())
+            ->method('getOrder')
+            ->willReturn($order);
+
+        $this->orderCheckoutService->voidPayment($order->getId(), $this->salesChannelContext->getContext());
     }
 
     public function capturePaymentProvider(): array
     {
         return [
-            'Test not found checkout order ID' => [
-                false,
-                false,
-                false,
-                false,
-                false,
-                CheckoutPaymentService::STATUS_CAPTURED,
-            ],
-            'Test not found order transaction collection' => [
-                true,
-                false,
-                false,
-                false,
-                false,
-                CheckoutPaymentService::STATUS_CAPTURED,
-            ],
-            'Test not found order transaction entity' => [
-                true,
-                true,
-                false,
-                false,
-                false,
-                CheckoutPaymentService::STATUS_CAPTURED,
-            ],
-            'Test not found payment handler' => [
-                true,
-                true,
-                true,
-                false,
-                false,
-                CheckoutPaymentService::STATUS_CAPTURED,
-            ],
-            'Test call api fail not found payment' => [
-                true,
-                true,
-                true,
-                true,
-                false,
-                CheckoutPaymentService::STATUS_CAPTURED,
-            ],
             'Test payment status is not authorized' => [
-                true,
-                true,
-                true,
-                true,
-                true,
                 CheckoutPaymentService::STATUS_CAPTURED,
             ],
             'Test capture successfully' => [
-                true,
-                true,
-                true,
-                true,
-                true,
+                CheckoutPaymentService::STATUS_AUTHORIZED,
+            ],
+        ];
+    }
+
+    public function voidPaymentProvider(): array
+    {
+        return [
+            'Test payment status is not authorized' => [
+                CheckoutPaymentService::STATUS_CAPTURED,
+            ],
+            'Test void successfully' => [
                 CheckoutPaymentService::STATUS_AUTHORIZED,
             ],
         ];

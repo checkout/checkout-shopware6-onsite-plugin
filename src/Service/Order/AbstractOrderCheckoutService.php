@@ -12,4 +12,6 @@ abstract class AbstractOrderCheckoutService
     abstract public function getCheckoutPayment(string $orderId, Context $context): Payment;
 
     abstract public function capturePayment(string $orderId, Context $context): void;
+
+    abstract public function voidPayment(string $orderId, Context $context): void;
 }
