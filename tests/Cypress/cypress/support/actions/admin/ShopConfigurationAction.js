@@ -62,6 +62,24 @@ class ShopConfigurationAction {
     }
 
     /**
+     * Enable or disable 3D secure for Storefront
+     * @param isActive
+     */
+    toggle3ds(isActive) {
+        cy.getSalesChannelByName().then((salesChannel) => {
+            if (!salesChannel?.id || isActive === undefined) return;
+
+            const data = {
+                [salesChannel.id]: {
+                    'CheckoutCom.config.enable3dSecure': isActive
+                }
+            };
+
+            return this.apiClient.post('/_action/system-config/batch', data);
+        });
+    }
+
+    /**
      * Activate CheckoutCom payment methods for all sales channels
      * @param id
      * @private

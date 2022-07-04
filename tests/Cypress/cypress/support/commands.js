@@ -57,3 +57,20 @@ Cypress.Commands.add('updateViaAdminApiWithIdentifier', (endpoint, identifier, d
             return cy.updateViaAdminApi(endpoint, entity.id, { data });
         });
 });
+
+/**
+ * Get sales channel info by name
+ * @memberOf Cypress.Chainable#
+ * @name getSalesChannelByName
+ * @function
+ * @param {String} salesChannelName - sales channel name
+ */
+Cypress.Commands.add('getSalesChannelByName', (salesChannelName = 'Storefront') => {
+    return cy.searchViaAdminApi({
+        endpoint: 'sales-channel',
+        data: {
+            field: 'name',
+            value: salesChannelName,
+        },
+    });
+});
