@@ -1,0 +1,107 @@
+{% block checkout_com_refund_modal %}
+    <sw-modal
+        variant="full"
+        class="checkout-com-refund-modal"
+        :is-loading="isLoading"
+        :title="$tc('checkout-payments.order.refund.modal.title')"
+        @modal-close="closeModal"
+    >
+        {% block checkout_com_refund_modal_section %}
+            <sw-card-section class="checkout-com-refund-section">
+                {% block checkout_com_refund_modal_section_container %}
+                    <sw-container columns="1fr">
+                        {% block checkout_com_refund_modal_section_container_card %}
+                            <sw-card
+                                :hero="false"
+                                :large="true"
+                            >
+                                {% block checkout_com_refund_modal_section_container_card_grid %}
+                                    <sw-data-grid
+                                        :data-source="refundableLineItems"
+                                        :columns="columns"
+                                        :show-selection="true"
+                                        :show-actions="false"
+                                        @select-item="onSelectItemChange"
+                                    >
+                                        {% block checkout_com_refund_modal_section_container_card_grid_columns_quantity %}
+                                            <template #column-quantity="{ item }">
+                                                <span>{{ item.quantity }} x</span>
+                                            </template>
+                                        {% endblock %}
+
+                                        {% block checkout_com_refund_modal_section_container_card_grid_columns_unit_price %}
+                                            <template #column-unitPrice="{ item }">
+                                                <span>{{ item.unitPrice | currency(order.currency.shortName) }}</span>
+                                            </template>
+                                        {% endblock %}
+
+                                        {% block checkout_com_refund_modal_section_container_card_grid_columns_return_quantity %}
+                                            <template #column-returnQuantity="{ item, selectItem }">
+                                                {% block checkout_com_refund_modal_section_container_card_grid_columns_return_quantity_field %}
+                                                    <sw-single-select
+                                                        v-model="item.returnQuantity"
+                                                        size="small"
+                                                        :is-invalid="item.returnQuantityError"
+                                                        :show-clearable-button="true"
+                                                        :options="returnQuantityOptions(item)"
+                                                        :placeholder="returnQuantityPlaceholder(item)"
+                                                        :disabled="isFullyRefunded(item)"
+                                                        @change="selectItem(true, item)"
+                                                    />
+                                                {% endblock %}
+                                            </template>
+                                        {% endblock %}
+                                    </sw-data-grid>
+                                {% endblock %}
+                            </sw-card>
+                        {% endblock %}
+                    </sw-container>
+                {% endblock %}
+            </sw-card-section>
+        {% endblock %}
+
+        {% block checkout_com_refund_modal_footer %}
+            <template #modal-footer>
+                {% block checkout_com_refund_modal_footer_section %}
+                    <div class="checkout-com-refund-modal-footer">
+                        {% block checkout_com_refund_modal_footer_confirm_checkbox %}
+                            <sw-checkbox-field
+                                v-model="isConfirmRefund"
+                                :label="$tc('checkout-payments.order.refund.modal.confirmRefundCheckboxLabel')"
+                            />
+                        {% endblock %}
+
+                        {% block checkout_com_refund_modal_footer_button_group %}
+                            <sw-container
+                                columns="1fr 1fr"
+                                gap="16px"
+                            >
+                                {% block checkout_com_refund_modal_footer_button_group_cancel %}
+                                    <sw-button
+                                        size="large"
+                                        class="checkout-com-refund-modal__button-cancel"
+                                        @click="closeModal"
+                                    >
+                                        {{ $tc('global.default.cancel') }}
+                                    </sw-button>
+                                {% endblock %}
+
+                                {% block checkout_com_refund_modal_footer_button_group_refund %}
+                                    <sw-button
+                                        variant="primary"
+                                        size="large"
+                                        class="checkout-com-refund-modal__button-refund"
+                                        :disabled="!canRefund"
+                                        @click="onRefund"
+                                    >
+                                        {{ $tc('checkout-payments.order.refund.modal.refundSelectedItemsButton') }}
+                                    </sw-button>
+                                {% endblock %}
+                            </sw-container>
+                        {% endblock %}
+                    </div>
+                {% endblock %}
+            </template>
+        {% endblock %}
+    </sw-modal>
+{% endblock %}

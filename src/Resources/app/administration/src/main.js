@@ -2,6 +2,8 @@ import './services/';
 import './module/checkout-payments';
 import './component/checkout-com-media-compact-upload-v2';
 import './component/checkout-com-inherit-media-upload';
+import './component/checkout-com-order-detail-payment';
+import './component/checkout-com-refund-modal';
 import './extension/sw-settings-payment';
 import './extension/sw-system-config';
 import './extension/sw-order';

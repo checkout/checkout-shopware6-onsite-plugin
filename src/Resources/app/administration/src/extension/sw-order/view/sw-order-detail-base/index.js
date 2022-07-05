@@ -1,10 +1,15 @@
 import template from './sw-order-detail-base.html.twig';
-import { ORDER_CHECKOUT_COM_CUSTOM_FIELDS } from '../../../../constant/settings';
+import { LINE_ITEM_PAYLOAD, ORDER_CHECKOUT_COM_CUSTOM_FIELDS } from '../../../../constant/settings';
 
 const {
     Component,
     Mixin,
+    State,
 } = Shopware;
+const {
+    mapState,
+    mapGetters,
+} = Component.getComponentHelper();
 
 Component.override('sw-order-detail-base', {
     template,
@@ -18,6 +23,15 @@ Component.override('sw-order-detail-base', {
     ],
 
     computed: {
+        ...mapState('checkoutComOrder', [
+            'checkoutComPayment',
+        ]),
+
+        ...mapGetters('checkoutComOrder', [
+            'isPartialRefundedPayment',
+            'isFullRefundedPayment',
+        ]),
+
         hasCheckoutComConfig() {
             const customFields = this.order.customFields;
             if (!customFields) {
@@ -26,18 +40,27 @@ Component.override('sw-order-detail-base', {
 
             return customFields.hasOwnProperty(ORDER_CHECKOUT_COM_CUSTOM_FIELDS);
         },
+
+        checkoutTotalBeforeRefund() {
+            return Math.abs(this.checkoutComRefundedAmount) + this.order.price.totalPrice;
+        },
+
+        checkoutComRefundedAmount() {
+            // Count total price of the refunded order line items (has `LINE_ITEM_PAYLOAD` property)
+            return this.order.lineItems.reduce((total, lineItem) => {
+                if (!lineItem?.payload?.hasOwnProperty(LINE_ITEM_PAYLOAD)) {
+                    return total;
+                }
+
+                return total + lineItem.totalPrice;
+            }, 0);
+        },
     },
 
     watch: {
         order() {
             this.getCheckoutComPayment();
         },
-    },
-
-    data() {
-        return {
-            checkoutComPayment: null,
-        };
     },
 
     created() {
@@ -70,8 +93,8 @@ Component.override('sw-order-detail-base', {
                 this.$emit('loading-change', true);
                 const checkoutComPayment = await this.checkoutOrderService.getCheckoutComPayment(this.order.id);
 
-                this.$root.$emit('checkout-payment-change', checkoutComPayment, this.order);
-                this.checkoutComPayment = checkoutComPayment;
+                State.commit('checkoutComOrder/setCheckoutComPayment', checkoutComPayment);
+                State.commit('checkoutComOrder/setOrder', this.order);
             } catch (error) {
                 this.createNotificationError({
                     message: this.$tc('global.notification.unspecifiedSaveErrorMessage'),
