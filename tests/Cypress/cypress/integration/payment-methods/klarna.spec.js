@@ -50,7 +50,7 @@ describe('Testing Storefront Klarna Payment', () => {
 
             checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
 
-            cy.intercept('POST', 'https://js.playground.klarna.com/**').as('initKlarna');
+            cy.intercept('POST', 'https://js.playground.klarna.com/eu/profile/login/**/init').as('initKlarna');
             cy.wait('@initKlarna');
 
             // Fill in necessary information
@@ -70,10 +70,10 @@ describe('Testing Storefront Klarna Payment', () => {
             // Choose "Flexible account"
             klarnaRepository.getPayOverTimeOption().click();
 
-            checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
+            cy.intercept('POST', 'https://eu.playground.klarnaevt.com/**').as('initKlarna');
+            cy.wait('@initKlarna');
 
-            // Wait for the Klarna iframe is fully loaded
-            cy.wait(3000);
+            checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
 
             // Fill in necessary information
             klarnaRepository.getDateOfBirthInput().type('01011990');
