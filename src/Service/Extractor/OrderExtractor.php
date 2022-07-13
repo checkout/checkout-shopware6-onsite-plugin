@@ -9,7 +9,10 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\EntityNotFoundException;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
@@ -145,6 +148,29 @@ class OrderExtractor extends AbstractOrderExtractor
         }
 
         return $delivery;
+    }
+
+    public function extractLatestOrderTransaction(OrderEntity $order): OrderTransactionEntity
+    {
+        $orderTransactions = $order->getTransactions();
+        if (!$orderTransactions instanceof OrderTransactionCollection) {
+            $this->logger->critical(
+                sprintf('The orderTransactions must be instance of OrderTransactionCollection with Order ID: %s', $order->getId())
+            );
+
+            throw new InvalidOrderException($order->getId());
+        }
+
+        $orderTransaction = $orderTransactions->last();
+        if (!$orderTransaction instanceof OrderTransactionEntity) {
+            $this->logger->critical(
+                sprintf('Could not find an order transaction with Order ID: %s', $order->getId())
+            );
+
+            throw new InvalidOrderException($order->getId());
+        }
+
+        return $orderTransaction;
     }
 
     public function extractOrderShippingMethod(OrderEntity $order): ShippingMethodEntity

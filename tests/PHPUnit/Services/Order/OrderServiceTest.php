@@ -14,6 +14,12 @@ use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
+use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
+use Shopware\Core\Checkout\Cart\Price\Struct\PriceCollection;
+use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
+use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryDefinition;
 use Shopware\Core\Checkout\Order\OrderDefinition;
@@ -110,6 +116,21 @@ class OrderServiceTest extends TestCase
         static::assertInstanceOf(OrderEntity::class, $order);
     }
 
+    public function testUpdateOrder(): void
+    {
+        $updatedData = [
+            'id' => 'foo',
+        ];
+        $context = Context::createDefaultContext();
+
+        $event = $this->createMock(EntityWrittenContainerEvent::class);
+        $this->orderRepository->entityWrittenContainerEvents[] = $event;
+
+        $this->orderService->updateOrder($updatedData, $context);
+
+        static::assertNotEmpty($this->orderRepository->data);
+    }
+
     /**
      * @dataProvider updateCheckoutCustomFieldsProvider
      */
@@ -145,6 +166,7 @@ class OrderServiceTest extends TestCase
 
         $skipArray = [
             CheckoutPaymentService::STATUS_REFUNDED,
+            CheckoutPaymentService::STATUS_PARTIALLY_REFUNDED,
             CheckoutPaymentService::STATUS_PENDING,
             CheckoutPaymentService::STATUS_CANCELED,
             CheckoutPaymentService::STATUS_EXPIRED,
@@ -225,6 +247,10 @@ class OrderServiceTest extends TestCase
                 false,
                 CheckoutPaymentService::STATUS_REFUNDED,
             ],
+            'Test transition order success with checkout status is partial refunded' => [
+                false,
+                CheckoutPaymentService::STATUS_PARTIALLY_REFUNDED,
+            ],
             'Test transition order success with checkout status is pending' => [
                 false,
                 CheckoutPaymentService::STATUS_PENDING,
@@ -301,5 +327,79 @@ class OrderServiceTest extends TestCase
         );
 
         $orderService->getOrderByOrderNumber('test', Context::createDefaultContext());
+    }
+
+    public function testIsOnlyHaveShippingCostsReturnFalse(): void
+    {
+        $order = new OrderEntity();
+        $order->setId('foo');
+        $order->setPrice(
+            new CartPrice(
+                5.5,
+                5.5,
+                5.5,
+                new CalculatedTaxCollection(),
+                new TaxRuleCollection(),
+                'foo'
+            )
+        );
+
+        $shippingCostsLineItems = $this->createConfiguredMock(LineItemCollection::class, [
+            'getPrices' => $this->createConfiguredMock(PriceCollection::class, [
+                'sum' => $this->createConfiguredMock(CalculatedPrice::class, [
+                    'getTotalPrice' => 5.5,
+                ]),
+            ]),
+        ]);
+
+        $lineItems = $this->createConfiguredMock(LineItemCollection::class, [
+            'getPrices' => $this->createConfiguredMock(PriceCollection::class, [
+                'sum' => $this->createConfiguredMock(CalculatedPrice::class, [
+                    'getTotalPrice' => 1.0,
+                ]),
+            ]),
+        ]);
+
+        $result = $this->orderService->isOnlyHaveShippingCosts($order, $lineItems, $shippingCostsLineItems);
+
+        static::assertIsBool($result);
+        static::assertFalse($result);
+    }
+
+    public function testIsOnlyHaveShippingCostsReturnTrue(): void
+    {
+        $order = new OrderEntity();
+        $order->setId('foo');
+        $order->setPrice(
+            new CartPrice(
+                5.5,
+                5.5,
+                5.5,
+                new CalculatedTaxCollection(),
+                new TaxRuleCollection(),
+                'foo'
+            )
+        );
+
+        $shippingCostsLineItems = $this->createConfiguredMock(LineItemCollection::class, [
+            'getPrices' => $this->createConfiguredMock(PriceCollection::class, [
+                'sum' => $this->createConfiguredMock(CalculatedPrice::class, [
+                    'getTotalPrice' => 5.5,
+                ]),
+            ]),
+        ]);
+
+        $lineItems = $this->createConfiguredMock(LineItemCollection::class, [
+            'getPrices' => $this->createConfiguredMock(PriceCollection::class, [
+                'sum' => $this->createConfiguredMock(CalculatedPrice::class, [
+                    'getTotalPrice' => 0.0,
+                ]),
+            ]),
+        ]);
+
+        $result = $this->orderService->isOnlyHaveShippingCosts($order, $lineItems, $shippingCostsLineItems);
+
+        static::assertIsBool($result);
+        static::assertTrue($result);
     }
 }

@@ -4,6 +4,7 @@ namespace CheckoutCom\Shopware6\Service\CheckoutApi;
 
 use Checkout\CheckoutApiException;
 use Checkout\Payments\PaymentRequest;
+use Checkout\Payments\RefundRequest;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
 
 class CheckoutPaymentService extends AbstractCheckoutService
@@ -21,6 +22,17 @@ class CheckoutPaymentService extends AbstractCheckoutService
     public const STATUS_EXPIRED = 'Expired';
     public const STATUS_PARTIALLY_CAPTURED = 'Partially Captured';
     public const STATUS_PARTIALLY_REFUNDED = 'Partially Refunded';
+
+    public const CAN_REFUND_STATUS = [
+        self::STATUS_CAPTURED,
+        self::STATUS_PARTIALLY_REFUNDED,
+    ];
+
+    public const FAILED_STATUS = [
+        self::STATUS_DECLINED,
+        self::STATUS_CANCELED,
+        self::STATUS_EXPIRED,
+    ];
 
     /**
      * @throws CheckoutApiException
@@ -111,12 +123,12 @@ class CheckoutPaymentService extends AbstractCheckoutService
     /**
      * @throws CheckoutApiException
      */
-    public function refundPayment(string $paymentId, string $salesChannelId): void
+    public function refundPayment(string $paymentId, RefundRequest $refundRequest, string $salesChannelId): void
     {
         $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
 
         try {
-            $checkoutApi->getPaymentsClient()->refundPayment($paymentId);
+            $checkoutApi->getPaymentsClient()->refundPayment($paymentId, $refundRequest);
         } catch (CheckoutApiException $e) {
             $this->logMessage($e, __FUNCTION__, ['paymentId' => $paymentId]);
 

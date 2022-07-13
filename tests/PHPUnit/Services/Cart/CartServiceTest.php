@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Cart\Delivery\Struct\Delivery;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Cart\Processor;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService as CoreCartService;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
@@ -40,6 +41,11 @@ class CartServiceTest extends TestCase
     private $contextSwitchRoute;
 
     /**
+     * @var MockObject|Processor
+     */
+    private $processor;
+
+    /**
      * @var MockObject|ProductLineItemFactory
      */
     private $productLineItemFactory;
@@ -57,13 +63,15 @@ class CartServiceTest extends TestCase
         $this->contextService = $this->createMock(ContextService::class);
         $this->contextSwitchRoute = $this->createMock(ContextSwitchRoute::class);
         $this->productLineItemFactory = $this->createMock(ProductLineItemFactory::class);
+        $this->processor = $this->createMock(Processor::class);
         $this->salesChannelContext = $this->getSaleChannelContext($this);
 
         $this->cartService = new CartService(
             $this->coreCartService,
             $this->contextService,
             $this->contextSwitchRoute,
-            $this->productLineItemFactory
+            $this->productLineItemFactory,
+            $this->processor
         );
     }
 
@@ -101,6 +109,18 @@ class CartServiceTest extends TestCase
         $cart = $this->cartService->recalculateCart($this->salesChannelContext);
 
         static::assertSame($cart, $directCart);
+    }
+
+    public function testRecalculateByCart(): void
+    {
+        $cart = new Cart('foo', 'bar');
+
+        $this->processor->expects(static::once())
+            ->method('process')
+            ->willReturn($cart);
+
+        $result = $this->cartService->recalculateByCart($cart, $this->salesChannelContext);
+        static::assertInstanceOf(Cart::class, $result);
     }
 
     public function testGetShippingCostsPrice(): void

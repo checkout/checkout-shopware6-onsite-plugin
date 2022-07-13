@@ -2,7 +2,11 @@
 
 namespace CheckoutCom\Shopware6\Controller;
 
+use CheckoutCom\Shopware6\Facade\PaymentRefundFacade;
 use CheckoutCom\Shopware6\Service\Order\AbstractOrderCheckoutService;
+use CheckoutCom\Shopware6\Struct\Request\Refund\OrderRefundRequest;
+use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequest;
+use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -11,6 +15,10 @@ use Shopware\Core\Framework\Validation\DataValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\All;
+use Symfony\Component\Validator\Constraints\Collection;
+use Symfony\Component\Validator\Constraints\Count;
+use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Type;
 
@@ -25,26 +33,27 @@ class OrderController extends AbstractController
 
     private AbstractOrderCheckoutService $orderCheckoutService;
 
+    private PaymentRefundFacade $paymentRefundFacade;
+
     public function __construct(
         DataValidator $dataValidator,
-        AbstractOrderCheckoutService $orderCheckoutService
+        AbstractOrderCheckoutService $orderCheckoutService,
+        PaymentRefundFacade $paymentRefundFacade
     ) {
         $this->dataValidator = $dataValidator;
         $this->orderCheckoutService = $orderCheckoutService;
+        $this->paymentRefundFacade = $paymentRefundFacade;
     }
 
     /**
      * Get checkout.com payment by the order id
      *
-     * @Route("/api/_action/checkout-com/order/payment", name="api.action.checkout-com.order.payment", methods={"POST"})
+     * @Route("/api/_action/checkout-com/order/payment/{orderId}", name="api.action.checkout-com.order.payment", methods={"POST"})
      */
-    public function getCheckoutComPayment(RequestDataBag $data, Context $context): JsonResponse
+    public function getCheckoutComPayment(string $orderId, Context $context): JsonResponse
     {
-        $dataValidation = $this->getCheckoutComPaymentValidation();
-        $this->dataValidator->validate($data->all(), $dataValidation);
-
         $payment = $this->orderCheckoutService->getCheckoutPayment(
-            $data->get('orderId'),
+            $orderId,
             $context
         );
 
@@ -54,15 +63,12 @@ class OrderController extends AbstractController
     /**
      * Capture checkout.com payment by the order id
      *
-     * @Route("/api/_action/checkout-com/order/capture", name="api.action.checkout-com.order.capture", methods={"POST"})
+     * @Route("/api/_action/checkout-com/order/capture/{orderId}", name="api.action.checkout-com.order.capture", methods={"POST"})
      */
-    public function capturePayment(RequestDataBag $data, Context $context): JsonResponse
+    public function capturePayment(string $orderId, Context $context): JsonResponse
     {
-        $dataValidation = $this->getCapturePaymentValidation();
-        $this->dataValidator->validate($data->all(), $dataValidation);
-
         $this->orderCheckoutService->capturePayment(
-            $data->get('orderId'),
+            $orderId,
             $context
         );
 
@@ -74,15 +80,12 @@ class OrderController extends AbstractController
     /**
      * Void checkout.com payment by the order id
      *
-     * @Route("/api/_action/checkout-com/order/void", name="api.action.checkout-com.order.void", methods={"POST"})
+     * @Route("/api/_action/checkout-com/order/void/{orderId}", name="api.action.checkout-com.order.void", methods={"POST"})
      */
-    public function voidPayment(RequestDataBag $data, Context $context): JsonResponse
+    public function voidPayment(string $orderId, Context $context): JsonResponse
     {
-        $dataValidation = $this->getVoidPaymentValidation();
-        $this->dataValidator->validate($data->all(), $dataValidation);
-
         $this->orderCheckoutService->voidPayment(
-            $data->get('orderId'),
+            $orderId,
             $context
         );
 
@@ -91,30 +94,69 @@ class OrderController extends AbstractController
         ]);
     }
 
-    public function getCheckoutComPaymentValidation(): DataValidationDefinition
+    /**
+     * Refund checkout.com payment by the order id
+     *
+     * @Route("/api/_action/checkout-com/order/refund", name="api.action.checkout-com.order.refund", methods={"POST"})
+     */
+    public function refundPayment(RequestDataBag $request, Context $context): JsonResponse
     {
-        $definition = new DataValidationDefinition('checkout_com.order.payment');
+        $dataValidation = $this->getRefundPaymentValidation();
+        $data = $request->all();
+        $this->dataValidator->validate($data, $dataValidation);
+
+        $orderRefundRequest = $this->buildOrderRefundRequest($data);
+
+        $this->paymentRefundFacade->refundPayment(
+            $orderRefundRequest,
+            $context
+        );
+
+        return new JsonResponse([
+            'success' => true,
+        ]);
+    }
+
+    private function getRefundPaymentValidation(): DataValidationDefinition
+    {
+        $definition = new DataValidationDefinition('checkout_com.order.refund');
 
         $definition->add('orderId', new Type('string'), new NotBlank());
+        $definition->add(
+            'items',
+            new Count([
+                'min' => 1,
+            ]),
+            new All([
+                'constraints' => [
+                    new Collection([
+                        'fields' => [
+                            'id' => [new Type('string'), new NotBlank()],
+                            'returnQuantity' => [new NotBlank(), new Type('numeric'), new GreaterThan(0)],
+                        ],
+                    ]),
+                ],
+            ])
+        );
 
         return $definition;
     }
 
-    public function getCapturePaymentValidation(): DataValidationDefinition
+    private function buildOrderRefundRequest(array $data): OrderRefundRequest
     {
-        $definition = new DataValidationDefinition('checkout_com.order.capture');
+        $refundItems = new RefundItemRequestCollection();
 
-        $definition->add('orderId', new Type('string'), new NotBlank());
+        foreach ($data['items'] as $item) {
+            $refundItem = new RefundItemRequest();
+            $refundItem->setId($item['id']);
+            $refundItem->setReturnQuantity($item['returnQuantity']);
+            $refundItems->set($refundItem->getId(), $refundItem);
+        }
 
-        return $definition;
-    }
+        $orderRefundRequest = new OrderRefundRequest();
+        $orderRefundRequest->setOrderId($data['orderId']);
+        $orderRefundRequest->setItems($refundItems);
 
-    public function getVoidPaymentValidation(): DataValidationDefinition
-    {
-        $definition = new DataValidationDefinition('checkout_com.order.void');
-
-        $definition->add('orderId', new Type('string'), new NotBlank());
-
-        return $definition;
+        return $orderRefundRequest;
     }
 }

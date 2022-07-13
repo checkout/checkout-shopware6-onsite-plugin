@@ -11,6 +11,8 @@ abstract class AbstractCartService
 
     abstract public function addProductToCart(string $productId, int $quantity, Cart $directCart, SalesChannelContext $context): Cart;
 
+    abstract public function recalculateByCart(Cart $cart, SalesChannelContext $context): Cart;
+
     abstract public function recalculateCart(SalesChannelContext $context): Cart;
 
     abstract public function getCart(string $token, SalesChannelContext $context): Cart;

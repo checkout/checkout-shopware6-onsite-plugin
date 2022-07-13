@@ -9,6 +9,7 @@ use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
+use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -19,6 +20,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
+use Shopware\Core\Framework\Util\FloatComparator;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -152,6 +154,15 @@ class OrderService extends AbstractOrderService
         return $order;
     }
 
+    public function updateOrder(
+        array $data,
+        Context $context
+    ): void {
+        $context->scope(Context::SYSTEM_SCOPE, function (Context $context) use ($data): void {
+            $this->orderRepository->update([$data], $context);
+        });
+    }
+
     public function getOrder(Context $context, string $orderId, array $associations = [], ?callable $criteriaCallback = null): OrderEntity
     {
         $criteria = new Criteria([$orderId]);
@@ -237,6 +248,7 @@ class OrderService extends AbstractOrderService
                 break;
             // We don't need to change order status for this payment status
             case CheckoutPaymentService::STATUS_REFUNDED:
+            case CheckoutPaymentService::STATUS_PARTIALLY_REFUNDED:
             case CheckoutPaymentService::STATUS_PENDING:
             case CheckoutPaymentService::STATUS_CANCELED:
             case CheckoutPaymentService::STATUS_EXPIRED:
@@ -270,5 +282,18 @@ class OrderService extends AbstractOrderService
         }
 
         return $order;
+    }
+
+    public function isOnlyHaveShippingCosts(
+        OrderEntity $order,
+        LineItemCollection $requestLineItems,
+        LineItemCollection $shippingCostsLineItems
+    ): bool {
+        $totalExcludingShippingCosts = abs($order->getPrice()->getTotalPrice()) - abs($shippingCostsLineItems->getPrices()->sum()->getTotalPrice());
+
+        return FloatComparator::equals(
+            abs($totalExcludingShippingCosts),
+            abs($requestLineItems->getPrices()->sum()->getTotalPrice())
+        );
     }
 }

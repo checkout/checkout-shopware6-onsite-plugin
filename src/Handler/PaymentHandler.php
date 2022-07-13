@@ -3,6 +3,7 @@
 namespace CheckoutCom\Shopware6\Handler;
 
 use Checkout\Payments\PaymentRequest;
+use Checkout\Payments\RefundRequest;
 use Checkout\Payments\Source\RequestIdSource;
 use Checkout\Payments\ThreeDsRequest;
 use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
@@ -264,17 +265,22 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
         $this->checkoutPaymentService->voidPayment($checkoutPaymentId, $order->getSalesChannelId());
     }
 
+    public function refundPayment(string $checkoutPaymentId, RefundRequest $refundRequest, OrderEntity $order): void
+    {
+        $this->checkoutPaymentService->refundPayment($checkoutPaymentId, $refundRequest, $order->getSalesChannelId());
+    }
+
     public function captureWhenFinalize(): bool
     {
         return true;
     }
 
-    public function shouldManualCapture(): bool
+    public function canManualCapture(): bool
     {
         return false;
     }
 
-    public function shouldManualVoid(): bool
+    public function canManualVoid(): bool
     {
         return false;
     }

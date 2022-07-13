@@ -13,6 +13,8 @@ class Payment extends Struct
 
     protected bool $approved = false;
 
+    protected int $amount;
+
     protected ?string $status = null;
 
     protected ?string $reference = null;
@@ -42,6 +44,11 @@ class Payment extends Struct
         return $this->approved;
     }
 
+    public function getAmount(): int
+    {
+        return $this->amount;
+    }
+
     public function getStatus(): ?string
     {
         return $this->status;
@@ -49,13 +56,12 @@ class Payment extends Struct
 
     public function isFailed(): bool
     {
-        $failedStatus = [
-            CheckoutPaymentService::STATUS_DECLINED,
-            CheckoutPaymentService::STATUS_CANCELED,
-            CheckoutPaymentService::STATUS_EXPIRED,
-        ];
+        return \in_array($this->status, CheckoutPaymentService::FAILED_STATUS, true);
+    }
 
-        return \in_array($this->status, $failedStatus, true);
+    public function canRefund(): bool
+    {
+        return \in_array($this->status, CheckoutPaymentService::CAN_REFUND_STATUS, true);
     }
 
     public function getReference(): ?string

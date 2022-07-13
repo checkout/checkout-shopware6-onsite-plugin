@@ -3,6 +3,7 @@
 namespace CheckoutCom\Shopware6\Tests\Services\CheckoutApi;
 
 use Checkout\Payments\PaymentRequest;
+use Checkout\Payments\RefundRequest;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
 
@@ -98,8 +99,11 @@ class CheckoutPaymentServiceTest extends AbstractCheckoutTest
     {
         $this->handleCheckoutRequestShouldThrowException($apiShouldThrowException, 'post');
 
+        $refundRequest = new RefundRequest();
+
         $this->checkoutPaymentService->refundPayment(
             'foo',
+            $refundRequest,
             $this->salesChannelContext->getSalesChannelId()
         );
     }

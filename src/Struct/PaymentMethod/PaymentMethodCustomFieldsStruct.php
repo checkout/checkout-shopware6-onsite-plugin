@@ -8,9 +8,9 @@ class PaymentMethodCustomFieldsStruct extends Struct
 {
     protected ?string $methodType;
 
-    protected ?bool $shouldManualCapture;
+    protected ?bool $canManualCapture;
 
-    protected ?bool $shouldManualVoid;
+    protected ?bool $canManualVoid;
 
     public function getMethodType(): ?string
     {
@@ -22,23 +22,23 @@ class PaymentMethodCustomFieldsStruct extends Struct
         $this->methodType = $methodType;
     }
 
-    public function getShouldManualCapture(): ?bool
+    public function getCanManualCapture(): ?bool
     {
-        return $this->shouldManualCapture;
+        return $this->canManualCapture;
     }
 
-    public function setShouldManualCapture(?bool $shouldManualCapture): void
+    public function setCanManualCapture(?bool $canManualCapture): void
     {
-        $this->shouldManualCapture = $shouldManualCapture;
+        $this->canManualCapture = $canManualCapture;
     }
 
-    public function getShouldManualVoid(): ?bool
+    public function getCanManualVoid(): ?bool
     {
-        return $this->shouldManualVoid;
+        return $this->canManualVoid;
     }
 
-    public function setShouldManualVoid(?bool $shouldManualVoid): void
+    public function setCanManualVoid(?bool $canManualVoid): void
     {
-        $this->shouldManualVoid = $shouldManualVoid;
+        $this->canManualVoid = $canManualVoid;
     }
 }

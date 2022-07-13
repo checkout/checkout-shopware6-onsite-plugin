@@ -60,12 +60,12 @@ class KlarnaHandler extends PaymentHandler
         $this->klarnaService->voidPayment($checkoutPaymentId, $order);
     }
 
-    public function shouldManualCapture(): bool
+    public function canManualCapture(): bool
     {
         return true;
     }
 
-    public function shouldManualVoid(): bool
+    public function canManualVoid(): bool
     {
         return true;
     }
