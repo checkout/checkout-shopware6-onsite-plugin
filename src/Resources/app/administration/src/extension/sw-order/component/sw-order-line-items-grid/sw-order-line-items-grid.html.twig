@@ -20,10 +20,16 @@
                                 <sw-button-group>
                                     {% block sw_order_line_items_grid_checkout_com_actions_group_refund %}
                                         <sw-button
+                                            v-tooltip="{
+                                                message: $tc('checkout-payments.order.refund.tooltip.refundFromHubDisabled'),
+                                                disabled: !isOrderRefundedFromHub,
+                                                showOnDisabledElements: true
+                                            }"
                                             class="sw-order-line-items-grid__actions-btn"
                                             variant="ghost"
                                             size="small"
                                             :block="true"
+                                            :disabled="isOrderRefundedFromHub"
                                             @click="onOpenRefundModal"
                                         >
                                             {{ $tc('checkout-payments.order.refund.refundButton') }}

@@ -2,14 +2,18 @@
 
 namespace CheckoutCom\Shopware6\Tests\Services\Webhook;
 
+use CheckoutCom\Shopware6\Facade\PaymentRefundFacade;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
+use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
 use CheckoutCom\Shopware6\Service\Order\OrderTransactionService;
 use CheckoutCom\Shopware6\Service\Webhook\WebhookService;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Webhook;
+use CheckoutCom\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
 use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use CheckoutCom\Shopware6\Struct\WebhookReceiveDataStruct;
+use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -23,6 +27,8 @@ use Symfony\Component\HttpKernel\Log\Logger;
 
 class WebhookServiceTest extends TestCase
 {
+    use ContextTrait;
+
     private WebhookService $webhookService;
 
     /**
@@ -45,18 +51,31 @@ class WebhookServiceTest extends TestCase
      */
     private $settingsFactory;
 
+    /**
+     * @var PaymentRefundFacade|MockObject
+     */
+    private $paymentRefundFacade;
+
+    /**
+     * @var MockObject|Context
+     */
+    private $context;
+
     public function setUp(): void
     {
         $this->logger = $this->createMock(Logger::class);
         $this->orderService = $this->createMock(OrderService::class);
         $this->orderTransactionService = $this->createMock(OrderTransactionService::class);
         $this->settingsFactory = $this->createMock(SettingsFactory::class);
+        $this->paymentRefundFacade = $this->createMock(PaymentRefundFacade::class);
+        $this->context = $this->getContext($this);
 
         $this->webhookService = new WebhookService(
             $this->logger,
             $this->orderService,
             $this->orderTransactionService,
             $this->settingsFactory,
+            $this->paymentRefundFacade,
         );
     }
 
@@ -81,72 +100,195 @@ class WebhookServiceTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getWebhookRequestDataWithInvalidOrder
-     */
-    public function testHandleWithInvalidOrder(?OrderTransactionCollection $transactionCollection): void
+    public function testHandleOfSameActionId(): void
     {
+        $checkoutOrderCustomFields = new OrderCustomFieldsStruct();
+        $checkoutOrderCustomFields->setLastCheckoutActionId('action_id');
+
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getId' => 'foo',
+            'getCustomFields' => [
+                OrderService::CHECKOUT_CUSTOM_FIELDS => $checkoutOrderCustomFields->jsonSerialize(),
+            ],
+        ]);
+
+        $data = new WebhookReceiveDataStruct();
+        $data->setActionId('action_id');
+        $data->setReference('foo');
+
+        $this->orderService->expects(static::once())
+            ->method('getOrderByOrderNumber')
+            ->willReturn($order);
+
+        $order->expects(static::never())
+            ->method('getTransactions');
+
+        $this->logger->expects(static::once())
+            ->method('warning');
+
+        $this->webhookService->handle($data, $this->context);
+    }
+
+    public function testHandleOfInvalidInstanceOfOrderTransaction(): void
+    {
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getId' => 'foo',
+            'getCustomFields' => [],
+            'getTransactions' => null,
+        ]);
+
+        $data = new WebhookReceiveDataStruct();
+        $data->setActionId('action_id');
+        $data->setReference('foo');
+
+        $this->orderService->expects(static::once())
+            ->method('getOrderByOrderNumber')
+            ->willReturn($order);
+
         static::expectException(InvalidOrderException::class);
 
-        $order = new OrderEntity();
-        $order->setId('test');
-        if ($transactionCollection) {
-            $order->setTransactions($transactionCollection);
-        }
-
-        $this->orderService->expects(static::once())->method('getOrderByOrderNumber')->willReturn($order);
-
-        $data = new WebhookReceiveDataStruct();
-        $data->setId('test');
-        $data->setCreatedOn('2019-06-07T08:36:43Z');
-        $data->setReference('10000');
-        $data->setType('test');
-
-        $this->webhookService->handle($data, Context::createDefaultContext());
+        $this->webhookService->handle($data, $this->context);
     }
 
-    public function getWebhookRequestDataWithInvalidOrder(): array
+    public function testHandleOfInvalidInstanceOfOrderTransactionEntity(): void
     {
-        return [
-            'with null transaction collection' => [null],
-            'with null transaction' => [new OrderTransactionCollection([])],
-        ];
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getId' => 'foo',
+            'getCustomFields' => [],
+            'getTransactions' => new OrderTransactionCollection(),
+        ]);
+
+        $data = new WebhookReceiveDataStruct();
+        $data->setActionId('action_id');
+        $data->setReference('foo');
+
+        $this->orderService->expects(static::once())
+            ->method('getOrderByOrderNumber')
+            ->willReturn($order);
+
+        static::expectException(InvalidOrderException::class);
+
+        $this->webhookService->handle($data, $this->context);
+    }
+
+    public function testHandleOfInvalidWebhookStatus(): void
+    {
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getId' => 'foo',
+            'getCustomFields' => [],
+            'getTransactions' => new OrderTransactionCollection([
+                $this->createConfiguredMock(OrderTransactionEntity::class, [
+                    'getId' => 'foo',
+                ]),
+            ]),
+        ]);
+
+        $data = new WebhookReceiveDataStruct();
+        $data->setActionId('action_id');
+        $data->setReference('foo');
+        $data->setType('invalid_status');
+
+        $this->orderService->expects(static::once())
+            ->method('getOrderByOrderNumber')
+            ->willReturn($order);
+
+        static::expectException(Exception::class);
+
+        $this->webhookService->handle($data, $this->context);
+    }
+
+    public function testHandleOfRefundedStatus(): void
+    {
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getId' => 'foo',
+            'getCustomFields' => [],
+            'getTransactions' => new OrderTransactionCollection([
+                $this->createConfiguredMock(OrderTransactionEntity::class, [
+                    'getId' => 'foo',
+                ]),
+            ]),
+        ]);
+
+        $data = new WebhookReceiveDataStruct();
+        $data->setActionId('action_id');
+        $data->setReference('foo');
+        $data->setType(CheckoutWebhookService::PAYMENT_REFUNDED);
+
+        $settings = $this->createMock(SettingStruct::class);
+
+        $this->orderService->expects(static::once())
+            ->method('getOrderByOrderNumber')
+            ->willReturn($order);
+
+        $this->paymentRefundFacade->expects(static::once())
+            ->method('refundPaymentByWebhook')
+            ->with(
+                static::isInstanceOf(OrderEntity::class),
+                $data,
+                static::isInstanceOf(Context::class)
+            );
+
+        $this->settingsFactory->expects(static::once())
+            ->method('getSettings')
+            ->willReturn($settings);
+
+        $this->orderTransactionService->expects(static::never())
+            ->method('processTransition')
+            ->with(
+                static::isInstanceOf(OrderTransactionEntity::class),
+                CheckoutPaymentService::STATUS_REFUNDED,
+                static::isInstanceOf(Context::class)
+            );
+
+        $this->orderService->expects(static::never())
+            ->method('processTransition')
+            ->with(
+                static::isInstanceOf(OrderEntity::class),
+                $settings,
+                CheckoutPaymentService::STATUS_REFUNDED,
+                static::isInstanceOf(Context::class)
+            );
+
+        $this->webhookService->handle($data, $this->context);
     }
 
     /**
-     * @dataProvider getWebhookRequestData
+     * @dataProvider getHandleStatusProvider
      */
-    public function testHandle(string $type): void
+    public function testHandleOfOtherStatus(string $type): void
     {
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getId' => 'foo',
+            'getCustomFields' => [],
+            'getTransactions' => new OrderTransactionCollection([
+                $this->createConfiguredMock(OrderTransactionEntity::class, [
+                    'getId' => 'foo',
+                ]),
+            ]),
+        ]);
+
         $data = new WebhookReceiveDataStruct();
-        $data->setId('test');
-        $data->setCreatedOn('2019-06-07T08:36:43Z');
-        $data->setReference('10000');
+        $data->setActionId('action_id');
+        $data->setReference('foo');
         $data->setType($type);
 
-        $order = new OrderEntity();
-        $order->setId('test');
-        $orderTransaction = new OrderTransactionEntity();
-        $orderTransaction->setId('transaction');
+        $this->orderService->expects(static::once())
+            ->method('getOrderByOrderNumber')
+            ->willReturn($order);
 
-        $order->setTransactions(new OrderTransactionCollection([$orderTransaction]));
+        $this->paymentRefundFacade->expects(static::never())
+            ->method('refundPaymentByWebhook');
 
-        if ($data->getType() === 'unknown_status') {
-            $this->logger->expects(static::once())->method('critical');
+        $this->orderTransactionService->expects(static::once())
+            ->method('processTransition');
 
-            static::expectException(Exception::class);
-        } else {
-            $this->orderService->expects(static::once())->method('processTransition');
-            $this->orderTransactionService->expects(static::once())->method('processTransition');
-        }
+        $this->orderService->expects(static::once())
+            ->method('processTransition');
 
-        $this->orderService->expects(static::once())->method('getOrderByOrderNumber')->willReturn($order);
-        $this->settingsFactory->expects(static::once())->method('getSettings')->willReturn(new SettingStruct());
-
-        $this->webhookService->handle($data, Context::createDefaultContext());
+        $this->webhookService->handle($data, $this->context);
     }
 
-    public function getWebhookRequestData(): array
+    public function getHandleStatusProvider(): array
     {
         return [
             'capture' => [
@@ -154,9 +296,6 @@ class WebhookServiceTest extends TestCase
             ],
             'voided' => [
                 'type' => CheckoutWebhookService::PAYMENT_VOIDED,
-            ],
-            'refunded' => [
-                'type' => CheckoutWebhookService::PAYMENT_REFUNDED,
             ],
             'pending' => [
                 'type' => CheckoutWebhookService::PAYMENT_PENDING,
@@ -169,9 +308,6 @@ class WebhookServiceTest extends TestCase
             ],
             'canceled' => [
                 'type' => CheckoutWebhookService::PAYMENT_CANCELED,
-            ],
-            'unknown status' => [
-                'type' => 'unknown_status',
             ],
         ];
     }

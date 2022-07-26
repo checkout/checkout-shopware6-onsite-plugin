@@ -50,14 +50,14 @@ class KlarnaHandler extends PaymentHandler
         return false;
     }
 
-    public function capturePayment(string $checkoutPaymentId, OrderEntity $order): void
+    public function capturePayment(string $checkoutPaymentId, OrderEntity $order): string
     {
-        $this->klarnaService->capturePayment($checkoutPaymentId, $order);
+        return $this->klarnaService->capturePayment($checkoutPaymentId, $order);
     }
 
-    public function voidPayment(string $checkoutPaymentId, OrderEntity $order): void
+    public function voidPayment(string $checkoutPaymentId, OrderEntity $order): string
     {
-        $this->klarnaService->voidPayment($checkoutPaymentId, $order);
+        return $this->klarnaService->voidPayment($checkoutPaymentId, $order);
     }
 
     public function canManualCapture(): bool

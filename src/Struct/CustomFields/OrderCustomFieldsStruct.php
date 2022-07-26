@@ -8,6 +8,10 @@ class OrderCustomFieldsStruct extends Struct
 {
     protected ?string $checkoutPaymentId = null;
 
+    protected ?bool $isRefundedFromHub = false;
+
+    protected ?string $lastCheckoutActionId = null;
+
     protected string $checkoutReturnUrl = '';
 
     protected string $transactionReturnUrl = '';
@@ -29,6 +33,26 @@ class OrderCustomFieldsStruct extends Struct
     public function setCheckoutPaymentId(?string $checkoutPaymentId): void
     {
         $this->checkoutPaymentId = $checkoutPaymentId;
+    }
+
+    public function getLastCheckoutActionId(): ?string
+    {
+        return $this->lastCheckoutActionId;
+    }
+
+    public function setLastCheckoutActionId(?string $lastCheckoutActionId): void
+    {
+        $this->lastCheckoutActionId = $lastCheckoutActionId;
+    }
+
+    public function isRefundedFromHub(): ?bool
+    {
+        return $this->isRefundedFromHub;
+    }
+
+    public function setIsRefundedFromHub(?bool $isRefundedFromHub): void
+    {
+        $this->isRefundedFromHub = $isRefundedFromHub;
     }
 
     public function getCheckoutReturnUrl(): string

@@ -20,6 +20,8 @@ abstract class AbstractOrderService
 
     abstract public function getOrder(Context $context, string $orderId, array $associations = [], ?callable $criteriaCallback = null): OrderEntity;
 
+    abstract public function getOrderByOrderNumber(string $orderNumber, Context $context): OrderEntity;
+
     abstract public function setRequestLastOrderId(string $lastOrderId): void;
 
     abstract public function getRequestLastOrderId(): ?string;
@@ -35,7 +37,7 @@ abstract class AbstractOrderService
 
     abstract public function updateOrder(array $data, Context $context): void;
 
-    abstract public function updateCheckoutCustomFields(OrderEntity $order, OrderCustomFieldsStruct $orderCustomFields, SalesChannelContext $context): void;
+    abstract public function updateCheckoutCustomFields(OrderEntity $order, OrderCustomFieldsStruct $orderCustomFields, Context $context): void;
 
     abstract public static function getCheckoutOrderCustomFields(OrderEntity $order): OrderCustomFieldsStruct;
 

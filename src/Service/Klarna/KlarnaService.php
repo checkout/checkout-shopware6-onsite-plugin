@@ -68,9 +68,9 @@ class KlarnaService
     /**
      * @throws CheckoutApiException
      */
-    public function capturePayment(string $paymentId, OrderEntity $order): void
+    public function capturePayment(string $paymentId, OrderEntity $order): string
     {
-        $this->checkoutKlarnaService->capturePayment(
+        return $this->checkoutKlarnaService->capturePayment(
             $paymentId,
             $this->buildCapturePaymentRequest($order),
             $order->getSalesChannelId()
@@ -80,9 +80,9 @@ class KlarnaService
     /**
      * @throws CheckoutApiException
      */
-    public function voidPayment(string $paymentId, OrderEntity $order): void
+    public function voidPayment(string $paymentId, OrderEntity $order): string
     {
-        $this->checkoutKlarnaService->voidPayment(
+        return $this->checkoutKlarnaService->voidPayment(
             $paymentId,
             $this->buildVoidPaymentRequest($order),
             $order->getSalesChannelId()

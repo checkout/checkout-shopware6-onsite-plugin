@@ -90,6 +90,16 @@
         },
         "message": {
           "refundExecuted": "Erstattung wurde erfolgreich durchgeführt"
+        },
+        "tooltip": {
+          "refundFromHubDisabled": "Sie können den Rückerstattungsmanager nicht verwenden, da diese Bestellung bereits über den Checkout.com-Hub rückerstattet wurde. Bitte setzen Sie die Aktion auf Checkout.com Hub fort."
+        }
+      },
+      "flow": {
+        "fullRefundLabel": "(checkout.com) Volle Erstattung",
+        "modal": {
+          "title": "Volle Erstattung",
+          "fullRefundAlsoIncludeText": "Die volle Rückerstattung umfasst auch die Versandkosten und kann nur einmal durchgeführt werden."
         }
       },
       "flow": {

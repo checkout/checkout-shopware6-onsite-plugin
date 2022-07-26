@@ -3,11 +3,14 @@ declare(strict_types=1);
 
 namespace CheckoutCom\Shopware6\Service\Webhook;
 
+use CheckoutCom\Shopware6\Exception\CheckoutComException;
+use CheckoutCom\Shopware6\Facade\PaymentRefundFacade;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
+use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
+use CheckoutCom\Shopware6\Service\Order\AbstractOrderTransactionService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
-use CheckoutCom\Shopware6\Service\Order\OrderTransactionService;
 use CheckoutCom\Shopware6\Struct\WebhookReceiveDataStruct;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -24,22 +27,26 @@ class WebhookService extends AbstractWebhookService
 {
     private LoggerInterface $logger;
 
-    private OrderService $orderService;
+    private AbstractOrderService $orderService;
 
-    private OrderTransactionService $orderTransactionService;
+    private AbstractOrderTransactionService $orderTransactionService;
 
     private SettingsFactory $settingsFactory;
 
+    private PaymentRefundFacade $paymentRefundFacade;
+
     public function __construct(
         LoggerInterface $logger,
-        OrderService $orderService,
-        OrderTransactionService $orderTransactionService,
-        SettingsFactory $settingsFactory
+        AbstractOrderService $orderService,
+        AbstractOrderTransactionService $orderTransactionService,
+        SettingsFactory $settingsFactory,
+        PaymentRefundFacade $paymentRefundFacade
     ) {
         $this->logger = $logger;
         $this->orderService = $orderService;
         $this->orderTransactionService = $orderTransactionService;
         $this->settingsFactory = $settingsFactory;
+        $this->paymentRefundFacade = $paymentRefundFacade;
     }
 
     public function getDecorated(): AbstractWebhookService
@@ -64,7 +71,21 @@ class WebhookService extends AbstractWebhookService
      */
     public function handle(WebhookReceiveDataStruct $receiveDataStruct, Context $context, ?string $salesChannelId = null): void
     {
-        $order = $this->orderService->getOrderByOrderNumber($receiveDataStruct->getReference(), $context);
+        $orderNumber = $receiveDataStruct->getReference();
+        if ($orderNumber === null) {
+            throw new CheckoutComException('Order number could not be null');
+        }
+
+        $order = $this->orderService->getOrderByOrderNumber($orderNumber, $context);
+
+        $orderCustomFields = OrderService::getCheckoutOrderCustomFields($order);
+        if ($orderCustomFields->getLastCheckoutActionId() === $receiveDataStruct->getActionId()) {
+            $this->logger->warning('This action has already finished', [
+                'actionId' => $receiveDataStruct->getActionId(),
+            ]);
+
+            return;
+        }
 
         $orderTransactions = $order->getTransactions();
         if (!$orderTransactions instanceof OrderTransactionCollection) {
@@ -79,6 +100,12 @@ class WebhookService extends AbstractWebhookService
         $settings = $this->settingsFactory->getSettings($salesChannelId);
         $paymentStatus = $this->getPaymentStatusByEventType($receiveDataStruct->getType());
 
+        if ($paymentStatus === CheckoutPaymentService::STATUS_REFUNDED) {
+            $this->paymentRefundFacade->refundPaymentByWebhook($order, $receiveDataStruct, $context);
+
+            return;
+        }
+
         // Update the order transaction of Shopware depending on checkout.com payment status
         $this->orderTransactionService->processTransition($orderTransaction, $paymentStatus, $context);
 
@@ -91,7 +118,7 @@ class WebhookService extends AbstractWebhookService
      *
      * @throws Exception
      */
-    private function getPaymentStatusByEventType(string $type): string
+    private function getPaymentStatusByEventType(?string $type): string
     {
         switch ($type) {
             case CheckoutWebhookService::PAYMENT_CAPTURED:

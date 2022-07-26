@@ -21,6 +21,8 @@ use CheckoutCom\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
 use CheckoutCom\Shopware6\Struct\LineItem\LineItemPayload;
 use CheckoutCom\Shopware6\Struct\Request\Refund\OrderRefundRequest;
 use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
+use CheckoutCom\Shopware6\Struct\WebhookReceiveDataStruct;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -38,6 +40,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
@@ -172,6 +175,36 @@ class PaymentRefundFacadeTest extends TestCase
             ->willReturn($order);
 
         static::expectException(CheckoutPaymentIdNotFoundException::class);
+
+        $this->paymentRefundFacade->refundPayment(
+            $orderRefundRequest,
+            $this->salesChannelContext->getContext()
+        );
+    }
+
+    public function testRefundedPaymentFromHubThrowsError(): void
+    {
+        $orderId = 'foo';
+
+        $checkoutOrderCustomFields = new OrderCustomFieldsStruct();
+        $checkoutOrderCustomFields->setCheckoutPaymentId('foo');
+        $checkoutOrderCustomFields->setIsRefundedFromHub(true);
+
+        $order = new OrderEntity();
+        $order->setId($orderId);
+        $order->setCustomFields([
+            OrderService::CHECKOUT_CUSTOM_FIELDS => $checkoutOrderCustomFields->jsonSerialize(),
+        ]);
+
+        $orderRefundRequest = new OrderRefundRequest();
+        $orderRefundRequest->setOrderId($orderId);
+        $orderRefundRequest->setItems(new RefundItemRequestCollection());
+
+        $this->orderService->expects(static::once())
+            ->method('getOrder')
+            ->willReturn($order);
+
+        static::expectException(CheckoutComException::class);
 
         $this->paymentRefundFacade->refundPayment(
             $orderRefundRequest,
@@ -631,6 +664,164 @@ class PaymentRefundFacadeTest extends TestCase
 
         $this->paymentRefundFacade->refundPayment(
             $orderRefundRequest,
+            $this->salesChannelContext->getContext()
+        );
+    }
+
+    public function testRefundPaymentByWebhookOfNullCheckoutPaymentId(): void
+    {
+        $orderId = 'foo';
+
+        $order = new OrderEntity();
+        $order->setId($orderId);
+
+        $receiveData = new WebhookReceiveDataStruct();
+
+        static::expectException(CheckoutPaymentIdNotFoundException::class);
+
+        $this->paymentRefundFacade->refundPaymentByWebhook(
+            $order,
+            $receiveData,
+            $this->salesChannelContext->getContext()
+        );
+    }
+
+    public function testRefundPaymentByWebhookOfOrderTotalAmountLessThanWebhookRequestRefundAmount(): void
+    {
+        $orderId = 'foo';
+
+        $checkoutOrderCustomFields = new OrderCustomFieldsStruct();
+        $checkoutOrderCustomFields->setCheckoutPaymentId('foo');
+        $order = new OrderEntity();
+        $order->setId($orderId);
+        $order->setCustomFields([
+            OrderService::CHECKOUT_CUSTOM_FIELDS => $checkoutOrderCustomFields->jsonSerialize(),
+        ]);
+        $order->setPrice(
+            new CartPrice(
+                5.5,
+                5.5,
+                5.5,
+                new CalculatedTaxCollection(),
+                new TaxRuleCollection(),
+                'foo'
+            )
+        );
+
+        $receiveData = new WebhookReceiveDataStruct();
+
+        $lineItem = new LineItem('foo', 'bar');
+        $lineItem->setPrice(
+            new CalculatedPrice(
+                -500,
+                -500,
+                new CalculatedTaxCollection(),
+                new TaxRuleCollection(),
+                1,
+            )
+        );
+        $requestLineItems = new LineItemCollection([$lineItem]);
+
+        $this->orderExtractor->expects(static::once())
+            ->method('extractLatestOrderTransaction');
+
+        $this->refundBuilder->expects(static::once())
+            ->method('buildLineItemsForWebhook')
+            ->willReturn($requestLineItems);
+
+        static::expectException(CheckoutComException::class);
+
+        $this->paymentRefundFacade->refundPaymentByWebhook(
+            $order,
+            $receiveData,
+            $this->salesChannelContext->getContext()
+        );
+    }
+
+    public function testRefundPaymentByWebhookSuccessful(): void
+    {
+        $orderId = 'foo';
+
+        $checkoutOrderCustomFields = new OrderCustomFieldsStruct();
+        $checkoutOrderCustomFields->setCheckoutPaymentId('foo');
+        $order = new OrderEntity();
+        $order->setId($orderId);
+        $order->setSalesChannelId('foo');
+        $order->setCustomFields([
+            OrderService::CHECKOUT_CUSTOM_FIELDS => $checkoutOrderCustomFields->jsonSerialize(),
+        ]);
+        $order->setPrice(
+            new CartPrice(
+                5.5,
+                5.5,
+                5.5,
+                new CalculatedTaxCollection(),
+                new TaxRuleCollection(),
+                'foo'
+            )
+        );
+
+        $receiveData = new WebhookReceiveDataStruct();
+
+        $lineItem = new LineItem('foo', 'bar');
+        $lineItem->setPrice(
+            new CalculatedPrice(
+                -5.5,
+                -5.5,
+                new CalculatedTaxCollection(),
+                new TaxRuleCollection(),
+                1,
+            )
+        );
+        $requestLineItems = new LineItemCollection([$lineItem]);
+
+        $settings = $this->createMock(SettingStruct::class);
+
+        $this->orderExtractor->expects(static::once())
+            ->method('extractLatestOrderTransaction');
+
+        $this->refundBuilder->expects(static::once())
+            ->method('buildLineItemsForWebhook')
+            ->willReturn($requestLineItems);
+
+        $this->settingsFactory->expects(static::once())
+            ->method('getSettings')
+            ->willReturn($settings);
+
+        $this->orderConverter->expects(static::once())
+            ->method('convertToOrder');
+
+        $this->orderService->expects(static::once())
+            ->method('updateOrder');
+
+        $this->orderService->expects(static::once())
+            ->method('updateCheckoutCustomFields')
+            ->with(
+                static::isInstanceOf(OrderEntity::class),
+                static::isInstanceOf(OrderCustomFieldsStruct::class),
+                static::isInstanceOf(Context::class)
+            );
+
+        $this->orderTransactionService->expects(static::once())
+            ->method('processTransition')
+            ->with(
+                static::isInstanceOf(OrderTransactionEntity::class),
+                CheckoutPaymentService::STATUS_REFUNDED,
+                static::isInstanceOf(Context::class)
+            );
+
+        $this->orderService->expects(static::once())
+            ->method('processTransition')
+            ->with(
+                static::isInstanceOf(OrderEntity::class),
+                $settings,
+                CheckoutPaymentService::STATUS_REFUNDED,
+                static::isInstanceOf(Context::class)
+            );
+
+        $this->paymentRefundFacade->refundPaymentByWebhook(
+            $order,
+            $receiveData,
             $this->salesChannelContext->getContext()
         );
     }

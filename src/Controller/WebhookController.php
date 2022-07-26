@@ -97,6 +97,9 @@ class WebhookController extends AbstractController
         $webhookData->setType($data['type']);
         $webhookData->setCreatedOn($data['created_on']);
         $webhookData->setReference($data['data']['reference']);
+        $webhookData->setActionId($data['data']['action_id'] ?? null);
+        $webhookData->setAmount($data['data']['amount'] ?? null);
+        $webhookData->setCurrency($data['data']['currency'] ?? null);
 
         return $webhookData;
     }

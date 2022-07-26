@@ -2,12 +2,14 @@
 
 namespace CheckoutCom\Shopware6\Tests\Services\Builder;
 
+use Checkout\Common\Currency;
 use CheckoutCom\Shopware6\Exception\CheckoutComException;
 use CheckoutCom\Shopware6\Service\Builder\RefundBuilder;
 use CheckoutCom\Shopware6\Struct\LineItem\LineItemPayload;
 use CheckoutCom\Shopware6\Struct\Request\Refund\OrderRefundRequest;
 use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequest;
 use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
+use CheckoutCom\Shopware6\Struct\WebhookReceiveDataStruct;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
@@ -417,6 +419,40 @@ class RefundBuilderTest extends TestCase
         $result = $this->refundBuilder->buildLineItem($refundItemRequest, $orderLineItem);
         static::assertInstanceOf(LineItem::class, $result);
         static::assertSame($refundItemRequest->getReturnQuantity(), $result->getQuantity());
+    }
+
+    public function testBuildLineItemsForWebhookOfNullWebhookAmount(): void
+    {
+        $receiveData = new WebhookReceiveDataStruct();
+        $receiveData->setId('foo');
+
+        static::expectException(CheckoutComException::class);
+
+        $this->refundBuilder->buildLineItemsForWebhook($receiveData);
+    }
+
+    public function testBuildLineItemsForWebhookOfNullWebhookCurrency(): void
+    {
+        $receiveData = new WebhookReceiveDataStruct();
+        $receiveData->setId('foo');
+        $receiveData->setAmount(500);
+
+        static::expectException(CheckoutComException::class);
+
+        $this->refundBuilder->buildLineItemsForWebhook($receiveData);
+    }
+
+    public function testBuildLineItemsForWebhookSuccessful(): void
+    {
+        $receiveData = new WebhookReceiveDataStruct();
+        $receiveData->setId('foo');
+        $receiveData->setAmount(500);
+        $receiveData->setCurrency(Currency::$EUR);
+
+        $result = $this->refundBuilder->buildLineItemsForWebhook($receiveData);
+
+        static::assertInstanceOf(LineItemCollection::class, $result);
+        static::assertSame(-5.0, $result->getPrices()->sum()->getTotalPrice());
     }
 
     private function getLineItemPayload(string $lineItemId): LineItemPayload

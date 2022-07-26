@@ -17,6 +17,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Struct\Struct;
+use Shopware\Core\Framework\Util\FloatComparator;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 
 class CheckoutComUtil
@@ -152,7 +153,7 @@ class CheckoutComUtil
     }
 
     /**
-     * Format price follow checkout.com documentation
+     * Format to checkout.com price follow checkout.com documentation
      * We have to multiply by X because checkout.com will divide by X when we make the request
      *
      * @see https://www.checkout.com/docs/resources/calculating-the-value
@@ -164,21 +165,45 @@ class CheckoutComUtil
 
         if (\in_array($currencyCode, self::getFullValueCurrency(), true)) {
             // We keep the full value
-            return (int) ceil($price);
+            return (int) ceil(FloatComparator::cast($price));
         }
 
         if (\in_array($currencyCode, self::getValueDividedBy1000Currency(), true)) {
             // We have to multiply by 1000 but the last digit must always be 0
-            return (int) ceil($price * 100) * 10;
+            return (int) ceil(FloatComparator::cast($price * 100)) * 10;
         }
 
         if (\in_array($currencyCode, self::getValueLast00Currency(), true)) {
             // We have round up first and then multiply by 100 (to get the last 00)
-            return (int) ceil($price) * 100;
+            return (int) ceil(FloatComparator::cast($price)) * 100;
         }
 
         // We have to multiply by 100
-        return (int) ceil($price * 100);
+        return (int) ceil(FloatComparator::cast($price * 100));
+    }
+
+    /**
+     * Format back to shopware price follow checkout.com documentation
+     * We have to divide by X because checkout.com will multiply by X when we make the request
+     *
+     * @see https://www.checkout.com/docs/resources/calculating-the-value
+     */
+    public static function formatPriceShopware(int $price, string $currencyCode): float
+    {
+        // We uppercase the currency code for make sure it is valid
+        $currencyCode = strtoupper($currencyCode);
+
+        if (\in_array($currencyCode, self::getFullValueCurrency(), true)) {
+            // We keep the full value
+            return (float) $price;
+        }
+
+        if (\in_array($currencyCode, self::getValueDividedBy1000Currency(), true)) {
+            return (float) $price / 1000;
+        }
+
+        // We have to divide by 100
+        return (float) $price / 100;
     }
 
     /**
