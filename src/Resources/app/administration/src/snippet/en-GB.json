@@ -75,11 +75,11 @@
           "confirmRefundCheckboxLabel": "Yes, I want to refund the selected items",
           "returnQuantityPlaceholder": "Value...",
           "returnQuantityFullyRefundedPlaceholder": "Already fully refunded...",
-          "nameColumn" : "Name",
-          "priceColumn" : "Price",
-          "quantityColumn" : "Quantity",
-          "refundedColumn" : "Refunded",
-          "returnQuantityColumn" : "Return Quantity"
+          "nameColumn": "Name",
+          "priceColumn": "Price",
+          "quantityColumn": "Quantity",
+          "refundedColumn": "Refunded",
+          "returnQuantityColumn": "Return Quantity"
         },
         "lineItems": {
           "prefixRefundLabel": "Refunded: {itemLabel}"
@@ -90,6 +90,13 @@
         },
         "message": {
           "refundExecuted": "Refund was successfully executed"
+        }
+      },
+      "flow": {
+        "fullRefundLabel": "(checkout.com) Full refund",
+        "modal": {
+          "title": "Full refund",
+          "fullRefundAlsoIncludeText": "Full refund also includes shipping costs and can only be executed once."
         }
       }
     }

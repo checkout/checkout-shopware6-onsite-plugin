@@ -4,6 +4,8 @@ import './component/checkout-com-media-compact-upload-v2';
 import './component/checkout-com-inherit-media-upload';
 import './component/checkout-com-order-detail-payment';
 import './component/checkout-com-refund-modal';
+import './component/checkout-com-flow-full-refund-modal';
+import './extension/sw-flow-sequence-action';
 import './extension/sw-settings-payment';
 import './extension/sw-system-config';
 import './extension/sw-order';

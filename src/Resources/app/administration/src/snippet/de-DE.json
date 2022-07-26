@@ -75,11 +75,11 @@
           "confirmRefundCheckboxLabel": "Ja, ich möchte die ausgewählten Artikel erstatten",
           "returnQuantityPlaceholder": "Wert...",
           "returnQuantityFullyRefundedPlaceholder": "Bereits vollständig erstattet...",
-          "nameColumn" : "Name",
-          "priceColumn" : "Preis",
-          "quantityColumn" : "Menge",
-          "refundedColumn" : "Erstattet",
-          "returnQuantityColumn" : "Rückgabe Menge"
+          "nameColumn": "Name",
+          "priceColumn": "Preis",
+          "quantityColumn": "Menge",
+          "refundedColumn": "Erstattet",
+          "returnQuantityColumn": "Rückgabe Menge"
         },
         "lineItems": {
           "prefixRefundLabel": "Erstattet: {itemLabel}"
@@ -90,6 +90,13 @@
         },
         "message": {
           "refundExecuted": "Erstattung wurde erfolgreich durchgeführt"
+        }
+      },
+      "flow": {
+        "fullRefundLabel": "(checkout.com) Volle Erstattung",
+        "modal": {
+          "title": "Volle Erstattung",
+          "fullRefundAlsoIncludeText": "Die volle Rückerstattung umfasst auch die Versandkosten und kann nur einmal durchgeführt werden."
         }
       }
     }
