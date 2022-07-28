@@ -101,6 +101,19 @@ class PaymentPayFacadeTest extends TestCase
         );
     }
 
+    public function testConstantCanRefundStatus(): void
+    {
+        static::assertContains(CheckoutPaymentService::STATUS_CAPTURED, CheckoutPaymentService::CAN_REFUND_STATUS);
+        static::assertContains(CheckoutPaymentService::STATUS_PARTIALLY_REFUNDED, CheckoutPaymentService::CAN_REFUND_STATUS);
+    }
+
+    public function testConstantFailedStatus(): void
+    {
+        static::assertContains(CheckoutPaymentService::STATUS_DECLINED, CheckoutPaymentService::FAILED_STATUS);
+        static::assertContains(CheckoutPaymentService::STATUS_CANCELED, CheckoutPaymentService::FAILED_STATUS);
+        static::assertContains(CheckoutPaymentService::STATUS_EXPIRED, CheckoutPaymentService::FAILED_STATUS);
+    }
+
     /**
      * @dataProvider payProvider
      */

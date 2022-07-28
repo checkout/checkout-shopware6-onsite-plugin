@@ -7,13 +7,12 @@ use CheckoutCom\Shopware6\Exception\CheckoutPaymentIdNotFoundException;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
+use CheckoutCom\Shopware6\Service\Extractor\AbstractOrderExtractor;
 use CheckoutCom\Shopware6\Service\PaymentMethodService;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
@@ -26,6 +25,8 @@ class OrderCheckoutService extends AbstractOrderCheckoutService
 
     private AbstractOrderService $orderService;
 
+    private AbstractOrderExtractor $orderExtractor;
+
     private AbstractOrderTransactionService $orderTransactionService;
 
     private CheckoutPaymentService $checkoutPaymentService;
@@ -37,6 +38,7 @@ class OrderCheckoutService extends AbstractOrderCheckoutService
     public function __construct(
         LoggerInterface $loggerService,
         AbstractOrderService $orderService,
+        AbstractOrderExtractor $orderExtractor,
         AbstractOrderTransactionService $orderTransactionService,
         CheckoutPaymentService $checkoutPaymentService,
         PaymentMethodService $paymentMethodService,
@@ -44,6 +46,7 @@ class OrderCheckoutService extends AbstractOrderCheckoutService
     ) {
         $this->logger = $loggerService;
         $this->orderService = $orderService;
+        $this->orderExtractor = $orderExtractor;
         $this->orderTransactionService = $orderTransactionService;
         $this->checkoutPaymentService = $checkoutPaymentService;
         $this->paymentMethodService = $paymentMethodService;
@@ -91,7 +94,7 @@ class OrderCheckoutService extends AbstractOrderCheckoutService
             throw new CheckoutPaymentIdNotFoundException($order);
         }
 
-        $orderTransaction = $this->getOrderTransaction($order);
+        $orderTransaction = $this->orderExtractor->extractLatestOrderTransaction($order);
         $paymentHandler = $this->getPaymentHandler($orderTransaction);
 
         try {
@@ -128,7 +131,7 @@ class OrderCheckoutService extends AbstractOrderCheckoutService
             throw new CheckoutPaymentIdNotFoundException($order);
         }
 
-        $orderTransaction = $this->getOrderTransaction($order);
+        $orderTransaction = $this->orderExtractor->extractLatestOrderTransaction($order);
         $paymentHandler = $this->getPaymentHandler($orderTransaction);
 
         try {
@@ -166,25 +169,6 @@ class OrderCheckoutService extends AbstractOrderCheckoutService
         ], function (Criteria $criteria): void {
             $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
         });
-    }
-
-    private function getOrderTransaction(OrderEntity $order): OrderTransactionEntity
-    {
-        $orderTransactions = $order->getTransactions();
-        if (!$orderTransactions instanceof OrderTransactionCollection) {
-            $this->logger->critical(sprintf('orderTransactions must be instance of OrderTransactionCollection with Order ID: %s', $order->getId()));
-
-            throw new InvalidOrderException($order->getId());
-        }
-
-        $orderTransaction = $orderTransactions->last();
-        if (!$orderTransaction instanceof OrderTransactionEntity) {
-            $this->logger->critical(sprintf('Could not find an order transaction with Order ID: %s', $order->getId()));
-
-            throw new InvalidOrderException($order->getId());
-        }
-
-        return $orderTransaction;
     }
 
     private function getPaymentHandler(OrderTransactionEntity $orderTransaction): PaymentHandler

@@ -165,6 +165,11 @@ class OrderTransactionServiceTest extends TestCase
                 CheckoutPaymentService::STATUS_REFUNDED,
                 'refundTransaction',
             ],
+            'Test transition order transaction success with checkout status is partial refunded' => [
+                false,
+                CheckoutPaymentService::STATUS_PARTIALLY_REFUNDED,
+                'partialRefundTransaction',
+            ],
         ];
     }
 }

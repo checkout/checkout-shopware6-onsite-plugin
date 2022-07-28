@@ -14,6 +14,8 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\EntityNotFoundException;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
@@ -171,6 +173,68 @@ class OrderExtractorTest extends TestCase
         $actualCurrency = $this->orderExtractor->extractCurrency($order);
 
         static::assertSame($currency, $actualCurrency);
+    }
+
+    public function testExtractOrderDeliveryOfNullOrderDeliveryCollection(): void
+    {
+        $order = $this->createMock(OrderEntity::class);
+
+        static::expectException(Exception::class);
+        $this->orderExtractor->extractOrderDelivery($order);
+    }
+
+    public function testExtractOrderDeliveryOfNullOrderDeliveryEntity(): void
+    {
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getDeliveries' => new OrderDeliveryCollection(),
+        ]);
+
+        static::expectException(Exception::class);
+        $this->orderExtractor->extractOrderDelivery($order);
+    }
+
+    public function testExtractOrderDeliverySuccessful(): void
+    {
+        $orderDelivery = new OrderDeliveryEntity();
+        $orderDelivery->setId('foo');
+
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getDeliveries' => new OrderDeliveryCollection([$orderDelivery]),
+        ]);
+
+        $result = $this->orderExtractor->extractOrderDelivery($order);
+        static::assertInstanceOf(OrderDeliveryEntity::class, $result);
+    }
+
+    public function testExtractOrderTransactionOfNullOrderTransactionCollection(): void
+    {
+        $order = $this->createMock(OrderEntity::class);
+
+        static::expectException(Exception::class);
+        $this->orderExtractor->extractLatestOrderTransaction($order);
+    }
+
+    public function testExtractOrderTransactionOfNullOrderDeliveryEntity(): void
+    {
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getTransactions' => new OrderTransactionCollection(),
+        ]);
+
+        static::expectException(Exception::class);
+        $this->orderExtractor->extractLatestOrderTransaction($order);
+    }
+
+    public function testExtractOrderTransactionSuccessful(): void
+    {
+        $orderTransaction = new OrderTransactionEntity();
+        $orderTransaction->setId('foo');
+
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getTransactions' => new OrderTransactionCollection([$orderTransaction]),
+        ]);
+
+        $result = $this->orderExtractor->extractLatestOrderTransaction($order);
+        static::assertInstanceOf(OrderTransactionEntity::class, $result);
     }
 
     public function extractOrderNumberProvider(): array

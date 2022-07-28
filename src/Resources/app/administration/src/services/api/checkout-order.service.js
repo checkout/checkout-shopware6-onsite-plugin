@@ -27,7 +27,7 @@ class CheckoutOrderService extends ApiService {
         const headers = this.getBasicHeaders();
 
         return this.httpClient
-            .post(`${this.getApiBasePath()}/payment`, { orderId }, { headers })
+            .post(`${this.getApiBasePath()}/payment/${orderId}`, {}, { headers })
             .then((response) => {
                 return ApiService.handleResponse(response);
             });
@@ -43,7 +43,7 @@ class CheckoutOrderService extends ApiService {
         const headers = this.getBasicHeaders();
 
         return this.httpClient
-            .post(`${this.getApiBasePath()}/capture`, { orderId }, { headers })
+            .post(`${this.getApiBasePath()}/capture/${orderId}`, {}, { headers })
             .then((response) => {
                 return ApiService.handleResponse(response);
             });
@@ -59,7 +59,7 @@ class CheckoutOrderService extends ApiService {
         const headers = this.getBasicHeaders();
 
         return this.httpClient
-            .post(`${this.getApiBasePath()}/void`, { orderId }, { headers })
+            .post(`${this.getApiBasePath()}/void/${orderId}`, {}, { headers })
             .then((response) => {
                 return ApiService.handleResponse(response);
             });

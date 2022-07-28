@@ -7,6 +7,7 @@ use CheckoutCom\Shopware6\Exception\CheckoutPaymentIdNotFoundException;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
+use CheckoutCom\Shopware6\Service\Extractor\OrderExtractor;
 use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Service\Order\OrderCheckoutService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
@@ -19,7 +20,6 @@ use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
-use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 
 class OrderCheckoutServiceTest extends TestCase
@@ -33,6 +33,11 @@ class OrderCheckoutServiceTest extends TestCase
      * @var MockObject|OrderCheckoutService
      */
     private $orderService;
+
+    /**
+     * @var OrderExtractor|MockObject
+     */
+    private $orderExtractor;
 
     /**
      * @var MockObject|OrderTransactionService
@@ -62,6 +67,7 @@ class OrderCheckoutServiceTest extends TestCase
     public function setUp(): void
     {
         $this->orderService = $this->createMock(OrderService::class);
+        $this->orderExtractor = $this->createMock(OrderExtractor::class);
         $this->orderTransitionService = $this->createMock(OrderTransactionService::class);
         $this->checkoutPaymentService = $this->createMock(CheckoutPaymentService::class);
         $this->paymentMethodService = $this->createMock(PaymentMethodService::class);
@@ -71,6 +77,7 @@ class OrderCheckoutServiceTest extends TestCase
         $this->orderCheckoutService = new OrderCheckoutService(
             $this->createMock(LoggerService::class),
             $this->orderService,
+            $this->orderExtractor,
             $this->orderTransitionService,
             $this->checkoutPaymentService,
             $this->paymentMethodService,
@@ -149,33 +156,6 @@ class OrderCheckoutServiceTest extends TestCase
         $this->orderCheckoutService->capturePayment($order->getId(), $this->salesChannelContext->getContext());
     }
 
-    public function testCapturePaymentOfNullOrderTransactionCollection(): void
-    {
-        $order = $this->getOrder('foo');
-
-        static::expectException(InvalidOrderException::class);
-
-        $this->orderService->expects(static::once())
-            ->method('getOrder')
-            ->willReturn($order);
-
-        $this->orderCheckoutService->capturePayment($order->getId(), $this->salesChannelContext->getContext());
-    }
-
-    public function testCapturePaymentOfNullOrderTransactionEntity(): void
-    {
-        $order = $this->getOrder('foo');
-        $order->setTransactions(new OrderTransactionCollection());
-
-        static::expectException(InvalidOrderException::class);
-
-        $this->orderService->expects(static::once())
-            ->method('getOrder')
-            ->willReturn($order);
-
-        $this->orderCheckoutService->capturePayment($order->getId(), $this->salesChannelContext->getContext());
-    }
-
     public function testCapturePaymentOfNullPaymentHandler(): void
     {
         $order = $this->getOrder('foo');
@@ -189,6 +169,10 @@ class OrderCheckoutServiceTest extends TestCase
         $this->orderService->expects(static::once())
             ->method('getOrder')
             ->willReturn($order);
+
+        $this->orderExtractor->expects(static::once())
+            ->method('extractLatestOrderTransaction')
+            ->willReturn($orderTransaction);
 
         $this->orderCheckoutService->capturePayment($order->getId(), $this->salesChannelContext->getContext());
     }
@@ -205,6 +189,10 @@ class OrderCheckoutServiceTest extends TestCase
         $this->paymentMethodService->expects(static::once())
             ->method('getPaymentHandlerByOrderTransaction')
             ->willReturn($paymentHandler);
+
+        $this->orderExtractor->expects(static::once())
+            ->method('extractLatestOrderTransaction')
+            ->willReturn($orderTransaction);
 
         $this->checkoutPaymentService->expects(static::once())
             ->method('getPaymentDetails')
@@ -277,33 +265,6 @@ class OrderCheckoutServiceTest extends TestCase
         $this->orderCheckoutService->voidPayment($order->getId(), $this->salesChannelContext->getContext());
     }
 
-    public function testVoidPaymentOfNullOrderTransactionCollection(): void
-    {
-        $order = $this->getOrder('foo');
-
-        static::expectException(InvalidOrderException::class);
-
-        $this->orderService->expects(static::once())
-            ->method('getOrder')
-            ->willReturn($order);
-
-        $this->orderCheckoutService->voidPayment($order->getId(), $this->salesChannelContext->getContext());
-    }
-
-    public function testVoidPaymentOfNullOrderTransactionEntity(): void
-    {
-        $order = $this->getOrder('foo');
-        $order->setTransactions(new OrderTransactionCollection());
-
-        static::expectException(InvalidOrderException::class);
-
-        $this->orderService->expects(static::once())
-            ->method('getOrder')
-            ->willReturn($order);
-
-        $this->orderCheckoutService->voidPayment($order->getId(), $this->salesChannelContext->getContext());
-    }
-
     public function testVoidPaymentOfNullPaymentHandler(): void
     {
         $order = $this->getOrder('foo');
@@ -317,6 +278,10 @@ class OrderCheckoutServiceTest extends TestCase
         $this->orderService->expects(static::once())
             ->method('getOrder')
             ->willReturn($order);
+
+        $this->orderExtractor->expects(static::once())
+            ->method('extractLatestOrderTransaction')
+            ->willReturn($orderTransaction);
 
         $this->orderCheckoutService->voidPayment($order->getId(), $this->salesChannelContext->getContext());
     }
@@ -343,6 +308,10 @@ class OrderCheckoutServiceTest extends TestCase
         $this->orderService->expects(static::once())
             ->method('getOrder')
             ->willReturn($order);
+
+        $this->orderExtractor->expects(static::once())
+            ->method('extractLatestOrderTransaction')
+            ->willReturn($orderTransaction);
 
         $this->orderCheckoutService->voidPayment($order->getId(), $this->salesChannelContext->getContext());
     }

@@ -100,6 +100,10 @@ class OrderTransactionService extends AbstractOrderTransactionService
                 $this->orderTransactionTransitionService->refundTransaction($transaction, $context);
 
                 break;
+            case CheckoutPaymentService::STATUS_PARTIALLY_REFUNDED:
+                $this->orderTransactionTransitionService->partialRefundTransaction($transaction, $context);
+
+                break;
             default:
                 $this->logger->critical('Unknown payment status', [
                     'transactionId' => $transaction->getId(),

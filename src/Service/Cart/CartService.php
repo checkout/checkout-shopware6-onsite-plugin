@@ -4,6 +4,8 @@ namespace CheckoutCom\Shopware6\Service\Cart;
 
 use CheckoutCom\Shopware6\Service\ContextService;
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\CartBehavior;
+use Shopware\Core\Checkout\Cart\Processor;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService as CoreCartService;
 use Shopware\Core\Content\Product\Cart\ProductLineItemFactory;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
@@ -22,16 +24,20 @@ class CartService extends AbstractCartService
 
     private ProductLineItemFactory $productLineItemFactory;
 
+    private Processor $processor;
+
     public function __construct(
         CoreCartService $coreCartService,
         ContextService $contextService,
         AbstractContextSwitchRoute $contextSwitchRoute,
-        ProductLineItemFactory $productLineItemFactory
+        ProductLineItemFactory $productLineItemFactory,
+        Processor $processor
     ) {
         $this->coreCartService = $coreCartService;
         $this->contextService = $contextService;
         $this->contextSwitchRoute = $contextSwitchRoute;
         $this->productLineItemFactory = $productLineItemFactory;
+        $this->processor = $processor;
     }
 
     public function getDecorated(): AbstractCartBackupService
@@ -44,6 +50,11 @@ class CartService extends AbstractCartService
         $productLineItem = $this->productLineItemFactory->create($productId, ['quantity' => $quantity]);
 
         return $this->coreCartService->add($directCart, $productLineItem, $context);
+    }
+
+    public function recalculateByCart(Cart $cart, SalesChannelContext $context): Cart
+    {
+        return $this->processor->process($cart, $context, new CartBehavior($context->getPermissions()));
     }
 
     /**
