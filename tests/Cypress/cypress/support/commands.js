@@ -74,3 +74,19 @@ Cypress.Commands.add('getSalesChannelByName', (salesChannelName = 'Storefront') 
         },
     });
 });
+
+/**
+ * Login and open administration page
+ * @memberOf Cypress.Chainable#
+ * @name loginAndOpenAdmin
+ * @function
+ * @param {String} url - url of the administration page
+ */
+Cypress.Commands.add('loginAndOpenAdmin', (url) => {
+    return cy.loginViaApi()
+        .then(() => {
+            cy.openInitialPage(url);
+            cy.get('.sw-skeleton').should('not.exist');
+            cy.get('.sw-loader').should('not.exist');
+        });
+});
