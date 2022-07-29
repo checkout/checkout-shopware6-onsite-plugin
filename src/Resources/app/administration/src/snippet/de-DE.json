@@ -66,6 +66,31 @@
         "cardNumberLabel": "Kartennummer",
         "cardExpiryDateLabel": "Ablaufdatum der Karte",
         "paymentHistoryLabel": "Zahlungsverhalten"
+      },
+      "refund": {
+        "refundButton": "Checkout.com Rückerstattung",
+        "modal": {
+          "title": "Rückerstattung einzelner Auftragspositionen",
+          "refundSelectedItemsButton": "Ausgewählte Artikel erstatten",
+          "confirmRefundCheckboxLabel": "Ja, ich möchte die ausgewählten Artikel erstatten",
+          "returnQuantityPlaceholder": "Wert...",
+          "returnQuantityFullyRefundedPlaceholder": "Bereits vollständig erstattet...",
+          "nameColumn" : "Name",
+          "priceColumn" : "Preis",
+          "quantityColumn" : "Menge",
+          "refundedColumn" : "Erstattet",
+          "returnQuantityColumn" : "Rückgabe Menge"
+        },
+        "lineItems": {
+          "prefixRefundLabel": "Erstattet: {itemLabel}"
+        },
+        "summary": {
+          "totalBeforeRefundLabel": "Gesamtbetrag vor Erstattung",
+          "refundedLabel": "Erstattet"
+        },
+        "message": {
+          "refundExecuted": "Erstattung wurde erfolgreich durchgeführt"
+        }
       }
     }
   }

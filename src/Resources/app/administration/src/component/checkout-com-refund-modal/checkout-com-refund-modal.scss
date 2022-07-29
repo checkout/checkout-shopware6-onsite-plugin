@@ -1,0 +1,39 @@
+@import "~scss/variables";
+
+.checkout-com-refund-modal {
+    .sw-modal__body {
+        width: 100%;
+        background-color: $color-gray-100;
+        display: inline-table;
+    }
+
+    .checkout-com-refund-section {
+        padding: 0;
+
+        .sw-card {
+            display: inline-table;
+            max-width: 100%;
+            width: 100%;
+            margin-bottom: 0;
+
+            .sw-card__content {
+                display: inline-table;
+                width: 100%;
+                padding: 0;
+            }
+
+            .sw-data-grid__bulk {
+                display: none;
+            }
+        }
+    }
+
+    .sw-modal__footer {
+        height: auto;
+
+        .checkout-com-refund-modal-footer {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+    }
+}

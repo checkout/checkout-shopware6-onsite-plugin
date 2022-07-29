@@ -3,7 +3,7 @@
 
     {% block checkout_com_order_detail_smart_bar_capture %}
         <div
-            v-if="shouldManualCapture"
+            v-if="canManualCapture"
             class="checkout-com-order-button"
         >
             {% block checkout_com_order_detail_smart_bar_capture_button %}
@@ -25,7 +25,7 @@
 
     {% block checkout_com_order_detail_smart_bar_void %}
         <div
-            v-if="shouldManualVoid"
+            v-if="canManualVoid"
             class="checkout-com-order-button"
         >
             {% block checkout_com_order_detail_smart_bar_void_button %}

@@ -1,0 +1,61 @@
+{% block sw_order_line_items_grid_actions %}
+    {% parent() %}
+
+    {% block sw_order_line_items_grid_condition %}
+        <template v-if="canRefund">
+            {% block sw_order_line_items_grid_checkout_com %}
+                <sw-container
+                    v-show="!editable"
+                    class="sw-order-line-items-grid__actions-container"
+                    columns="1fr auto"
+                    gap="16px"
+                >
+                    {% block sw_order_line_items_grid_line_item_filter %}
+                        {% parent() %}
+                    {% endblock %}
+
+                    {% block sw_order_line_items_grid_checkout_com_actions %}
+                        <div align="right">
+                            {% block sw_order_line_items_grid_checkout_com_actions_group %}
+                                <sw-button-group>
+                                    {% block sw_order_line_items_grid_checkout_com_actions_group_refund %}
+                                        <sw-button
+                                            class="sw-order-line-items-grid__actions-btn"
+                                            variant="ghost"
+                                            size="small"
+                                            :block="true"
+                                            @click="onOpenRefundModal"
+                                        >
+                                            {{ $tc('checkout-payments.order.refund.refundButton') }}
+                                        </sw-button>
+                                    {% endblock %}
+                                </sw-button-group>
+                            {% endblock %}
+                        </div>
+                    {% endblock %}
+                </sw-container>
+            {% endblock %}
+
+            {% block checkout_com_refund_modal %}
+                <checkout-com-refund-modal
+                    v-if="isShowRefundModal"
+                    :order="order"
+                    :order-line-items="orderLineItems"
+                    @close-modal="closeRefundModal"
+                />
+            {% endblock %}
+        </template>
+    {% endblock %}
+{% endblock %}
+
+{% block sw_order_line_items_grid_grid_columns_label_link %}
+    {% block checkout_com_line_items_grid_columns_label %}
+        <template v-if="isCheckoutComRefundedItem(item)">
+            <span class="sw-order-line-items-grid__item-label">
+                {{ $tc("checkout-payments.order.refund.lineItems.prefixRefundLabel", 0, {itemLabel: item.label}) }}
+            </span>
+        </template>
+    {% endblock %}
+
+    {% parent() %}
+{% endblock %}

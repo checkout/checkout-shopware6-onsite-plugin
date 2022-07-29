@@ -137,7 +137,7 @@ describe('Testing Storefront Klarna Payment', () => {
         it('capture payment when clicking "Capture" button', () => {
             cy.intercept({
                 method: 'POST',
-                url: 'api/_action/checkout-com/order/capture'
+                url: 'api/_action/checkout-com/order/capture/**'
             }).as('capturePayment');
 
             cy.get('.sw-data-grid__row--0 .sw-data-grid__cell--orderNumber a').click();
@@ -181,7 +181,7 @@ describe('Testing Storefront Klarna Payment', () => {
         it('void payment when clicking "Void" button', () => {
             cy.intercept({
                 method: 'POST',
-                url: 'api/_action/checkout-com/order/void'
+                url: 'api/_action/checkout-com/order/void/**'
             }).as('voidPayment');
 
             cy.get('.sw-data-grid__row--0 .sw-data-grid__cell--orderNumber a').click();

@@ -8,4 +8,52 @@
             :payment="checkoutComPayment"
         />
     {% endblock %}
+{% endblock %}%}
+
+{% block sw_order_detail_base_line_items_summary_amount %}
+    {% block checkout_com_order_detail_payment_summary %}
+        <template v-if="isPartialRefundedPayment || isFullRefundedPayment">
+            {% block checkout_com_order_detail_payment_summary_total_before_refund %}
+                <template>
+                    {% block checkout_com_order_detail_payment_summary_total_before_refund_first_column %}
+                        <dt>
+                            <strong>
+                                {{ $tc('checkout-payments.order.refund.summary.totalBeforeRefundLabel') }}
+                            </strong>
+                        </dt>
+                    {% endblock %}
+
+                    {% block checkout_com_order_detail_payment_summary_total_before_refund_second_column %}
+                        <dd>
+                            <strong>
+                                {{ checkoutTotalBeforeRefund|currency(order.currency.translated.shortName, order.totalRounding.decimals) }}
+                            </strong>
+                        </dd>
+                    {% endblock %}
+                </template>
+            {% endblock %}
+
+            {% block checkout_com_order_detail_payment_summary_refunded_label %}
+                <template>
+                    {% block checkout_com_order_detail_payment_summary_refunded_label_first_column %}
+                        <dt>
+                            <strong>
+                                {{ $tc('checkout-payments.order.refund.summary.refundedLabel') }}
+                            </strong>
+                        </dt>
+                    {% endblock %}
+
+                    {% block checkout_com_order_detail_payment_summary_refunded_label_second_column %}
+                        <dd>
+                            <strong>
+                                {{ checkoutComRefundedAmount|currency(order.currency.translated.shortName, order.totalRounding.decimals) }}
+                            </strong>
+                        </dd>
+                    {% endblock %}
+                </template>
+            {% endblock %}
+        </template>
+    {% endblock %}
+
+    {% parent() %}
 {% endblock %}

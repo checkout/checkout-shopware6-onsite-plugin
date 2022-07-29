@@ -1,8 +1,12 @@
 import template from './sw-order-detail.html.twig';
 import './sw-order-detail.scss';
-import { CHECKOUT_STATUS } from '../../../../constant/settings';
+import checkoutComOrder from './state';
 
-const { Component } = Shopware;
+const {
+    Component,
+    State,
+} = Shopware;
+const { mapGetters } = Component.getComponentHelper();
 
 /**
  * Overwrite the default order detail component to
@@ -15,31 +19,13 @@ Component.override('sw-order-detail', {
         'checkoutOrderService',
     ],
 
-    data() {
-        return {
-            checkoutComPayment: null,
-            checkoutComOrder: null,
-        };
-    },
-
     computed: {
-        isAuthorizedPayment() {
-            if (!this.checkoutComPayment) {
-                return false;
-            }
+        ...mapGetters('checkoutComOrder', [
+            'isAuthorizedPayment',
+            'paymentMethodCheckoutConfig',
+        ]),
 
-            return this.checkoutComPayment.status === CHECKOUT_STATUS.AUTHORIZED;
-        },
-
-        checkoutComPaymentMethod() {
-            return this.checkoutComOrder?.transactions?.last()?.paymentMethod;
-        },
-
-        paymentMethodCheckoutConfig() {
-            return this.checkoutComPaymentMethod?.customFields?.checkoutConfig;
-        },
-
-        shouldManualCapture() {
+        canManualCapture() {
             if (this.isEditing) {
                 return false;
             }
@@ -53,10 +39,10 @@ Component.override('sw-order-detail', {
                 return false;
             }
 
-            return paymentMethodCheckoutConfig.shouldManualCapture;
+            return paymentMethodCheckoutConfig.canManualCapture;
         },
 
-        shouldManualVoid() {
+        canManualVoid() {
             if (this.isEditing) {
                 return false;
             }
@@ -70,32 +56,19 @@ Component.override('sw-order-detail', {
                 return false;
             }
 
-            return paymentMethodCheckoutConfig.shouldManualVoid;
+            return paymentMethodCheckoutConfig.canManualVoid;
         },
     },
 
-    created() {
-        this.registerCheckoutComListener();
+    beforeCreate() {
+        State.registerModule('checkoutComOrder', checkoutComOrder);
     },
 
-    destroyed() {
-        this.destroyedCheckoutComComponent();
+    beforeDestroy() {
+        State.unregisterModule('checkoutComOrder');
     },
 
     methods: {
-        registerCheckoutComListener() {
-            this.$root.$on('checkout-payment-change', this.onCheckoutPaymentChange);
-        },
-
-        destroyedCheckoutComComponent() {
-            this.$root.$off('checkout-payment-change', this.onCheckoutPaymentChange);
-        },
-
-        onCheckoutPaymentChange(checkoutComPayment, order) {
-            this.checkoutComPayment = checkoutComPayment;
-            this.checkoutComOrder = order;
-        },
-
         async onCapture() {
             try {
                 this.isLoading = true;

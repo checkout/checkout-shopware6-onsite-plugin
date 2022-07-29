@@ -66,6 +66,31 @@
         "cardNumberLabel": "Card number",
         "cardExpiryDateLabel": "Card expiry date",
         "paymentHistoryLabel": "Payment history"
+      },
+      "refund": {
+        "refundButton": "Checkout.com Refund",
+        "modal": {
+          "title": "Refund individual order items",
+          "refundSelectedItemsButton": "Refund selected items",
+          "confirmRefundCheckboxLabel": "Yes, I want to refund the selected items",
+          "returnQuantityPlaceholder": "Value...",
+          "returnQuantityFullyRefundedPlaceholder": "Already fully refunded...",
+          "nameColumn" : "Name",
+          "priceColumn" : "Price",
+          "quantityColumn" : "Quantity",
+          "refundedColumn" : "Refunded",
+          "returnQuantityColumn" : "Return Quantity"
+        },
+        "lineItems": {
+          "prefixRefundLabel": "Refunded: {itemLabel}"
+        },
+        "summary": {
+          "totalBeforeRefundLabel": "Total before refund",
+          "refundedLabel": "Refunded"
+        },
+        "message": {
+          "refundExecuted": "Refund was successfully executed"
+        }
       }
     }
   }

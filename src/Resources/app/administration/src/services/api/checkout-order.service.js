@@ -64,6 +64,25 @@ class CheckoutOrderService extends ApiService {
                 return ApiService.handleResponse(response);
             });
     }
+
+    /**
+     * Refund checkout.com payment by the order id
+     *
+     * @param orderId {string}
+     * @param items {array}
+     * @returns {*}
+     */
+    refundPayment(orderId, items) {
+        const headers = this.getBasicHeaders();
+
+        return this.httpClient
+            .post(`${this.getApiBasePath()}/refund`, {
+                orderId,
+                items,
+            }, { headers }).then((response) => {
+                return ApiService.handleResponse(response);
+            });
+    }
 }
 
 export default CheckoutOrderService;

@@ -4,6 +4,7 @@ export const DASHBOARD_LINK = {
 };
 
 export const ORDER_CHECKOUT_COM_CUSTOM_FIELDS = 'checkoutComPayments';
+export const LINE_ITEM_PAYLOAD = 'checkoutComPayments';
 export const CHECKOUT_DOMAIN = 'CheckoutCom.config';
 export const CHECKOUT_DOMAIN_PAYMENT_METHOD = `${CHECKOUT_DOMAIN}.paymentMethod`;
 
@@ -21,4 +22,7 @@ export const PAYMENT_METHOD_TYPE = {
 
 export const CHECKOUT_STATUS = {
     AUTHORIZED: 'Authorized',
+    CAPTURED: 'Captured',
+    PARTIAL_REFUNDED: 'Partially Refunded',
+    REFUNDED: 'Refunded',
 };
