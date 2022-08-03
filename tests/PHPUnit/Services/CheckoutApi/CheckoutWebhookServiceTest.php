@@ -11,6 +11,8 @@ use Symfony\Component\Routing\RouterInterface;
 
 class CheckoutWebhookServiceTest extends AbstractCheckoutTest
 {
+    protected CheckoutWebhookService $checkoutPaymentService;
+
     /**
      * @var RouterInterface|MockObject
      */
