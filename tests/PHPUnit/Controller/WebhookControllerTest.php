@@ -9,12 +9,12 @@ use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
 use CheckoutCom\Shopware6\Service\Webhook\WebhookService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Validation\DataValidator;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Log\Logger;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 
@@ -41,7 +41,7 @@ class WebhookControllerTest extends TestCase
     {
         $this->validator = $this->createMock(DataValidator::class);
         $this->webhookService = $this->createMock(WebhookService::class);
-        $this->logger = $this->createMock(Logger::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
         $this->webhookController = new WebhookController(
             $this->validator,
             $this->webhookService,
