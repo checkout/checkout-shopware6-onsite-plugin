@@ -5,6 +5,7 @@ namespace CheckoutCom\Shopware6\Tests\Services\Builder;
 use CheckoutCom\Shopware6\Exception\CheckoutComException;
 use CheckoutCom\Shopware6\Service\Builder\RefundBuilder;
 use CheckoutCom\Shopware6\Struct\LineItem\LineItemPayload;
+use CheckoutCom\Shopware6\Struct\Request\Refund\OrderRefundRequest;
 use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequest;
 use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
 use PHPUnit\Framework\TestCase;
@@ -31,6 +32,93 @@ class RefundBuilderTest extends TestCase
         $this->refundBuilder = new RefundBuilder(
             $this->createMock(LoggerInterface::class)
         );
+    }
+
+    public function testBuildRefundRequestForFullRefundOfNullOrderLineItemCollection(): void
+    {
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getId' => 'foo',
+            'getLineItems' => null,
+        ]);
+
+        static::expectException(CheckoutComException::class);
+
+        $this->refundBuilder->buildRefundRequestForFullRefund($order);
+    }
+
+    public function testBuildRefundRequestForFullRefundOfEmptyOrderLineItemCollection(): void
+    {
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getId' => 'foo',
+            'getLineItems' => $this->createMock(OrderLineItemCollection::class),
+        ]);
+
+        $result = $this->refundBuilder->buildRefundRequestForFullRefund($order);
+        static::assertInstanceOf(OrderRefundRequest::class, $result);
+        static::assertSame(0, $result->getItems()->count());
+    }
+
+    public function testBuildRefundRequestForFullRefundOfSkipIfHaveRefundLineItemId(): void
+    {
+        $lineItemPayload = $this->getLineItemPayload('foo');
+
+        $skipOrderLineItem = new OrderLineItemEntity();
+        $skipOrderLineItem->setId('foo');
+        $skipOrderLineItem->setPayload([
+            RefundBuilder::LINE_ITEM_PAYLOAD => $lineItemPayload->jsonSerialize(),
+        ]);
+
+        $continueOrderLineItem = new OrderLineItemEntity();
+        $continueOrderLineItem->setId('bar');
+        $continueOrderLineItem->setQuantity(1);
+
+        $orderLineItems = new OrderLineItemCollection([$skipOrderLineItem, $continueOrderLineItem]);
+
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getId' => 'foo',
+            'getLineItems' => $orderLineItems,
+        ]);
+
+        $result = $this->refundBuilder->buildRefundRequestForFullRefund($order);
+        static::assertInstanceOf(OrderRefundRequest::class, $result);
+        static::assertSame(1, $result->getItems()->count());
+        static::assertSame('bar', $result->getItems()->first()->getId());
+    }
+
+    public function testBuildRefundRequestForFullRefundOfRemainingQuantityEqual0(): void
+    {
+        $orderLineItem = new OrderLineItemEntity();
+        $orderLineItem->setId('foo');
+        $orderLineItem->setQuantity(0);
+
+        $orderLineItems = new OrderLineItemCollection([$orderLineItem]);
+
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getId' => 'foo',
+            'getLineItems' => $orderLineItems,
+        ]);
+
+        $result = $this->refundBuilder->buildRefundRequestForFullRefund($order);
+        static::assertInstanceOf(OrderRefundRequest::class, $result);
+        static::assertSame(0, $result->getItems()->count());
+    }
+
+    public function testBuildRefundRequestForFullRefundSuccessful(): void
+    {
+        $orderLineItem = new OrderLineItemEntity();
+        $orderLineItem->setId('foo');
+        $orderLineItem->setQuantity(1);
+
+        $orderLineItems = new OrderLineItemCollection([$orderLineItem]);
+
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getId' => 'foo',
+            'getLineItems' => $orderLineItems,
+        ]);
+
+        $result = $this->refundBuilder->buildRefundRequestForFullRefund($order);
+        static::assertInstanceOf(OrderRefundRequest::class, $result);
+        static::assertSame(1, $result->getItems()->count());
     }
 
     public function testBuildLineItemsOfNotFoundOrderLineItems(): void

@@ -1,0 +1,39 @@
+{% block checkout_com_flow_full_refund %}
+    <sw-modal
+        :title="$tc('checkout-payments.order.flow.modal.title')"
+        @modal-close="onClose"
+    >
+        {% block checkout_com_flow_full_refund_content_warning %}
+            <sw-alert
+                variant="warning"
+            >
+                <span>
+                    {{ $tc('checkout-payments.order.flow.modal.fullRefundAlsoIncludeText') }}
+                </span>
+            </sw-alert>
+        {% endblock %}
+
+        {% block checkout_com_flow_full_refund_footer %}
+            <template #modal-footer>
+                {% block checkout_com_flow_full_refund_footer_cancel_button %}
+                    <sw-button
+                        size="small"
+                        @click="onClose"
+                    >
+                        {{ $tc('global.default.cancel') }}
+                    </sw-button>
+                {% endblock %}
+
+                {% block checkout_com_flow_full_refund_footer_save_button %}
+                    <sw-button
+                        variant="primary"
+                        size="small"
+                        @click="onAddAction"
+                    >
+                        {{ sequence.id ? $tc('sw-flow.modals.buttonSaveAction') : $tc('sw-flow.modals.buttonAddAction') }}
+                    </sw-button>
+                {% endblock %}
+            </template>
+        {% endblock %}
+    </sw-modal>
+{% endblock %}

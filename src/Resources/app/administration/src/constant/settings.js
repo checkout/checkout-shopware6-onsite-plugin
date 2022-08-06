@@ -8,6 +8,10 @@ export const LINE_ITEM_PAYLOAD = 'checkoutComPayments';
 export const CHECKOUT_DOMAIN = 'CheckoutCom.config';
 export const CHECKOUT_DOMAIN_PAYMENT_METHOD = `${CHECKOUT_DOMAIN}.paymentMethod`;
 
+export const FLOW_ACTION = {
+    FULL_REFUND: 'action.checkout_com.full_refund',
+};
+
 export const SETUP_LINK = {
     APPLE_PAY: 'https://www.checkout.com/docs/payments/payment-methods/wallets/apple-pay/set-up-apple-pay',
 };

@@ -4,6 +4,7 @@ namespace CheckoutCom\Shopware6\Service\Builder;
 
 use CheckoutCom\Shopware6\Exception\CheckoutComException;
 use CheckoutCom\Shopware6\Struct\LineItem\LineItemPayload;
+use CheckoutCom\Shopware6\Struct\Request\Refund\OrderRefundRequest;
 use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequest;
 use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
 use Psr\Log\LoggerInterface;
@@ -32,6 +33,55 @@ class RefundBuilder
     public function __construct(LoggerInterface $loggerService)
     {
         $this->logger = $loggerService;
+    }
+
+    public function buildRefundRequestForFullRefund(OrderEntity $order): OrderRefundRequest
+    {
+        $orderLineItems = $order->getLineItems();
+        if (!$orderLineItems instanceof OrderLineItemCollection) {
+            $message = sprintf('The orderLineItems must be instance of OrderLineItemCollection with Order ID: %s', $order->getId());
+            $this->logger->warning($message);
+
+            throw new CheckoutComException($message);
+        }
+
+        $refundItems = new RefundItemRequestCollection();
+        foreach ($orderLineItems as $orderLineItem) {
+            $lineItemPayload = $this->getCheckoutLineItemPayload($orderLineItem);
+            // Skip if the current order line item have `refund line item ID`
+            if (!empty($lineItemPayload->getRefundLineItemId())) {
+                continue;
+            }
+
+            // Count total remaining quantity
+            $remainingQuantity = $orderLineItems->reduce(
+                function (int $remainingQuantity, OrderLineItemEntity $orderRefundLineItem) use ($orderLineItem) {
+                    $orderRefundPayload = $this->getCheckoutLineItemPayload($orderRefundLineItem);
+
+                    if ($orderRefundPayload->getRefundLineItemId() !== $orderLineItem->getId()) {
+                        return $remainingQuantity;
+                    }
+
+                    return $remainingQuantity - $orderRefundLineItem->getQuantity();
+                },
+                $orderLineItem->getQuantity()
+            );
+
+            if ($remainingQuantity === 0) {
+                continue;
+            }
+
+            $refundItem = new RefundItemRequest();
+            $refundItem->setId($orderLineItem->getId());
+            $refundItem->setReturnQuantity($remainingQuantity);
+            $refundItems->set($refundItem->getId(), $refundItem);
+        }
+
+        $orderRefundRequest = new OrderRefundRequest();
+        $orderRefundRequest->setOrderId($order->getId());
+        $orderRefundRequest->setItems($refundItems);
+
+        return $orderRefundRequest;
     }
 
     public function buildLineItems(RefundItemRequestCollection $refundItems, OrderEntity $order): LineItemCollection

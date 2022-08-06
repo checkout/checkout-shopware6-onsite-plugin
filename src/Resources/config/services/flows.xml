@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="CheckoutCom\Shopware6\Content\Flow\Dispatching\Action\FullRefundAction">
+            <argument type="service" id="checkout_com.shopware6.logger"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Facade\PaymentRefundFacade"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Builder\RefundBuilder"/>
+
+            <tag name="kernel.event_subscriber"/>
+            <tag name="flow.action" priority="10"/>
+        </service>
+    </services>
+</container>
