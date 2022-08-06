@@ -4,6 +4,7 @@ import dummyCheckoutScenario from '../../support/scenarios/DummyCheckoutScenario
 
 import checkoutConfirmRepository from '../../support/repositories/storefront/CheckoutConfirmRepository';
 import accountOrderRepository from '../../support/repositories/storefront/AccountOrderRepository';
+import cardRepository from '../../support/repositories/storefront/payment-methods/CardRepository';
 
 describe('Testing Storefront Card Payments Payment', () => {
     before(() => {
@@ -26,33 +27,35 @@ describe('Testing Storefront Card Payments Payment', () => {
         checkoutAction.selectPaymentMethod('Card Payments');
     });
 
-    it('Empty card', () => {
-        checkoutConfirmRepository.getConfirmSubmitButton().should('be.disabled');
-    });
+    describe(('Testing card validation'), () => {
+        it('Empty card', () => {
+            checkoutConfirmRepository.getConfirmSubmitButton().should('be.disabled');
+        });
 
-    it('Empty card number', () => {
-        checkoutAction.fillCardPayment(null, null, '0224', '100');
-        checkoutConfirmRepository.getConfirmSubmitButton().should('be.disabled');
-    });
+        it('Empty card number', () => {
+            checkoutAction.fillCardPayment(null, null, '0224', '100');
+            checkoutConfirmRepository.getConfirmSubmitButton().should('be.disabled');
+        });
 
-    it('Invalid card number', () => {
-        checkoutAction.fillCardPayment(null, '2222222222222222', '0224', '100');
-        checkoutConfirmRepository.getConfirmSubmitButton().should('be.disabled');
-    });
+        it('Invalid card number', () => {
+            checkoutAction.fillCardPayment(null, '2222222222222222', '0224', '100');
+            checkoutConfirmRepository.getConfirmSubmitButton().should('be.disabled');
+        });
 
-    it('Empty expiry date', () => {
-        checkoutAction.fillCardPayment(null, '4242424242424242', null, '100');
-        checkoutConfirmRepository.getConfirmSubmitButton().should('be.disabled');
-    });
+        it('Empty expiry date', () => {
+            checkoutAction.fillCardPayment(null, '4242424242424242', null, '100');
+            checkoutConfirmRepository.getConfirmSubmitButton().should('be.disabled');
+        });
 
-    it('Invalid expiry date', () => {
-        checkoutAction.fillCardPayment(null, '4242424242424242', '1111', '100');
-        checkoutConfirmRepository.getConfirmSubmitButton().should('be.disabled');
-    });
+        it('Invalid expiry date', () => {
+            checkoutAction.fillCardPayment(null, '4242424242424242', '1111', '100');
+            checkoutConfirmRepository.getConfirmSubmitButton().should('be.disabled');
+        });
 
-    it('Empty CVV', () => {
-        checkoutAction.fillCardPayment(null, '4242424242424242', '0224', null);
-        checkoutConfirmRepository.getConfirmSubmitButton().should('be.disabled');
+        it('Empty CVV', () => {
+            checkoutAction.fillCardPayment(null, '4242424242424242', '0224', null);
+            checkoutConfirmRepository.getConfirmSubmitButton().should('be.disabled');
+        });
     });
 
     describe('Make payment with 3DS', () => {
@@ -124,6 +127,85 @@ describe('Testing Storefront Card Payments Payment', () => {
 
                 accountOrderRepository.getFirstOrderStatus().should('have.text', 'Paid');
             });
+        });
+    });
+
+    describe('Testing "Save card details for future payments"', () => {
+        before(() => {
+            shopConfigurationAction.toggle3ds(false);
+        });
+
+        it('Uncheck and make payment', () => {
+            checkoutAction.fillCardPayment(null, '4242424242424242', '0224', '100');
+
+            checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
+
+            cy.intercept('GET', '/checkout/finish*').as('checkoutFinish');
+            cy.wait('@checkoutFinish').its('response.statusCode').should('equal', 200);
+
+            // Make another payment
+            cy.visit('/');
+            dummyCheckoutScenario.execute(false);
+            checkoutAction.selectPaymentMethod('Card Payments');
+
+            // Card options section should not appear when unchecking "Save card details for future payments"
+            cardRepository.getCardOptionInput().should('have.length', 0);
+        });
+
+        it('Check and make failed payment', () => {
+            checkoutAction.fillCardPayment(null, '4242424242424242', '0224', '111');
+
+            // Check "Save card details for future payments"
+            cardRepository.getSaveCardDetailsCheckbox().check({ force: true });
+
+            checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
+
+            cy.url().should('include', '3ds2');
+
+            // Wait until iframe is fully loaded
+            cy.wait(8000);
+
+            cy.getIframeBody('iframe[name="cko-3ds2-iframe"]').find('#password').type('Checkout1!');
+            cy.getIframeBody('iframe[name="cko-3ds2-iframe"]').find('#txtButton').click();
+
+            // Wait for 3DS verification process to finish
+            cy.wait(3000);
+
+            // Make another payment
+            cy.visit('/');
+            dummyCheckoutScenario.execute(false);
+            checkoutAction.selectPaymentMethod('Card Payments');
+
+            // Card options section should not appear when unchecking "Save card details for future payments"
+            cardRepository.getCardOptionInput().should('have.length', 0);
+        });
+
+        it('Check and make successful payment', () => {
+            checkoutAction.fillCardPayment(null, '4242424242424242', '0224', '100');
+
+            // Check "Save card details for future payments"
+            cardRepository.getSaveCardDetailsCheckbox().check({ force: true });
+
+            checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
+
+            cy.url().should('include', '3ds2');
+
+            // Wait until iframe is fully loaded
+            cy.wait(8000);
+
+            cy.getIframeBody('iframe[name="cko-3ds2-iframe"]').find('#password').type('Checkout1!');
+            cy.getIframeBody('iframe[name="cko-3ds2-iframe"]').find('#txtButton').click();
+
+            // Wait for 3DS verification process to finish
+            cy.wait(3000);
+
+            // Make another payment
+            cy.visit('/');
+            dummyCheckoutScenario.execute(false);
+            checkoutAction.selectPaymentMethod('Card Payments');
+
+            // Card options section should appear with the recently saved card
+            cardRepository.getCardOptionInput().should('have.length', 2);
         });
     });
 });

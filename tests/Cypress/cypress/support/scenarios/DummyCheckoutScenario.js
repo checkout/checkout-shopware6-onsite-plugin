@@ -3,11 +3,13 @@ import checkoutAction from '../actions/storefront/CheckoutAction';
 
 class DummyCheckoutScenario {
 
-    execute() {
+    execute(login = true) {
         const userEmail = 'test@example.com';
         const userPwd = 'shopware';
 
-        storefrontLoginAction.login(userEmail, userPwd);
+        if (login) {
+            storefrontLoginAction.login(userEmail, userPwd);
+        }
 
         checkoutAction.addFirstProductToCart(1);
 
