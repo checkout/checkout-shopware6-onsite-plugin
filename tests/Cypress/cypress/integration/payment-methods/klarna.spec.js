@@ -1,10 +1,8 @@
 import shopConfigurationAction from '../../support/actions/admin/ShopConfigurationAction';
 import dummyCheckoutScenario from '../../support/scenarios/DummyCheckoutScenario';
 import storefrontLoginAction from '../../support/actions/storefront/LoginAction';
-import checkoutAction from '../../support/actions/storefront/CheckoutAction';
-import checkoutConfirmRepository from '../../support/repositories/storefront/CheckoutConfirmRepository';
-import klarnaRepository from '../../support/repositories/storefront/payment-methods/KlarnaRepository';
 import orderDetailRepository from '../../support/repositories/storefront/OrderDetailRepository';
+import klarnaScenario from '../../support/scenarios/KlarnaScenario';
 
 const paymentEndpoint = 'payment-method';
 const paymentHandler = 'CheckoutCom\\Shopware6\\Handler\\Method\\KlarnaHandler';
@@ -44,21 +42,7 @@ describe('Testing Storefront Klarna Payment', () => {
         it('make payment with "Pay in 30 days"', () => {
             dummyCheckoutScenario.execute();
 
-            checkoutAction.selectPaymentMethod('Klarna');
-
-            // Choose "Pay in 30 days"
-            klarnaRepository.getPayLaterOption().click();
-
-            checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
-
-            cy.intercept('POST', 'https://js.playground.klarna.com/eu/profile/login/**/init').as('initKlarna');
-            cy.wait('@initKlarna');
-
-            // Fill in necessary information
-            klarnaRepository.getEmailOrPhoneInput().type('017614287464');
-            klarnaRepository.getContinueButton().click();
-            klarnaRepository.getOtpInput().type('123456');
-            klarnaRepository.getPurchaseButton().click();
+            klarnaScenario.payIn30Days();
 
             cy.url().should('include', '/checkout/finish');
         });
@@ -66,19 +50,7 @@ describe('Testing Storefront Klarna Payment', () => {
         it('make payment with "Flexible account"', () => {
             dummyCheckoutScenario.execute();
 
-            checkoutAction.selectPaymentMethod('Klarna');
-
-            // Choose "Flexible account"
-            klarnaRepository.getPayOverTimeOption().click();
-
-            cy.intercept('POST', 'https://eu.playground.klarnaevt.com/**').as('initKlarna');
-            cy.wait('@initKlarna');
-
-            checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
-
-            // Fill in necessary information
-            klarnaRepository.getDateOfBirthInput().type('01011990');
-            klarnaRepository.getApproveButton().click();
+            klarnaScenario.payWithFlexibleAccount();
 
             cy.url().should('include', '/checkout/finish');
         });
@@ -108,21 +80,7 @@ describe('Testing Storefront Klarna Payment', () => {
         beforeEach(() => {
             dummyCheckoutScenario.execute();
 
-            checkoutAction.selectPaymentMethod('Klarna');
-
-            // Choose "Pay in 30 days"
-            klarnaRepository.getPayLaterOption().click();
-
-            checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
-
-            cy.intercept('POST', 'https://js.playground.klarna.com/eu/profile/login/**/init').as('initKlarna');
-            cy.wait('@initKlarna');
-
-            // Fill in necessary information
-            klarnaRepository.getEmailOrPhoneInput().type('017614287464');
-            klarnaRepository.getContinueButton().click();
-            klarnaRepository.getOtpInput().type('123456');
-            klarnaRepository.getPurchaseButton().click();
+            klarnaScenario.payIn30Days();
 
             cy.url().should('include', '/checkout/finish');
 
