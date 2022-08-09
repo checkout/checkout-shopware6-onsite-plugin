@@ -37,12 +37,14 @@ class CheckoutKlarnaService extends AbstractCheckoutService
      *
      * @throws CheckoutApiException
      */
-    public function capturePayment(string $paymentId, OrderCaptureRequest $orderCaptureRequest, string $salesChannelId): void
+    public function capturePayment(string $paymentId, OrderCaptureRequest $orderCaptureRequest, string $salesChannelId): string
     {
         $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
 
         try {
-            $checkoutApi->getKlarnaClient()->capturePayment($paymentId, $orderCaptureRequest);
+            $captureResponse = $checkoutApi->getKlarnaClient()->capturePayment($paymentId, $orderCaptureRequest);
+
+            return $captureResponse['action_id'];
         } catch (CheckoutApiException $e) {
             $this->logMessage($e, __FUNCTION__);
 
@@ -55,12 +57,14 @@ class CheckoutKlarnaService extends AbstractCheckoutService
      *
      * @throws CheckoutApiException
      */
-    public function voidPayment(string $paymentId, VoidRequest $voidRequest, string $salesChannelId): void
+    public function voidPayment(string $paymentId, VoidRequest $voidRequest, string $salesChannelId): string
     {
         $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
 
         try {
-            $checkoutApi->getKlarnaClient()->voidPayment($paymentId, $voidRequest);
+            $voidResponse = $checkoutApi->getKlarnaClient()->voidPayment($paymentId, $voidRequest);
+
+            return $voidResponse['action_id'];
         } catch (CheckoutApiException $e) {
             $this->logMessage($e, __FUNCTION__);
 

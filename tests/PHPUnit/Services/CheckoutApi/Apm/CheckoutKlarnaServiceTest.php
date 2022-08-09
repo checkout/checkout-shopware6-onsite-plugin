@@ -43,7 +43,9 @@ class CheckoutKlarnaServiceTest extends AbstractCheckoutTest
      */
     public function testCapturePayment(bool $apiShouldThrowException): void
     {
-        $this->handleCheckoutRequestShouldThrowException($apiShouldThrowException, 'post');
+        $this->handleCheckoutRequestShouldThrowException($apiShouldThrowException, 'post', [
+            'action_id' => 'foo',
+        ]);
 
         $orderCaptureRequest = new OrderCaptureRequest();
         $this->checkoutKlarnaService->capturePayment(
@@ -58,7 +60,9 @@ class CheckoutKlarnaServiceTest extends AbstractCheckoutTest
      */
     public function testVoidPayment(bool $apiShouldThrowException): void
     {
-        $this->handleCheckoutRequestShouldThrowException($apiShouldThrowException, 'post');
+        $this->handleCheckoutRequestShouldThrowException($apiShouldThrowException, 'post', [
+            'action_id' => 'foo',
+        ]);
 
         $voidRequest = new VoidRequest();
         $this->checkoutKlarnaService->voidPayment(

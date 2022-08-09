@@ -3,10 +3,12 @@
 namespace CheckoutCom\Shopware6\Service\Builder;
 
 use CheckoutCom\Shopware6\Exception\CheckoutComException;
+use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use CheckoutCom\Shopware6\Struct\LineItem\LineItemPayload;
 use CheckoutCom\Shopware6\Struct\Request\Refund\OrderRefundRequest;
 use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequest;
 use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
+use CheckoutCom\Shopware6\Struct\WebhookReceiveDataStruct;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
@@ -116,6 +118,64 @@ class RefundBuilder
         }
 
         return $lineItems;
+    }
+
+    public function buildLineItemsForWebhook(WebhookReceiveDataStruct $receiveDataStruct): LineItemCollection
+    {
+        $webhookAmount = $receiveDataStruct->getAmount();
+        if ($webhookAmount === null) {
+            $message = sprintf('The amount of webhook can not null for webhook ID: %s', $receiveDataStruct->getId());
+            $this->logger->warning($message);
+
+            throw new CheckoutComException($message);
+        }
+
+        $webhookCurrency = $receiveDataStruct->getCurrency();
+        if ($webhookCurrency === null) {
+            $message = sprintf('The currency of webhook can not null for webhook ID: %s', $receiveDataStruct->getId());
+            $this->logger->warning($message);
+
+            throw new CheckoutComException($message);
+        }
+
+        $unitPrice = CheckoutComUtil::formatPriceShopware(
+            $webhookAmount,
+            $webhookCurrency
+        ) * -1;
+        $refundQuantity = 1;
+
+        $lineItem = new LineItem(
+            Uuid::randomHex(),
+            LineItem::CUSTOM_LINE_ITEM_TYPE,
+            null,
+            $refundQuantity
+        );
+
+        $lineItem->setStackable(true);
+        $lineItem->setRemovable(true);
+        $lineItem->setLabel('Refunded from Checkout hub');
+        $lineItem->setPriceDefinition(
+            new QuantityPriceDefinition(
+                $unitPrice,
+                new TaxRuleCollection(),
+                $refundQuantity
+            )
+        );
+        $lineItem->setPrice(
+            new CalculatedPrice(
+                $unitPrice,
+                $unitPrice * $refundQuantity,
+                new CalculatedTaxCollection(),
+                new TaxRuleCollection(),
+                $refundQuantity,
+            )
+        );
+
+        $lineItemPayload = new LineItemPayload();
+        $lineItemPayload->setType(LineItemPayload::LINE_ITEM_WEBHOOK);
+        $lineItem->setPayloadValue(self::LINE_ITEM_PAYLOAD, $lineItemPayload->jsonSerialize());
+
+        return new LineItemCollection([$lineItem]);
     }
 
     public function buildLineItemsShippingCosts(OrderEntity $order): LineItemCollection

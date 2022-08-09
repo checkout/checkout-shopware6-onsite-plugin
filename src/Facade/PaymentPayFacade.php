@@ -173,7 +173,7 @@ class PaymentPayFacade
         }
 
         // After receiving data from the checkout.com response, insert as much data as possible into our "order" custom fields
-        $this->orderService->updateCheckoutCustomFields($order, $checkoutOrderCustomFields, $salesChannelContext);
+        $this->orderService->updateCheckoutCustomFields($order, $checkoutOrderCustomFields, $salesChannelContext->getContext());
 
         // If the payment is not approved and status is not pending, throw an exception and log the error
         if (!$payment->isApproved() && $payment->getStatus() !== CheckoutPaymentService::STATUS_PENDING) {
@@ -275,6 +275,7 @@ class PaymentPayFacade
             $payment = $this->checkoutPaymentService->requestPayment($paymentRequest, $salesChannelContext->getSalesChannelId());
 
             $checkoutOrderCustomFields->setShouldSaveSource(RequestUtil::getShouldSaveSource($dataBag));
+            $checkoutOrderCustomFields->setLastCheckoutActionId($payment->getActionId());
             $checkoutOrderCustomFields->setCheckoutPaymentId($payment->getId());
             $checkoutOrderCustomFields->setCheckoutReturnUrl($payment->getRedirectUrl());
 

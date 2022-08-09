@@ -71,7 +71,9 @@ class CheckoutPaymentServiceTest extends AbstractCheckoutTest
      */
     public function testCapturePayment(bool $apiShouldThrowException): void
     {
-        $this->handleCheckoutRequestShouldThrowException($apiShouldThrowException, 'post');
+        $this->handleCheckoutRequestShouldThrowException($apiShouldThrowException, 'post', [
+            'action_id' => 'foo',
+        ]);
 
         $this->checkoutPaymentService->capturePayment(
             'foo',
@@ -84,7 +86,9 @@ class CheckoutPaymentServiceTest extends AbstractCheckoutTest
      */
     public function testVoidPayment(bool $apiShouldThrowException): void
     {
-        $this->handleCheckoutRequestShouldThrowException($apiShouldThrowException, 'post');
+        $this->handleCheckoutRequestShouldThrowException($apiShouldThrowException, 'post', [
+            'action_id' => 'foo',
+        ]);
 
         $this->checkoutPaymentService->voidPayment(
             'foo',
@@ -97,7 +101,9 @@ class CheckoutPaymentServiceTest extends AbstractCheckoutTest
      */
     public function testRefundPayment(bool $apiShouldThrowException): void
     {
-        $this->handleCheckoutRequestShouldThrowException($apiShouldThrowException, 'post');
+        $this->handleCheckoutRequestShouldThrowException($apiShouldThrowException, 'post', [
+            'action_id' => 'foo',
+        ]);
 
         $refundRequest = new RefundRequest();
 

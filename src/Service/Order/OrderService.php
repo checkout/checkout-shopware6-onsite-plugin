@@ -190,7 +190,7 @@ class OrderService extends AbstractOrderService
     /**
      * Update order custom fields of the order for checkout.com payments
      */
-    public function updateCheckoutCustomFields(OrderEntity $order, OrderCustomFieldsStruct $orderCustomFields, SalesChannelContext $context): void
+    public function updateCheckoutCustomFields(OrderEntity $order, OrderCustomFieldsStruct $orderCustomFields, Context $context): void
     {
         $this->logger->debug('Updating order checkout custom fields', [
             'orderId' => $order->getId(),
@@ -206,7 +206,7 @@ class OrderService extends AbstractOrderService
                     self::CHECKOUT_CUSTOM_FIELDS => $orderCustomFields->jsonSerialize(),
                 ],
             ],
-        ], $context->getContext());
+        ], $context);
     }
 
     /**
@@ -269,6 +269,11 @@ class OrderService extends AbstractOrderService
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('orderNumber', $orderNumber));
+        $criteria->addAssociation('lineItems');
+        $criteria->addAssociation('deliveries.shippingMethod');
+        $criteria->addAssociation('deliveries.positions.orderLineItem');
+        $criteria->addAssociation('deliveries.shippingOrderAddress.country');
+        $criteria->addAssociation('deliveries.shippingOrderAddress.countryState');
         $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
 
         $order = $this->orderRepository->search($criteria, $context)->first();

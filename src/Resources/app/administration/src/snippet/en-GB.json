@@ -90,6 +90,16 @@
         },
         "message": {
           "refundExecuted": "Refund was successfully executed"
+        },
+        "tooltip": {
+          "refundFromHubDisabled": "You cannot use Refund manager because this order has been refunded from Checkout.com hub. Please continue the action on Checkout.com hub."
+        }
+      },
+      "flow": {
+        "fullRefundLabel": "(checkout.com) Full refund",
+        "modal": {
+          "title": "Full refund",
+          "fullRefundAlsoIncludeText": "Full refund also includes shipping costs and can only be executed once."
         }
       },
       "flow": {

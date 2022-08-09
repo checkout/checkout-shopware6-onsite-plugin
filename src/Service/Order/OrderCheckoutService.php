@@ -105,7 +105,10 @@ class OrderCheckoutService extends AbstractOrderCheckoutService
                 return;
             }
 
-            $paymentHandler->capturePayment($checkoutPaymentId, $order);
+            $actionId = $paymentHandler->capturePayment($checkoutPaymentId, $order);
+            $orderCustomFields->setLastCheckoutActionId($actionId);
+
+            $this->orderService->updateCheckoutCustomFields($order, $orderCustomFields, $context);
 
             // Get plugin settings
             $settings = $this->settingsFactory->getSettings($order->getSalesChannelId());
@@ -142,7 +145,10 @@ class OrderCheckoutService extends AbstractOrderCheckoutService
                 return;
             }
 
-            $paymentHandler->voidPayment($checkoutPaymentId, $order);
+            $actionId = $paymentHandler->voidPayment($checkoutPaymentId, $order);
+            $orderCustomFields->setLastCheckoutActionId($actionId);
+
+            $this->orderService->updateCheckoutCustomFields($order, $orderCustomFields, $context);
 
             // Get plugin settings
             $settings = $this->settingsFactory->getSettings($order->getSalesChannelId());

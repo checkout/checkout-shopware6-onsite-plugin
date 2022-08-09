@@ -99,6 +99,7 @@
             <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderTransactionService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Facade\PaymentRefundFacade"/>
         </service>
 
         <!--    BUILDER    -->

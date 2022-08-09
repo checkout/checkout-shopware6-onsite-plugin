@@ -108,6 +108,15 @@ class CheckoutComTest extends TestCase
     }
 
     /**
+     * @dataProvider formatPriceShopwareProvider
+     */
+    public function testFormatPriceShopware(float $expected, int $price, string $currency): void
+    {
+        $result = CheckoutComUtil::formatPriceShopware($price, $currency);
+        static::assertSame($expected, $result);
+    }
+
+    /**
      * @dataProvider buildDirectPayCartProvider
      */
     public function testBuildDirectPayCart(LineItemCollection $lineItems, DeliveryCollection $deliveries, float $taxAmount): void
@@ -295,6 +304,37 @@ class CheckoutComTest extends TestCase
                 'expected' => 12500,
                 'price' => 124.2545435535,
                 'currency' => Currency::$CLP,
+            ],
+        ];
+    }
+
+    public function formatPriceShopwareProvider(): array
+    {
+        return [
+            'Test full value' => [
+                'expected' => 124,
+                'price' => 124,
+                'currency' => Currency::$BIF,
+            ],
+            'Test divide 1000 float value' => [
+                'expected' => 1,
+                'price' => 1000,
+                'currency' => Currency::$BHD,
+            ],
+            'Test divide 1000 with float value' => [
+                'expected' => 0.1,
+                'price' => 100,
+                'currency' => Currency::$IQD,
+            ],
+            'Test divide 100 float value' => [
+                'expected' => 1,
+                'price' => 100,
+                'currency' => 'other',
+            ],
+            'Test divide 100 with float value' => [
+                'expected' => 0.1,
+                'price' => 10,
+                'currency' => 'other',
             ],
         ];
     }

@@ -91,12 +91,14 @@ class CheckoutPaymentService extends AbstractCheckoutService
     /**
      * @throws CheckoutApiException
      */
-    public function capturePayment(string $paymentId, string $salesChannelId): void
+    public function capturePayment(string $paymentId, string $salesChannelId): string
     {
         $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
 
         try {
-            $checkoutApi->getPaymentsClient()->capturePayment($paymentId);
+            $captureResponse = $checkoutApi->getPaymentsClient()->capturePayment($paymentId);
+
+            return $captureResponse['action_id'];
         } catch (CheckoutApiException $e) {
             $this->logMessage($e, __FUNCTION__, ['paymentId' => $paymentId]);
 
@@ -107,12 +109,14 @@ class CheckoutPaymentService extends AbstractCheckoutService
     /**
      * @throws CheckoutApiException
      */
-    public function voidPayment(string $paymentId, string $salesChannelId): void
+    public function voidPayment(string $paymentId, string $salesChannelId): string
     {
         $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
 
         try {
-            $checkoutApi->getPaymentsClient()->voidPayment($paymentId);
+            $voidResponse = $checkoutApi->getPaymentsClient()->voidPayment($paymentId);
+
+            return $voidResponse['action_id'];
         } catch (CheckoutApiException $e) {
             $this->logMessage($e, __FUNCTION__, ['paymentId' => $paymentId]);
 
@@ -123,12 +127,14 @@ class CheckoutPaymentService extends AbstractCheckoutService
     /**
      * @throws CheckoutApiException
      */
-    public function refundPayment(string $paymentId, RefundRequest $refundRequest, string $salesChannelId): void
+    public function refundPayment(string $paymentId, RefundRequest $refundRequest, string $salesChannelId): string
     {
         $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
 
         try {
-            $checkoutApi->getPaymentsClient()->refundPayment($paymentId, $refundRequest);
+            $refundResponse = $checkoutApi->getPaymentsClient()->refundPayment($paymentId, $refundRequest);
+
+            return $refundResponse['action_id'];
         } catch (CheckoutApiException $e) {
             $this->logMessage($e, __FUNCTION__, ['paymentId' => $paymentId]);
 

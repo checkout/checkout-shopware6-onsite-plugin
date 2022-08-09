@@ -68,9 +68,17 @@ class OrderStateMachineSubscriber implements EventSubscriberInterface
             return;
         }
 
+        $checkoutOrderCustomFields = OrderService::getCheckoutOrderCustomFields($order);
+        $checkoutPaymentId = $checkoutOrderCustomFields->getCheckoutPaymentId();
+
+        // If empty payment detail we skip it
+        if (empty($checkoutPaymentId)) {
+            return;
+        }
+
         // We get payment detail from checkout.com API
-        $payment = $this->getCheckoutPaymentDetail($order, $order->getSalesChannelId());
-        if (!$payment instanceof Payment || $payment->getStatus() !== CheckoutPaymentService::STATUS_AUTHORIZED) {
+        $payment = $this->checkoutPaymentService->getPaymentDetails($checkoutPaymentId, $order->getSalesChannelId());
+        if ($payment->getStatus() !== CheckoutPaymentService::STATUS_AUTHORIZED) {
             return;
         }
 
@@ -78,7 +86,10 @@ class OrderStateMachineSubscriber implements EventSubscriberInterface
         $settings = $this->settingsFactory->getSettings($order->getSalesChannelId());
 
         // Capture the payment from Checkout.com
-        $paymentHandler->capturePayment($payment->getId(), $order);
+        $actionId = $paymentHandler->capturePayment($payment->getId(), $order);
+        $checkoutOrderCustomFields->setLastCheckoutActionId($actionId);
+
+        $this->orderService->updateCheckoutCustomFields($order, $checkoutOrderCustomFields, $event->getContext());
 
         $this->orderTransactionService->processTransition($orderTransaction, CheckoutPaymentService::STATUS_CAPTURED, $event->getContext());
         $this->orderService->processTransition($order, $settings, CheckoutPaymentService::STATUS_CAPTURED, $event->getContext());
@@ -96,21 +107,5 @@ class OrderStateMachineSubscriber implements EventSubscriberInterface
         });
 
         return $orderTransactions->last();
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function getCheckoutPaymentDetail(OrderEntity $order, string $salesChannelId): ?Payment
-    {
-        $checkoutOrderCustomFields = OrderService::getCheckoutOrderCustomFields($order);
-        $checkoutPaymentId = $checkoutOrderCustomFields->getCheckoutPaymentId();
-
-        // If empty payment detail we skip it
-        if (empty($checkoutPaymentId)) {
-            return null;
-        }
-
-        return $this->checkoutPaymentService->getPaymentDetails($checkoutPaymentId, $salesChannelId);
     }
 }

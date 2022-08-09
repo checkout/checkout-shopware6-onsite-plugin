@@ -19,6 +19,7 @@ use CheckoutCom\Shopware6\Service\PaymentMethodService;
 use CheckoutCom\Shopware6\Service\Product\ProductService;
 use CheckoutCom\Shopware6\Struct\Request\Refund\OrderRefundRequest;
 use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
+use CheckoutCom\Shopware6\Struct\WebhookReceiveDataStruct;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Cart\Order\OrderConversionContext;
@@ -28,6 +29,7 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
+use Shopware\Core\Framework\Util\FloatComparator;
 use Throwable;
 
 class PaymentRefundFacade
@@ -96,16 +98,23 @@ class PaymentRefundFacade
         $orderCustomFields = OrderService::getCheckoutOrderCustomFields($order);
         $checkoutPaymentId = $orderCustomFields->getCheckoutPaymentId();
         if (empty($checkoutPaymentId)) {
-            $this->logger->error(sprintf('Error while getting checkoutPaymentId from custom fields of order ID: %s', $orderId));
+            $this->logger->error(sprintf('Error while getting checkoutPaymentId from custom fields of order number: %s', $order->getOrderNumber()));
 
             throw new CheckoutPaymentIdNotFoundException($order);
+        }
+
+        if ($orderCustomFields->isRefundedFromHub()) {
+            $message = sprintf('This order has already been refunded from checkout.com hub: %s', $orderId);
+            $this->logger->error($message);
+
+            throw new CheckoutComException($message);
         }
 
         $orderCurrency = $this->orderExtractor->extractCurrency($order);
 
         $requestLineItems = $this->refundBuilder->buildLineItems($refundItemsRequest, $order);
         if ($requestLineItems->count() === 0) {
-            $message = sprintf('The line items after build are empty with order ID: %s', $orderId);
+            $message = sprintf('The line items after build are empty with order number: %s', $order->getOrderNumber());
             $this->logger->error($message);
 
             throw new CheckoutComException($message);
@@ -117,7 +126,7 @@ class PaymentRefundFacade
         try {
             $payment = $this->checkoutPaymentService->getPaymentDetails($checkoutPaymentId, $order->getSalesChannelId());
             if (!$payment->canRefund()) {
-                $message = sprintf('Checkout payment status is not captured to refund for the order ID: %s', $orderId);
+                $message = sprintf('Checkout payment status is not captured to refund for the order number: %s', $order->getOrderNumber());
                 $this->logger->warning($message);
 
                 throw new CheckoutComException($message);
@@ -134,7 +143,8 @@ class PaymentRefundFacade
             $refundRequest = new RefundRequest();
             $refundRequest->amount = $refundedAmount;
 
-            $paymentHandler->refundPayment($checkoutPaymentId, $refundRequest, $order);
+            $actionId = $paymentHandler->refundPayment($checkoutPaymentId, $refundRequest, $order);
+            $orderCustomFields->setLastCheckoutActionId($actionId);
 
             $this->logger->info('Starting request refund', [
                 'status' => $refundStatus,
@@ -147,20 +157,80 @@ class PaymentRefundFacade
             $this->addRefundedLineItemsToOrder($order, $requestLineItems, $context);
             $this->updateStockForProduct($requestLineItems, $context);
 
+            $this->orderService->updateCheckoutCustomFields($order, $orderCustomFields, $context);
             $this->orderTransactionService->processTransition($orderTransaction, $refundStatus, $context);
             $this->orderService->processTransition($order, $settings, $refundStatus, $context);
         } catch (Throwable $ex) {
-            $message = sprintf('Error while refund payment for order ID: %s, checkoutPaymentId: %s', $orderId, $checkoutPaymentId);
-            $this->logger->error($message);
+            $message = sprintf('Error while refund payment for order ID: %s, checkoutPaymentId: %s', $order->getOrderNumber(), $checkoutPaymentId);
+            $this->logger->error($message, [
+                'error' => $ex->getMessage(),
+            ]);
 
             throw new CheckoutComException($message);
         }
     }
 
+    public function refundPaymentByWebhook(OrderEntity $order, WebhookReceiveDataStruct $receiveDataStruct, Context $context): void
+    {
+        $orderCustomFields = OrderService::getCheckoutOrderCustomFields($order);
+        $checkoutPaymentId = $orderCustomFields->getCheckoutPaymentId();
+        if (empty($checkoutPaymentId)) {
+            $this->logger->error(sprintf('Error while getting checkoutPaymentId from custom fields of order number: %s', $order->getOrderNumber()));
+
+            throw new CheckoutPaymentIdNotFoundException($order);
+        }
+
+        $orderTransaction = $this->orderExtractor->extractLatestOrderTransaction($order);
+        $requestLineItems = $this->refundBuilder->buildLineItemsForWebhook($receiveDataStruct);
+
+        try {
+            // Have to get refund status (partial refund/full refund)
+            $refundStatus = $this->getWebhookRefundStatus($order, $requestLineItems);
+
+            $orderCustomFields->setLastCheckoutActionId($receiveDataStruct->getActionId());
+            $orderCustomFields->setIsRefundedFromHub(true);
+
+            // Get plugin settings
+            $settings = $this->settingsFactory->getSettings($order->getSalesChannelId());
+
+            $this->addRefundedLineItemsToOrder($order, $requestLineItems, $context);
+
+            $this->orderService->updateCheckoutCustomFields($order, $orderCustomFields, $context);
+            $this->orderTransactionService->processTransition($orderTransaction, $refundStatus, $context);
+            $this->orderService->processTransition($order, $settings, $refundStatus, $context);
+        } catch (Throwable $ex) {
+            $message = sprintf('Error while refund payment by webhook for order number: %s, checkoutPaymentId: %s', $order->getOrderNumber(), $checkoutPaymentId);
+            $this->logger->error($message, [
+                'error' => $ex->getMessage(),
+            ]);
+
+            throw new CheckoutComException($message);
+        }
+    }
+
+    private function getWebhookRefundStatus(OrderEntity $order, LineItemCollection $requestLineItems): string
+    {
+        $absOrderTotal = abs($order->getPrice()->getTotalPrice());
+        $absRequestTotal = abs($requestLineItems->getPrices()->sum()->getTotalPrice());
+        if (FloatComparator::lessThan($absOrderTotal, $absRequestTotal)) {
+            $message = sprintf('the remaining order total amount can not less than the refund request amount for order number: %s', $order->getOrderNumber());
+            $this->logger->error($message, [
+                'orderTotal' => $absOrderTotal,
+                'requestTotal' => $absRequestTotal,
+            ]);
+
+            throw new CheckoutComException($message);
+        }
+
+        return FloatComparator::equals(
+            $absOrderTotal,
+            $absRequestTotal
+        ) ? CheckoutPaymentService::STATUS_REFUNDED : CheckoutPaymentService::STATUS_PARTIALLY_REFUNDED;
+    }
+
     private function getRefundStatus(OrderEntity $order, LineItemCollection $requestLineItems): string
     {
         $shippingCostsLineItems = $this->refundBuilder->buildLineItemsShippingCosts($order);
-
         if (!$this->orderService->isOnlyHaveShippingCosts($order, $requestLineItems, $shippingCostsLineItems)) {
             return CheckoutPaymentService::STATUS_PARTIALLY_REFUNDED;
         }

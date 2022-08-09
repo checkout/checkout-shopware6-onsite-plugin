@@ -9,6 +9,7 @@ class LineItemPayload extends Struct
 {
     public const LINE_ITEM_SHIPPING = 'shipping';
     public const LINE_ITEM_PRODUCT = 'product';
+    public const LINE_ITEM_WEBHOOK = 'webhook';
 
     protected ?string $refundLineItemId = null;
 

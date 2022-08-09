@@ -250,24 +250,24 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
     /**
      * @throws Exception
      */
-    public function capturePayment(string $checkoutPaymentId, OrderEntity $order): void
+    public function capturePayment(string $checkoutPaymentId, OrderEntity $order): string
     {
         // We capture the payment from the Checkout.com API, the CheckoutApiException will be thrown if the API is failed
-        $this->checkoutPaymentService->capturePayment($checkoutPaymentId, $order->getSalesChannelId());
+        return $this->checkoutPaymentService->capturePayment($checkoutPaymentId, $order->getSalesChannelId());
     }
 
     /**
      * @throws Exception
      */
-    public function voidPayment(string $checkoutPaymentId, OrderEntity $order): void
+    public function voidPayment(string $checkoutPaymentId, OrderEntity $order): string
     {
         // We void the payment from the Checkout.com API, the CheckoutApiException will be thrown if the API is failed
-        $this->checkoutPaymentService->voidPayment($checkoutPaymentId, $order->getSalesChannelId());
+        return $this->checkoutPaymentService->voidPayment($checkoutPaymentId, $order->getSalesChannelId());
     }
 
-    public function refundPayment(string $checkoutPaymentId, RefundRequest $refundRequest, OrderEntity $order): void
+    public function refundPayment(string $checkoutPaymentId, RefundRequest $refundRequest, OrderEntity $order): string
     {
-        $this->checkoutPaymentService->refundPayment($checkoutPaymentId, $refundRequest, $order->getSalesChannelId());
+        return $this->checkoutPaymentService->refundPayment($checkoutPaymentId, $refundRequest, $order->getSalesChannelId());
     }
 
     public function captureWhenFinalize(): bool

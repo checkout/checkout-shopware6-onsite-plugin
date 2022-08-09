@@ -147,7 +147,7 @@ class OrderServiceTest extends TestCase
         $event = $this->createMock(EntityWrittenContainerEvent::class);
         $this->orderRepository->entityWrittenContainerEvents[] = $event;
 
-        $this->orderService->updateCheckoutCustomFields($order, $checkoutOrderCustomFields, $this->salesChannelContext);
+        $this->orderService->updateCheckoutCustomFields($order, $checkoutOrderCustomFields, $this->salesChannelContext->getContext());
 
         static::assertNotEmpty($this->orderRepository->data);
         static::assertArrayHasKey('customFields', $this->orderRepository->data[0][0]);
