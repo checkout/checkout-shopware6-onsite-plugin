@@ -50,6 +50,10 @@ export default class DisplayPaymentHandler extends Plugin {
         return true;
     }
 
+    update() {
+        this.init();
+    }
+
     /**
      * Hide the direct pay buttons
      * Hide the payment method option on the checkout page

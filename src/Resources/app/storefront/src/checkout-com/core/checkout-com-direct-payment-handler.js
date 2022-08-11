@@ -37,6 +37,10 @@ export default class CheckoutComDirectPaymentHandler extends Plugin {
         this.storeApiClient = new StoreApiClient();
     }
 
+    update() {
+        this.init();
+    }
+
     getDirectButtons() {
         const { directButtonClass } = this.options;
         if (!directButtonClass) {
