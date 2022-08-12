@@ -36,11 +36,6 @@ class SepaHandlerTest extends AbstractPaymentHandlerTest
         $this->setServices();
     }
 
-    public function testSnippetKey(): void
-    {
-        static::assertSame('checkoutCom.paymentMethod.sepaLabel', $this->paymentHandler->getSnippetKey());
-    }
-
     public function testPaymentMethodType(): void
     {
         static::assertSame(SourceType::$sepa, SepaHandler::getPaymentMethodType());

@@ -30,6 +30,6 @@ class CheckoutOrderPlacedEventSubscriber implements EventSubscriberInterface
      */
     public function onCheckoutOrderPlaced(CheckoutOrderPlacedEvent $event): void
     {
-        $this->orderService->setRequestLastOrderId($event->getOrderId());
+        $this->orderService->setRequestLastOrderId($event->getOrder()->getId());
     }
 }

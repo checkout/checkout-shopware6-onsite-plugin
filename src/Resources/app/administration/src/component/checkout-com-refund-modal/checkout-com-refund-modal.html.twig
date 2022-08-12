@@ -17,6 +17,7 @@
                             >
                                 {% block checkout_com_refund_modal_section_container_card_grid %}
                                     <sw-data-grid
+                                        ref="refundGrid"
                                         :data-source="refundableLineItems"
                                         :columns="columns"
                                         :show-selection="true"
@@ -36,7 +37,7 @@
                                         {% endblock %}
 
                                         {% block checkout_com_refund_modal_section_container_card_grid_columns_return_quantity %}
-                                            <template #column-returnQuantity="{ item, selectItem }">
+                                            <template #column-returnQuantity="{ item }">
                                                 {% block checkout_com_refund_modal_section_container_card_grid_columns_return_quantity_field %}
                                                     <sw-single-select
                                                         v-model="item.returnQuantity"
@@ -46,7 +47,7 @@
                                                         :options="returnQuantityOptions(item)"
                                                         :placeholder="returnQuantityPlaceholder(item)"
                                                         :disabled="isFullyRefunded(item)"
-                                                        @change="selectItem(true, item)"
+                                                        @change="onSelectItem(item)"
                                                     />
                                                 {% endblock %}
                                             </template>

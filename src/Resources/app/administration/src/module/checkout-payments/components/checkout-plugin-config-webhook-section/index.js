@@ -28,7 +28,11 @@ Component.register('checkout-plugin-config-webhook-section', {
                 return defaultValue;
             }
 
-            return this.value[field] ?? defaultValue;
+            if (this.value[field] === null || typeof this.value[field] === 'undefined') {
+                return defaultValue;
+            }
+
+            return this.value[field];
         },
     },
 });

@@ -13,6 +13,7 @@ use CheckoutCom\Shopware6\Exception\CheckoutInvalidTokenException;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use CheckoutCom\Shopware6\Helper\RequestUtil;
+use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
 use Exception;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -20,9 +21,14 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class CardPaymentHandler extends PaymentHandler
 {
-    public function getSnippetKey(): string
+    public function getPaymentMethodDisplayName(): DisplayNameTranslationCollection
     {
-        return 'checkoutCom.paymentMethod.cardPaymentsLabel';
+        $displayNames = new DisplayNameTranslationCollection();
+
+        $displayNames->addLangData('en-GB', 'Card Payments');
+        $displayNames->addLangData('de-DE', 'Kartenzahlungen');
+
+        return $displayNames;
     }
 
     public static function getPaymentMethodType(): string

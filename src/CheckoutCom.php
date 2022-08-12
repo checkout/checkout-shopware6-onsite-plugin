@@ -2,15 +2,28 @@
 
 namespace CheckoutCom\Shopware6;
 
+use CheckoutCom\Shopware6\Service\CompatibilityService;
 use CheckoutCom\Shopware6\Service\PaymentMethodService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
 use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class CheckoutCom extends Plugin
 {
+    /**
+     * @throws \Exception
+     */
+    public function build(ContainerBuilder $container): void
+    {
+        parent::build($container);
+
+        $compatibilityService = new CompatibilityService($container);
+        $compatibilityService->loadServices();
+    }
+
     public function update(UpdateContext $updateContext): void
     {
         parent::update($updateContext);

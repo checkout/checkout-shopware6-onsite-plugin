@@ -27,11 +27,6 @@ class CardPaymentHandlerTest extends AbstractPaymentHandlerTest
         $this->setServices();
     }
 
-    public function testSnippetKey(): void
-    {
-        static::assertSame('checkoutCom.paymentMethod.cardPaymentsLabel', $this->paymentHandler->getSnippetKey());
-    }
-
     public function testPaymentMethodType(): void
     {
         static::assertSame(PaymentSourceType::$card, CardPaymentHandler::getPaymentMethodType());

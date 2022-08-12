@@ -18,6 +18,7 @@ use CheckoutCom\Shopware6\Struct\DirectPay\GooglePay\GooglePayLineItemStruct;
 use CheckoutCom\Shopware6\Struct\DirectPay\GooglePay\GoogleShippingOptionCollection;
 use CheckoutCom\Shopware6\Struct\DirectPay\GooglePay\GoogleShippingOptionStruct;
 use CheckoutCom\Shopware6\Struct\DirectPay\GooglePay\GoogleShippingPayloadStruct;
+use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
 use Exception;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
@@ -46,9 +47,13 @@ class GooglePayHandler extends PaymentHandler
         return TokenType::$googlepay;
     }
 
-    public function getSnippetKey(): string
+    public function getPaymentMethodDisplayName(): DisplayNameTranslationCollection
     {
-        return 'checkoutCom.paymentMethod.googlePayLabel';
+        $displayNames = new DisplayNameTranslationCollection();
+
+        $displayNames->addLangData('en-GB', 'Google Pay');
+
+        return $displayNames;
     }
 
     public function getDirectShippingOptions(): AbstractShippingOptionCollection

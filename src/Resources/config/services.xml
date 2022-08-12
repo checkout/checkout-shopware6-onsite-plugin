@@ -12,6 +12,5 @@
         <import resource="services/handlers.xml"/>
         <import resource="services/subscribers.xml"/>
         <import resource="services/services.xml"/>
-        <import resource="services/flows.xml"/>
     </imports>
 </container>

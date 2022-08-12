@@ -1,15 +1,19 @@
 {% block checkout_com_card_source %}
+    {% set checkoutComFormCheckInputClass = formCheckInputClass ?? 'custom-control-input' %}
+    {% set checkoutComFormCheckLabelClass = formCheckLabelClass ?? 'custom-control-label' %}
+    {% set checkoutComFormRadioWrapperClass = formRadioWrapperClass ?? 'custom-control custom-radio' %}
+
     {% for source in sources %}
         {% block checkout_com_card_source_item %}
             <div
-                class="checkout-com-source {{ removable ? 'checkout-com-source-remove' : formRadioWrapperClass }}"
+                class="checkout-com-source {{ removable ? 'checkout-com-source-remove' : checkoutComFormRadioWrapperClass }}"
                 data-checkout-com-source-id="{{ source.id }}"
             >
                 {% block checkout_com_card_source_input %}
                     {% if not removable %}
                         <input type="radio"
                                name="checkoutComSourceId"
-                               class="{{ formCheckInputClass }}"
+                               class="{{ checkoutComFormCheckInputClass }}"
                                id="{{ source.id }}"
                                value="{{ source.id }}"
                             {{ loop.first ? 'checked' : '' }}
@@ -20,7 +24,7 @@
                 {% set sourceCardIcon = checkoutCardIcon(source.scheme) %}
 
                 {% block checkout_com_card_source_label %}
-                    <label class="checkout-com-radio-label {{ removable ? '' : formCheckLabelClass }}"
+                    <label class="checkout-com-radio-label {{ removable ? '' : checkoutComFormCheckLabelClass }}"
                            for="{{ source.id }}">
                         {% block checkout_com_card_source_label_last_4_digits %}
                             <span class="checkout-com-source-card-number">

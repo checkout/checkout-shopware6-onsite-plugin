@@ -13,6 +13,7 @@ use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use CheckoutCom\Shopware6\Helper\RequestUtil;
 use CheckoutCom\Shopware6\Service\Klarna\KlarnaService;
 use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
+use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
 use Exception;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
@@ -35,9 +36,13 @@ class KlarnaHandler extends PaymentHandler
         $this->orderService = $orderService;
     }
 
-    public function getSnippetKey(): string
+    public function getPaymentMethodDisplayName(): DisplayNameTranslationCollection
     {
-        return 'checkoutCom.paymentMethod.klarnaLabel';
+        $displayNames = new DisplayNameTranslationCollection();
+
+        $displayNames->addLangData('en-GB', 'Klarna');
+
+        return $displayNames;
     }
 
     public static function getPaymentMethodType(): string

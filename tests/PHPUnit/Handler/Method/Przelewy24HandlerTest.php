@@ -33,11 +33,6 @@ class Przelewy24HandlerTest extends AbstractPaymentHandlerTest
         $this->setServices();
     }
 
-    public function testSnippetKey(): void
-    {
-        static::assertSame('checkoutCom.paymentMethod.p24Label', $this->paymentHandler->getSnippetKey());
-    }
-
     public function testPaymentMethodType(): void
     {
         static::assertSame(PaymentSourceType::$przelewy24, Przelewy24Handler::getPaymentMethodType());

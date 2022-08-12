@@ -4,6 +4,8 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
+        <service id="checkout_com.guzzle" class="GuzzleHttp\Client"/>
+
         <service id="checkout_com.shopware6.logger" class="CheckoutCom\Shopware6\Service\LoggerService">
             <argument type="service" id="session"/>
             <argument type="service" id="monolog.logger.checkout_com"/>
@@ -110,7 +112,7 @@
         <!--    APPLE PAY    -->
         <service id="CheckoutCom\Shopware6\Service\ApplePay\ApplePayService">
             <argument type="service" id="checkout_com.shopware6.logger"/>
-            <argument type="service" id="shopware.update.http.client"/>
+            <argument type="service" id="checkout_com.guzzle"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
             <argument type="service" id="CheckoutCom\Shopware6\Service\MediaService"/>
