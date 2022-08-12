@@ -10,10 +10,7 @@ const paymentHandler = 'CheckoutCom\\Shopware6\\Handler\\Method\\IdealHandler';
 
 describe('Testing Storefront iDEAL Payment', () => {
     before(() => {
-        // Set the Shopware instance to initial state only on local environment
-        const promiseChain = Cypress.env('localUsage') ? cy.setToInitialState() : cy;
-
-        promiseChain.then(() => {
+        cy.setToInitialState().then(() => {
             return cy.loginViaApi();
         }).then(() => {
             return cy.createProductFixture();

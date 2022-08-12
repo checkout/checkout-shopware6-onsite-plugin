@@ -29,7 +29,15 @@ core: ## Installs all core dependencies
 clean: ## Cleans all dependencies
 	rm -rf vendor
 
-# ------------------------------------------------------------------------------------------------------------
+build: ## Installs the plugin, and builds
+	cd /var/www/html && php bin/console plugin:refresh
+	cd /var/www/html && php bin/console plugin:install /CheckoutCom --activate | true
+	cd /var/www/html && php bin/console plugin:refresh
+	cd /var/www/html && php bin/console theme:dump
+	cd /var/www/html && PUPPETEER_SKIP_DOWNLOAD=1 ./bin/build-js.sh
+	cd /var/www/html && php bin/console theme:refresh
+	cd /var/www/html && php bin/console theme:compile
+	cd /var/www/html && php bin/console theme:refresh
 
 phpunit: ## Starts all PHPUnit Tests
 	php ./vendor/bin/phpunit --configuration=./phpunit.xml

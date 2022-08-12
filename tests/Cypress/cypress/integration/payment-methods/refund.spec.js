@@ -14,10 +14,7 @@ import shopware from '../../support/services/shopware/Shopware';
 
 describe('Testing Refund Manager', () => {
     before(() => {
-        // Set the Shopware instance to initial state only on local environment
-        const promiseChain = Cypress.env('localUsage') ? cy.setToInitialState() : cy;
-
-        promiseChain.then(() => {
+        cy.setToInitialState().then(() => {
             return cy.loginViaApi();
         }).then(() => {
             return cy.createProductFixture();

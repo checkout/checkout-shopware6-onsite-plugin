@@ -1,0 +1,98 @@
+name: e2e
+
+on:
+  workflow_dispatch:
+    inputs:
+      SHOPWARE_VERSION:
+        description: 'Shopware Version'
+        required: true
+      PHP_VERSION:
+        description: 'PHP Version'
+        required: true
+        options:
+          - 7.2
+          - 7.3
+          - 7.4
+          - 8.0
+          - 8.1
+
+jobs:
+  e2e:
+    name: E2E Tests | Shopware ${{ github.event.inputs.SHOPWARE_VERSION }}, PHP ${{ github.event.inputs.PHP_VERSION }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone Code
+        uses: actions/checkout@v3
+
+      - name: Download Docker
+        run: |
+          docker pull dockware/dev:${{ github.event.inputs.SHOPWARE_VERSION }}
+
+      - name: Start Docker
+        run: |
+          docker run -p 443:443 -p 8005:8005 --name shop --env PHP_VERSION=${{ github.event.inputs.PHP_VERSION }} --env APP_ENV=e2e -d dockware/dev:${{ github.event.inputs.SHOPWARE_VERSION }}
+          sleep 30
+          docker logs shop
+          docker exec shop bash -c 'sudo npm install -g forever'
+          sudo echo "127.0.0.1 local.checkout.shop" | sudo tee -a /etc/hosts
+
+      - name: Upload into docker
+        run: |
+          cd tests/Cypress
+          rm -f cypress.json
+          echo '{"responseTimeout":80000,"defaultCommandTimeout":20000,"chromeWebSecurity":false,"video":true,"env":{"user":"admin","pass":"shopware","salesChannelName":"Storefront","admin":"/admin","apiPath":"api","secretKey":"${{ secrets.CKO_SK_KEY }}","publicKey":"${{ secrets.CKO_PK_KEY }}"}}' >> cypress.json
+          cd ../../
+          docker cp $(pwd)/. shop:/var/www/html/custom/plugins/CheckoutCom
+          docker exec shop bash -c 'sudo chown www-data:www-data custom/plugins -R'
+
+      - name: Install and Build Artifacts
+        run: |
+          docker exec shop bash -c 'cd /var/www/html/custom/plugins/CheckoutCom && make install -B'
+          docker exec shop bash -c 'cd /var/www/html/custom/plugins/CheckoutCom && make build -B'
+          docker exec shop bash -c 'php bin/console system:install --drop-database --create-database --basic-setup --force'
+
+      - name: Install/Configure Plugin
+        run: |
+          docker exec shop bash -c 'php bin/console plugin:refresh'
+          docker exec shop bash -c 'php bin/console plugin:install CheckoutCom --activate'
+          docker exec shop bash -c "mysql -u root -proot shopware -e \"UPDATE sales_channel_domain SET url='https://local.checkout.shop' WHERE url NOT LIKE 'default.%';\""
+          docker exec shop bash -c 'PUPPETEER_SKIP_DOWNLOAD=1 ./bin/build-js.sh'
+          docker exec shop bash -c 'php bin/console cache:clear'
+
+      - name: DB backup
+        run: |
+          docker exec shop bash -c 'php bin/console e2e:dump-db'
+
+      - name: Turn off frw
+        run: |
+          docker exec shop bash -c 'mkdir -p /var/www/html/config/services'
+          docker cp tests/Cypress/cypress/config/defaults.xml shop:/var/www/html/config/services/defaults.xml
+
+      - name: Install Cypress
+        run: cd tests/Cypress && make install -B
+
+      - name: Run e2e port
+        run: docker exec shop bash -c 'cd custom/plugins/CheckoutCom/tests/Cypress && forever start cypress/routes/cypress.js'
+
+      - name: Start Cypress
+        run: cd tests/Cypress && make run shopware=${{ github.event.inputs.SHOPWARE_VERSION }} url=https://local.checkout.shop
+
+      - name: Download Logs
+        if: ${{ always() }}
+        run: |
+          mkdir -p $(pwd)/tests/Cypress/cypress/logs/shopware
+          mkdir -p $(pwd)/tests/Cypress/cypress/logs/apache
+          docker cp shop:/var/www/html/var/log/. $(pwd)/tests/Cypress/cypress/logs/shopware
+          docker cp shop:/var/log/php/. $(pwd)/tests/Cypress/cypress/logs/apache
+
+      - name: Store Cypress Results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: cypress_results_sw${{ github.event.inputs.SHOPWARE_VERSION }}_php${{ github.event.inputs.PHP_VERSION }}
+          retention-days: 1
+          path: |
+            tests/Cypress/cypress/logs
+            tests/Cypress/cypress/videos
+            tests/Cypress/cypress/screenshots

@@ -9,10 +9,7 @@ import P24Action from '../../support/actions/payment-methods/P24Action';
 
 describe('Testing Storefront Przelewy24 Payment', () => {
     before(() => {
-        // Set the Shopware instance to initial state only on local environment
-        const promiseChain = Cypress.env('localUsage') ? cy.setToInitialState() : cy;
-
-        promiseChain.then(() => {
+        cy.setToInitialState().then(() => {
             return cy.loginViaApi();
         }).then(() => {
             return cy.createProductFixture();

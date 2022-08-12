@@ -12,10 +12,7 @@ const paymentHandler = 'CheckoutCom\\Shopware6\\Handler\\Method\\EpsHandler';
 // https://github.com/cypress-io/cypress/issues/1496
 describe('Testing Storefront EPS payment', () => {
     before(() => {
-        // Set the Shopware instance to initial state only on local environment
-        const promiseChain = Cypress.env('localUsage') ? cy.setToInitialState() : cy;
-
-        promiseChain.then(() => {
+        cy.setToInitialState().then(() => {
             return cy.loginViaApi();
         }).then(() => {
             return cy.createProductFixture();

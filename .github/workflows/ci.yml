@@ -1,0 +1,254 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone Code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+
+      - name: Install Dependencies
+        run: make dev -B
+
+      - name: Run lint
+        run: make lint
+
+  phpecs:
+    name: Easy code standard
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone Code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+
+      - name: Install Dependencies
+        run: make dev -B
+
+      - name: Run ecs
+        run: make ecs -B
+
+  phpcsfixer:
+    name: PHP CS Fixer
+    needs: phpecs
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Clone Code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+
+      - name: Install Dependencies
+        run: make dev -B
+
+      - name: Run PHP CS Fixer
+        run: make csfix -B
+
+  phpstan:
+    name: Static Analyzers
+    needs: phpcsfixer
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Clone Code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+
+      - name: Install Dependencies
+        run: make dev -B
+
+      - name: Run PHPStan
+        run: make stan -B
+
+  phpunit:
+    name: Unit Tests | PHP ${{ matrix.php }}
+    needs: phpstan
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [ '8.1' ]
+    steps:
+      - name: Clone Code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+
+      - name: Install Dependencies
+        run: make dev -B
+
+      - name: Run PHPUnit
+        run: make phpunit -B
+
+  integration:
+    name: Integration Tests | Shopware ${{ matrix.shopware }}
+    needs: phpunit
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shopware: [ '6.4.14.0', '6.4.13.0', '6.4.12.0', '6.4.11.1', '6.4.10.0', '6.4.9.0', '6.4.8.2', '6.4.0.0',]
+    steps:
+
+      - name: Clone Code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+
+      - name: Install PROD Dependencies
+        run: make install -B
+
+      - name: Start Docker
+        run: |
+          docker run --rm --name shop -d dockware/dev:${{ matrix.shopware }}
+          sleep 30
+          docker logs shop
+      - name: Upload into Docker
+        run: |
+          docker cp $(pwd)/. shop:/var/www/html/custom/plugins/CheckoutCom
+          docker exec shop bash -c 'sudo chown www-data:www-data /var/www/html/custom/plugins -R'
+      - name: Install and Build Plugin
+        run: |
+          docker exec shop bash -c 'cd /var/www/html/custom/plugins/CheckoutCom && make clean'
+          docker exec shop bash -c 'cd /var/www/html/custom/plugins/CheckoutCom && make install'
+          docker exec shop bash -c 'cd /var/www/html/custom/plugins/CheckoutCom && make build'
+
+  e2e:
+    name: E2E Tests | Shopware ${{ matrix.shopware }}, PHP ${{ matrix.php }}
+    needs: integration
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shopware: '6.4.14.0'
+            php: '8.1'
+          - shopware: '6.4.12.0'
+            php: '8.0'
+          - shopware: '6.4.11.1'
+            php: '8.0'
+          - shopware: '6.4.10.0'
+            php: '8.0'
+          - shopware: '6.4.9.0'
+            php: '7.4'
+          - shopware: '6.4.8.2'
+            php: '7.4'
+          - shopware: '6.4.7.0'
+            php: '7.4'
+          - shopware: '6.4.6.1'
+            php: '7.4'
+          - shopware: '6.4.5.1'
+            php: '7.4'
+          - shopware: '6.4.4.1'
+            php: '7.4'
+          - shopware: '6.4.2.1'
+            php: '7.4'
+          - shopware: '6.4.1.2'
+            php: '7.4'
+
+    steps:
+
+      - name: Clone Code
+        uses: actions/checkout@v3
+
+      - name: Download Docker
+        run: |
+          docker pull dockware/dev:${{ matrix.shopware }}
+
+      - name: Start Docker
+        run: |
+          docker run -p 443:443 -p 8005:8005 --name shop --env PHP_VERSION=${{ matrix.php }} --env APP_ENV=e2e -d dockware/dev:${{ matrix.shopware }}
+          sleep 30
+          docker logs shop
+          docker exec shop bash -c 'sudo npm install -g forever'
+          sudo echo "127.0.0.1 local.checkout.shop" | sudo tee -a /etc/hosts
+
+      - name: Upload into docker
+        run: |
+          cd tests/Cypress
+          rm -f cypress.json
+          echo '{"responseTimeout":80000,"defaultCommandTimeout":20000,"chromeWebSecurity":false,"video":false,"env":{"user":"admin","pass":"shopware","salesChannelName":"Storefront","admin":"/admin","apiPath":"api","secretKey":"${{ secrets.CKO_SK_KEY }}","publicKey":"${{ secrets.CKO_PK_KEY }}"}}' >> cypress.json
+          cd ../../
+          docker cp $(pwd)/. shop:/var/www/html/custom/plugins/CheckoutCom
+          docker exec shop bash -c 'sudo chown www-data:www-data custom/plugins -R'
+
+      - name: Install and Build Artifacts
+        run: |
+          docker exec shop bash -c 'cd /var/www/html/custom/plugins/CheckoutCom && make install -B'
+          docker exec shop bash -c 'cd /var/www/html/custom/plugins/CheckoutCom && make build -B'
+          docker exec shop bash -c 'php bin/console system:install --drop-database --create-database --basic-setup --force'
+
+      - name: Install/Configure Plugin
+        run: |
+          docker exec shop bash -c 'php bin/console plugin:refresh'
+          docker exec shop bash -c 'php bin/console plugin:install CheckoutCom --activate'
+          docker exec shop bash -c "mysql -u root -proot shopware -e \"UPDATE sales_channel_domain SET url='https://local.checkout.shop' WHERE url NOT LIKE 'default.%';\""
+          docker exec shop bash -c 'PUPPETEER_SKIP_DOWNLOAD=1 ./bin/build-js.sh'
+          docker exec shop bash -c 'php bin/console cache:clear'
+
+      - name: DB backup
+        run: |
+          docker exec shop bash -c 'php bin/console e2e:dump-db'
+
+      - name: Turn off frw
+        run: |
+          docker exec shop bash -c 'mkdir -p /var/www/html/config/services'
+          docker cp tests/Cypress/cypress/config/defaults.xml shop:/var/www/html/config/services/defaults.xml
+
+      - name: Install Cypress
+        run: cd tests/Cypress && make install -B
+
+      - name: Run e2e port
+        run: docker exec shop bash -c 'cd custom/plugins/CheckoutCom/tests/Cypress && forever start cypress/routes/cypress.js'
+
+      - name: Start Cypress
+        run: cd tests/Cypress && make run shopware=${{ matrix.shopware }} url=https://local.checkout.shop
+
+      - name: Download Logs
+        if: ${{ always() }}
+        run: |
+          mkdir -p $(pwd)/tests/Cypress/cypress/logs/shopware
+          mkdir -p $(pwd)/tests/Cypress/cypress/logs/apache
+          docker cp shop:/var/www/html/var/log/. $(pwd)/tests/Cypress/cypress/logs/shopware
+          docker cp shop:/var/log/php/. $(pwd)/tests/Cypress/cypress/logs/apache
+
+      - name: Store Cypress Results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: cypress_results_sw${{ github.event.inputs.SHOPWARE_VERSION }}_php${{ github.event.inputs.PHP_VERSION }}
+          retention-days: 1
+          path: |
+            tests/Cypress/cypress/logs
+            tests/Cypress/cypress/videos
+            tests/Cypress/cypress/screenshots
+
