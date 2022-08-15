@@ -19,6 +19,7 @@ use CheckoutCom\Shopware6\Service\PaymentMethodService;
 use CheckoutCom\Shopware6\Service\Product\ProductService;
 use CheckoutCom\Shopware6\Struct\Request\Refund\OrderRefundRequest;
 use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use CheckoutCom\Shopware6\Struct\WebhookReceiveDataStruct;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
@@ -124,6 +125,9 @@ class PaymentRefundFacade
         $paymentHandler = $this->getPaymentHandler($orderTransaction);
 
         try {
+            // Get plugin settings
+            $settings = $this->settingsFactory->getSettings($order->getSalesChannelId());
+
             $payment = $this->checkoutPaymentService->getPaymentDetails($checkoutPaymentId, $order->getSalesChannelId());
             if (!$payment->canRefund()) {
                 $message = sprintf('Checkout payment status is not captured to refund for the order number: %s', $order->getOrderNumber());
@@ -133,7 +137,7 @@ class PaymentRefundFacade
             }
 
             // Have to get refund status (partial refund/full refund)
-            $refundStatus = $this->getRefundStatus($order, $requestLineItems);
+            $refundStatus = $this->getRefundStatus($order, $requestLineItems, $settings);
 
             $refundedAmount = abs(CheckoutComUtil::formatPriceCheckout(
                 $requestLineItems->getPrices()->sum()->getTotalPrice(),
@@ -150,9 +154,6 @@ class PaymentRefundFacade
                 'status' => $refundStatus,
                 'request' => get_object_vars($refundRequest),
             ]);
-
-            // Get plugin settings
-            $settings = $this->settingsFactory->getSettings($order->getSalesChannelId());
 
             $this->addRefundedLineItemsToOrder($order, $requestLineItems, $context);
             $this->updateStockForProduct($requestLineItems, $context);
@@ -228,16 +229,18 @@ class PaymentRefundFacade
         ) ? CheckoutPaymentService::STATUS_REFUNDED : CheckoutPaymentService::STATUS_PARTIALLY_REFUNDED;
     }
 
-    private function getRefundStatus(OrderEntity $order, LineItemCollection $requestLineItems): string
+    private function getRefundStatus(OrderEntity $order, LineItemCollection $requestLineItems, SettingStruct $settingStruct): string
     {
         $shippingCostsLineItems = $this->refundBuilder->buildLineItemsShippingCosts($order);
         if (!$this->orderService->isOnlyHaveShippingCosts($order, $requestLineItems, $shippingCostsLineItems)) {
             return CheckoutPaymentService::STATUS_PARTIALLY_REFUNDED;
         }
 
-        // If only have shipping costs remaining after a refund, we have to add shipping costs to the request line items
-        foreach ($shippingCostsLineItems as $shippingCostsLineItem) {
-            $requestLineItems->add($shippingCostsLineItem);
+        if ($settingStruct->isIncludeShippingCostsRefund()) {
+            // If only have shipping costs remaining after a refund, we have to add shipping costs to the request line items
+            foreach ($shippingCostsLineItems as $shippingCostsLineItem) {
+                $requestLineItems->add($shippingCostsLineItem);
+            }
         }
 
         return CheckoutPaymentService::STATUS_REFUNDED;

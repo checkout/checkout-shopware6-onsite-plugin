@@ -15,6 +15,8 @@ class SettingStruct extends Struct
 
     protected bool $sandboxMode = true;
 
+    protected bool $includeShippingCostsRefund = true;
+
     protected string $orderStateForPaidPayment = self::ORDER_STATE_SKIP;
 
     protected string $orderStateForFailedPayment = self::ORDER_STATE_SKIP;
@@ -53,6 +55,16 @@ class SettingStruct extends Struct
     public function setSandboxMode(bool $sandboxMode): void
     {
         $this->sandboxMode = $sandboxMode;
+    }
+
+    public function isIncludeShippingCostsRefund(): bool
+    {
+        return $this->includeShippingCostsRefund;
+    }
+
+    public function setIncludeShippingCostsRefund(bool $includeShippingCostsRefund): void
+    {
+        $this->includeShippingCostsRefund = $includeShippingCostsRefund;
     }
 
     public function getOrderStateForPaidPayment(): string

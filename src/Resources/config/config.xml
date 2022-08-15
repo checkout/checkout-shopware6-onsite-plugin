@@ -15,6 +15,13 @@
         <title lang="de-DE">Zahlungen</title>
 
         <input-field type="bool">
+            <name>includeShippingCostsRefund</name>
+            <label>Include shipping costs for full refund</label>
+            <label lang="de-DE">Inklusive Versandkosten für volle Rückerstattung</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
+
+        <input-field type="bool">
             <name>enable3dSecure</name>
             <label>3D Secure</label>
             <label lang="de-DE">3D-Sicherheit</label>
