@@ -33,11 +33,6 @@ class EpsHandlerTest extends AbstractPaymentHandlerTest
         $this->setServices();
     }
 
-    public function testSnippetKey(): void
-    {
-        static::assertSame('checkoutCom.paymentMethod.epsLabel', $this->paymentHandler->getSnippetKey());
-    }
-
     public function testPaymentMethodType(): void
     {
         static::assertSame(PaymentSourceType::$eps, EpsHandler::getPaymentMethodType());

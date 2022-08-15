@@ -18,6 +18,7 @@ use CheckoutCom\Shopware6\Struct\DirectPay\ApplePay\AppleShippingOptionStruct;
 use CheckoutCom\Shopware6\Struct\DirectPay\ApplePay\AppleShippingPayloadStruct;
 use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartItemStruct;
 use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
+use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
 use Exception;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
@@ -40,9 +41,13 @@ class ApplePayHandler extends PaymentHandler
         return TokenType::$applepay;
     }
 
-    public function getSnippetKey(): string
+    public function getPaymentMethodDisplayName(): DisplayNameTranslationCollection
     {
-        return 'checkoutCom.paymentMethod.applePayLabel';
+        $displayNames = new DisplayNameTranslationCollection();
+
+        $displayNames->addLangData('en-GB', 'Apple Pay');
+
+        return $displayNames;
     }
 
     public function getDirectShippingOptions(): AbstractShippingOptionCollection

@@ -255,8 +255,7 @@ class PaymentRefundFacade
             ->setIncludeCustomer(false)
             ->setIncludeBillingAddress(false)
             ->setIncludeDeliveries(false)
-            ->setIncludeTransactions(false)
-            ->setIncludeOrderDate(false);
+            ->setIncludeTransactions(false);
 
         $orderData = $this->orderConverter->convertToOrder($recalculatedCart, $salesChannelContext, $conversionContext);
         $orderData['id'] = $order->getId();

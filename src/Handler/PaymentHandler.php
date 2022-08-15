@@ -16,7 +16,6 @@ use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
 use CheckoutCom\Shopware6\Service\ContextService;
 use CheckoutCom\Shopware6\Service\CountryService;
 use CheckoutCom\Shopware6\Service\Extractor\AbstractOrderExtractor;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
 use CheckoutCom\Shopware6\Struct\DirectPay\AbstractShippingOptionCollection;
 use CheckoutCom\Shopware6\Struct\DirectPay\AbstractShippingOptionStruct;
 use CheckoutCom\Shopware6\Struct\DirectPay\AbstractShippingPayloadStruct;
@@ -108,24 +107,10 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
         $this->settingsFactory = $settingsFactory;
     }
 
-    public function getPaymentMethodDisplayName(): DisplayNameTranslationCollection
-    {
-        $displayNameCollection = new DisplayNameTranslationCollection();
-
-        // Support languages
-        $languages = ['de-DE', 'en-GB'];
-
-        foreach ($languages as $lang) {
-            $displayNameCollection->addLangData($lang, $this->translator->trans($this->getSnippetKey(), [], null, $lang));
-        }
-
-        return $displayNameCollection;
-    }
-
     /**
      * Get snippet lang key
      */
-    abstract public function getSnippetKey(): string;
+    abstract public function getPaymentMethodDisplayName(): DisplayNameTranslationCollection;
 
     /**
      * Get checkout.com payment method type

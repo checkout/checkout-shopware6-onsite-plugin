@@ -12,7 +12,7 @@ use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\Locale\LocaleEntity;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainCollection;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
@@ -22,12 +22,12 @@ class ContextService
 
     private EntityRepositoryInterface $languageRepository;
 
-    private SalesChannelContextService $salesChannelContextService;
+    private SalesChannelContextServiceInterface $salesChannelContextService;
 
     public function __construct(
         LoggerInterface $logger,
         EntityRepositoryInterface $languageRepository,
-        SalesChannelContextService $salesChannelContextService
+        SalesChannelContextServiceInterface $salesChannelContextService
     ) {
         $this->logger = $logger;
         $this->languageRepository = $languageRepository;

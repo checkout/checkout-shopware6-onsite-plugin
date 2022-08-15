@@ -118,10 +118,10 @@ Component.register('checkout-com-refund-modal', {
             // 1. refundedLineItems = The order line items has property `LINE_ITEM_PAYLOAD`(refunded line items)
             // 2. refundableLineItems = The refundable order line items that can be shown in the refund manager modal
             this.orderLineItems.forEach((orderLineItem) => {
-                if (orderLineItem?.payload?.hasOwnProperty(LINE_ITEM_PAYLOAD)) {
-                    refundLineItems.push({ ...orderLineItem });
-                } else {
+                if (!orderLineItem || !orderLineItem.payload || !orderLineItem.payload.hasOwnProperty(LINE_ITEM_PAYLOAD)) {
                     refundableLineItems.push({ ...orderLineItem });
+                } else {
+                    refundLineItems.push({ ...orderLineItem });
                 }
             });
 
@@ -195,7 +195,10 @@ Component.register('checkout-com-refund-modal', {
                     message: this.$tc('checkout-payments.order.refund.message.refundExecuted'),
                 });
                 this.closeModal();
-                this.$root.$emit('checkout-order-update');
+
+                this.$nextTick(() => {
+                    this.$root.$emit('checkout-order-update');
+                });
             } catch {
                 this.createNotificationError({
                     message: this.$tc('global.notification.unspecifiedSaveErrorMessage'),
@@ -203,6 +206,10 @@ Component.register('checkout-com-refund-modal', {
             } finally {
                 this.isLoading = false;
             }
+        },
+
+        onSelectItem(item) {
+            this.$refs.refundGrid.selectItem(true, item);
         },
     },
 });

@@ -33,11 +33,6 @@ class GiropayHandlerTest extends AbstractPaymentHandlerTest
         $this->setServices();
     }
 
-    public function testSnippetKey(): void
-    {
-        static::assertSame('checkoutCom.paymentMethod.giropayLabel', $this->paymentHandler->getSnippetKey());
-    }
-
     public function testPaymentMethodType(): void
     {
         static::assertSame(PaymentSourceType::$giropay, GiropayHandler::getPaymentMethodType());

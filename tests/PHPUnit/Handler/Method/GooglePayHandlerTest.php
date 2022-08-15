@@ -41,11 +41,6 @@ class GooglePayHandlerTest extends AbstractPaymentHandlerTest
         $this->setServices();
     }
 
-    public function testSnippetKey(): void
-    {
-        static::assertSame('checkoutCom.paymentMethod.googlePayLabel', $this->paymentHandler->getSnippetKey());
-    }
-
     public function testPaymentMethodType(): void
     {
         static::assertSame(TokenType::$googlepay, GooglePayHandler::getPaymentMethodType());

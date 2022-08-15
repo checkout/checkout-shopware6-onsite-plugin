@@ -1,7 +1,7 @@
 {% block checkout_com_google_pay_confirm %}
     {% set totalAmount = page.order is defined ? page.order.price.totalPrice : page.cart.price.totalPrice %}
     {% set googlePayConfirmOptions = {
-        "amount": totalAmount|strval,
+        "amount": totalAmount|trans,
         "currencyCode": context.currency.translated.shortName,
         "countryCode": context.shippingLocation.country.iso,
         "shopName": config('core.basicInformation.shopName'),

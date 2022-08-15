@@ -4,19 +4,6 @@
       "unknownError": "Ein unbekannter Fehler ist aufgetreten.",
       "paymentMethodError": "Ein unbekannter Fehler ist aufgetreten. Bitte ändern Sie Ihre Zahlungsmethode oder versuchen Sie es später noch einmal."
     },
-    "paymentMethod": {
-      "applePayLabel": "Apple Pay",
-      "googlePayLabel": "Google Pay",
-      "cardPaymentsLabel": "Kartenzahlungen",
-      "giropayLabel": "Giropay",
-      "p24Label": "Przelewy24",
-      "sofortLabel": "Sofort",
-      "payPalLabel": "PayPal",
-      "sepaLabel": "SEPA Direct Debit",
-      "idealLabel": "iDEAL",
-      "klarnaLabel": "Klarna",
-      "epsLabel": "EPS"
-    },
     "messages": {
       "card": {
         "cardNumber": "Bitte geben Sie eine gültige Kartennummer ein.",

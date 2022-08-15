@@ -48,7 +48,11 @@ Component.override('sw-order-detail-base', {
         checkoutComRefundedAmount() {
             // Count total price of the refunded order line items (has `LINE_ITEM_PAYLOAD` property)
             return this.order.lineItems.reduce((total, lineItem) => {
-                if (!lineItem?.payload?.hasOwnProperty(LINE_ITEM_PAYLOAD)) {
+                if (!lineItem.payload) {
+                    return total;
+                }
+
+                if (!lineItem.payload.hasOwnProperty(LINE_ITEM_PAYLOAD)) {
                     return total;
                 }
 

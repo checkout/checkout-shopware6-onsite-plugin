@@ -7,6 +7,7 @@ use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\Source\Apm\RequestEpsSource;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
+use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
 use Exception;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -14,9 +15,13 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class EpsHandler extends PaymentHandler
 {
-    public function getSnippetKey(): string
+    public function getPaymentMethodDisplayName(): DisplayNameTranslationCollection
     {
-        return 'checkoutCom.paymentMethod.epsLabel';
+        $displayNames = new DisplayNameTranslationCollection();
+
+        $displayNames->addLangData('en-GB', 'EPS');
+
+        return $displayNames;
     }
 
     public static function getPaymentMethodType(): string

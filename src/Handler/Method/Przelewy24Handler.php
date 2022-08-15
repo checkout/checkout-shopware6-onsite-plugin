@@ -8,6 +8,7 @@ use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\Source\Apm\RequestP24Source;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
+use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
 use Exception;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -16,9 +17,13 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class Przelewy24Handler extends PaymentHandler
 {
-    public function getSnippetKey(): string
+    public function getPaymentMethodDisplayName(): DisplayNameTranslationCollection
     {
-        return 'checkoutCom.paymentMethod.p24Label';
+        $displayNames = new DisplayNameTranslationCollection();
+
+        $displayNames->addLangData('en-GB', 'Przelewy24');
+
+        return $displayNames;
     }
 
     public static function getPaymentMethodType(): string

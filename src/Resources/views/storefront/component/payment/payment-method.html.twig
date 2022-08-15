@@ -18,9 +18,9 @@
         <div id="checkoutComPaymentMethod{{ payment.id }}"
              class="checkout-com-payment-method"
              data-payment-method-id="{{ payment.id }}"
-            {% if paymentMethodType === METHOD_TYPE_APPLE_PAY %}
+            {% if paymentMethodType == METHOD_TYPE_APPLE_PAY %}
                 data-apple-pay="true"
-            {% elseif paymentMethodType === METHOD_TYPE_GOOGLE_PAY %}
+            {% elseif paymentMethodType == METHOD_TYPE_GOOGLE_PAY %}
                 data-google-pay="true"
             {% endif %}
         ></div>

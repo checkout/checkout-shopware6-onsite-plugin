@@ -44,11 +44,32 @@ export default {
         },
 
         orderPaymentMethod(state) {
-            return state.checkoutComOrder?.transactions?.last()?.paymentMethod;
+            if (!state.checkoutComOrder) {
+                return null;
+            }
+
+            if (!state.checkoutComOrder.transactions) {
+                return null;
+            }
+
+            const lastTransaction = state.checkoutComOrder.transactions.last();
+            if (!lastTransaction) {
+                return null;
+            }
+
+            return lastTransaction.paymentMethod;
         },
 
         paymentMethodCheckoutConfig(state, getters) {
-            return getters.orderPaymentMethod?.customFields?.checkoutConfig;
+            if (!getters.orderPaymentMethod) {
+                return null;
+            }
+
+            if (!getters.orderPaymentMethod.customFields) {
+                return null;
+            }
+
+            return getters.orderPaymentMethod.customFields.checkoutConfig;
         },
     },
 

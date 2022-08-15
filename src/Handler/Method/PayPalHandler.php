@@ -8,6 +8,7 @@ use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\Source\Apm\RequestPayPalSource;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
+use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
 use Exception;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -15,9 +16,13 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class PayPalHandler extends PaymentHandler
 {
-    public function getSnippetKey(): string
+    public function getPaymentMethodDisplayName(): DisplayNameTranslationCollection
     {
-        return 'checkoutCom.paymentMethod.payPalLabel';
+        $displayNames = new DisplayNameTranslationCollection();
+
+        $displayNames->addLangData('en-GB', 'PayPal');
+
+        return $displayNames;
     }
 
     public static function getPaymentMethodType(): string

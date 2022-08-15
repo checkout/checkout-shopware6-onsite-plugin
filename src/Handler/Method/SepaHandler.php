@@ -12,6 +12,7 @@ use CheckoutCom\Shopware6\Exception\CheckoutInvalidSourceException;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use CheckoutCom\Shopware6\Helper\RequestUtil;
+use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\DataValidationDefinition;
@@ -24,9 +25,13 @@ class SepaHandler extends PaymentHandler
     public const MANDATE_TYPE_ONE_OFF = 'single';
     public const MANDATE_TYPE_RECURRING = 'recurring';
 
-    public function getSnippetKey(): string
+    public function getPaymentMethodDisplayName(): DisplayNameTranslationCollection
     {
-        return 'checkoutCom.paymentMethod.sepaLabel';
+        $displayNames = new DisplayNameTranslationCollection();
+
+        $displayNames->addLangData('en-GB', 'SEPA Direct Debit');
+
+        return $displayNames;
     }
 
     public static function getPaymentMethodType(): string

@@ -9,6 +9,7 @@ use Checkout\Payments\Source\Apm\RequestIdealSource;
 use CheckoutCom\Shopware6\Exception\CheckoutInvalidSourceException;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\RequestUtil;
+use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\DataValidationDefinition;
@@ -18,9 +19,13 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class IdealHandler extends PaymentHandler
 {
-    public function getSnippetKey(): string
+    public function getPaymentMethodDisplayName(): DisplayNameTranslationCollection
     {
-        return 'checkoutCom.paymentMethod.idealLabel';
+        $displayNames = new DisplayNameTranslationCollection();
+
+        $displayNames->addLangData('en-GB', 'iDEAL');
+
+        return $displayNames;
     }
 
     public static function getPaymentMethodType(): string

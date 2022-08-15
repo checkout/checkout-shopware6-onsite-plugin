@@ -22,7 +22,11 @@ Component.override('sw-order-line-items-grid', {
         },
 
         isOrderRefundedFromHub() {
-            const checkoutCustomFields = this.order.customFields?.[ORDER_CHECKOUT_COM_CUSTOM_FIELDS];
+            if (!this.order.customFields) {
+                return false;
+            }
+
+            const checkoutCustomFields = this.order.customFields[ORDER_CHECKOUT_COM_CUSTOM_FIELDS];
             if (!checkoutCustomFields) {
                 return false;
             }
@@ -47,7 +51,15 @@ Component.override('sw-order-line-items-grid', {
         },
 
         isCheckoutComRefundedItem(item) {
-            return !!item?.payload?.hasOwnProperty(LINE_ITEM_PAYLOAD);
+            if (!item) {
+                return false;
+            }
+
+            if (!item.payload) {
+                return false;
+            }
+
+            return item.payload.hasOwnProperty(LINE_ITEM_PAYLOAD);
         },
     },
 });

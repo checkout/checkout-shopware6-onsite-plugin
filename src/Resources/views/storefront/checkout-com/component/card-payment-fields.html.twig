@@ -1,4 +1,10 @@
 {% block checkout_com_card_payment_fields %}
+    {% set checkoutComFormRowClass = formRowClass ?? 'form-row' %}
+    {% set checkoutComFormRadioWrapperClass = formRadioWrapperClass ?? 'custom-control custom-radio' %}
+    {% set checkoutComFormCheckInputClass = formCheckInputClass ?? 'custom-control-input' %}
+    {% set checkoutComFormCheckLabelClass = formCheckLabelClass ?? 'custom-control-label' %}
+    {% set checkoutComFormCheckboxWrapperClass = formCheckboxWrapperClass ?? 'custom-control custom-checkbox' %}
+
     {% block checkout_com_card_payment_import_frame_script %}
         {% if not isAccountPaymentPage %}
             <script defer src="{{ page.extensions.checkoutCom.frameUrl }}"></script>
@@ -36,14 +42,14 @@
                             {% block checkout_com_card_payment_form_source_radio_input %}
                                 <input type="radio"
                                        name="checkoutComSourceId"
-                                       class="{{ formCheckInputClass }}"
+                                       class="{{ checkoutComFormCheckInputClass }}"
                                        id="checkoutComCardPaymentForm"
                                        value="null"
                                 />
                             {% endblock %}
 
                             {% block checkout_com_card_payment_form_source_radio_label %}
-                                <label class="{{ formCheckLabelClass }} checkout-com-radio-label"
+                                <label class="{{ checkoutComFormCheckLabelClass }} checkout-com-radio-label"
                                        for="checkoutComCardPaymentForm">
                                     {{ "checkoutCom.components.card.newCardLabel"|trans|striptags }}
                                 </label>
@@ -58,7 +64,7 @@
                              data-checkout-com-card-payment-options='{{ cardOptions|json_encode }}'
                         >
                             {% block checkout_com_card_payment_form_card_holder %}
-                                <div class="{{ formRowClass }}">
+                                <div class="{{ checkoutComFormRowClass }}">
                                     <div class="form-group col">
                                         {% block checkout_com_card_payment_form_card_holder_label %}
                                             <label class="form-label" for="cardholder-name">
@@ -78,7 +84,7 @@
                             {% endblock %}
 
                             {% block checkout_com_card_payment_form_card_number %}
-                                <div class="{{ formRowClass }}">
+                                <div class="{{ checkoutComFormRowClass }}">
                                     <div class="form-group col">
                                         {% block checkout_com_card_payment_form_card_number_label %}
                                             <label class="form-label" for="card-number">
@@ -107,7 +113,7 @@
                                 </div>
                             {% endblock %}
                             {% block checkout_com_card_payment_form_extra %}
-                                <div class="{{ formRowClass }}">
+                                <div class="{{ checkoutComFormRowClass }}">
                                     <div class="form-group col-6">
                                         {% block checkout_com_card_payment_form_extra_expiry_date_label %}
                                             <label class="form-label" for="expiry-date">
@@ -147,20 +153,20 @@
                             {% endblock %}
 
                             {% block checkout_com_card_payment_form_check_store_card %}
-                                <div class="{{ formRowClass }}">
+                                <div class="{{ checkoutComFormRowClass ?? 'form-row' }}">
                                     <div class="form-group col">
                                         {% block checkout_com_card_payment_form_check_store_card_checkbox %}
-                                            <div class="{{ formCheckboxWrapperClass }} checkout-com-custom-checkbox">
+                                            <div class="{{ checkoutComFormCheckboxWrapperClass }} checkout-com-custom-checkbox">
                                                 {% block checkout_com_card_payment_form_check_store_card_checkbox_input %}
                                                     <input type="checkbox"
                                                            id="checkoutComShouldSaveSource"
-                                                           class="{{ formCheckInputClass }}"
+                                                           class="{{ checkoutComFormCheckInputClass }}"
                                                            name="checkoutComShouldSaveSource"
                                                     />
                                                 {% endblock %}
 
                                                 {% block checkout_com_card_payment_form_check_store_card_checkbox_label %}
-                                                    <label class="{{ formCheckLabelClass }}"
+                                                    <label class="{{ checkoutComFormCheckLabelClass }}"
                                                            for="checkoutComShouldSaveSource">
                                                         {{ "checkoutCom.messages.source.saveSource"|trans|striptags }}
                                                     </label>
