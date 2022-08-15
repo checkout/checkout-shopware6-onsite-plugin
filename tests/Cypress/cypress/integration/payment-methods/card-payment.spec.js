@@ -5,6 +5,8 @@ import dummyCheckoutScenario from '../../support/scenarios/DummyCheckoutScenario
 import checkoutConfirmRepository from '../../support/repositories/storefront/CheckoutConfirmRepository';
 import accountOrderRepository from '../../support/repositories/storefront/AccountOrderRepository';
 import cardRepository from '../../support/repositories/storefront/payment-methods/CardRepository';
+import orderListRepository from '../../support/repositories/administration/OrderListRepository';
+import orderDetailRepository from '../../support/repositories/storefront/OrderDetailRepository';
 
 describe('Testing Storefront Card Payments Payment', () => {
     before(() => {
@@ -124,6 +126,71 @@ describe('Testing Storefront Card Payments Payment', () => {
 
                 accountOrderRepository.getFirstOrderStatus().should('have.text', 'Paid');
             });
+        });
+    });
+
+    describe('Enable "Manual capture"', () => {
+        before(() => {
+            shopConfigurationAction.toggle3ds(false);
+        });
+
+        beforeEach(() => {
+            cy.intercept({
+                url: 'https://api.sandbox.checkout.com/tokens',
+                method: 'POST'
+            }).as('makePayment');
+
+            shopConfigurationAction.toggleManualCapture(true);
+
+            checkoutAction.fillCardPayment(null, '4242424242424242', '0224', '100');
+
+            checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
+
+            cy.wait('@makePayment');
+
+            cy.loginAndOpenAdmin(`${Cypress.env('admin')}#/sw/order/index`);
+        });
+
+        it('Capture payment', () => {
+            cy.intercept({
+                method: 'POST',
+                url: 'api/_action/checkout-com/order/capture/**'
+            }).as('capturePayment');
+
+            orderListRepository.getFirstRowOrderNumber().click();
+
+            cy.url().should('include', 'order/detail');
+
+            orderDetailRepository.getCurrentPaymentStatus().contains('Authorized');
+
+            orderDetailRepository.getCaptureButton().should('exist').click();
+
+            cy.wait('@capturePayment');
+
+            // Check if payment status was changed to "Paid"
+            orderDetailRepository.getCurrentPaymentStatus().contains('Paid');
+            orderDetailRepository.getCaptureButton().should('not.exist');
+        });
+
+        it('Void payment', () => {
+            cy.intercept({
+                method: 'POST',
+                url: 'api/_action/checkout-com/order/void/**'
+            }).as('voidPayment');
+
+            orderListRepository.getFirstRowOrderNumber().click();
+
+            cy.url().should('include', 'order/detail');
+
+            orderDetailRepository.getCurrentPaymentStatus().contains('Authorized');
+
+            orderDetailRepository.getVoidButton().should('exist').click();
+
+            cy.wait('@voidPayment');
+
+            // Check if payment status was changed to "Cancelled"
+            orderDetailRepository.getCurrentPaymentStatus().contains('Cancelled');
+            orderDetailRepository.getVoidButton().should('not.exist');
         });
     });
 
