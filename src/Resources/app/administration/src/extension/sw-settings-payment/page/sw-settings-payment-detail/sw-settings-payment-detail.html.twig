@@ -56,6 +56,18 @@
                             @set-checkout-payment-configs="setCheckoutPaymentConfigs"
                         />
                     {% endblock %}
+
+                    {% block checkout_com_payment_method_card_payment_component %}
+                        <checkout-com-payment-method-card-payment
+                            v-else-if="isCardPayment"
+                            :payment-method-configs="checkoutPaymentMethodConfig"
+                            :parent-payment-method-configs="parentCheckoutPaymentMethodConfig"
+                            :sales-channel-id="salesChannelId"
+                            @set-loading="setLoading"
+                            @save-system-config="saveSystemConfig"
+                            @set-checkout-payment-configs="setCheckoutPaymentConfigs"
+                        />
+                    {% endblock %}
                 </sw-card>
             {% endblock %}
         </template>

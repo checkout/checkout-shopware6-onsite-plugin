@@ -116,15 +116,18 @@ class PaymentFinalizeFacade
             throw new AsyncPaymentFinalizeException($orderTransaction->getId(), $message);
         }
 
-        if ($payment->getStatus() === CheckoutPaymentService::STATUS_AUTHORIZED && $paymentHandler->captureWhenFinalize()) {
+        $canManualCapture = $paymentHandler->canManualCapture($salesChannelContext);
+        $checkoutOrderCustomFields->setManualCapture($canManualCapture);
+
+        if ($payment->getStatus() === CheckoutPaymentService::STATUS_AUTHORIZED && !$canManualCapture) {
             $actionId = $paymentHandler->capturePayment($checkoutPaymentId, $order);
             $checkoutOrderCustomFields->setLastCheckoutActionId($actionId);
             $paymentStatus = CheckoutPaymentService::STATUS_CAPTURED;
-
-            $this->orderService->updateCheckoutCustomFields($order, $checkoutOrderCustomFields, $salesChannelContext->getContext());
         }
 
         $this->eventDispatcher->dispatch(new CheckoutFinalizeStatusEvent($order, $payment, $paymentStatus));
+
+        $this->orderService->updateCheckoutCustomFields($order, $checkoutOrderCustomFields, $salesChannelContext->getContext());
 
         $settings = $this->settingsFactory->getSettings($salesChannelContext->getSalesChannelId());
 

@@ -61,6 +61,14 @@ Component.override('sw-settings-payment-detail', {
             return this.paymentMethodCheckoutConfig.methodType === PAYMENT_METHOD_TYPE.GOOGLE_PAY;
         },
 
+        isCardPayment() {
+            if (!this.isCheckoutCom) {
+                return false;
+            }
+
+            return this.paymentMethodCheckoutConfig.methodType === PAYMENT_METHOD_TYPE.CARD_PAYMENT;
+        },
+
         checkoutPaymentMethodConfig() {
             return this.getCheckoutPaymentMethodConfig(this.salesChannelId);
         },
@@ -82,7 +90,7 @@ Component.override('sw-settings-payment-detail', {
         'paymentMethod.id'() {
             this.isDisplayComponent = false;
 
-            if (!this.isApplePay && !this.isGooglePay) {
+            if (!this.isApplePay && !this.isGooglePay && !this.isCardPayment) {
                 return;
             }
 

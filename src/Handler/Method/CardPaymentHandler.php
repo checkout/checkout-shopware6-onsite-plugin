@@ -9,11 +9,13 @@ use Checkout\Payments\Source\AbstractRequestSource;
 use Checkout\Payments\Source\RequestIdSource;
 use Checkout\Payments\Source\RequestTokenSource;
 use Checkout\Payments\ThreeDsRequest;
+use CheckoutCom\Shopware6\Exception\CheckoutComException;
 use CheckoutCom\Shopware6\Exception\CheckoutInvalidTokenException;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use CheckoutCom\Shopware6\Helper\RequestUtil;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
+use CheckoutCom\Shopware6\Struct\SystemConfig\CardPaymentSettingStruct;
 use Exception;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -34,6 +36,13 @@ class CardPaymentHandler extends PaymentHandler
     public static function getPaymentMethodType(): string
     {
         return PaymentSourceType::$card;
+    }
+
+    public function canManualCapture(SalesChannelContext $context): bool
+    {
+        $settings = $this->getPaymentMethodSettings($context);
+
+        return $settings->isManualCapture();
     }
 
     /**
@@ -94,5 +103,22 @@ class CardPaymentHandler extends PaymentHandler
         $requestTokenSource->billing_address = CheckoutComUtil::buildAddress($billingAddress);
 
         return $requestTokenSource;
+    }
+
+    private function getPaymentMethodSettings(SalesChannelContext $context): CardPaymentSettingStruct
+    {
+        $settings = $this->settingsFactory->getPaymentMethodSettings(
+            CardPaymentSettingStruct::class,
+            $context->getSalesChannelId()
+        );
+
+        if (!$settings instanceof CardPaymentSettingStruct) {
+            $message = 'Card Payment settings not found';
+            $this->logger->error($message);
+
+            throw new CheckoutComException($message);
+        }
+
+        return $settings;
     }
 }

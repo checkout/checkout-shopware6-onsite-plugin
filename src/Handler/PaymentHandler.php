@@ -255,17 +255,7 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
         return $this->checkoutPaymentService->refundPayment($checkoutPaymentId, $refundRequest, $order->getSalesChannelId());
     }
 
-    public function captureWhenFinalize(): bool
-    {
-        return true;
-    }
-
-    public function canManualCapture(): bool
-    {
-        return false;
-    }
-
-    public function canManualVoid(): bool
+    public function canManualCapture(SalesChannelContext $context): bool
     {
         return false;
     }
