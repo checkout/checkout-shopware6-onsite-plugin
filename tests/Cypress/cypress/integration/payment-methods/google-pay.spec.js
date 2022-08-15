@@ -7,10 +7,7 @@ const paymentHandler = 'CheckoutCom\\Shopware6\\Handler\\Method\\GooglePayHandle
 
 describe('Testing Storefront Google Pay visibility', () => {
     beforeEach(() => {
-        // Set the Shopware instance to initial state only on local environment
-        const promiseChain = Cypress.env('localUsage') ? cy.setToInitialState() : cy;
-
-        promiseChain.then(() => {
+        cy.setToInitialState().then(() => {
             return cy.loginViaApi();
         }).then(() => {
             return cy.createProductFixture();
