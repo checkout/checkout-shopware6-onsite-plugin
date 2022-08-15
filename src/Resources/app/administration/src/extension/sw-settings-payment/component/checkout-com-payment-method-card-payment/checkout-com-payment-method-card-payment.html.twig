@@ -1,0 +1,26 @@
+{% block checkout_com_payment_method_card_payment %}
+    <div class="checkout-com-payment-method-card-payment">
+        {% block checkout_com_payment_method_card_payment_manual_capture %}
+            <sw-inherit-wrapper
+                :value="paymentMethodConfigs.manualCapture"
+                :inherited-value="parentPaymentMethodConfigs.manualCapture"
+                :has-parent="isNotDefaultSalesChannel"
+                :custom-remove-inheritance-function="removeSwitchInheritance"
+                @input="onInputChange('manualCapture', $event)"
+            >
+                <template #content="props">
+                    {% block checkout_com_payment_method_card_payment_manual_capture_field %}
+                        <sw-switch-field
+                            type="text"
+                            :map-inheritance="props"
+                            :disabled="!acl.can('payment.editor') || props.isInherited"
+                            :value="props.currentValue"
+                            :label="$tc('checkout-payments.paymentMethod.cardPayment.configuration.manualCaptureLabel')"
+                            @change="props.updateCurrentValue"
+                        />
+                    {% endblock %}
+                </template>
+            </sw-inherit-wrapper>
+        {% endblock %}
+    </div>
+{% endblock %}

@@ -1,12 +1,16 @@
 import template from './sw-order-detail.html.twig';
 import './sw-order-detail.scss';
 import checkoutComOrder from './state';
+import { ORDER_CHECKOUT_COM_CUSTOM_FIELDS } from '../../../../constant/settings';
 
 const {
     Component,
     State,
 } = Shopware;
-const { mapGetters } = Component.getComponentHelper();
+const {
+    mapState,
+    mapGetters,
+} = Component.getComponentHelper();
 
 /**
  * Overwrite the default order detail component to
@@ -20,9 +24,12 @@ Component.override('sw-order-detail', {
     ],
 
     computed: {
+        ...mapState('checkoutComOrder', [
+            'checkoutComOrder',
+        ]),
+
         ...mapGetters('checkoutComOrder', [
             'isAuthorizedPayment',
-            'paymentMethodCheckoutConfig',
         ]),
 
         canManualCapture() {
@@ -34,29 +41,17 @@ Component.override('sw-order-detail', {
                 return false;
             }
 
-            const paymentMethodCheckoutConfig = this.paymentMethodCheckoutConfig;
-            if (!paymentMethodCheckoutConfig) {
+            if (!this.checkoutComOrder.customFields) {
                 return false;
             }
 
-            return paymentMethodCheckoutConfig.canManualCapture;
-        },
-
-        canManualVoid() {
-            if (this.isEditing) {
+            const checkoutCustomFields = this.checkoutComOrder.customFields[ORDER_CHECKOUT_COM_CUSTOM_FIELDS];
+            if (!checkoutCustomFields) {
                 return false;
             }
 
-            if (!this.isAuthorizedPayment) {
-                return false;
-            }
 
-            const paymentMethodCheckoutConfig = this.paymentMethodCheckoutConfig;
-            if (!paymentMethodCheckoutConfig) {
-                return false;
-            }
-
-            return paymentMethodCheckoutConfig.canManualVoid;
+            return checkoutCustomFields.manualCapture;
         },
     },
 

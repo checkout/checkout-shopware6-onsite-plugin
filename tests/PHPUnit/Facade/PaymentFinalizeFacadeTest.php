@@ -103,7 +103,7 @@ class PaymentFinalizeFacadeTest extends TestCase
         $paymentHandler = $this->createConfiguredMock(
             PaymentHandler::class,
             [
-                'captureWhenFinalize' => true,
+                'canManualCapture' => false,
             ]
         );
 

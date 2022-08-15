@@ -48,6 +48,11 @@
           "googleMerchantIdLabel": "Google-Händler-ID",
           "googleMerchantIdHelpText": "Diese finden Sie in Ihrem Google Pay-Entwicklerkonto"
         }
+      },
+      "cardPayment": {
+        "configuration": {
+          "manualCaptureLabel": "Manuelles Erfassen"
+        }
       }
     },
     "order": {

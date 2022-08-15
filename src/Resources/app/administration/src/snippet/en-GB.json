@@ -48,6 +48,11 @@
           "googleMerchantIdLabel": "Google Merchant ID",
           "googleMerchantIdHelpText": "This is found in your Google Pay developer account"
         }
+      },
+      "cardPayment": {
+        "configuration": {
+          "manualCaptureLabel": "Manual Capture"
+        }
       }
     },
     "order": {

@@ -20,6 +20,7 @@ export const SETUP_LINK = {
  * @see CheckoutCom\Shopware6\Handler\PaymentHandler::getPaymentMethodType()
  */
 export const PAYMENT_METHOD_TYPE = {
+    CARD_PAYMENT: 'card',
     APPLE_PAY: 'applepay',
     GOOGLE_PAY: 'googlepay',
 };

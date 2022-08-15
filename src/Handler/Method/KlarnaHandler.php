@@ -50,9 +50,9 @@ class KlarnaHandler extends PaymentHandler
         return PaymentSourceType::$klarna;
     }
 
-    public function captureWhenFinalize(): bool
+    public function canManualCapture(SalesChannelContext $context): bool
     {
-        return false;
+        return true;
     }
 
     public function capturePayment(string $checkoutPaymentId, OrderEntity $order): string
@@ -63,16 +63,6 @@ class KlarnaHandler extends PaymentHandler
     public function voidPayment(string $checkoutPaymentId, OrderEntity $order): string
     {
         return $this->klarnaService->voidPayment($checkoutPaymentId, $order);
-    }
-
-    public function canManualCapture(): bool
-    {
-        return true;
-    }
-
-    public function canManualVoid(): bool
-    {
-        return true;
     }
 
     public function shouldCaptureAfterShipping(): bool
