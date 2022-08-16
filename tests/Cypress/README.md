@@ -2,11 +2,11 @@
 ## Easy Testing
 
 Running Cypress tests is easy!
-Just install it by using the built in makefile commands
+Just install it by using the built-in makefile commands
 and either open your tests in the Cypress UI, or run them directly from your CLI.
 
 ### Test environment & DB
-Follow these steps to setup the test environment ff you run E2E for the first time:
+Follow these steps to set up the test environment ff you run E2E for the first time:
 ```ruby
 ./psh.phar init-database --DB_NAME=shopware_e2e --APP_ENV=e2e
 bin/console system:install --basic-setup --force

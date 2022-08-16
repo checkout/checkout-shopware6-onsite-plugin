@@ -59,6 +59,9 @@ class ShopConfigurationAction {
         };
 
         this.apiClient.post('/_action/system-config/batch', data);
+        this.apiClient.post('/_action/system-config', {
+            'core.mailerSettings.disableDelivery': true,
+        });
     }
 
     /**
@@ -77,6 +80,18 @@ class ShopConfigurationAction {
 
             return this.apiClient.post('/_action/system-config/batch', data);
         });
+    }
+
+    toggleManualCapture(isActive) {
+        if (isActive === undefined) return;
+
+        const data = {
+            null: {
+                'CheckoutCom.config.paymentMethod.card.manualCapture': isActive
+            }
+        };
+
+        return this.apiClient.post('/_action/system-config/batch', data);
     }
 
     /**

@@ -3,6 +3,7 @@ import dummyCheckoutScenario from '../../support/scenarios/DummyCheckoutScenario
 import storefrontLoginAction from '../../support/actions/storefront/LoginAction';
 import orderDetailRepository from '../../support/repositories/storefront/OrderDetailRepository';
 import klarnaScenario from '../../support/scenarios/KlarnaScenario';
+import orderListRepository from '../../support/repositories/administration/OrderListRepository';
 
 const paymentEndpoint = 'payment-method';
 const paymentHandler = 'CheckoutCom\\Shopware6\\Handler\\Method\\KlarnaHandler';
@@ -95,7 +96,7 @@ describe('Testing Storefront Klarna Payment', () => {
                 url: 'api/_action/checkout-com/order/capture/**'
             }).as('capturePayment');
 
-            cy.get('.sw-data-grid__row--0 .sw-data-grid__cell--orderNumber a').click();
+            orderListRepository.getFirstRowOrderNumber().click();
 
             cy.url().should('include', 'order/detail');
 
@@ -114,7 +115,7 @@ describe('Testing Storefront Klarna Payment', () => {
                 method: 'post',
             }).as(`updateDeliveryStatus`);
 
-            cy.get('.sw-data-grid__row--0 .sw-data-grid__cell--orderNumber a').click();
+            orderListRepository.getFirstRowOrderNumber().click();
 
             cy.url().should('include', 'order/detail');
 
@@ -139,7 +140,7 @@ describe('Testing Storefront Klarna Payment', () => {
                 url: 'api/_action/checkout-com/order/void/**'
             }).as('voidPayment');
 
-            cy.get('.sw-data-grid__row--0 .sw-data-grid__cell--orderNumber a').click();
+            orderListRepository.getFirstRowOrderNumber().click();
 
             cy.url().should('include', 'order/detail');
 
