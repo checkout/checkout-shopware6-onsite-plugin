@@ -78,7 +78,7 @@ describe('Testing Storefront Klarna Payment', () => {
         beforeEach(() => {
             dummyCheckoutScenario.execute();
 
-            klarnaScenario.payIn30Days();
+            klarnaScenario.payWithFlexibleAccount();
 
             cy.url().should('include', '/checkout/finish');
 

@@ -39,8 +39,20 @@ class RefundRepository {
         return cy.get('.checkout-com-refund-section .sw-data-grid__select-all .sw-field__checkbox');
     }
 
+    /**
+     * Get quantity input of first row
+     * @returns {Cypress.Chainable<JQuery<HTMLElement>>}
+     */
     getFirstRowReturnQuantityInput() {
         return cy.get('.sw-data-grid__row--0 .sw-data-grid__cell--returnQuantity .sw-block-field__block');
+    }
+
+    /**
+     * Get refund shipping cost row
+     * @returns {Cypress.Chainable<JQuery<HTMLElement>>}
+     */
+    getRefundShippingCostRow() {
+        return cy.get('.sw-data-grid__row--2 .sw-data-grid__cell--label');
     }
 }
 

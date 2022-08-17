@@ -59,7 +59,7 @@ describe('Testing Storefront Card Payments Payment', () => {
 
     describe('Make payment with 3DS', () => {
         before(() => {
-            shopConfigurationAction.toggle3ds(true);
+            shopConfigurationAction.setSystemConfig('CheckoutCom.config.enable3dSecure', true);
         });
 
         it('Invalid CVV', () => {
@@ -101,7 +101,7 @@ describe('Testing Storefront Card Payments Payment', () => {
 
     describe('Make payment without 3DS', () => {
         before(() => {
-            shopConfigurationAction.toggle3ds(false);
+            shopConfigurationAction.setSystemConfig('CheckoutCom.config.enable3dSecure', false);
         });
 
         it('Invalid CVV', () => {
@@ -131,7 +131,7 @@ describe('Testing Storefront Card Payments Payment', () => {
 
     describe('Enable "Manual capture"', () => {
         before(() => {
-            shopConfigurationAction.toggle3ds(false);
+            shopConfigurationAction.setSystemConfig('CheckoutCom.config.enable3dSecure', false);
         });
 
         beforeEach(() => {
@@ -140,7 +140,7 @@ describe('Testing Storefront Card Payments Payment', () => {
                 method: 'POST'
             }).as('makePayment');
 
-            shopConfigurationAction.toggleManualCapture(true);
+            shopConfigurationAction.setSystemConfig('CheckoutCom.config.paymentMethod.card.manualCapture', true);
 
             checkoutAction.fillCardPayment(null, '4242424242424242', '0224', '100');
 
@@ -196,7 +196,7 @@ describe('Testing Storefront Card Payments Payment', () => {
 
     describe('Testing "Save card details for future payments"', () => {
         before(() => {
-            shopConfigurationAction.toggle3ds(false);
+            shopConfigurationAction.setSystemConfig('CheckoutCom.config.enable3dSecure', false);
         });
 
         it('Uncheck and make payment', () => {

@@ -90,3 +90,22 @@ Cypress.Commands.add('loginAndOpenAdmin', (url) => {
             cy.get('.sw-loader').should('not.exist');
         });
 });
+
+/**
+ * Type in a masked input
+ * @memberOf Cypress.Chainable#
+ * @name typeMask
+ * @function
+ */
+Cypress.Commands.add('typeMask', { prevSubject: true }, (subject, nextValue) => {
+        const $input = subject.get(0);
+
+        const lastValue = $input.value;
+        $input.value = nextValue;
+
+        $input._valueTracker.setValue(lastValue);
+        $input.dispatchEvent(new Event('change', { bubbles: true }));
+
+        return subject;
+    }
+);
