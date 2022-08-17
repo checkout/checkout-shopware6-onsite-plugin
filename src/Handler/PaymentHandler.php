@@ -132,6 +132,11 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
         SalesChannelContext $context
     ): PaymentRequest;
 
+    public function getAvailableCountries(): array
+    {
+        return [];
+    }
+
     public function getClassName(): string
     {
         return static::class;

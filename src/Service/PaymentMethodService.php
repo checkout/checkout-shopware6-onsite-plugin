@@ -6,8 +6,6 @@ use CheckoutCom\Shopware6\CheckoutCom;
 use CheckoutCom\Shopware6\Exception\PaymentMethodNotFoundException;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Struct\PaymentHandler\PaymentHandlerCollection;
-use CheckoutCom\Shopware6\Struct\PaymentMethod\InstallablePaymentMethodCollection;
-use CheckoutCom\Shopware6\Struct\PaymentMethod\InstallablePaymentMethodStruct;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\InstalledPaymentMethodCollection;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\InstalledPaymentMethodStruct;
 use Exception;
@@ -18,6 +16,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 class PaymentMethodService
 {
@@ -28,12 +27,23 @@ class PaymentMethodService
 
     private EntityRepositoryInterface $paymentMethodRepository;
 
+    private EntityRepositoryInterface $ruleRepository;
+
+    private CountryService $countryService;
+
     private PluginIdProvider $pluginIdProvider;
 
-    public function __construct(iterable $paymentHandlers, EntityRepositoryInterface $paymentMethodRepository, PluginIdProvider $pluginIdProvider)
-    {
+    public function __construct(
+        iterable $paymentHandlers,
+        EntityRepositoryInterface $paymentMethodRepository,
+        EntityRepositoryInterface $ruleRepository,
+        CountryService $countryService,
+        PluginIdProvider $pluginIdProvider
+    ) {
         $this->installablePaymentHandlers = new PaymentHandlerCollection($paymentHandlers);
         $this->paymentMethodRepository = $paymentMethodRepository;
+        $this->ruleRepository = $ruleRepository;
+        $this->countryService = $countryService;
         $this->pluginIdProvider = $pluginIdProvider;
     }
 
@@ -75,15 +85,13 @@ class PaymentMethodService
             return;
         }
 
-        // Get installable payment methods
-        $installablePaymentMethods = $this->getInstallablePaymentMethods();
-        if ($installablePaymentMethods->count() === 0) {
-            return;
-        }
-
         $pluginId = $this->pluginIdProvider->getPluginIdByBaseClass(CheckoutCom::class, $context);
 
-        $this->addPaymentMethods($installablePaymentMethods, $pluginId, $context);
+        $this->addPaymentMethods(
+            $this->installablePaymentHandlers,
+            $pluginId,
+            $context
+        );
     }
 
     /**
@@ -95,12 +103,6 @@ class PaymentMethodService
             return;
         }
 
-        // Get installable payment methods
-        $installablePaymentMethods = $this->getInstallablePaymentMethods();
-        if ($installablePaymentMethods->count() === 0) {
-            return;
-        }
-
         $pluginId = $this->pluginIdProvider->getPluginIdByBaseClass(CheckoutCom::class, $context);
 
         // Get installed payment methods in the shop
@@ -108,7 +110,7 @@ class PaymentMethodService
 
         // Toggle activate newly installed payment methods
         $this->setActivatePaymentMethods(
-            $installablePaymentMethods,
+            $this->installablePaymentHandlers,
             $installedPaymentMethodHandlers,
             $context,
             $isActive
@@ -138,37 +140,18 @@ class PaymentMethodService
     }
 
     /**
-     * Get an array of installable payment methods
-     */
-    private function getInstallablePaymentMethods(): InstallablePaymentMethodCollection
-    {
-        $paymentMethods = new InstallablePaymentMethodCollection();
-
-        /** @var PaymentHandler $paymentHandler */
-        foreach ($this->installablePaymentHandlers->getElements() as $paymentHandler) {
-            $paymentMethods->add(
-                new InstallablePaymentMethodStruct(
-                    $paymentHandler->getPaymentMethodDisplayName(),
-                    $paymentHandler->getClassName()
-                )
-            );
-        }
-
-        return $paymentMethods;
-    }
-
-    /**
      * Add payment methods for the plugin
      */
-    private function addPaymentMethods(InstallablePaymentMethodCollection $paymentMethods, string $pluginId, Context $context): void
+    private function addPaymentMethods(PaymentHandlerCollection $paymentHandlers, string $pluginId, Context $context): void
     {
         $paymentData = [];
+        $rulesData = [];
 
-        /** @var InstallablePaymentMethodStruct $paymentMethod */
-        foreach ($paymentMethods->getElements() as $paymentMethod) {
+        /** @var PaymentHandler $paymentHandler */
+        foreach ($paymentHandlers->getElements() as $paymentHandler) {
             $paymentMethodData = [
-                'handlerIdentifier' => $paymentMethod->getHandler(),
-                'name' => $paymentMethod->getDisplayName()->toTranslationArray(),
+                'handlerIdentifier' => $paymentHandler->getClassName(),
+                'name' => $paymentHandler->getPaymentMethodDisplayName()->toTranslationArray(),
                 'description' => '',
                 'pluginId' => $pluginId,
                 'afterOrderEnabled' => true,
@@ -186,18 +169,65 @@ class PaymentMethodService
                 $paymentMethodData['description'] = $existingPaymentMethod->getDescription();
                 $paymentMethodData['active'] = $existingPaymentMethod->getActive();
             } catch (PaymentMethodNotFoundException $exception) {
-                // Do nothing to make sure this exception does not block any action behind
+                $rule = $this->getRuleForPaymentHandler($paymentHandler, $context);
+            }
+
+            if (!empty($rule)) {
+                $paymentMethodData['availabilityRuleId'] = $rule['id'];
+                $rulesData[] = $rule;
             }
 
             $paymentData[] = $paymentMethodData;
         }
 
-        // Insert or update payment data
-        if (empty($paymentData)) {
-            return;
+        if (!empty($rulesData)) {
+            $this->ruleRepository->upsert($rulesData, $context);
         }
 
-        $this->paymentMethodRepository->upsert($paymentData, $context);
+        if (!empty($paymentData)) {
+            $this->paymentMethodRepository->upsert($paymentData, $context);
+        }
+    }
+
+    private function getRuleForPaymentHandler(PaymentHandler $paymentHandler, Context $context): ?array
+    {
+        $paymentAvailableCountries = $paymentHandler->getAvailableCountries();
+        if (empty($paymentAvailableCountries)) {
+            return null;
+        }
+
+        $ruleId = Uuid::randomHex();
+
+        return [
+            'id' => $ruleId,
+            'name' => sprintf(
+                '(checkout.com) %s',
+                $paymentHandler->getPaymentMethodDisplayName()->getName('en-GB')
+            ),
+            'priority' => 1,
+            'conditions' => [
+                [
+                    'type' => 'orContainer',
+                    'children' => [
+                        [
+                            'type' => 'andContainer',
+                            'children' => [
+                                [
+                                    'type' => 'customerBillingCountry',
+                                    'value' => [
+                                        'operator' => '=',
+                                        'countryIds' => $this->countryService->getCountryIdsByListIsoCode(
+                                            $paymentAvailableCountries,
+                                            $context
+                                        ),
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
     }
 
     /**
@@ -237,29 +267,23 @@ class PaymentMethodService
     /**
      * Toggle activate payment methods in Shopware.
      */
-    private function setActivatePaymentMethods(InstallablePaymentMethodCollection $paymentMethods, InstalledPaymentMethodCollection $installedPaymentMethods, Context $context, bool $isActive = true): void
+    private function setActivatePaymentMethods(PaymentHandlerCollection $paymentHandlers, InstalledPaymentMethodCollection $installedPaymentMethods, Context $context, bool $isActive = true): void
     {
-        if ($paymentMethods->count() === 0) {
-            return;
-        }
-
-        /** @var InstallablePaymentMethodStruct $paymentMethod */
-        foreach ($paymentMethods->getElements() as $paymentMethod) {
-            $paymentMethodHandler = $paymentMethod->getHandler();
-
+        /** @var PaymentHandler $paymentHandler */
+        foreach ($paymentHandlers->getElements() as $paymentHandler) {
             // We skip if empty payment method handler or if it is not in the installed payment methods
-            if (empty($paymentMethodHandler) || !$installedPaymentMethods->has($paymentMethodHandler)) {
+            if (!$installedPaymentMethods->has($paymentHandler->getClassName())) {
                 continue;
             }
 
-            $installedPaymentMethod = $installedPaymentMethods->get($paymentMethodHandler);
+            $installedPaymentMethod = $installedPaymentMethods->get($paymentHandler->getClassName());
             if ($installedPaymentMethod instanceof InstalledPaymentMethodStruct && $installedPaymentMethod->isActive() === $isActive) {
                 // Skip if It is exists in the installed handlers and same activation status
                 continue;
             }
 
             try {
-                $existingPaymentMethod = $this->getPaymentMethodByHandlerIdentifier($context, $paymentMethodHandler);
+                $existingPaymentMethod = $this->getPaymentMethodByHandlerIdentifier($context, $paymentHandler->getClassName());
 
                 $this->setActivatePaymentMethod($existingPaymentMethod->getId(), $isActive, $context);
             } catch (PaymentMethodNotFoundException $exception) {

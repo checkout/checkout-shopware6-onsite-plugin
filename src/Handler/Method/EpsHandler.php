@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace CheckoutCom\Shopware6\Handler\Method;
 
+use Checkout\Common\Country;
 use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\Source\Apm\RequestEpsSource;
@@ -27,6 +28,13 @@ class EpsHandler extends PaymentHandler
     public static function getPaymentMethodType(): string
     {
         return PaymentSourceType::$eps;
+    }
+
+    public function getAvailableCountries(): array
+    {
+        return [
+            Country::$AU,
+        ];
     }
 
     /**

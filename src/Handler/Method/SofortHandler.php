@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace CheckoutCom\Shopware6\Handler\Method;
 
+use Checkout\Common\Country;
 use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\Source\Apm\RequestSofortSource;
@@ -26,6 +27,13 @@ class SofortHandler extends PaymentHandler
     public static function getPaymentMethodType(): string
     {
         return PaymentSourceType::$sofort;
+    }
+
+    public function getAvailableCountries(): array
+    {
+        return [
+            Country::$DE,
+        ];
     }
 
     public function prepareDataForPay(

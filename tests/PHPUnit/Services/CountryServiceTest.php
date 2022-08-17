@@ -16,6 +16,7 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateDefinition;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\Country\CountryEntity;
@@ -66,6 +67,28 @@ class CountryServiceTest extends TestCase
         $country = $this->countryService->getCountryByIsoCode($countryCode, $this->salesChannelContext->getContext());
 
         static::assertInstanceOf(CountryEntity::class, $country);
+    }
+
+    public function testGetCountryIdsByListIsoCode(): void
+    {
+        $search = $this->createConfiguredMock(IdSearchResult::class, [
+            'getIds' => [
+                'foo',
+                'bar',
+            ],
+        ]);
+
+        $this->countryRepository->idSearchResults[] = $search;
+
+        $result = $this->countryService->getCountryIdsByListIsoCode(
+            [
+                'foo',
+                'bar',
+            ],
+            $this->salesChannelContext->getContext()
+        );
+
+        static::assertIsArray($result);
     }
 
     /**

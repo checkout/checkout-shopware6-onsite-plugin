@@ -2,6 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Handler\Method;
 
+use Checkout\Common\Country;
 use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\Source\Apm\RequestGiropaySource;
@@ -20,6 +21,13 @@ class GiropayHandler extends PaymentHandler
         $displayNames->addLangData('en-GB', 'Giropay');
 
         return $displayNames;
+    }
+
+    public function getAvailableCountries(): array
+    {
+        return [
+            Country::$DE,
+        ];
     }
 
     public static function getPaymentMethodType(): string

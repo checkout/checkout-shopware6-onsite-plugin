@@ -18,7 +18,7 @@ describe('Testing Storefront EPS payment', () => {
             return cy.createProductFixture();
         }).then(() => {
             shopConfigurationAction.setupShop();
-            cy.createCustomerFixtureStorefront();
+            cy.createCustomerFixtureByCountry({}, 'AU');
         });
     });
 

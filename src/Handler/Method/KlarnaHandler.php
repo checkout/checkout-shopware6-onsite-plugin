@@ -50,6 +50,18 @@ class KlarnaHandler extends PaymentHandler
         return PaymentSourceType::$klarna;
     }
 
+    public function getAvailableCountries(): array
+    {
+        return [
+            Country::$DE,
+            Country::$SE,
+            Country::$GB,
+            Country::$ES,
+            Country::$NO,
+            Country::$FR,
+        ];
+    }
+
     public function canManualCapture(SalesChannelContext $context): bool
     {
         return true;

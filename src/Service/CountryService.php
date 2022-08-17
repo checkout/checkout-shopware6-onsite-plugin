@@ -14,6 +14,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\Country\CountryEntity;
@@ -50,6 +51,14 @@ class CountryService
         }
 
         return $country;
+    }
+
+    public function getCountryIdsByListIsoCode(array $isoCodes, Context $context): array
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsAnyFilter('iso', $isoCodes));
+
+        return $this->countryRepository->searchIds($criteria, $context)->getIds();
     }
 
     public function getCountryState(string $stateCode, CountryEntity $country, Context $context): CountryStateEntity

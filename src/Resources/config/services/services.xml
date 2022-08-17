@@ -15,6 +15,8 @@
                  public="true">
             <argument type="tagged" tag="checkout_com.shopware6.payment_handler"/>
             <argument type="service" id="payment_method.repository"/>
+            <argument type="service" id="rule.repository"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\CountryService"/>
             <argument type="service" id="Shopware\Core\Framework\Plugin\Util\PluginIdProvider"/>
         </service>
 

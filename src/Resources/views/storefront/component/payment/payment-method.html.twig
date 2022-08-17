@@ -1,8 +1,6 @@
 {% sw_extends '@Storefront/storefront/component/payment/payment-method.html.twig' %}
 
 {% block component_payment_method_label %}
-    {{ parent() }}
-
     {% set isAccountPaymentPage = activeRoute is same as 'frontend.account.payment.page' %}
     {% set isSelectedPaymentMethod = payment.id is same as selectedPaymentMethodId %}
     {% set paymentMethodType = payment.customFields.checkoutConfig.methodType %}
@@ -14,6 +12,7 @@
     {% set METHOD_TYPE_IDEAL = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\IdealHandler::getPaymentMethodType') %}
     {% set METHOD_TYPE_KLARNA = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\KlarnaHandler::getPaymentMethodType') %}
 
+    {{ parent() }}
     {% block checkout_com_payment_method %}
         <div id="checkoutComPaymentMethod{{ payment.id }}"
              class="checkout-com-payment-method"

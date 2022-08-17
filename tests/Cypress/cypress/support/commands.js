@@ -1,3 +1,5 @@
+const { v4: uuid } = require('uuid');
+
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite
@@ -109,3 +111,118 @@ Cypress.Commands.add('typeMask', { prevSubject: true }, (subject, nextValue) => 
         return subject;
     }
 );
+
+/**
+ * Create customer fixture using Shopware API at the given endpoint, tailored for Storefront
+ * @memberOf Cypress.Chainable#
+ * @name createCustomerFixtureByCountry
+ * @function
+ * @param {Object} userData - Options concerning creation
+ * @param {Object} isoCode - Country ISO code to set in customer address
+ */
+Cypress.Commands.add('createCustomerFixtureByCountry', (userData, isoCode) => {
+    const addressId = uuid().replace(/-/g, '');
+    const customerId = uuid().replace(/-/g, '');
+    let customerJson = {};
+    let customerAddressJson = {};
+    let finalAddressRawData = {};
+    let countryId = '';
+    let groupId = '';
+    let paymentId = '';
+    let salesChannelId = '';
+    let salutationId = '';
+
+    return cy.fixture('customer').then((result) => {
+        customerJson = Cypress._.merge(result, userData);
+
+        return cy.fixture('customer-address')
+    }).then((result) => {
+        customerAddressJson = result;
+
+        return cy.searchViaAdminApi({
+            endpoint: 'country',
+            data: {
+                field: 'iso',
+                value: isoCode || 'DE'
+            }
+        });
+    }).then((result) => {
+        countryId = result.id;
+
+        return cy.searchViaAdminApi({
+            endpoint: 'payment-method',
+            data: {
+                field: 'name',
+                value: 'Invoice'
+            }
+        });
+    }).then((result) => {
+        paymentId = result.id;
+
+        return cy.searchViaAdminApi({
+            endpoint: 'sales-channel',
+            data: {
+                field: 'name',
+                value: 'Storefront'
+            }
+        });
+    }).then((result) => {
+        salesChannelId = result.id;
+
+        return cy.searchViaAdminApi({
+            endpoint: 'customer-group',
+            data: {
+                field: 'name',
+                value: 'Standard customer group'
+            }
+        });
+    }).then((result) => {
+        groupId = result.id;
+
+        return cy.searchViaAdminApi({
+            endpoint: 'salutation',
+            data: {
+                field: 'displayName',
+                value: 'Mr.'
+            }
+        });
+    }).then((salutation) => {
+        salutationId = salutation.id;
+
+        let first = true;
+        finalAddressRawData = {
+            addresses: customerAddressJson.addresses.map((a) => {
+                let addrId;;
+                if (first) {
+                    addrId = addressId;
+                    first = false;
+                } else {
+                    addrId = uuid().replace(/-/g, '');
+                }
+                cy.log(a.firstName)
+                return Cypress._.merge({
+                    customerId: customerId,
+                    salutationId: salutationId,
+                    id: addrId,
+                    countryId: countryId
+                }, a)
+            })
+        };
+    }).then(() => {
+        return Cypress._.merge(customerJson, {
+            salutationId: salutationId,
+            defaultPaymentMethodId: paymentId,
+            salesChannelId: salesChannelId,
+            groupId: groupId,
+            defaultBillingAddressId: addressId,
+            defaultShippingAddressId: addressId
+        });
+    }).then((result) => {
+        return Cypress._.merge(result, finalAddressRawData);
+    }).then((result) => {
+        return cy.requestAdminApiStorefront({
+            endpoint: 'customer',
+            data: result
+        });
+    });
+});
