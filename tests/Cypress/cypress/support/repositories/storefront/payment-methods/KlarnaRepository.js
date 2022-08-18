@@ -32,11 +32,14 @@ class KlarnaRepository {
     }
 
     /**
-     * Get "OTP" input
+     * Fill "OTP" input
      * @returns {*}
      */
-    getOtpInput() {
-        return cy.getIframeBody('iframe[id="klarna-checkoutcomklarnainstance-fullscreen"]').find('#otp_field');
+    fillOtpInput() {
+        cy.get('iframe[id="klarna-checkoutcomklarnainstance-fullscreen"]').then($element => {
+            const $body = $element.contents().find('body');
+            cy.wrap($body).find('#otp_field').typeMask('123456', { force: true });
+        });
     }
 
     /**
@@ -48,11 +51,14 @@ class KlarnaRepository {
     }
 
     /**
-     * Get "Date of birth" input
+     * Fill "Date of birth" input
      * @returns {*}
      */
-    getDateOfBirthInput() {
-        return cy.getIframeBody('iframe[id="klarna-checkoutcomklarnainstance-fullscreen"]').find('#baseaccount_kp-purchase-approval-form-date-of-birth');
+    fillDateOfBirthInput() {
+        cy.get('iframe[id="klarna-checkoutcomklarnainstance-fullscreen"]').then($element => {
+            const $body = $element.contents().find('body');
+            cy.wrap($body).find('#baseaccount_kp-purchase-approval-form-date-of-birth').typeMask('01011990', { force: true });
+        });
     }
 
     /**

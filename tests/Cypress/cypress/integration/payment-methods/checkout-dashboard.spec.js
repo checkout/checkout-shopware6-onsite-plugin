@@ -43,7 +43,7 @@ describe('Testing CheckoutCom dashboard view', () => {
 
     describe('make payment with CheckoutCom payment method', () => {
         beforeEach(() => {
-            shopConfigurationAction.toggle3ds(false);
+            shopConfigurationAction.setSystemConfig('CheckoutCom.config.enable3dSecure', false);
 
             dummyCheckoutScenario.execute();
 

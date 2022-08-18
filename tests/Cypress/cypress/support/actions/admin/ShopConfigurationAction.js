@@ -65,29 +65,17 @@ class ShopConfigurationAction {
     }
 
     /**
-     * Enable or disable 3D secure for Storefront
-     * @param isActive
+     * Set system config value
+     * @param key
+     * @param value
+     * @returns {*}
      */
-    toggle3ds(isActive) {
-        cy.getSalesChannelByName().then((salesChannel) => {
-            if (!salesChannel?.id || isActive === undefined) return;
-
-            const data = {
-                [salesChannel.id]: {
-                    'CheckoutCom.config.enable3dSecure': isActive
-                }
-            };
-
-            return this.apiClient.post('/_action/system-config/batch', data);
-        });
-    }
-
-    toggleManualCapture(isActive) {
-        if (isActive === undefined) return;
+    setSystemConfig(key, value) {
+        if (value === undefined) return;
 
         const data = {
             null: {
-                'CheckoutCom.config.paymentMethod.card.manualCapture': isActive
+                [key]: value
             }
         };
 

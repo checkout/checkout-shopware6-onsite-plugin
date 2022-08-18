@@ -17,8 +17,11 @@ class KlarnaScenario {
         // Fill in necessary information
         klarnaRepository.getEmailOrPhoneInput().type('017614287464');
         klarnaRepository.getContinueButton().click();
-        klarnaRepository.getOtpInput().type('123456');
 
+        // Wait until Klarna fetch new content
+        cy.wait(8000);
+
+        klarnaRepository.fillOtpInput();
         klarnaRepository.getPurchaseButton().click();
     }
 
@@ -34,7 +37,7 @@ class KlarnaScenario {
         checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
 
         // Fill in necessary information
-        klarnaRepository.getDateOfBirthInput().type('01011990');
+        klarnaRepository.fillDateOfBirthInput();
         klarnaRepository.getApproveButton().click();
     }
 }

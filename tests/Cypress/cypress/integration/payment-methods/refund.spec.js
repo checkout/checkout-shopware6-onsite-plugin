@@ -1,5 +1,4 @@
 import dummyCheckoutScenario from '../../support/scenarios/DummyCheckoutScenario';
-import klarnaScenario from '../../support/scenarios/KlarnaScenario';
 import dummyFlowBuilderScenario from '../../support/scenarios/DummyFlowBuilderScenario';
 
 import shopConfigurationAction from '../../support/actions/admin/ShopConfigurationAction';
@@ -26,7 +25,7 @@ describe('Testing Refund Manager', () => {
 
     describe('Check Refund Manager visibility', () => {
         before(() => {
-            shopConfigurationAction.toggle3ds(false);
+            shopConfigurationAction.setSystemConfig('CheckoutCom.config.enable3dSecure', false);
         })
 
         beforeEach(() => {
@@ -34,7 +33,9 @@ describe('Testing Refund Manager', () => {
         });
 
         it('should hide Refund Manager', () => {
-            klarnaScenario.payWithFlexibleAccount();
+            checkoutAction.selectPaymentMethod('Cash on delivery');
+
+            checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
 
             cy.url().should('include', '/checkout/finish');
 
@@ -43,8 +44,6 @@ describe('Testing Refund Manager', () => {
             orderListRepository.getFirstRowOrderNumber().click();
 
             cy.url().should('include', 'order/detail');
-
-            orderDetailRepository.getCurrentPaymentStatus().contains('Authorized');
 
             // Checkout.com Refund button should not exist when payment status is not "Paid"
             refundRepository.getRefundButton().should('not.exist');
@@ -80,7 +79,7 @@ describe('Testing Refund Manager', () => {
 
     describe('Check Refund Manager functionality', () => {
         before(() => {
-            shopConfigurationAction.toggle3ds(false);
+            shopConfigurationAction.setSystemConfig('CheckoutCom.config.enable3dSecure', false);
 
             cy.intercept({
                 url: 'https://api.sandbox.checkout.com/tokens',
@@ -98,15 +97,13 @@ describe('Testing Refund Manager', () => {
         });
 
         beforeEach(() => {
-            cy.loginAndOpenAdmin(`${Cypress.env('admin')}#/sw/order/index`);
-
             cy.intercept({
                 url: `${Cypress.env('apiPath')}/_action/checkout-com/order/refund`,
                 method: 'POST'
             }).as('refund');
 
+            cy.loginAndOpenAdmin(`${Cypress.env('admin')}#/sw/order/index`);
             cy.get('.sw-data-grid__row--0 .sw-data-grid__cell--orderNumber a').click();
-
             cy.url().should('include', 'order/detail');
 
             // Open "Refund manager" modal
@@ -148,9 +145,83 @@ describe('Testing Refund Manager', () => {
         });
     });
 
+    describe('check "Include shipping costs for full refund"', () => {
+        beforeEach(() => {
+            cy.intercept({
+                url: 'https://api.sandbox.checkout.com/tokens',
+                method: 'POST'
+            }).as('makePayment');
+
+            cy.intercept({
+                url: `${Cypress.env('apiPath')}/_action/checkout-com/order/refund`,
+                method: 'POST'
+            }).as('refund');
+
+            // Place an order using Card payments
+            dummyCheckoutScenario.execute(true, 1);
+            checkoutAction.selectPaymentMethod('Card Payments');
+            checkoutAction.fillCardPayment(null, '4242424242424242', '0224', '100');
+
+            checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
+
+            cy.wait('@makePayment');
+
+            shopConfigurationAction.setSystemConfig('CheckoutCom.config.enable3dSecure', false);
+
+            cy.loginAndOpenAdmin(`${Cypress.env('admin')}#/sw/order/index`);
+            cy.get('.sw-data-grid__row--0 .sw-data-grid__cell--orderNumber a').click();
+            cy.url().should('include', 'order/detail');
+
+            // Open "Refund manager" modal
+            refundRepository.getRefundButton().should('exist').contains('Checkout.com Refund').click();
+        });
+
+        it('check and include shipping cost to the refunded amount', () => {
+            shopConfigurationAction.setSystemConfig('CheckoutCom.config.includeShippingCostsRefund', true);
+
+            // Return the remaining item
+            refundRepository.getFirstRowReturnQuantityInput()
+                .typeSingleSelectAndCheck(1, '.sw-data-grid__cell--returnQuantity');
+
+            // Confirm "Yes, I want to refund"
+            refundRepository.getConfirmRefundCheckbox().click();
+
+            // Click "Refund selected items"
+            refundRepository.getModalRefundButton().should('not.be.disabled').click();
+
+            cy.wait('@refund');
+
+            orderDetailRepository.getCurrentPaymentStatus().contains('Refunded');
+
+            // Check if shipping cost is refunded
+            refundRepository.getRefundShippingCostRow().contains('Refunded');
+        });
+
+        it('uncheck and exclude shipping cost out of the refunded amount', () => {
+            shopConfigurationAction.setSystemConfig('CheckoutCom.config.includeShippingCostsRefund', false);
+
+            // Return 1 item
+            refundRepository.getFirstRowReturnQuantityInput()
+                .typeSingleSelectAndCheck(1, '.sw-data-grid__cell--returnQuantity');
+
+            // Confirm "Yes, I want to refund"
+            refundRepository.getConfirmRefundCheckbox().click();
+
+            // Click "Refund selected items"
+            refundRepository.getModalRefundButton().should('not.be.disabled').click();
+
+            cy.wait('@refund');
+
+            orderDetailRepository.getCurrentPaymentStatus().contains('Refunded');
+
+            // Shipping cost will not be refunded
+            refundRepository.getRefundShippingCostRow().should('not.exist');
+        });
+    });
+
     describe('Check refund in flow builder', () => {
         before(() => {
-            shopConfigurationAction.toggle3ds(false);
+            shopConfigurationAction.setSystemConfig('CheckoutCom.config.enable3dSecure', false);
 
             cy.intercept({
                 url: 'https://api.sandbox.checkout.com/tokens',
