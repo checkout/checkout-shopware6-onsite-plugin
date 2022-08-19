@@ -3,10 +3,11 @@
 namespace CheckoutCom\Shopware6\Tests\Handler\Method;
 
 use Checkout\Common\PaymentSourceType;
-use Checkout\Payments\PaymentRequest;
-use Checkout\Payments\Source\RequestTokenSource;
+use Checkout\Payments\Previous\PaymentRequest;
+use Checkout\Payments\Previous\Source\RequestTokenSource;
 use CheckoutCom\Shopware6\Handler\Method\CardPaymentHandler;
 use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use Exception;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -68,6 +69,7 @@ class CardPaymentHandlerTest extends AbstractPaymentHandlerTest
             $this->createMock(PaymentRequest::class),
             $dataBag,
             $this->createMock(OrderEntity::class),
+            $this->createMock(SettingStruct::class),
             $this->saleChannelContext
         );
 
@@ -85,6 +87,7 @@ class CardPaymentHandlerTest extends AbstractPaymentHandlerTest
             $this->createMock(PaymentRequest::class),
             $dataBag,
             $this->createMock(OrderEntity::class),
+            $this->createMock(SettingStruct::class),
             $this->saleChannelContext
         );
 

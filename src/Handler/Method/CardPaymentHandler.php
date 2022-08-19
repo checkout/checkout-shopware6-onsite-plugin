@@ -4,10 +4,10 @@ namespace CheckoutCom\Shopware6\Handler\Method;
 
 use Checkout\Common\ChallengeIndicatorType;
 use Checkout\Common\PaymentSourceType;
-use Checkout\Payments\PaymentRequest;
-use Checkout\Payments\Source\AbstractRequestSource;
-use Checkout\Payments\Source\RequestIdSource;
-use Checkout\Payments\Source\RequestTokenSource;
+use Checkout\Payments\Previous\PaymentRequest;
+use Checkout\Payments\Previous\Source\AbstractRequestSource;
+use Checkout\Payments\Previous\Source\RequestIdSource;
+use Checkout\Payments\Previous\Source\RequestTokenSource;
 use Checkout\Payments\ThreeDsRequest;
 use CheckoutCom\Shopware6\Exception\CheckoutComException;
 use CheckoutCom\Shopware6\Exception\CheckoutInvalidTokenException;
@@ -16,6 +16,7 @@ use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use CheckoutCom\Shopware6\Helper\RequestUtil;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
 use CheckoutCom\Shopware6\Struct\SystemConfig\CardPaymentSettingStruct;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use Exception;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -52,6 +53,7 @@ class CardPaymentHandler extends PaymentHandler
         PaymentRequest $paymentRequest,
         RequestDataBag $dataBag,
         OrderEntity $order,
+        SettingStruct $settings,
         SalesChannelContext $context
     ): PaymentRequest {
         $this->enableThreeDsRequest($dataBag, $paymentRequest, $context->getSalesChannelId());

@@ -2,9 +2,9 @@
 
 namespace CheckoutCom\Shopware6\Handler;
 
-use Checkout\Payments\PaymentRequest;
+use Checkout\Payments\Previous\PaymentRequest;
+use Checkout\Payments\Previous\Source\RequestIdSource;
 use Checkout\Payments\RefundRequest;
-use Checkout\Payments\Source\RequestIdSource;
 use Checkout\Payments\ThreeDsRequest;
 use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
@@ -21,6 +21,7 @@ use CheckoutCom\Shopware6\Struct\DirectPay\AbstractShippingOptionStruct;
 use CheckoutCom\Shopware6\Struct\DirectPay\AbstractShippingPayloadStruct;
 use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -129,6 +130,7 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
         PaymentRequest $paymentRequest,
         RequestDataBag $dataBag,
         OrderEntity $order,
+        SettingStruct $settings,
         SalesChannelContext $context
     ): PaymentRequest;
 

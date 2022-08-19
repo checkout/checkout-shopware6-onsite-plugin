@@ -2,7 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Event;
 
-use Checkout\Payments\PaymentRequest;
+use Checkout\Payments\Previous\PaymentRequest;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Framework\Event\EventData\EventDataCollection;

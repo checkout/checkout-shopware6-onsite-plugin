@@ -52,7 +52,7 @@
   },
   "require": {
     "php": ">= 7.4",
-    "checkout/checkout-sdk-php": "^2.4.0"
+    "checkout/checkout-sdk-php": "^3.0.1"
   },
   "require-dev": {
     "shopware/core": "*",

@@ -4,12 +4,10 @@ declare(strict_types=1);
 namespace CheckoutCom\Shopware6\Service\CheckoutApi;
 
 use Checkout\CheckoutApiException;
-use Checkout\Webhooks\WebhookRequest;
-use CheckoutCom\Shopware6\Exception\CheckoutComWebhookNotFoundException;
+use Checkout\Webhooks\Previous\WebhookRequest;
 use CheckoutCom\Shopware6\Factory\CheckoutApiFactory;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Webhook;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -76,7 +74,7 @@ class CheckoutWebhookService extends AbstractCheckoutService
      */
     public function registerWebhook(?string $salesChannelId = null): Webhook
     {
-        $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
+        $checkoutApi = $this->checkoutApiFactory->getPreviousClient($salesChannelId);
 
         try {
             $webhook = $checkoutApi->getWebhooksClient()->registerWebhook($this->buildWebhookRequest($salesChannelId));
@@ -94,21 +92,14 @@ class CheckoutWebhookService extends AbstractCheckoutService
      *
      * @throws CheckoutApiException
      */
-    public function retrieveWebhook(string $webhookId, ?string $salesChannelId = null): Webhook
+    public function retrieveWebhook(string $webhookId, ?string $salesChannelId = null): void
     {
-        $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
+        $checkoutApi = $this->checkoutApiFactory->getPreviousClient($salesChannelId);
 
         try {
-            $webhook = $checkoutApi->getWebhooksClient()->retrieveWebhook($webhookId);
-
-            return $this->buildWebhook($webhook);
+            $checkoutApi->getWebhooksClient()->retrieveWebhook($webhookId);
         } catch (CheckoutApiException $e) {
             $this->logMessage($e, __FUNCTION__);
-
-            // @TODO Update HTTP status code CC-144
-            if ($e->http_status_code === Response::HTTP_NOT_FOUND) {
-                throw new CheckoutComWebhookNotFoundException($webhookId);
-            }
 
             throw $e;
         }
@@ -136,10 +127,6 @@ class CheckoutWebhookService extends AbstractCheckoutService
     {
         $webhook = new Webhook();
         $webhook->setId($data['id'] ?? null);
-        $webhook->setActive($data['active'] ?? false);
-        $webhook->setContentType($data['content_type'] ?? null);
-        $webhook->setEventTypes($data['event_types'] ?? []);
-        $webhook->setUrl($data['url'] ?? null);
         $webhook->setAuthorization(
             isset($data['headers'])
                 ? $data['headers']['authorization'] ?? null

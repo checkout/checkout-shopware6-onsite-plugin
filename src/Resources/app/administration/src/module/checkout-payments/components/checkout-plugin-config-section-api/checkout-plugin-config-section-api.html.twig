@@ -8,6 +8,16 @@
         :disabled="isLoading"
     >
         <template #content="props">
+            {% block checkout_plugin_config_section_api_account_type %}
+                <sw-single-select
+                    :label="$tc('checkout-payments.config.api.accountTypeLabel')"
+                    :options="accountTypeOptions"
+                    :disabled="props.isInherited || isLoading"
+                    :value="props.currentValue.accountType"
+                    @change="updateInheritedValue('accountType', props.currentValue, $event, props.updateCurrentValue)"
+                />
+            {% endblock %}
+
             {% block checkout_plugin_config_section_api_secret_key %}
                 <sw-password-field
                     copyable

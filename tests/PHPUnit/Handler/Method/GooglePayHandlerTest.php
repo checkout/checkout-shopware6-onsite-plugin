@@ -2,7 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Tests\Handler\Method;
 
-use Checkout\Payments\PaymentRequest;
+use Checkout\Payments\Previous\PaymentRequest;
 use Checkout\Tokens\TokenType;
 use CheckoutCom\Shopware6\Handler\Method\GooglePayHandler;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
@@ -13,6 +13,7 @@ use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
 use CheckoutCom\Shopware6\Struct\DirectPay\GooglePay\GoogleShippingOptionCollection;
 use CheckoutCom\Shopware6\Struct\DirectPay\GooglePay\GoogleShippingOptionStruct;
 use CheckoutCom\Shopware6\Struct\DirectPay\GooglePay\GoogleShippingPayloadStruct;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use PHPUnit\Framework\MockObject\MockObject;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -138,6 +139,7 @@ class GooglePayHandlerTest extends AbstractPaymentHandlerTest
             $this->createMock(PaymentRequest::class),
             $dataBag,
             $this->createMock(OrderEntity::class),
+            $this->createMock(SettingStruct::class),
             $this->saleChannelContext
         );
 

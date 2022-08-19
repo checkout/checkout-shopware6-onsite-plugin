@@ -3,7 +3,7 @@
 namespace CheckoutCom\Shopware6\Service\CheckoutApi;
 
 use Checkout\CheckoutApiException;
-use Checkout\Payments\PaymentRequest;
+use Checkout\Payments\Previous\PaymentRequest;
 use Checkout\Payments\RefundRequest;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
 
@@ -39,7 +39,7 @@ class CheckoutPaymentService extends AbstractCheckoutService
      */
     public function requestPayment(PaymentRequest $paymentRequest, string $salesChannelId): Payment
     {
-        $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
+        $checkoutApi = $this->checkoutApiFactory->getPreviousClient($salesChannelId);
 
         try {
             $payment = $checkoutApi->getPaymentsClient()->requestPayment($paymentRequest);
@@ -57,7 +57,7 @@ class CheckoutPaymentService extends AbstractCheckoutService
      */
     public function getPaymentDetails(string $paymentId, string $salesChannelId): Payment
     {
-        $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
+        $checkoutApi = $this->checkoutApiFactory->getPreviousClient($salesChannelId);
 
         try {
             $paymentDetail = $checkoutApi->getPaymentsClient()->getPaymentDetails($paymentId);
@@ -75,7 +75,7 @@ class CheckoutPaymentService extends AbstractCheckoutService
      */
     public function getPaymentActions(string $paymentId, string $salesChannelId): array
     {
-        $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
+        $checkoutApi = $this->checkoutApiFactory->getPreviousClient($salesChannelId);
 
         try {
             $paymentAction = $checkoutApi->getPaymentsClient()->getPaymentActions($paymentId);
@@ -93,7 +93,7 @@ class CheckoutPaymentService extends AbstractCheckoutService
      */
     public function capturePayment(string $paymentId, string $salesChannelId): string
     {
-        $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
+        $checkoutApi = $this->checkoutApiFactory->getPreviousClient($salesChannelId);
 
         try {
             $captureResponse = $checkoutApi->getPaymentsClient()->capturePayment($paymentId);
@@ -111,7 +111,7 @@ class CheckoutPaymentService extends AbstractCheckoutService
      */
     public function voidPayment(string $paymentId, string $salesChannelId): string
     {
-        $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
+        $checkoutApi = $this->checkoutApiFactory->getPreviousClient($salesChannelId);
 
         try {
             $voidResponse = $checkoutApi->getPaymentsClient()->voidPayment($paymentId);
@@ -129,7 +129,7 @@ class CheckoutPaymentService extends AbstractCheckoutService
      */
     public function refundPayment(string $paymentId, RefundRequest $refundRequest, string $salesChannelId): string
     {
-        $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
+        $checkoutApi = $this->checkoutApiFactory->getPreviousClient($salesChannelId);
 
         try {
             $refundResponse = $checkoutApi->getPaymentsClient()->refundPayment($paymentId, $refundRequest);

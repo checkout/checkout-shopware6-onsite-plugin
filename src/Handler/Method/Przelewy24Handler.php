@@ -5,10 +5,11 @@ namespace CheckoutCom\Shopware6\Handler\Method;
 
 use Checkout\Common\Country;
 use Checkout\Common\PaymentSourceType;
-use Checkout\Payments\PaymentRequest;
-use Checkout\Payments\Source\Apm\RequestP24Source;
+use Checkout\Payments\Previous\PaymentRequest;
+use Checkout\Payments\Previous\Source\Apm\RequestP24Source;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use Exception;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -45,6 +46,7 @@ class Przelewy24Handler extends PaymentHandler
         PaymentRequest $paymentRequest,
         RequestDataBag $dataBag,
         OrderEntity $order,
+        SettingStruct $settings,
         SalesChannelContext $context
     ): PaymentRequest {
         $paymentRequest->source = $this->buildPrzelewy24Source($order);

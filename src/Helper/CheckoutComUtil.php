@@ -3,7 +3,6 @@
 namespace CheckoutCom\Shopware6\Helper;
 
 use Checkout\Common\Address;
-use Checkout\Common\Country;
 use Checkout\Common\Currency;
 use Checkout\Common\CustomerRequest;
 use Checkout\Payments\ShippingDetails;
@@ -60,9 +59,7 @@ class CheckoutComUtil
         $address->state = $addressEntity->getCountryState() !== null ? ($addressEntity->getCountryState()->getName() ?? '') : '';
         $address->zip = $addressEntity->getZipcode();
 
-        /** @var Country $country */
-        $country = $addressEntity->getCountry() !== null ? ($addressEntity->getCountry()->getIso() ?? '') : '';
-        $address->country = $country;
+        $address->country = $addressEntity->getCountry() !== null ? ($addressEntity->getCountry()->getIso() ?? '') : '';
 
         return $address;
     }

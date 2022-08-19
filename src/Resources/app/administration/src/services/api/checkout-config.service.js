@@ -22,14 +22,20 @@ class CheckoutConfigService extends ApiService {
      *
      * @param secretKey {string}
      * @param publicKey {string}
+     * @param accountType {string}
      * @param isSandbox {boolean}
      * @returns {*}
      */
-    testApiKey(secretKey, publicKey, isSandbox) {
+    testApiKey(secretKey, publicKey, accountType, isSandbox) {
         const headers = this.getBasicHeaders();
 
         return this.httpClient
-            .post(`${this.getApiBasePath()}/test-api-key`, { secretKey, publicKey, isSandbox }, { headers })
+            .post(`${this.getApiBasePath()}/test-api-key`, {
+                secretKey,
+                publicKey,
+                accountType,
+                isSandbox,
+            }, { headers })
             .then((response) => {
                 return ApiService.handleResponse(response);
             });

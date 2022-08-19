@@ -3,7 +3,7 @@
 namespace CheckoutCom\Shopware6\Service\CheckoutApi;
 
 use Checkout\CheckoutApiException;
-use Checkout\Sources\SepaSourceRequest;
+use Checkout\Sources\Previous\SepaSourceRequest;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Source;
 
 class CheckoutSourceService extends AbstractCheckoutService
@@ -13,7 +13,7 @@ class CheckoutSourceService extends AbstractCheckoutService
      */
     public function createSepaSource(SepaSourceRequest $sepaSourceRequest, string $salesChannelId): Source
     {
-        $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
+        $checkoutApi = $this->checkoutApiFactory->getPreviousClient($salesChannelId);
 
         try {
             $response = $checkoutApi->getSourcesClient()->createSepaSource($sepaSourceRequest);

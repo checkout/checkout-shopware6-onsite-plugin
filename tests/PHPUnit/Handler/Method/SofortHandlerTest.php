@@ -4,11 +4,12 @@ declare(strict_types=1);
 namespace CheckoutCom\Shopware6\Tests\Handler\Method;
 
 use Checkout\Common\PaymentSourceType;
-use Checkout\Payments\PaymentRequest;
-use Checkout\Payments\Source\Apm\RequestSofortSource;
+use Checkout\Payments\Previous\PaymentRequest;
+use Checkout\Payments\Previous\Source\Apm\RequestSofortSource;
 use CheckoutCom\Shopware6\Handler\Method\SofortHandler;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use Exception;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -73,6 +74,7 @@ class SofortHandlerTest extends AbstractPaymentHandlerTest
             $this->createMock(PaymentRequest::class),
             $dataBag,
             $order,
+            $this->createMock(SettingStruct::class),
             $this->saleChannelContext
         );
 

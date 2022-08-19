@@ -1,6 +1,6 @@
 import template from './checkout-plugin-config-section-api.html.twig';
 import './checkout-plugin-config-section-api.scss';
-import { DASHBOARD_LINK } from '../../../../constant/settings';
+import { DASHBOARD_LINK, ACCOUNT_TYPE } from '../../../../constant/settings';
 
 const {
     Component,
@@ -33,14 +33,14 @@ Component.register('checkout-plugin-config-section-api', {
 
     data() {
         return {
-            config: this.actualConfigData || {},
+            config: this.actualConfigData || {
+                accountType: ACCOUNT_TYPE.ABC,
+            },
             error: {
                 secretKey: false,
                 publicKey: false,
             },
             isLoading: false,
-            testModeInput: null,
-            isSandbox: false,
         };
     },
 
@@ -49,6 +49,18 @@ Component.register('checkout-plugin-config-section-api', {
             const { sandboxMode } = this.config;
 
             return sandboxMode ? DASHBOARD_LINK.SANDBOX : DASHBOARD_LINK.LIVE;
+        },
+
+        accountTypeOptions() {
+            return [
+                {
+                    label: this.$tc('checkout-payments.config.api.accountTypeOptions.abc'),
+                    value: ACCOUNT_TYPE.ABC,
+                }, {
+                    label: this.$tc('checkout-payments.config.api.accountTypeOptions.nas'),
+                    value: ACCOUNT_TYPE.NAS,
+                },
+            ];
         },
     },
 
@@ -78,6 +90,7 @@ Component.register('checkout-plugin-config-section-api', {
             const {
                 secretKey,
                 publicKey,
+                accountType,
                 sandboxMode,
             } = isEmpty(this.config) ? this.inheritedValue : this.config;
 
@@ -91,6 +104,7 @@ Component.register('checkout-plugin-config-section-api', {
                 const results = await this.checkoutConfigService.testApiKey(
                     secretKey,
                     publicKey,
+                    accountType,
                     sandboxMode,
                 );
 

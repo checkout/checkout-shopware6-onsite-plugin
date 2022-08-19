@@ -2,8 +2,8 @@
 
 namespace CheckoutCom\Shopware6\Tests\Services\CheckoutApi\Apm;
 
-use Checkout\Apm\Klarna\CreditSessionRequest;
-use Checkout\Apm\Klarna\OrderCaptureRequest;
+use Checkout\Apm\Previous\Klarna\CreditSessionRequest;
+use Checkout\Apm\Previous\Klarna\OrderCaptureRequest;
 use Checkout\Payments\VoidRequest;
 use CheckoutCom\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\Klarna\CreditSessionStruct;
