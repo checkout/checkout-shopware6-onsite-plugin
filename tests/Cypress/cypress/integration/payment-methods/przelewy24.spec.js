@@ -15,7 +15,7 @@ describe('Testing Storefront Przelewy24 Payment', () => {
             return cy.createProductFixture();
         }).then(() => {
             shopConfigurationAction.setupShop();
-            cy.createCustomerFixtureStorefront();
+            cy.createCustomerFixtureByCountry({}, 'PL');
         });
     });
 

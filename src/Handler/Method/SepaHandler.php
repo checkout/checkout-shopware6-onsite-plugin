@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace CheckoutCom\Shopware6\Handler\Method;
 
+use Checkout\Common\Country;
 use Checkout\Payments\PaymentRequest;
 use Checkout\Payments\Source\RequestIdSource;
 use Checkout\Sources\SepaSourceRequest;
@@ -37,6 +38,16 @@ class SepaHandler extends PaymentHandler
     public static function getPaymentMethodType(): string
     {
         return SourceType::$sepa;
+    }
+
+    public function getAvailableCountries(): array
+    {
+        return [
+            Country::$DE,
+            Country::$HU,
+            Country::$FR,
+            Country::$IT,
+        ];
     }
 
     public function prepareDataForPay(

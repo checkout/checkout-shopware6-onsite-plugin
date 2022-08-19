@@ -31,6 +31,13 @@ class Przelewy24Handler extends PaymentHandler
         return PaymentSourceType::$przelewy24;
     }
 
+    public function getAvailableCountries(): array
+    {
+        return [
+            Country::$PL,
+        ];
+    }
+
     /**
      * @throws Exception
      */

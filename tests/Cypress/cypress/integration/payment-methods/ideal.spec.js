@@ -16,7 +16,7 @@ describe('Testing Storefront iDEAL Payment', () => {
             return cy.createProductFixture();
         }).then(() => {
             shopConfigurationAction.setupShop();
-            cy.createCustomerFixtureStorefront();
+            cy.createCustomerFixtureByCountry({}, 'NL');
         });
     });
 

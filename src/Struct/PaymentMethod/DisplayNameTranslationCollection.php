@@ -28,6 +28,22 @@ class DisplayNameTranslationCollection extends Collection
         return $translations;
     }
 
+    public function getName(string $lang): string
+    {
+        if (empty($this->elements)) {
+            return '';
+        }
+
+        /** @var ?DisplayNameTranslationStruct $translation */
+        $translation = $this->get($lang);
+
+        if (!$translation instanceof DisplayNameTranslationStruct) {
+            return '';
+        }
+
+        return $translation->getName();
+    }
+
     protected function getExpectedClass(): string
     {
         return DisplayNameTranslationStruct::class;

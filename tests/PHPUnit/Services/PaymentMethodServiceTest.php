@@ -5,6 +5,7 @@ namespace CheckoutCom\Shopware6\Tests\Services;
 use CheckoutCom\Shopware6\Handler\Method\CardPaymentHandler;
 use CheckoutCom\Shopware6\Handler\Method\GooglePayHandler;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
+use CheckoutCom\Shopware6\Service\CountryService;
 use CheckoutCom\Shopware6\Service\PaymentMethodService;
 use CheckoutCom\Shopware6\Struct\PaymentHandler\PaymentHandlerCollection;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
@@ -45,10 +46,14 @@ class PaymentMethodServiceTest extends TestCase
         $installablePaymentHandlers = new PaymentHandlerCollection($paymentMethods);
 
         $paymentMethodRepository = $this->createMock(EntityRepository::class);
+        $ruleRepository = $this->createMock(EntityRepository::class);
+        $countryService = $this->createMock(CountryService::class);
         $pluginIdProvider = $this->createMock(PluginIdProvider::class);
         $paymentMethodService = new PaymentMethodService(
             $installablePaymentHandlers,
             $paymentMethodRepository,
+            $ruleRepository,
+            $countryService,
             $pluginIdProvider
         );
 
@@ -68,11 +73,15 @@ class PaymentMethodServiceTest extends TestCase
         ]);
 
         $paymentMethodRepository = $this->createMock(EntityRepository::class);
+        $ruleRepository = $this->createMock(EntityRepository::class);
+        $countryService = $this->createMock(CountryService::class);
         $pluginIdProvider = $this->createMock(PluginIdProvider::class);
 
         $paymentMethodService = new PaymentMethodService(
             [$paymentHandler],
             $paymentMethodRepository,
+            $ruleRepository,
+            $countryService,
             $pluginIdProvider
         );
 
@@ -98,11 +107,15 @@ class PaymentMethodServiceTest extends TestCase
         ]);
 
         $paymentMethodRepository = $this->createMock(EntityRepository::class);
+        $ruleRepository = $this->createMock(EntityRepository::class);
+        $countryService = $this->createMock(CountryService::class);
         $pluginIdProvider = $this->createMock(PluginIdProvider::class);
 
         $paymentMethodService = new PaymentMethodService(
             [$paymentHandler],
             $paymentMethodRepository,
+            $ruleRepository,
+            $countryService,
             $pluginIdProvider
         );
 
@@ -123,10 +136,14 @@ class PaymentMethodServiceTest extends TestCase
         $installablePaymentHandlers = new PaymentHandlerCollection($paymentMethods);
 
         $paymentMethodRepository = $this->createMock(EntityRepository::class);
+        $ruleRepository = $this->createMock(EntityRepository::class);
+        $countryService = $this->createMock(CountryService::class);
         $pluginIdProvider = $this->createMock(PluginIdProvider::class);
         $paymentMethodService = new PaymentMethodService(
             $installablePaymentHandlers,
             $paymentMethodRepository,
+            $ruleRepository,
+            $countryService,
             $pluginIdProvider
         );
 
@@ -154,10 +171,14 @@ class PaymentMethodServiceTest extends TestCase
         $installablePaymentHandlers = new PaymentHandlerCollection($paymentMethods);
 
         $paymentMethodRepository = $this->createMock(EntityRepository::class);
+        $ruleRepository = $this->createMock(EntityRepository::class);
+        $countryService = $this->createMock(CountryService::class);
         $pluginIdProvider = $this->createMock(PluginIdProvider::class);
         $paymentMethodService = new PaymentMethodService(
             $installablePaymentHandlers,
             $paymentMethodRepository,
+            $ruleRepository,
+            $countryService,
             $pluginIdProvider
         );
 
