@@ -17,4 +17,4 @@ The plugin is compatible with Shopware 6.4.0 and later.
 There are two ways of installing this plugin manually: You can either checkout this repository on your machine (in the plugins folder of your Shopware installation) or you can download the zip file above and extract this on your machine (in the very same plugins folder).
 
 ## Usage
-For more information about the plugin configuration, please refer to our wiki page.
+For more information about the plugin configuration, please refer to our [wiki page](../../wiki).
