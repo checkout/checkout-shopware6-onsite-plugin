@@ -57,7 +57,7 @@ class FullRefundAction extends FlowAction
             return;
         }
 
-        $this->logger->info(sprintf('Starting to full refund with order ID: %s', $baseEvent->getOrderId()));
+        $this->logger->info(sprintf('Action starting to full refund with order ID: %s', $baseEvent->getOrderId()));
         $this->handleFullRefund($baseEvent->getOrderId(), $baseEvent->getContext());
     }
 

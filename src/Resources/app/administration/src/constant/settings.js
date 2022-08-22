@@ -9,6 +9,7 @@ export const CHECKOUT_DOMAIN = 'CheckoutCom.config';
 export const CHECKOUT_DOMAIN_PAYMENT_METHOD = `${CHECKOUT_DOMAIN}.paymentMethod`;
 
 export const FLOW_ACTION = {
+    CAPTURE_PAYMENT: 'action.checkout_com.capture_payment',
     FULL_REFUND: 'action.checkout_com.full_refund',
 };
 

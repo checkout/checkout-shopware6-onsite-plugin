@@ -101,17 +101,19 @@
         }
       },
       "flow": {
-        "fullRefundLabel": "(checkout.com) Full refund",
-        "modal": {
-          "title": "Full refund",
-          "fullRefundAlsoIncludeText": "Full refund also includes shipping costs and can only be executed once."
-        }
-      },
-      "flow": {
-        "fullRefundLabel": "(checkout.com) Full refund",
-        "modal": {
-          "title": "Full refund",
-          "fullRefundAlsoIncludeText": "Full refund also includes shipping costs and can only be executed once."
+        "refund": {
+          "fullRefundLabel": "(checkout.com) Full refund",
+          "modal": {
+            "title": "Full refund",
+            "fullRefundAlsoIncludeText": "Full refund also includes shipping costs and can only be executed once."
+          }
+        },
+        "capture": {
+          "captureLabel": "(checkout.com) Capture payment",
+          "modal": {
+            "title": "Capture payment",
+            "description": "Capturing payments can only be executed once."
+          }
         }
       }
     }

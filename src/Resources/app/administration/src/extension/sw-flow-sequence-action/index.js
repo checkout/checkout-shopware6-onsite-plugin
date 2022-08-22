@@ -9,6 +9,10 @@ Component.override('sw-flow-sequence-action', {
                 return 'checkout-com-flow-full-refund-modal';
             }
 
+            if (this.selectedAction === FLOW_ACTION.CAPTURE_PAYMENT) {
+                return 'checkout-com-flow-capture-payment-modal';
+            }
+
             return this.$super('modalName');
         },
     },
@@ -19,7 +23,15 @@ Component.override('sw-flow-sequence-action', {
                 return {
                     value: actionName,
                     icon: 'default-arrow-360-left',
-                    label: this.$tc('checkout-payments.order.flow.fullRefundLabel'),
+                    label: this.$tc('checkout-payments.order.flow.refund.fullRefundLabel'),
+                };
+            }
+
+            if (actionName === FLOW_ACTION.CAPTURE_PAYMENT) {
+                return {
+                    value: actionName,
+                    icon: 'default-arrow-360-left',
+                    label: this.$tc('checkout-payments.order.flow.capture.captureLabel'),
                 };
             }
 

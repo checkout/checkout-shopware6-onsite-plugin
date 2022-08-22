@@ -82,6 +82,18 @@ class ShopConfigurationAction {
         return this.apiClient.post('/_action/system-config/batch', data);
     }
 
+    toggleManualCapture(isActive) {
+        if (isActive === undefined) return;
+
+        const data = {
+            null: {
+                'CheckoutCom.config.paymentMethod.card.manualCapture': isActive
+            }
+        };
+
+        return this.apiClient.post('/_action/system-config/batch', data);
+    }
+
     /**
      * Activate CheckoutCom payment methods for all sales channels
      * @param id
