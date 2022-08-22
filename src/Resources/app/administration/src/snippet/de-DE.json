@@ -101,17 +101,19 @@
         }
       },
       "flow": {
-        "fullRefundLabel": "(checkout.com) Volle Erstattung",
-        "modal": {
-          "title": "Volle Erstattung",
-          "fullRefundAlsoIncludeText": "Die volle Rückerstattung umfasst auch die Versandkosten und kann nur einmal durchgeführt werden."
-        }
-      },
-      "flow": {
-        "fullRefundLabel": "(checkout.com) Volle Erstattung",
-        "modal": {
-          "title": "Volle Erstattung",
-          "fullRefundAlsoIncludeText": "Die volle Rückerstattung umfasst auch die Versandkosten und kann nur einmal durchgeführt werden."
+        "refund": {
+          "fullRefundLabel": "(checkout.com) Volle Erstattung",
+          "modal": {
+            "title": "Volle Erstattung",
+            "fullRefundAlsoIncludeText": "Die volle Rückerstattung umfasst auch die Versandkosten und kann nur einmal durchgeführt werden."
+          }
+        },
+        "capture": {
+          "captureLabel": "(checkout.com) Zahlung einfangen",
+          "modal": {
+            "title": "Zahlung einfangen",
+            "description": "Das Erfassen von Zahlungen kann nur einmal durchgeführt werden."
+          }
         }
       }
     }

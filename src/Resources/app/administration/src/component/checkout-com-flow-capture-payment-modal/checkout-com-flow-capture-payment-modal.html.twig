@@ -1,21 +1,21 @@
-{% block checkout_com_flow_full_refund %}
+{% block checkout_com_flow_capture_payment %}
     <sw-modal
-        :title="$tc('checkout-payments.order.flow.refund.modal.title')"
+        :title="$tc('checkout-payments.order.flow.capture.modal.title')"
         @modal-close="onClose"
     >
-        {% block checkout_com_flow_full_refund_content_warning %}
+        {% block checkout_com_flow_capture_payment_content_warning %}
             <sw-alert
                 variant="warning"
             >
                 <span>
-                    {{ $tc('checkout-payments.order.flow.refund.modal.fullRefundAlsoIncludeText') }}
+                    {{ $tc('checkout-payments.order.flow.capture.modal.description') }}
                 </span>
             </sw-alert>
         {% endblock %}
 
-        {% block checkout_com_flow_full_refund_footer %}
+        {% block checkout_com_flow_capture_payment_footer %}
             <template #modal-footer>
-                {% block checkout_com_flow_full_refund_footer_cancel_button %}
+                {% block checkout_com_flow_capture_payment_footer_cancel_button %}
                     <sw-button
                         size="small"
                         @click="onClose"
@@ -24,7 +24,7 @@
                     </sw-button>
                 {% endblock %}
 
-                {% block checkout_com_flow_full_refund_footer_save_button %}
+                {% block checkout_com_flow_capture_payment_footer_save_button %}
                     <sw-button
                         variant="primary"
                         size="small"

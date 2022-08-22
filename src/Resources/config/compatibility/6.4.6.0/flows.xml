@@ -13,5 +13,13 @@
             <tag name="kernel.event_subscriber"/>
             <tag name="flow.action" priority="10"/>
         </service>
+
+        <service id="CheckoutCom\Shopware6\Content\Flow\Dispatching\Action\CapturePaymentAction">
+            <argument type="service" id="checkout_com.shopware6.logger"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderCheckoutService"/>
+
+            <tag name="kernel.event_subscriber"/>
+            <tag name="flow.action" priority="10"/>
+        </service>
     </services>
 </container>
