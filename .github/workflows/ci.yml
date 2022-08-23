@@ -192,7 +192,7 @@ jobs:
 
       - name: Setup for target version
         run: |
-          .github/workflows/e2e_sw_old_version.sh ${{ github.event.inputs.SHOPWARE_VERSION }}
+          .github/workflows/e2e_sw_old_version.sh ${{ matrix.shopware }}
 
       - name: Upload into docker
         run: |
