@@ -122,6 +122,7 @@ describe('Testing Refund Manager', () => {
             refundRepository.getModalRefundButton().should('not.be.disabled').click();
 
             cy.wait('@refund');
+            cy.wait(3000);
 
             orderDetailRepository.getCurrentPaymentStatus().contains('Refunded (partially)');
         });
@@ -140,6 +141,7 @@ describe('Testing Refund Manager', () => {
             refundRepository.getModalRefundButton().should('not.be.disabled').click();
 
             cy.wait('@refund');
+            cy.wait(3000);
 
             orderDetailRepository.getCurrentPaymentStatus().contains('Refunded');
         });
@@ -190,6 +192,7 @@ describe('Testing Refund Manager', () => {
             refundRepository.getModalRefundButton().should('not.be.disabled').click();
 
             cy.wait('@refund');
+            cy.wait(3000);
 
             orderDetailRepository.getCurrentPaymentStatus().contains('Refunded');
 
@@ -211,6 +214,7 @@ describe('Testing Refund Manager', () => {
             refundRepository.getModalRefundButton().should('not.be.disabled').click();
 
             cy.wait('@refund');
+            cy.wait(3000);
 
             orderDetailRepository.getCurrentPaymentStatus().contains('Refunded');
 

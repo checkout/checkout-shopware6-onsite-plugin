@@ -39,30 +39,33 @@ class CheckoutAction {
      * @param expiryDate
      * @param cvv
      */
-    fillCardPayment(name, number, expiryDate, cvv) {
+     fillCardPayment(name, number, expiryDate, cvv) {
         if (name) {
             cy.get('#cardholder-name').type(name);
         }
 
         if (number) {
-            cy.get('iframe#cardNumber').then($element => {
-                const $body = $element.contents().find('body')
-                cy.wrap($body).find('#frames-element-card-number').click().type(number);
-            });
+            cy.getIframeBody('iframe#cardNumber').find('#frames-element-card-number').click().type(number);
+            // cy.get('iframe#cardNumber').then($element => {
+            //     const $body = $element.contents().find('body');
+            //     cy.wrap($body).find('#frames-element-card-number').click().type(number);
+            // });
         }
 
         if (expiryDate) {
-            cy.get('iframe#expiryDate').then($element => {
-                const $body = $element.contents().find('body')
-                cy.wrap($body).find('#checkout-frames-expiry-date').click().type(expiryDate);
-            });
+            cy.getIframeBody('iframe#expiryDate').find('#checkout-frames-expiry-date').click().type(expiryDate);
+            // cy.get('iframe#expiryDate').then($element => {
+            //     const $body = $element.contents().find('body');
+            //     cy.wrap($body).find('#checkout-frames-expiry-date').click().type(expiryDate);
+            // });
         }
 
         if (cvv) {
-            cy.get('iframe#cvv').then($element => {
-                const $body = $element.contents().find('body')
-                cy.wrap($body).find('#frames-element-cvv').click().type(cvv);
-            });
+            cy.getIframeBody('iframe#cvv').find('#frames-element-cvv').click().type(cvv);
+            // cy.get('iframe#cvv').then($element => {
+            //     const $body = $element.contents().find('body');
+            //     cy.wrap($body).find('#frames-element-cvv').click().type(cvv);
+            // });
         }
     }
 
