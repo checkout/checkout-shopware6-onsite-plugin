@@ -37,6 +37,10 @@ jobs:
           docker exec shop bash -c 'sudo npm install -g forever'
           sudo echo "127.0.0.1 local.checkout.shop" | sudo tee -a /etc/hosts
 
+      - name: Setup for target version
+        run: |
+          .github/workflows/e2e_sw_old_version.sh ${{ github.event.inputs.SHOPWARE_VERSION }}
+
       - name: Upload into docker
         run: |
           cd tests/Cypress
