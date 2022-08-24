@@ -112,7 +112,7 @@
           "captureLabel": "(checkout.com) Capture payment",
           "modal": {
             "title": "Capture payment",
-            "description": "Capturing payments can only be executed once."
+            "description": "This action will perform a full capture and can only be executed once."
           }
         }
       }
