@@ -7,6 +7,9 @@ import accountOrderRepository from '../../support/repositories/storefront/Accoun
 import cardRepository from '../../support/repositories/storefront/payment-methods/CardRepository';
 import orderListRepository from '../../support/repositories/administration/OrderListRepository';
 import orderDetailRepository from '../../support/repositories/storefront/OrderDetailRepository';
+import shopware from '../../support/services/shopware/Shopware';
+import dummyFlowBuilderScenario from '../../support/scenarios/DummyFlowBuilderScenario';
+import orderStateAction from '../../support/actions/admin/OrderStateAction';
 
 describe('Testing Storefront Card Payments Payment', () => {
     before(() => {
@@ -26,7 +29,7 @@ describe('Testing Storefront Card Payments Payment', () => {
         checkoutAction.selectPaymentMethod('Card Payments');
     });
 
-    describe(('Testing card validation'), () => {
+    describe('Testing card validation', () => {
         it('Empty card', () => {
             checkoutConfirmRepository.getConfirmSubmitButton().should('be.disabled');
         });
@@ -55,12 +58,6 @@ describe('Testing Storefront Card Payments Payment', () => {
             checkoutAction.fillCardPayment(null, '4242424242424242', '0224', null);
             checkoutConfirmRepository.getConfirmSubmitButton().should('be.disabled');
         });
-    });
-
-    describe('Make payment with 3DS', () => {
-        before(() => {
-            shopConfigurationAction.setSystemConfig('CheckoutCom.config.enable3dSecure', true);
-        });
 
         it('Invalid CVV', () => {
             checkoutAction.fillCardPayment(null, '4242424242424242', '0224', '111');
@@ -78,6 +75,12 @@ describe('Testing Storefront Card Payments Payment', () => {
             checkoutAction.goToOrderScreen();
 
             accountOrderRepository.getFirstOrderStatus().should('have.text', 'Failed');
+        });
+    });
+
+    describe('Make payment with 3DS', () => {
+        before(() => {
+            shopConfigurationAction.setSystemConfig('CheckoutCom.config.enable3dSecure', true);
         });
 
         it('Successful payment', () => {
@@ -102,18 +105,6 @@ describe('Testing Storefront Card Payments Payment', () => {
     describe('Make payment without 3DS', () => {
         before(() => {
             shopConfigurationAction.setSystemConfig('CheckoutCom.config.enable3dSecure', false);
-        });
-
-        it('Invalid CVV', () => {
-            checkoutAction.fillCardPayment(null, '4242424242424242', '0224', '111');
-
-            checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
-
-            cy.intercept('POST', 'https://api.sandbox.checkout.com/tokens', (req) => {
-                checkoutAction.goToOrderScreen();
-
-                accountOrderRepository.getFirstOrderStatus().should('have.text', 'Failed');
-            });
         });
 
         it('Successful payment', () => {
@@ -147,8 +138,6 @@ describe('Testing Storefront Card Payments Payment', () => {
             checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
 
             cy.wait('@makePayment');
-
-            cy.loginAndOpenAdmin(`${Cypress.env('admin')}#/sw/order/index`);
         });
 
         it('Capture payment', () => {
@@ -156,6 +145,8 @@ describe('Testing Storefront Card Payments Payment', () => {
                 method: 'POST',
                 url: 'api/_action/checkout-com/order/capture/**'
             }).as('capturePayment');
+
+            cy.loginAndOpenAdmin(`${Cypress.env('admin')}#/sw/order/index`);
 
             orderListRepository.getFirstRowOrderNumber().click();
 
@@ -172,11 +163,32 @@ describe('Testing Storefront Card Payments Payment', () => {
             orderDetailRepository.getCaptureButton().should('not.exist');
         });
 
+        it('Capture payment with flow builder', () => {
+            // Lower Shopware version does not support Flow builder
+            cy.skipOn(shopware.isVersionLower('6.4.9'));
+
+            dummyFlowBuilderScenario.createCaptureFlow();
+
+            cy.visit(`${Cypress.env('admin')}#/sw/order/index`);
+
+            orderListRepository.getFirstRowOrderNumber().click();
+
+            cy.url().should('include', 'order/detail');
+
+            // Change delivery status to "Shipped"
+            orderStateAction.changeState('delivery', 'ship');
+
+            // Check if payment is captured
+            cy.get('.checkout-com-order-detail-payment-action').contains('Capture');
+        });
+
         it('Void payment', () => {
             cy.intercept({
                 method: 'POST',
                 url: 'api/_action/checkout-com/order/void/**'
             }).as('voidPayment');
+
+            cy.loginAndOpenAdmin(`${Cypress.env('admin')}#/sw/order/index`);
 
             orderListRepository.getFirstRowOrderNumber().click();
 
