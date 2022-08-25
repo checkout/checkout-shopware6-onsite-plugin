@@ -14,8 +14,6 @@ class LoginAction {
         cy.get('#loginPassword').typeAndCheckStorefront(password);
         cy.get('.login-submit [type="submit"]').click();
 
-        cy.screenshot('login screen');
-
         cy.visit('/');
     }
 }
