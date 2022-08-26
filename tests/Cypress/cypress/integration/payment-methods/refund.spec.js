@@ -112,8 +112,13 @@ describe('Testing Refund Manager', () => {
 
         it('partial refund', () => {
             // Return 1 item
-            refundRepository.getFirstRowReturnQuantityInput()
-                .typeSingleSelectAndCheck(1, '.sw-data-grid__cell--returnQuantity');
+            if (shopware.isVersionLower('6.4.8')) {
+                refundRepository.getFirstRowReturnQuantityInput()
+                    .customTypeSingleSelect(1, '.sw-data-grid__cell--returnQuantity');
+            } else {
+                refundRepository.getFirstRowReturnQuantityInput()
+                    .typeSingleSelect(1, '.sw-data-grid__cell--returnQuantity');
+            }
 
             // Confirm "Yes, I want to refund"
             refundRepository.getConfirmRefundCheckbox().click();
@@ -131,8 +136,13 @@ describe('Testing Refund Manager', () => {
             refundRepository.getSelectAllCheckbox().click();
 
             // Return the remaining item
-            refundRepository.getFirstRowReturnQuantityInput()
-                .typeSingleSelectAndCheck(1, '.sw-data-grid__cell--returnQuantity');
+            if (shopware.isVersionLower('6.4.8')) {
+                refundRepository.getFirstRowReturnQuantityInput()
+                    .customTypeSingleSelect(1, '.sw-data-grid__cell--returnQuantity');
+            } else {
+                refundRepository.getFirstRowReturnQuantityInput()
+                    .typeSingleSelect(1, '.sw-data-grid__cell--returnQuantity');
+            }
 
             // Confirm "Yes, I want to refund"
             refundRepository.getConfirmRefundCheckbox().click();
@@ -182,8 +192,13 @@ describe('Testing Refund Manager', () => {
             shopConfigurationAction.setSystemConfig('CheckoutCom.config.includeShippingCostsRefund', true);
 
             // Return the remaining item
-            refundRepository.getFirstRowReturnQuantityInput()
-                .typeSingleSelectAndCheck(1, '.sw-data-grid__cell--returnQuantity');
+            if (shopware.isVersionLower('6.4.8')) {
+                refundRepository.getFirstRowReturnQuantityInput()
+                    .customTypeSingleSelect(1, '.sw-data-grid__cell--returnQuantity');
+            } else {
+                refundRepository.getFirstRowReturnQuantityInput()
+                    .typeSingleSelect(1, '.sw-data-grid__cell--returnQuantity');
+            }
 
             // Confirm "Yes, I want to refund"
             refundRepository.getConfirmRefundCheckbox().click();
@@ -204,8 +219,13 @@ describe('Testing Refund Manager', () => {
             shopConfigurationAction.setSystemConfig('CheckoutCom.config.includeShippingCostsRefund', false);
 
             // Return 1 item
-            refundRepository.getFirstRowReturnQuantityInput()
-                .typeSingleSelectAndCheck(1, '.sw-data-grid__cell--returnQuantity');
+            if (shopware.isVersionLower('6.4.8')) {
+                refundRepository.getFirstRowReturnQuantityInput()
+                    .customTypeSingleSelect(1, '.sw-data-grid__cell--returnQuantity');
+            } else {
+                refundRepository.getFirstRowReturnQuantityInput()
+                    .typeSingleSelect(1, '.sw-data-grid__cell--returnQuantity');
+            }
 
             // Confirm "Yes, I want to refund"
             refundRepository.getConfirmRefundCheckbox().click();
