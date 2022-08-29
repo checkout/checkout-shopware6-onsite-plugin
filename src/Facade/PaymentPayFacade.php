@@ -3,8 +3,7 @@
 namespace CheckoutCom\Shopware6\Facade;
 
 use Checkout\CheckoutApiException;
-use Checkout\Common\Currency;
-use Checkout\Payments\PaymentRequest;
+use Checkout\Payments\Previous\PaymentRequest;
 use CheckoutCom\Shopware6\Event\CheckoutRequestPaymentEvent;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
@@ -156,6 +155,7 @@ class PaymentPayFacade
                 $dataBag,
                 $transaction,
                 $order,
+                $settings,
                 $salesChannelContext
             );
         } else {
@@ -167,6 +167,7 @@ class PaymentPayFacade
                     $dataBag,
                     $transaction,
                     $order,
+                    $settings,
                     $salesChannelContext
                 );
             }
@@ -214,6 +215,7 @@ class PaymentPayFacade
         RequestDataBag $dataBag,
         PaymentHandler $paymentHandler,
         OrderEntity $order,
+        SettingStruct $settings,
         SalesChannelContext $context
     ): PaymentRequest {
         $orderCurrency = $this->orderExtractor->extractCurrency($order);
@@ -235,10 +237,8 @@ class PaymentPayFacade
             $paymentRequest->amount = CheckoutComUtil::formatPriceCheckout($order->getAmountTotal(), $orderCurrency->getIsoCode());
         }
 
-        /** @var Currency $currency */
-        $currency = strtoupper($orderCurrency->getIsoCode());
         // We uppercase the ISO code to avoid errors with checkout.com
-        $paymentRequest->currency = $currency;
+        $paymentRequest->currency = strtoupper($orderCurrency->getIsoCode());
 
         // We disable auto `Capture` for the payment
         // We will `Capture` this payment in @finalize function
@@ -248,7 +248,7 @@ class PaymentPayFacade
 
         // Prepare data for the payment depending on the payment method
         // Each method will have its own data
-        return $paymentHandler->prepareDataForPay($paymentRequest, $dataBag, $order, $context);
+        return $paymentHandler->prepareDataForPay($paymentRequest, $dataBag, $order, $settings, $context);
     }
 
     /**
@@ -263,14 +263,22 @@ class PaymentPayFacade
         RequestDataBag $dataBag,
         AsyncPaymentTransactionStruct $transaction,
         OrderEntity $order,
+        SettingStruct $settings,
         SalesChannelContext $salesChannelContext
     ): Payment {
         // Get the payment request, to call the Checkout API
-        $paymentRequest = $this->getCheckoutPaymentRequest($dataBag, $paymentHandler, $order, $salesChannelContext);
+        $paymentRequest = $this->getCheckoutPaymentRequest($dataBag, $paymentHandler, $order, $settings, $salesChannelContext);
 
         $this->eventDispatcher->dispatch(new CheckoutRequestPaymentEvent($paymentRequest, $paymentHandler, $transaction, $salesChannelContext));
 
         try {
+            $this->logger->info(
+                sprintf('Starting request payment for order ID: %s', $order->getId()),
+                [
+                    'data' => get_object_vars($paymentRequest),
+                ]
+            );
+
             // Call the API to create a payment at checkout.com
             $payment = $this->checkoutPaymentService->requestPayment($paymentRequest, $salesChannelContext->getSalesChannelId());
 

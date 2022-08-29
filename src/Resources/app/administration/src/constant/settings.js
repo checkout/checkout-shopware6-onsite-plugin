@@ -17,6 +17,11 @@ export const SETUP_LINK = {
     APPLE_PAY: 'https://www.checkout.com/docs/payments/payment-methods/wallets/apple-pay/set-up-apple-pay',
 };
 
+export const ACCOUNT_TYPE = {
+    ABC: 'abc',
+    NAS: 'nas',
+};
+
 /**
  * @see CheckoutCom\Shopware6\Handler\PaymentHandler::getPaymentMethodType()
  */

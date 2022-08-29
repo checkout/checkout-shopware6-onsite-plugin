@@ -3,16 +3,21 @@ declare(strict_types=1);
 
 namespace CheckoutCom\Shopware6\Subscriber;
 
+use Checkout\CheckoutApiException;
+use Checkout\HttpMetadata;
 use CheckoutCom\Shopware6\Exception\CheckoutComWebhookNotFoundException;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
+use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWorkflowService;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use Shopware\Core\System\SystemConfig\Event\BeforeSystemConfigChangedEvent;
 use Shopware\Core\System\SystemConfig\Event\SystemConfigChangedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 /**
- * This subscriber is used to register the webhook to Checkout whenever
+ * This subscriber is used to register the webhook to Checkout.com whenever
  * CheckoutCom.config.checkoutPluginConfigSectionApi config key is updated
  */
 class SystemConfigSubscriber implements EventSubscriberInterface
@@ -21,13 +26,17 @@ class SystemConfigSubscriber implements EventSubscriberInterface
 
     private CheckoutWebhookService $checkoutWebhookService;
 
+    private CheckoutWorkflowService $checkoutWorkflowService;
+
     private SettingsFactory $settingsFactory;
 
     public function __construct(
         CheckoutWebhookService $checkoutWebhookService,
+        CheckoutWorkflowService $checkoutWorkflowService,
         SettingsFactory $settingsFactory
     ) {
         $this->checkoutWebhookService = $checkoutWebhookService;
+        $this->checkoutWorkflowService = $checkoutWorkflowService;
         $this->settingsFactory = $settingsFactory;
     }
 
@@ -71,24 +80,23 @@ class SystemConfigSubscriber implements EventSubscriberInterface
             return;
         }
 
+        $settings = $this->settingsFactory->getSettings($salesChannelId);
         $webhook = $this->settingsFactory->getWebhookConfig($salesChannelId);
 
         $webhookId = $webhook->getId();
         // Registering new webhook if there is no registered webhook
         if ($webhookId === null) {
-            $this->registerWebhook($salesChannelId);
+            $this->registerWebhook($settings, $salesChannelId);
 
             return;
         }
 
         try {
             // skip if webhook already registered
-            $this->checkoutWebhookService->retrieveWebhook($webhookId, $salesChannelId);
-
-            return;
+            $this->receiveWebhook($settings, $webhookId, $salesChannelId);
         } catch (CheckoutComWebhookNotFoundException $e) {
             // Register a new webhook when "retrieveWebhook" returns a 404 status
-            $this->registerWebhook($salesChannelId);
+            $this->registerWebhook($settings, $salesChannelId);
         } catch (Throwable $e) {
             // do nothing to make sure this exception does not block any action behind
         }
@@ -103,20 +111,47 @@ class SystemConfigSubscriber implements EventSubscriberInterface
         );
     }
 
-    private function registerWebhook(?string $salesChannelId = null): void
+    private function registerWebhook(SettingStruct $settings, ?string $salesChannelId = null): void
     {
         try {
-            $webhook = $this->checkoutWebhookService->registerWebhook($salesChannelId);
+            if ($settings->isAccountType(SettingStruct::ACCOUNT_TYPE_ABC)) {
+                $webhook = $this->checkoutWebhookService->registerWebhook($salesChannelId);
+            } else {
+                $webhook = $this->checkoutWorkflowService->createWorkFlows($salesChannelId);
+            }
 
             // save registered webhook data to system config
-            $this->setSettingWebhook(
-                $webhook->getVars(),
-                $salesChannelId
-            );
+            $this->setSettingWebhook($webhook->getVars(), $salesChannelId);
 
             $this->webhookData = $webhook->getVars();
         } catch (Throwable $e) {
             // do nothing to make sure this exception does not block any action behind
+        }
+    }
+
+    /**
+     * @throws CheckoutApiException
+     */
+    private function receiveWebhook(SettingStruct $settings, string $webhookId, ?string $salesChannelId): void
+    {
+        try {
+            if ($settings->isAccountType(SettingStruct::ACCOUNT_TYPE_ABC)) {
+                $this->checkoutWebhookService->retrieveWebhook($webhookId, $salesChannelId);
+            } else {
+                $this->checkoutWorkflowService->getWorkflow($webhookId, $salesChannelId);
+            }
+        } catch (CheckoutApiException $e) {
+            $httpMetaData = $e->http_metadata;
+
+            if (!$httpMetaData instanceof HttpMetadata) {
+                throw new CheckoutComWebhookNotFoundException($webhookId);
+            }
+
+            if ($httpMetaData->getStatusCode() === Response::HTTP_NOT_FOUND) {
+                throw new CheckoutComWebhookNotFoundException($webhookId);
+            }
+
+            throw $e;
         }
     }
 }

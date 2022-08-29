@@ -3,13 +3,11 @@ declare(strict_types=1);
 
 namespace CheckoutCom\Shopware6\Service\Klarna;
 
-use Checkout\Apm\Klarna\CreditSessionRequest;
-use Checkout\Apm\Klarna\Klarna;
-use Checkout\Apm\Klarna\OrderCaptureRequest;
+use Checkout\Apm\Previous\Klarna\CreditSessionRequest;
+use Checkout\Apm\Previous\Klarna\Klarna;
+use Checkout\Apm\Previous\Klarna\OrderCaptureRequest;
 use Checkout\CheckoutApiException;
-use Checkout\Common\Country;
-use Checkout\Common\Currency;
-use Checkout\Payments\Source\Apm\KlarnaProduct;
+use Checkout\Payments\Previous\Source\Apm\KlarnaProduct;
 use Checkout\Payments\VoidRequest;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use CheckoutCom\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService;
@@ -188,16 +186,11 @@ class KlarnaService
     {
         $currency = $context->getCurrency();
 
-        /** @var Currency $requestCurrency */
-        $requestCurrency = $currency->getIsoCode();
         $cartPrice = $lineItemTotalPrice->getPrice();
 
-        /** @var Country $purchaseCountry */
-        $purchaseCountry = $this->countryService->getPurchaseCountryIsoCodeFromContext($context);
-
         $request = new CreditSessionRequest();
-        $request->purchase_country = $purchaseCountry;
-        $request->currency = $requestCurrency;
+        $request->purchase_country = $this->countryService->getPurchaseCountryIsoCodeFromContext($context);
+        $request->currency = $currency->getIsoCode();
         $request->locale = $this->contextService->getLocaleCode($context);
         $request->amount = CheckoutComUtil::formatPriceCheckout($cartPrice->getTotalPrice(), $currency->getIsoCode());
         $request->tax_amount = CheckoutComUtil::formatPriceCheckout(

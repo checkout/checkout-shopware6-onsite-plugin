@@ -3,11 +3,12 @@
 namespace CheckoutCom\Shopware6\Tests\Services\CheckoutApi;
 
 use Checkout\ApiClient;
-use Checkout\CheckoutApi;
 use Checkout\CheckoutApiException;
 use Checkout\CheckoutConfiguration;
 use Checkout\Environment;
 use Checkout\HttpClientBuilderInterface;
+use Checkout\HttpMetadata;
+use Checkout\Previous\CheckoutApi;
 use Checkout\SdkAuthorization;
 use Checkout\SdkCredentialsInterface;
 use CheckoutCom\Shopware6\Factory\CheckoutApiFactory;
@@ -59,7 +60,7 @@ abstract class AbstractCheckoutTest extends TestCase
         );
 
         return $this->createConfiguredMock(CheckoutApiFactory::class, [
-            'getClient' => $checkoutApi,
+            'getPreviousClient' => $checkoutApi,
         ]);
     }
 
@@ -73,7 +74,12 @@ abstract class AbstractCheckoutTest extends TestCase
         int $code = 500
     ): void {
         $checkoutApiException = new CheckoutApiException('test');
-        $checkoutApiException->http_status_code = $code;
+        $checkoutApiException->http_metadata = new HttpMetadata(
+            null,
+            $code,
+            null,
+            null
+        );
         $checkoutApiException->error_details = [];
         $this->apiClient
             ->method($requestMethod)

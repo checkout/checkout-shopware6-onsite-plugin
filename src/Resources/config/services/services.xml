@@ -164,6 +164,11 @@
             <argument type="service" id="router"/>
         </service>
 
+        <service id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWorkflowService"
+                 parent="checkout_com.shopware6.service.checkout_api.abstract_checkout_service">
+            <argument type="service" id="router"/>
+        </service>
+
         <service id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutSourceService"
                  parent="checkout_com.shopware6.service.checkout_api.abstract_checkout_service">
         </service>

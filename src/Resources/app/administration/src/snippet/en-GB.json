@@ -5,6 +5,7 @@
     },
     "config": {
       "api": {
+        "accountTypeLabel": "Account Type",
         "secretKeyLabel": "Secret Key",
         "publicKeyLabel": "Public Key",
         "sandboxModeLabel": "Sandbox Mode",
@@ -14,6 +15,10 @@
         "webhookIdLabel": "Id",
         "webhookAuthorizationKeyLabel": "Private shared key",
         "webhookHelpText": "Webhook will be registered automatically when saving the API keys",
+        "accountTypeOptions": {
+          "abc": "ABC",
+          "nas": "NAS"
+        },
         "testApiKeys": {
           "title": "Checkout",
           "secretKey": {

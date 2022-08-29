@@ -4,10 +4,11 @@ declare(strict_types=1);
 namespace CheckoutCom\Shopware6\Tests\Handler\Method;
 
 use Checkout\Common\PaymentSourceType;
-use Checkout\Payments\PaymentRequest;
-use Checkout\Payments\Source\Apm\RequestEpsSource;
+use Checkout\Payments\Previous\PaymentRequest;
+use Checkout\Payments\Previous\Source\Apm\RequestEpsSource;
 use CheckoutCom\Shopware6\Handler\Method\EpsHandler;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataValidator;
@@ -48,6 +49,7 @@ class EpsHandlerTest extends AbstractPaymentHandlerTest
             $this->createMock(PaymentRequest::class),
             $dataBag,
             $order,
+            $this->createMock(SettingStruct::class),
             $this->saleChannelContext
         );
 

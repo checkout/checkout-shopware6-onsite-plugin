@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace CheckoutCom\Shopware6\Tests\Services\CheckoutApi;
 
-use Checkout\Sources\SepaSourceRequest;
+use Checkout\Sources\Previous\SepaSourceRequest;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutSourceService;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Source;
 

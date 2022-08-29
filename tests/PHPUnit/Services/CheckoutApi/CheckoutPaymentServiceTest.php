@@ -2,7 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Tests\Services\CheckoutApi;
 
-use Checkout\Payments\PaymentRequest;
+use Checkout\Payments\Previous\PaymentRequest;
 use Checkout\Payments\RefundRequest;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;

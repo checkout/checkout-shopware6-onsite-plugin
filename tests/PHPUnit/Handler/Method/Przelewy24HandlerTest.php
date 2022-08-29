@@ -4,11 +4,12 @@ declare(strict_types=1);
 namespace CheckoutCom\Shopware6\Tests\Handler\Method;
 
 use Checkout\Common\PaymentSourceType;
-use Checkout\Payments\PaymentRequest;
-use Checkout\Payments\Source\Apm\RequestP24Source;
+use Checkout\Payments\Previous\PaymentRequest;
+use Checkout\Payments\Previous\Source\Apm\RequestP24Source;
 use CheckoutCom\Shopware6\Handler\Method\Przelewy24Handler;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use Exception;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
@@ -80,6 +81,7 @@ class Przelewy24HandlerTest extends AbstractPaymentHandlerTest
             $this->createMock(PaymentRequest::class),
             $dataBag,
             $order,
+            $this->createMock(SettingStruct::class),
             $this->saleChannelContext
         );
 
@@ -99,6 +101,7 @@ class Przelewy24HandlerTest extends AbstractPaymentHandlerTest
             $this->createMock(PaymentRequest::class),
             $dataBag,
             $order,
+            $this->createMock(SettingStruct::class),
             $this->saleChannelContext
         );
     }

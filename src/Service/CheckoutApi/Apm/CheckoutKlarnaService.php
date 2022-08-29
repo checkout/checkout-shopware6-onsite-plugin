@@ -2,9 +2,8 @@
 
 namespace CheckoutCom\Shopware6\Service\CheckoutApi\Apm;
 
-use Checkout\Apm\Klarna\CreditSessionRequest;
-use Checkout\Apm\Klarna\Klarna;
-use Checkout\Apm\Klarna\OrderCaptureRequest;
+use Checkout\Apm\Previous\Klarna\CreditSessionRequest;
+use Checkout\Apm\Previous\Klarna\OrderCaptureRequest;
 use Checkout\CheckoutApiException;
 use Checkout\Payments\VoidRequest;
 use CheckoutCom\Shopware6\Service\CheckoutApi\AbstractCheckoutService;
@@ -19,7 +18,7 @@ class CheckoutKlarnaService extends AbstractCheckoutService
      */
     public function createCreditSession(CreditSessionRequest $creditSessionRequest, string $salesChannelId): CreditSessionStruct
     {
-        $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
+        $checkoutApi = $this->checkoutApiFactory->getPreviousClient($salesChannelId);
 
         try {
             $response = $checkoutApi->getKlarnaClient()->createCreditSession($creditSessionRequest);
@@ -39,7 +38,7 @@ class CheckoutKlarnaService extends AbstractCheckoutService
      */
     public function capturePayment(string $paymentId, OrderCaptureRequest $orderCaptureRequest, string $salesChannelId): string
     {
-        $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
+        $checkoutApi = $this->checkoutApiFactory->getPreviousClient($salesChannelId);
 
         try {
             $captureResponse = $checkoutApi->getKlarnaClient()->capturePayment($paymentId, $orderCaptureRequest);
@@ -59,7 +58,7 @@ class CheckoutKlarnaService extends AbstractCheckoutService
      */
     public function voidPayment(string $paymentId, VoidRequest $voidRequest, string $salesChannelId): string
     {
-        $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
+        $checkoutApi = $this->checkoutApiFactory->getPreviousClient($salesChannelId);
 
         try {
             $voidResponse = $checkoutApi->getKlarnaClient()->voidPayment($paymentId, $voidRequest);

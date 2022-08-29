@@ -9,11 +9,17 @@ class SettingStruct extends Struct
 {
     public const ORDER_STATE_SKIP = 'checkout_com.skip';
 
+    public const ACCOUNT_TYPE_ABC = 'abc';
+
+    public const ACCOUNT_TYPE_NAS = 'nas';
+
     protected string $secretKey = '';
 
     protected string $publicKey = '';
 
     protected bool $sandboxMode = true;
+
+    protected string $accountType = self::ACCOUNT_TYPE_ABC;
 
     protected bool $includeShippingCostsRefund = true;
 
@@ -55,6 +61,21 @@ class SettingStruct extends Struct
     public function setSandboxMode(bool $sandboxMode): void
     {
         $this->sandboxMode = $sandboxMode;
+    }
+
+    public function getAccountType(): string
+    {
+        return $this->accountType;
+    }
+
+    public function isAccountType(string $accountType): bool
+    {
+        return $this->getAccountType() === $accountType;
+    }
+
+    public function setAccountType(string $accountType): void
+    {
+        $this->accountType = $accountType;
     }
 
     public function isIncludeShippingCostsRefund(): bool

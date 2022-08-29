@@ -3,14 +3,15 @@ declare(strict_types=1);
 
 namespace CheckoutCom\Shopware6\Tests\Handler\Method;
 
-use Checkout\Payments\PaymentRequest;
-use Checkout\Payments\Source\RequestIdSource;
-use Checkout\Sources\SourceType;
+use Checkout\Payments\Previous\PaymentRequest;
+use Checkout\Payments\Previous\Source\RequestIdSource;
+use Checkout\Sources\Previous\SourceType;
 use CheckoutCom\Shopware6\Exception\CheckoutInvalidSourceException;
 use CheckoutCom\Shopware6\Handler\Method\SepaHandler;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\RequestUtil;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Source;
+use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
@@ -55,6 +56,7 @@ class SepaHandlerTest extends AbstractPaymentHandlerTest
             $this->createMock(PaymentRequest::class),
             $dataBag,
             $order,
+            $this->createMock(SettingStruct::class),
             $this->saleChannelContext
         );
     }
@@ -92,6 +94,7 @@ class SepaHandlerTest extends AbstractPaymentHandlerTest
             $this->createMock(PaymentRequest::class),
             $dataBag,
             $order,
+            $this->createMock(SettingStruct::class),
             $this->saleChannelContext
         );
 

@@ -3,8 +3,10 @@
 namespace CheckoutCom\Shopware6\Factory;
 
 use Checkout\CheckoutApi;
-use Checkout\CheckoutDefaultSdk;
+use Checkout\CheckoutSdkBuilder;
 use Checkout\Environment;
+use Checkout\Previous\CheckoutApi as CheckoutPreviousApi;
+use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutStaticKeysSdkBuilder;
 use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 
 class CheckoutApiFactory
@@ -27,15 +29,47 @@ class CheckoutApiFactory
     }
 
     /**
+     * Returns a new instance of the Checkout API client.
+     */
+    public function getPreviousClient(?string $salesChannelId = null): CheckoutPreviousApi
+    {
+        $settings = $this->settingFactory->getSettings($salesChannelId);
+
+        return $this->buildPreviousClient($settings);
+    }
+
+    /**
      * Build checkout client
      */
     private function buildClient(SettingStruct $settings): CheckoutApi
     {
-        $builder = CheckoutDefaultSdk::staticKeys();
-        $builder->setEnvironment($settings->isSandboxMode() ? Environment::sandbox() : Environment::production());
-        $builder->setSecretKey($settings->getSecretKey());
-        $builder->setPublicKey($settings->getPublicKey());
+        $builder = (new CheckoutSdkBuilder())->staticKeys();
+        $builder->environment($settings->isSandboxMode() ? Environment::sandbox() : Environment::production());
+        $builder->secretKey($settings->getSecretKey());
+        $builder->publicKey($settings->getPublicKey());
 
         return $builder->build();
+    }
+
+    /**
+     * Build checkout previous client
+     */
+    private function buildPreviousClient(SettingStruct $settings): CheckoutPreviousApi
+    {
+        $builder = new CheckoutStaticKeysSdkBuilder();
+        $builder->environment($settings->isSandboxMode() ? Environment::sandbox() : Environment::production());
+        $builder->secretKey($this->formatKeyBySetting($settings, $settings->getSecretKey()));
+        $builder->publicKey($this->formatKeyBySetting($settings, $settings->getPublicKey()));
+
+        return $builder->build();
+    }
+
+    private function formatKeyBySetting(SettingStruct $settings, string $key): string
+    {
+        if ($settings->isAccountType(SettingStruct::ACCOUNT_TYPE_ABC)) {
+            return $key;
+        }
+
+        return sprintf('Bearer %s', $key);
     }
 }

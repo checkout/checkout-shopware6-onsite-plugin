@@ -2,7 +2,6 @@
 
 namespace CheckoutCom\Shopware6\Tests\Services\CheckoutApi;
 
-use CheckoutCom\Shopware6\Exception\CheckoutComWebhookNotFoundException;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Webhook;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -11,7 +10,7 @@ use Symfony\Component\Routing\RouterInterface;
 
 class CheckoutWebhookServiceTest extends AbstractCheckoutTest
 {
-    protected CheckoutWebhookService $checkoutPaymentService;
+    protected CheckoutWebhookService $checkoutWebhookService;
 
     /**
      * @var RouterInterface|MockObject
@@ -23,7 +22,7 @@ class CheckoutWebhookServiceTest extends AbstractCheckoutTest
         parent::setUp();
 
         $this->router = $this->createMock(Router::class);
-        $this->checkoutPaymentService = new CheckoutWebhookService(
+        $this->checkoutWebhookService = new CheckoutWebhookService(
             $this->logger,
             $this->getCheckoutApiFactory(),
             $this->router
@@ -61,7 +60,7 @@ class CheckoutWebhookServiceTest extends AbstractCheckoutTest
         );
 
         $this->router->expects(static::once())->method('generate')->willReturn('http://test.dev');
-        $webhook = $this->checkoutPaymentService->registerWebhook();
+        $webhook = $this->checkoutWebhookService->registerWebhook();
 
         static::assertInstanceOf(Webhook::class, $webhook);
     }
@@ -69,25 +68,14 @@ class CheckoutWebhookServiceTest extends AbstractCheckoutTest
     /**
      * @dataProvider requestCheckoutApiProvider
      */
-    public function testRetrieveWebhook(bool $apiShouldThrowException, int $code = 500): void
+    public function testRetrieveWebhook(bool $apiShouldThrowException): void
     {
         $this->handleCheckoutRequestShouldThrowException(
             $apiShouldThrowException,
-            'get',
-            [
-                'id' => 'test',
-                'headers' => ['authorization' => 'xxxxxx'],
-            ],
-            $code
+            'get'
         );
 
-        if ($apiShouldThrowException && $code === 404) {
-            static::expectException(CheckoutComWebhookNotFoundException::class);
-        }
-
-        $webhook = $this->checkoutPaymentService->retrieveWebhook('test');
-
-        static::assertInstanceOf(Webhook::class, $webhook);
+        $this->checkoutWebhookService->retrieveWebhook('test', 'foo');
     }
 
     public function requestCheckoutApiProvider(): array
@@ -95,10 +83,6 @@ class CheckoutWebhookServiceTest extends AbstractCheckoutTest
         return [
             'Test throw checkout api exception' => [
                 true,
-            ],
-            'Test throw checkout webhook exception' => [
-                true,
-                404,
             ],
             'Test call api successful' => [
                 false,

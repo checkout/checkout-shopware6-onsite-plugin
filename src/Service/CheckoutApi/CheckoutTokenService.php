@@ -14,7 +14,7 @@ class CheckoutTokenService extends AbstractCheckoutService
      */
     public function requestWalletToken(WalletTokenRequest $walletTokenRequest, string $salesChannelId): Token
     {
-        $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
+        $checkoutApi = $this->checkoutApiFactory->getPreviousClient($salesChannelId);
 
         try {
             $tokenResponse = $checkoutApi->getTokensClient()->requestWalletToken($walletTokenRequest);
@@ -32,7 +32,7 @@ class CheckoutTokenService extends AbstractCheckoutService
      */
     public function requestCardToken(CardTokenRequest $cardTokenRequest, string $salesChannelId): Token
     {
-        $checkoutApi = $this->checkoutApiFactory->getClient($salesChannelId);
+        $checkoutApi = $this->checkoutApiFactory->getPreviousClient($salesChannelId);
 
         try {
             $tokenResponse = $checkoutApi->getTokensClient()->requestCardToken($cardTokenRequest);
