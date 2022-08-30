@@ -76,18 +76,18 @@ Component.register('checkout-com-payment-method-apple-pay', {
             applePayFiles: {
                 keyMediaId: {
                     tag: 'checkout-com-payment-method-apple-pay-key',
-                    accept: '.key',
+                    accept: '*/*',
                     preview: null,
                 },
                 pemMediaId: {
                     tag: 'checkout-com-payment-method-apple-pay-pem',
-                    accept: '.pem',
+                    accept: '*/*',
                     preview: null,
                 },
             },
             domainMedias: {
                 tag: 'checkout-com-payment-method-apple-pay-domain',
-                accept: '.txt',
+                accept: '*/*',
                 data: [],
             },
         };

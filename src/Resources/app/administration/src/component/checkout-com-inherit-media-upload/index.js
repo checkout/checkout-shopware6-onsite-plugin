@@ -46,7 +46,6 @@ Component.register('checkout-com-inherit-media-upload', {
         fileAccept: {
             type: String,
             required: false,
-            default: 'image/*',
         },
         uploadTag: {
             type: String,
