@@ -8,10 +8,10 @@ use Shopware\Core\System\SalesChannel\StoreApiResponse;
 
 /**
  * @OA\Schema(
- *     schema="checkout_com_credit_card_token_response"
+ *     schema="checkout_com_card_payment_token_response"
  * )
  */
-class CreditCardTokenResponse extends StoreApiResponse
+class CardPaymentTokenResponse extends StoreApiResponse
 {
     /**
      * @OA\Property(
@@ -34,7 +34,7 @@ class CreditCardTokenResponse extends StoreApiResponse
         parent::__construct(new ArrayStruct([
             'success' => true,
             'token' => $token,
-        ], 'credit_card_token_response'));
+        ], 'card_payment_token_response'));
     }
 
     public function getToken(): string
