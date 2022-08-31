@@ -62,9 +62,9 @@
         </service>
 
         <!--     STOREFRONT API   -->
-        <service id="CheckoutCom\Shopware6\Storefront\Api\CreditCardController" public="true">
+        <service id="CheckoutCom\Shopware6\Storefront\Api\CardPaymentController" public="true">
             <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\CreditCard\CreditCardService"/>
+            <argument type="service" id="CheckoutCom\Shopware6\Service\CardPayment\CardPaymentService"/>
         </service>
 
         <service id="CheckoutCom\Shopware6\Storefront\Api\ConfigController" public="true">

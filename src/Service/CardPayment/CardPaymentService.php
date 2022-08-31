@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\CreditCard;
+namespace CheckoutCom\Shopware6\Service\CardPayment;
 
 use Checkout\CheckoutApiException;
 use Checkout\Tokens\CardTokenRequest;
@@ -15,7 +15,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 
-class CreditCardService extends AbstractCreditCardService
+class CardPaymentService extends AbstractCardPaymentService
 {
     protected LoggerInterface $logger;
 
@@ -33,7 +33,7 @@ class CreditCardService extends AbstractCreditCardService
         $this->checkoutTokenService = $checkoutTokenService;
     }
 
-    public function getDecorated(): AbstractCreditCardService
+    public function getDecorated(): AbstractCardPaymentService
     {
         throw new DecorationPatternException(self::class);
     }

@@ -14,7 +14,7 @@ class PublicConfigStruct extends Struct
 {
     /**
      * @OA\Property(
-     *      description="Credit Card IFrame URL"
+     *      description="Card Payment IFrame URL"
      *  )
      */
     protected string $frameUrl = '';

@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services\CreditCard;
+namespace CheckoutCom\Shopware6\Tests\Services\CardPayment;
 
 use Checkout\CheckoutApiException;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
+use CheckoutCom\Shopware6\Service\CardPayment\CardPaymentService;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
-use CheckoutCom\Shopware6\Service\CreditCard\CreditCardService;
 use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Token;
 use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
@@ -15,7 +15,7 @@ use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 
-class CreditCardServiceTest extends TestCase
+class CardPaymentServiceTest extends TestCase
 {
     use ContextTrait;
 
@@ -29,7 +29,7 @@ class CreditCardServiceTest extends TestCase
      */
     protected $checkoutTokenService;
 
-    protected CreditCardService $creditCardService;
+    protected CardPaymentService $cardPaymentService;
 
     protected $saleChannelContext;
 
@@ -39,7 +39,7 @@ class CreditCardServiceTest extends TestCase
         $this->checkoutTokenService = $this->createMock(CheckoutTokenService::class);
         $this->saleChannelContext = $this->getSaleChannelContext($this);
 
-        $this->creditCardService = new CreditCardService(
+        $this->cardPaymentService = new CardPaymentService(
             $this->createMock(LoggerService::class),
             $this->settingsFactory,
             $this->checkoutTokenService
@@ -49,7 +49,7 @@ class CreditCardServiceTest extends TestCase
     public function testGetDecoratedThrowException(): void
     {
         static::expectException(DecorationPatternException::class);
-        $this->creditCardService->getDecorated();
+        $this->cardPaymentService->getDecorated();
     }
 
     /**
@@ -85,7 +85,7 @@ class CreditCardServiceTest extends TestCase
             'expiryYear' => 123,
             'cvv' => '111',
         ]);
-        $expect = $this->creditCardService->createToken($data, $this->saleChannelContext);
+        $expect = $this->cardPaymentService->createToken($data, $this->saleChannelContext);
 
         static::assertInstanceOf(Token::class, $expect);
         static::assertSame($expect, $token);

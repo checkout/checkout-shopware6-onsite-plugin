@@ -2,8 +2,8 @@
 
 namespace CheckoutCom\Shopware6\Storefront\Api;
 
-use CheckoutCom\Shopware6\Service\CreditCard\AbstractCreditCardService;
-use CheckoutCom\Shopware6\Struct\Response\CreditCardTokenResponse;
+use CheckoutCom\Shopware6\Service\CardPayment\AbstractCardPaymentService;
+use CheckoutCom\Shopware6\Struct\Response\CardPaymentTokenResponse;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
@@ -20,31 +20,31 @@ use Symfony\Component\Validator\Constraints\Type;
 /**
  * @RouteScope(scopes={"store-api"})
  */
-class CreditCardController extends AbstractCreditCardController
+class CardPaymentController extends AbstractCardPaymentController
 {
     private DataValidator $dataValidator;
 
-    private AbstractCreditCardService $creditCardService;
+    private AbstractCardPaymentService $creditCardService;
 
-    public function __construct(DataValidator $dataValidator, AbstractCreditCardService $creditCardService)
+    public function __construct(DataValidator $dataValidator, AbstractCardPaymentService $creditCardService)
     {
         $this->dataValidator = $dataValidator;
         $this->creditCardService = $creditCardService;
     }
 
-    public function getDecorated(): AbstractCreditCardController
+    public function getDecorated(): AbstractCardPaymentController
     {
         throw new DecorationPatternException(self::class);
     }
 
     /**
-     * Create credit card token
+     * Create card payment token
      *
      * @OA\Post(
-     *      path="/store-api/checkout-com/credit-card/token",
-     *      summary="Create credit card token",
-     *      description="Create credit card token",
-     *      operationId="checkoutComCreditCardToken",
+     *      path="/store-api/checkout-com/card-payment/token",
+     *      summary="Create card payment token",
+     *      description="Create card payment token",
+     *      operationId="checkoutComCardPaymentToken",
      *      tags={"Store API", "CheckoutCom"},
      *      @OA\RequestBody(
      *          @OA\JsonContent(
@@ -78,25 +78,25 @@ class CreditCardController extends AbstractCreditCardController
      *      ),
      *      @OA\Response(
      *          response="200",
-     *          description="Returns the token of credit card",
-     *         @OA\JsonContent(ref="#/components/schemas/checkout_com_credit_card_token_response")
+     *          description="Returns the token of card payment",
+     *         @OA\JsonContent(ref="#/components/schemas/checkout_com_card_payment_token_response")
      *     )
      * )
-     * @Route("/store-api/checkout-com/credit-card/token", name="store-api.checkout-com.credit-card.token", methods={"POST"})
+     * @Route("/store-api/checkout-com/card-payment/token", name="store-api.checkout-com.card-payment.token", methods={"POST"})
      */
-    public function createToken(SalesChannelContext $context, RequestDataBag $data): CreditCardTokenResponse
+    public function createToken(SalesChannelContext $context, RequestDataBag $data): CardPaymentTokenResponse
     {
         $definition = $this->getCreateTokenValidation();
         $this->dataValidator->validate($data->all(), $definition);
 
         $token = $this->creditCardService->createToken($data, $context);
 
-        return new CreditCardTokenResponse($token->getToken());
+        return new CardPaymentTokenResponse($token->getToken());
     }
 
     public function getCreateTokenValidation(): DataValidationDefinition
     {
-        $definition = new DataValidationDefinition('credit_card_controller.token');
+        $definition = new DataValidationDefinition('card_payment_controller.token');
         $definition->add('name', new Type('string'), new Optional());
         $definition->add('number', new Type('string'), new NotBlank());
         $definition->add('expiryMonth', new Type('integer'), new NotBlank(), new GreaterThanOrEqual(1));
