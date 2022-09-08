@@ -294,7 +294,7 @@ class OrderService extends AbstractOrderService
         LineItemCollection $requestLineItems,
         LineItemCollection $shippingCostsLineItems
     ): bool {
-        $totalExcludingShippingCosts = abs($order->getPrice()->getTotalPrice()) - abs($shippingCostsLineItems->getPrices()->sum()->getTotalPrice());
+        $totalExcludingShippingCosts = abs($order->getPrice()->getRawTotal()) - abs($shippingCostsLineItems->getPrices()->sum()->getTotalPrice());
 
         return FloatComparator::equals(
             abs($totalExcludingShippingCosts),

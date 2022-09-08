@@ -5,6 +5,13 @@ namespace CheckoutCom\Shopware6\Struct\Customer;
 use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\PaymentSource;
 use Shopware\Core\Framework\Struct\Collection;
 
+/**
+ * @method PaymentSource[]    getIterator()
+ * @method PaymentSource[]    getElements()
+ * @method PaymentSource|null get(string $key)
+ * @method PaymentSource|null first()
+ * @method PaymentSource|null last()
+ */
 class CustomerSourceCollection extends Collection
 {
     public function hasFingerPrint(?string $fingerPrint): bool
@@ -13,7 +20,6 @@ class CustomerSourceCollection extends Collection
             return false;
         }
 
-        /** @var PaymentSource $element */
         foreach ($this->getElements() as $element) {
             if ($element->getFingerprint() !== $fingerPrint) {
                 continue;

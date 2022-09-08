@@ -1,0 +1,55 @@
+{% block checkout_com_fix_price_diffenrece %}
+    <sw-modal
+        :title="$tc('checkout-payments.order.fixPriceDifference.modal.title')"
+        :is-loading="isLoading"
+        @modal-close="closeModal"
+    >
+        {% block checkout_com_fix_price_diffenrece_content_warning %}
+            <sw-alert
+                variant="warning"
+            >
+                <span>
+                    {{ $tc('checkout-payments.order.fixPriceDifference.modal.description') }}
+                </span>
+            </sw-alert>
+        {% endblock %}
+
+        {% block checkout_com_fix_price_diffenrece_footer %}
+            <template #modal-footer>
+                {% block checkout_com_fix_price_diffenrece_footer_section %}
+                    <div class="checkout-com-fix-price-difference-modal-footer">
+                        {% block checkout_com_fix_price_diffenrece_footer_button_group %}
+                            <sw-container
+                                columns="1fr 1fr"
+                                gap="16px"
+                            >
+                                {% block checkout_com_fix_price_diffenrece_footer_button_group_cancel %}
+                                    <sw-button
+                                        size="large"
+                                        class="checkout-com-fix-price-difference-modal__button-cancel"
+                                        :disabled="isLoading"
+                                        @click="closeModal"
+                                    >
+                                        {{ $tc('global.default.cancel') }}
+                                    </sw-button>
+                                {% endblock %}
+
+                                {% block checkout_com_fix_price_diffenrece_footer_button_group_submit %}
+                                    <sw-button
+                                        variant="primary"
+                                        size="large"
+                                        class="checkout-com-fix-price-difference-modal__button-fix-price"
+                                        :disabled="isLoading"
+                                        @click="onSubmit"
+                                    >
+                                        {{ $tc('global.default.confirm') }}
+                                    </sw-button>
+                                {% endblock %}
+                            </sw-container>
+                        {% endblock %}
+                    </div>
+                {% endblock %}
+            </template>
+        {% endblock %}
+    </sw-modal>
+{% endblock %}

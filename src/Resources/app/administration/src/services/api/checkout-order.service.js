@@ -83,6 +83,23 @@ class CheckoutOrderService extends ApiService {
                 return ApiService.handleResponse(response);
             });
     }
+
+    /**
+     * Fix price difference of payment by the order id
+     *
+     * @param orderId {string}
+     * @returns {*}
+     */
+    fixPriceDifferencePayment(orderId) {
+        const headers = this.getBasicHeaders();
+
+        return this.httpClient
+            .post(`${this.getApiBasePath()}/fix-price-difference`, {
+                orderId,
+            }, { headers }).then((response) => {
+                return ApiService.handleResponse(response);
+            });
+    }
 }
 
 export default CheckoutOrderService;

@@ -6,6 +6,7 @@ use Checkout\Common\Currency;
 use CheckoutCom\Shopware6\Exception\CheckoutComException;
 use CheckoutCom\Shopware6\Service\Builder\RefundBuilder;
 use CheckoutCom\Shopware6\Struct\LineItem\LineItemPayload;
+use CheckoutCom\Shopware6\Struct\LineItem\ProductPromotionCollection;
 use CheckoutCom\Shopware6\Struct\Request\Refund\OrderRefundRequest;
 use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequest;
 use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
@@ -24,6 +25,8 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\CashRoundingConfig;
+use Shopware\Core\System\Currency\CurrencyEntity;
 
 class RefundBuilderTest extends TestCase
 {
@@ -130,14 +133,28 @@ class RefundBuilderTest extends TestCase
             'getLineItems' => null,
         ]);
 
+        $currency = $this->createConfiguredMock(CurrencyEntity::class, [
+            'getId' => 'foo',
+            'getItemRounding' => $this->createConfiguredMock(CashRoundingConfig::class, [
+                'getDecimals' => 2,
+            ]),
+        ]);
+
         static::expectException(CheckoutComException::class);
 
-        $this->refundBuilder->buildLineItems(new RefundItemRequestCollection(), $order);
+        $this->refundBuilder->buildLineItems(new RefundItemRequestCollection(), $order, $currency, new ProductPromotionCollection());
     }
 
     public function testBuildLineItemsOfCannotRefundBecauseOfHasRefundLineId(): void
     {
         $refundLineId = 'foo';
+
+        $currency = $this->createConfiguredMock(CurrencyEntity::class, [
+            'getId' => 'foo',
+            'getItemRounding' => $this->createConfiguredMock(CashRoundingConfig::class, [
+                'getDecimals' => 2,
+            ]),
+        ]);
 
         $lineItemPayload = $this->getLineItemPayload($refundLineId);
 
@@ -160,12 +177,19 @@ class RefundBuilderTest extends TestCase
 
         static::expectException(CheckoutComException::class);
 
-        $this->refundBuilder->buildLineItems($refundItems, $order);
+        $this->refundBuilder->buildLineItems($refundItems, $order, $currency, new ProductPromotionCollection());
     }
 
     public function testBuildLineItemsOfCannotBuildBecauseOfUnitPriceLessThan0(): void
     {
         $refundLineId = 'foo';
+
+        $currency = $this->createConfiguredMock(CurrencyEntity::class, [
+            'getId' => 'foo',
+            'getItemRounding' => $this->createConfiguredMock(CashRoundingConfig::class, [
+                'getDecimals' => 2,
+            ]),
+        ]);
 
         $orderLineItem = new OrderLineItemEntity();
         $orderLineItem->setId($refundLineId);
@@ -186,12 +210,19 @@ class RefundBuilderTest extends TestCase
 
         static::expectException(CheckoutComException::class);
 
-        $this->refundBuilder->buildLineItems($refundItems, $order);
+        $this->refundBuilder->buildLineItems($refundItems, $order, $currency, new ProductPromotionCollection());
     }
 
     public function testBuildLineItemsOfCannotBuildBecauseOfNullPrice(): void
     {
         $refundLineId = 'foo';
+
+        $currency = $this->createConfiguredMock(CurrencyEntity::class, [
+            'getId' => 'foo',
+            'getItemRounding' => $this->createConfiguredMock(CashRoundingConfig::class, [
+                'getDecimals' => 2,
+            ]),
+        ]);
 
         $orderLineItem = new OrderLineItemEntity();
         $orderLineItem->setId($refundLineId);
@@ -212,12 +243,19 @@ class RefundBuilderTest extends TestCase
 
         static::expectException(CheckoutComException::class);
 
-        $this->refundBuilder->buildLineItems($refundItems, $order);
+        $this->refundBuilder->buildLineItems($refundItems, $order, $currency, new ProductPromotionCollection());
     }
 
     public function testBuildLineItemsSuccessful(): void
     {
         $refundLineId = 'foo';
+
+        $currency = $this->createConfiguredMock(CurrencyEntity::class, [
+            'getId' => 'foo',
+            'getItemRounding' => $this->createConfiguredMock(CashRoundingConfig::class, [
+                'getDecimals' => 2,
+            ]),
+        ]);
 
         $orderLineItem = new OrderLineItemEntity();
         $orderLineItem->setId($refundLineId);
@@ -246,7 +284,7 @@ class RefundBuilderTest extends TestCase
             'getLineItems' => new OrderLineItemCollection([$orderLineItem]),
         ]);
 
-        $result = $this->refundBuilder->buildLineItems($refundItems, $order);
+        $result = $this->refundBuilder->buildLineItems($refundItems, $order, $currency, new ProductPromotionCollection());
         static::assertInstanceOf(LineItemCollection::class, $result);
     }
 
@@ -359,6 +397,13 @@ class RefundBuilderTest extends TestCase
 
     public function testBuildLineItemOfUnitPriceLessThan0(): void
     {
+        $currency = $this->createConfiguredMock(CurrencyEntity::class, [
+            'getId' => 'foo',
+            'getItemRounding' => $this->createConfiguredMock(CashRoundingConfig::class, [
+                'getDecimals' => 2,
+            ]),
+        ]);
+
         $refundLineId = 'foo';
 
         $orderLineItem = new OrderLineItemEntity();
@@ -372,11 +417,18 @@ class RefundBuilderTest extends TestCase
 
         static::expectException(CheckoutComException::class);
 
-        $this->refundBuilder->buildLineItem($refundItemRequest, $orderLineItem);
+        $this->refundBuilder->buildLineItem(new LineItemCollection(), $refundItemRequest, $orderLineItem, $currency);
     }
 
     public function testBuildLineItemOfNullCalculatedPrice(): void
     {
+        $currency = $this->createConfiguredMock(CurrencyEntity::class, [
+            'getId' => 'foo',
+            'getItemRounding' => $this->createConfiguredMock(CashRoundingConfig::class, [
+                'getDecimals' => 2,
+            ]),
+        ]);
+
         $refundLineId = 'foo';
 
         $orderLineItem = new OrderLineItemEntity();
@@ -390,11 +442,18 @@ class RefundBuilderTest extends TestCase
 
         static::expectException(CheckoutComException::class);
 
-        $this->refundBuilder->buildLineItem($refundItemRequest, $orderLineItem);
+        $this->refundBuilder->buildLineItem(new LineItemCollection(), $refundItemRequest, $orderLineItem, $currency);
     }
 
     public function testBuildLineItemSuccessful(): void
     {
+        $currency = $this->createConfiguredMock(CurrencyEntity::class, [
+            'getId' => 'foo',
+            'getItemRounding' => $this->createConfiguredMock(CashRoundingConfig::class, [
+                'getDecimals' => 2,
+            ]),
+        ]);
+
         $refundLineId = 'foo';
 
         $orderLineItem = new OrderLineItemEntity();
@@ -416,9 +475,10 @@ class RefundBuilderTest extends TestCase
         $refundItemRequest->setId($refundLineId);
         $refundItemRequest->setReturnQuantity(1);
 
-        $result = $this->refundBuilder->buildLineItem($refundItemRequest, $orderLineItem);
-        static::assertInstanceOf(LineItem::class, $result);
-        static::assertSame($refundItemRequest->getReturnQuantity(), $result->getQuantity());
+        $lineItems = new LineItemCollection();
+
+        $this->refundBuilder->buildLineItem($lineItems, $refundItemRequest, $orderLineItem, $currency);
+        static::assertSame($refundItemRequest->getReturnQuantity(), $lineItems->getTotalQuantity());
     }
 
     public function testBuildLineItemsForWebhookOfNullWebhookAmount(): void
@@ -453,6 +513,116 @@ class RefundBuilderTest extends TestCase
 
         static::assertInstanceOf(LineItemCollection::class, $result);
         static::assertSame(-5.0, $result->getPrices()->sum()->getTotalPrice());
+    }
+
+    public function testBuildLineItemsForFixPriceDifferenceSuccessful(): void
+    {
+        $result = $this->refundBuilder->buildLineItemsForFixPriceDifference(1.0);
+
+        static::assertInstanceOf(LineItemCollection::class, $result);
+        static::assertSame(-1.0, $result->getPrices()->sum()->getTotalPrice());
+    }
+
+    public function testBuildProductPromotionsOfNullLineItems(): void
+    {
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getId' => 'foo',
+            'getLineItems' => null,
+        ]);
+
+        static::expectException(CheckoutComException::class);
+        $this->refundBuilder->buildProductPromotions($order);
+    }
+
+    public function testBuildProductPromotionsOfEmptyLineItems(): void
+    {
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getId' => 'foo',
+            'getLineItems' => new OrderLineItemCollection(),
+        ]);
+
+        $result = $this->refundBuilder->buildProductPromotions($order);
+        static::assertInstanceOf(ProductPromotionCollection::class, $result);
+        static::assertSame(0, $result->count());
+    }
+
+    public function testBuildProductPromotionsOfEmptyPayload(): void
+    {
+        $lineItem = $this->createConfiguredMock(OrderLineItemEntity::class, [
+            'getId' => 'foo',
+        ]);
+
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getId' => 'foo',
+            'getLineItems' => new OrderLineItemCollection([$lineItem]),
+        ]);
+
+        $result = $this->refundBuilder->buildProductPromotions($order);
+        static::assertInstanceOf(ProductPromotionCollection::class, $result);
+        static::assertSame(0, $result->count());
+    }
+
+    public function testBuildProductPromotionsOfQuantityEqual0(): void
+    {
+        $lineItem = $this->createConfiguredMock(OrderLineItemEntity::class, [
+            'getId' => 'foo',
+            'getPromotionId' => 'foo',
+            'getPayload' => [
+                'composition' => [
+                    [
+                        'id' => 'foo',
+                        'quantity' => 1,
+                    ],
+                ],
+                RefundBuilder::LINE_ITEM_PROMOTION_PAYLOAD => [
+                    'foo' => [
+                        'id' => 'foo',
+                        'refundedQuantity' => 1,
+                    ],
+                ],
+            ],
+        ]);
+
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getId' => 'foo',
+            'getLineItems' => new OrderLineItemCollection([$lineItem]),
+        ]);
+
+        $result = $this->refundBuilder->buildProductPromotions($order);
+        static::assertInstanceOf(ProductPromotionCollection::class, $result);
+        static::assertSame(0, $result->count());
+    }
+
+    public function testBuildProductPromotionsSuccessful(): void
+    {
+        $lineItem = $this->createConfiguredMock(OrderLineItemEntity::class, [
+            'getId' => 'foo',
+            'getPromotionId' => 'foo',
+            'getPayload' => [
+                'composition' => [
+                    [
+                        'id' => 'foo',
+                        'quantity' => 2,
+                        'discount' => 2.2,
+                    ],
+                ],
+                RefundBuilder::LINE_ITEM_PROMOTION_PAYLOAD => [
+                    'foo' => [
+                        'id' => 'foo',
+                        'refundedQuantity' => 1,
+                    ],
+                ],
+            ],
+        ]);
+
+        $order = $this->createConfiguredMock(OrderEntity::class, [
+            'getId' => 'foo',
+            'getLineItems' => new OrderLineItemCollection([$lineItem]),
+        ]);
+
+        $result = $this->refundBuilder->buildProductPromotions($order);
+        static::assertInstanceOf(ProductPromotionCollection::class, $result);
+        static::assertSame(1, $result->count());
     }
 
     private function getLineItemPayload(string $lineItemId): LineItemPayload

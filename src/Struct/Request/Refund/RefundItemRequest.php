@@ -10,6 +10,10 @@ class RefundItemRequest extends Struct
 
     protected int $returnQuantity;
 
+    protected int $remainingReturnQuantity = 0;
+
+    protected float $discountPerQuantity = 0;
+
     public function getId(): string
     {
         return $this->id;
@@ -28,5 +32,25 @@ class RefundItemRequest extends Struct
     public function setReturnQuantity(int $returnQuantity): void
     {
         $this->returnQuantity = $returnQuantity;
+    }
+
+    public function getRemainingReturnQuantity(): int
+    {
+        return $this->remainingReturnQuantity;
+    }
+
+    public function setRemainingReturnQuantity(int $remainingReturnQuantity): void
+    {
+        $this->remainingReturnQuantity = $remainingReturnQuantity;
+    }
+
+    public function getDiscountPerQuantity(): float
+    {
+        return $this->discountPerQuantity;
+    }
+
+    public function setDiscountPerQuantity($discountPerQuantity): void
+    {
+        $this->discountPerQuantity = $discountPerQuantity;
     }
 }

@@ -118,7 +118,6 @@ class ApplePayHandler extends PaymentHandler
         ));
 
         // Shipping
-        /** @var DirectPayCartItemStruct $shipping */
         foreach ($directPayCart->getShipping() as $shipping) {
             $lineItems->add(new ApplePayLineItemStruct(
                 $shipping->getName(),

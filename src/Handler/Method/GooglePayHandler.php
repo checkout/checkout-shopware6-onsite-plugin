@@ -124,7 +124,6 @@ class GooglePayHandler extends PaymentHandler
         ));
 
         // Shipping
-        /** @var DirectPayCartItemStruct $shipping */
         foreach ($directPayCart->getShipping() as $shipping) {
             $lineItems->add(new GooglePayLineItemStruct(
                 self::TYPE_LINE_ITEM,

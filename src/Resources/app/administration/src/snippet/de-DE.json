@@ -92,7 +92,8 @@
           "returnQuantityColumn": "Rückgabe Menge"
         },
         "lineItems": {
-          "prefixRefundLabel": "Erstattet: {itemLabel}"
+          "prefixRefundLabel": "Erstattet: {itemLabel}",
+          "prefixCompositionLabel": "- {itemLabel}"
         },
         "summary": {
           "totalBeforeRefundLabel": "Gesamtbetrag vor Erstattung",

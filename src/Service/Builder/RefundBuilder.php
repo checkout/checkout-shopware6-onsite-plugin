@@ -5,6 +5,10 @@ namespace CheckoutCom\Shopware6\Service\Builder;
 use CheckoutCom\Shopware6\Exception\CheckoutComException;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use CheckoutCom\Shopware6\Struct\LineItem\LineItemPayload;
+use CheckoutCom\Shopware6\Struct\LineItem\ProductPromotion;
+use CheckoutCom\Shopware6\Struct\LineItem\ProductPromotionCollection;
+use CheckoutCom\Shopware6\Struct\LineItem\PromotionComposition;
+use CheckoutCom\Shopware6\Struct\LineItem\PromotionCompositionCollection;
 use CheckoutCom\Shopware6\Struct\Request\Refund\OrderRefundRequest;
 use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequest;
 use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
@@ -25,10 +29,12 @@ use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
 use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\Currency\CurrencyEntity;
 
 class RefundBuilder
 {
     public const LINE_ITEM_PAYLOAD = 'checkoutComPayments';
+    public const LINE_ITEM_PROMOTION_PAYLOAD = 'checkoutComPromotions';
 
     private LoggerInterface $logger;
 
@@ -37,6 +43,9 @@ class RefundBuilder
         $this->logger = $loggerService;
     }
 
+    /**
+     * Build line items for full refund then later it will be inserted to order line items
+     */
     public function buildRefundRequestForFullRefund(OrderEntity $order): OrderRefundRequest
     {
         $orderLineItems = $order->getLineItems();
@@ -86,8 +95,15 @@ class RefundBuilder
         return $orderRefundRequest;
     }
 
-    public function buildLineItems(RefundItemRequestCollection $refundItems, OrderEntity $order): LineItemCollection
-    {
+    /**
+     * Build line items then later it will be inserted to order line items
+     */
+    public function buildLineItems(
+        RefundItemRequestCollection $refundItems,
+        OrderEntity $order,
+        CurrencyEntity $currency,
+        ProductPromotionCollection $productPromotions
+    ): LineItemCollection {
         $orderLineItems = $order->getLineItems();
         if (!$orderLineItems instanceof OrderLineItemCollection) {
             $message = sprintf('The orderLineItems must be instance of OrderLineItemCollection with Order ID: %s', $order->getId());
@@ -113,13 +129,34 @@ class RefundBuilder
                 ]);
             }
 
-            $lineItem = $this->buildLineItem($refundItem, $orderLineItem);
-            $lineItems->add($lineItem);
+            $productPromotion = $productPromotions->get($orderLineItem->getReferencedId());
+
+            if ($productPromotion instanceof ProductPromotion) {
+                $this->buildLineItemsByPromotions(
+                    $lineItems,
+                    $refundItem,
+                    $orderLineItem,
+                    $currency,
+                    $productPromotion
+                );
+
+                continue;
+            }
+
+            $this->buildLineItem(
+                $lineItems,
+                $refundItem,
+                $orderLineItem,
+                $currency
+            );
         }
 
         return $lineItems;
     }
 
+    /**
+     * Build line items by webhook data then later it will be inserted to order line items
+     */
     public function buildLineItemsForWebhook(WebhookReceiveDataStruct $receiveDataStruct): LineItemCollection
     {
         $webhookAmount = $receiveDataStruct->getAmount();
@@ -178,6 +215,51 @@ class RefundBuilder
         return new LineItemCollection([$lineItem]);
     }
 
+    /**
+     * Build line items by fix price difference then later it will be inserted to order line items
+     */
+    public function buildLineItemsForFixPriceDifference(float $price): LineItemCollection
+    {
+        $unitPrice = $price * -1;
+        $refundQuantity = 1;
+
+        $lineItem = new LineItem(
+            Uuid::randomHex(),
+            LineItem::CUSTOM_LINE_ITEM_TYPE,
+            null,
+            $refundQuantity
+        );
+
+        $lineItem->setStackable(true);
+        $lineItem->setRemovable(true);
+        $lineItem->setLabel('Fix price difference');
+        $lineItem->setPriceDefinition(
+            new QuantityPriceDefinition(
+                $unitPrice,
+                new TaxRuleCollection(),
+                $refundQuantity
+            )
+        );
+        $lineItem->setPrice(
+            new CalculatedPrice(
+                $unitPrice,
+                $unitPrice * $refundQuantity,
+                new CalculatedTaxCollection(),
+                new TaxRuleCollection(),
+                $refundQuantity,
+            )
+        );
+
+        $lineItemPayload = new LineItemPayload();
+        $lineItemPayload->setType(LineItemPayload::LINE_ITEM_FIX_PRICE);
+        $lineItem->setPayloadValue(self::LINE_ITEM_PAYLOAD, $lineItemPayload->jsonSerialize());
+
+        return new LineItemCollection([$lineItem]);
+    }
+
+    /**
+     * Build line items by shipping costs then later it will be inserted to order line items
+     */
     public function buildLineItemsShippingCosts(OrderEntity $order): LineItemCollection
     {
         $orderDeliveries = $order->getDeliveries();
@@ -250,8 +332,81 @@ class RefundBuilder
         return ($orderLineItem->getQuantity() - $refundedQuantity) >= $refundItem->getReturnQuantity();
     }
 
-    public function buildLineItem(RefundItemRequest $refundItem, OrderLineItemEntity $orderLineItem): LineItem
-    {
+    /**
+     * Build line items by provide product promotions then later it will be inserted to order line items
+     */
+    public function buildLineItemsByPromotions(
+        LineItemCollection $lineItems,
+        RefundItemRequest $refundItem,
+        OrderLineItemEntity $orderLineItem,
+        CurrencyEntity $currency,
+        ProductPromotion $productPromotion
+    ): void {
+        $refundItem->setRemainingReturnQuantity($refundItem->getReturnQuantity());
+
+        // Group promotion composition by quantity
+        $groupPromotions = $productPromotion->getPromotions()->groupByRemainingQuantity();
+        krsort($groupPromotions);
+
+        $totalDiscountPerQuantity = 0.0;
+        $discountCompositions = [];
+
+        $quantitiesKeys = array_keys($groupPromotions);
+
+        // Build line items depend on promotion composition quantity
+        foreach ($groupPromotions as $remainingQuantity => $quantityPromotionCompositions) {
+            $discountPerQuantity = 0.0;
+
+            // Calculate total discount per quantity
+            foreach ($quantityPromotionCompositions as $promotionComposition) {
+                $discountPerQuantity += $promotionComposition->getDiscountPerQuantity();
+
+                // Update new refunded quantity
+                $promotionComposition->setRefundedQuantity(
+                    min(
+                        $promotionComposition->getRefundedQuantity() + $refundItem->getReturnQuantity(),
+                        $remainingQuantity,
+                    )
+                );
+
+                $discountCompositions[] = [
+                    'label' => $promotionComposition->getLabel(),
+                ];
+            }
+
+            $totalDiscountPerQuantity += $discountPerQuantity;
+            $nextPromotionRemainingQuantity = (int) ($quantitiesKeys[array_search($remainingQuantity, $quantitiesKeys, true) + 1] ?? 0);
+
+            // Calculate remaining quantity for new line item
+            $currentRemainingQuantity = $refundItem->getRemainingReturnQuantity() - $nextPromotionRemainingQuantity;
+            if ($currentRemainingQuantity <= 0) {
+                continue;
+            }
+
+            $refundItem->setReturnQuantity($currentRemainingQuantity);
+
+            // Update remaining return quantity for next loop checking
+            $refundItem->setRemainingReturnQuantity($nextPromotionRemainingQuantity);
+
+            $this->buildLineItem(
+                $lineItems,
+                $refundItem,
+                $orderLineItem,
+                $currency,
+                $totalDiscountPerQuantity,
+                $discountCompositions
+            );
+        }
+    }
+
+    public function buildLineItem(
+        LineItemCollection $lineItems,
+        RefundItemRequest $refundItem,
+        OrderLineItemEntity $orderLineItem,
+        CurrencyEntity $currency,
+        float $discountPerQuantity = 0.0,
+        array $discountCompositions = []
+    ): void {
         if ($orderLineItem->getUnitPrice() < 0) {
             $message = sprintf('The $orderUnitPrice must equal or greater than 0: %s', $orderLineItem->getId());
             $this->logger->warning($message);
@@ -267,7 +422,10 @@ class RefundBuilder
             throw new CheckoutComException($message);
         }
 
-        $unitPrice = $orderLineItem->getUnitPrice() * -1;
+        $unitPrice = CheckoutComUtil::floorp(
+            $orderLineItem->getUnitPrice() - $discountPerQuantity,
+            $currency->getItemRounding()->getDecimals()
+        ) * -1;
         $refundQuantity = $refundItem->getReturnQuantity();
 
         $lineItem = new LineItem(
@@ -301,9 +459,82 @@ class RefundBuilder
         $lineItemPayload->setType(LineItemPayload::LINE_ITEM_PRODUCT);
         $lineItemPayload->setRefundLineItemId($orderLineItem->getId());
         $lineItemPayload->setProductId($orderLineItem->getProductId());
+        $lineItemPayload->setProductId($orderLineItem->getProductId());
+        $lineItemPayload->setDiscountCompositions($discountCompositions);
         $lineItem->setPayloadValue(self::LINE_ITEM_PAYLOAD, $lineItemPayload->jsonSerialize());
 
-        return $lineItem;
+        $lineItems->add($lineItem);
+    }
+
+    /**
+     * Build product promotions for refund stuffs
+     * Need it for calculate discount of each product
+     */
+    public function buildProductPromotions(OrderEntity $order): ProductPromotionCollection
+    {
+        // Init list of product promotions
+        $productPromotions = new ProductPromotionCollection();
+        $lineItems = $order->getLineItems();
+
+        if (!$lineItems instanceof OrderLineItemCollection) {
+            $message = sprintf('The $lineItems must be instance of OrderLineItemCollection with order number: %s', $order->getOrderNumber());
+            $this->logger->warning($message);
+
+            throw new CheckoutComException($message);
+        }
+
+        foreach ($lineItems as $item) {
+            $compositions = $item->getPayload()['composition'] ?? [];
+            if (empty($compositions) || empty($item->getPromotionId())) {
+                continue;
+            }
+
+            foreach ($compositions as $composition) {
+                $productId = $composition['id'];
+
+                $checkoutPayload = $item->getPayload()[self::LINE_ITEM_PROMOTION_PAYLOAD] ?? [];
+                $lineItemRefundedPayload = $checkoutPayload[$productId] ?? [];
+                $refundedQuantityPayload = $lineItemRefundedPayload['refundedQuantity'] ?? 0;
+
+                $remainingQuantity = (int) $composition['quantity'] - (int) $refundedQuantityPayload;
+
+                if ($remainingQuantity === 0) {
+                    continue;
+                }
+
+                $discountPerQuantity = (float) $composition['discount'] / (int) $composition['quantity'];
+
+                // Create a product promotion instance if it is not exists in the product promotion list
+                // Also get all discount promotion list in the product promotion to add the current loop composition to the list
+                $productPromotion = $productPromotions->get($productId);
+                if ($productPromotion instanceof ProductPromotion) {
+                    $promotionCompositions = $productPromotion->getPromotions();
+                } else {
+                    $productPromotion = new ProductPromotion();
+                    $productPromotion->setProductId($productId);
+                    $promotionCompositions = new PromotionCompositionCollection();
+                }
+
+                $promotionComposition = new PromotionComposition();
+                $promotionComposition->setLineItemId($item->getIdentifier());
+                $promotionComposition->setReferencedId($productId);
+                $promotionComposition->setLabel($item->getLabel());
+                $promotionComposition->setRefundedQuantity($refundedQuantityPayload);
+                $promotionComposition->setDiscountPerQuantity($discountPerQuantity);
+                $promotionComposition->setRemainingQuantity($remainingQuantity);
+
+                $promotionCompositions->add($promotionComposition);
+
+                $productPromotion->setPromotions($promotionCompositions);
+
+                $productPromotions->set(
+                    $productPromotion->getProductId(),
+                    $productPromotion,
+                );
+            }
+        }
+
+        return $productPromotions;
     }
 
     private function buildLineItemShippingCosts(OrderDeliveryEntity $orderDelivery): LineItem

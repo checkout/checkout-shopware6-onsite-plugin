@@ -17,11 +17,15 @@ use CheckoutCom\Shopware6\Service\Order\AbstractOrderTransactionService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
 use CheckoutCom\Shopware6\Service\PaymentMethodService;
 use CheckoutCom\Shopware6\Service\Product\ProductService;
+use CheckoutCom\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
+use CheckoutCom\Shopware6\Struct\LineItem\ProductPromotionCollection;
 use CheckoutCom\Shopware6\Struct\Request\Refund\OrderRefundRequest;
 use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
 use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use CheckoutCom\Shopware6\Struct\WebhookReceiveDataStruct;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Cart\Order\OrderConversionContext;
 use Shopware\Core\Checkout\Cart\Order\OrderConverter;
@@ -31,6 +35,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Util\FloatComparator;
+use Shopware\Core\System\Currency\CurrencyEntity;
 use Throwable;
 
 class PaymentRefundFacade
@@ -96,24 +101,16 @@ class PaymentRefundFacade
         }
 
         $order = $this->getOrder($orderId, $context);
-        $orderCustomFields = OrderService::getCheckoutOrderCustomFields($order);
-        $checkoutPaymentId = $orderCustomFields->getCheckoutPaymentId();
-        if (empty($checkoutPaymentId)) {
-            $this->logger->error(sprintf('Error while getting checkoutPaymentId from custom fields of order number: %s', $order->getOrderNumber()));
-
-            throw new CheckoutPaymentIdNotFoundException($order);
-        }
-
-        if ($orderCustomFields->isRefundedFromHub()) {
-            $message = sprintf('This order has already been refunded from checkout.com hub: %s', $orderId);
-            $this->logger->error($message);
-
-            throw new CheckoutComException($message);
-        }
-
         $orderCurrency = $this->orderExtractor->extractCurrency($order);
+        $productPromotions = $this->refundBuilder->buildProductPromotions($order);
 
-        $requestLineItems = $this->refundBuilder->buildLineItems($refundItemsRequest, $order);
+        $requestLineItems = $this->refundBuilder->buildLineItems(
+            $refundItemsRequest,
+            $order,
+            $orderCurrency,
+            $productPromotions
+        );
+
         if ($requestLineItems->count() === 0) {
             $message = sprintf('The line items after build are empty with order number: %s', $order->getOrderNumber());
             $this->logger->error($message);
@@ -121,54 +118,23 @@ class PaymentRefundFacade
             throw new CheckoutComException($message);
         }
 
-        $orderTransaction = $this->orderExtractor->extractLatestOrderTransaction($order);
-        $paymentHandler = $this->getPaymentHandler($orderTransaction);
+        // Get plugin settings
+        $settings = $this->settingsFactory->getSettings($order->getSalesChannelId());
+        $orderCustomFields = OrderService::getCheckoutOrderCustomFields($order);
 
-        try {
-            // Get plugin settings
-            $settings = $this->settingsFactory->getSettings($order->getSalesChannelId());
+        // Have to get refund status (partial refund/full refund)
+        $refundStatus = $this->getRefundStatus($order, $orderCustomFields, $requestLineItems, $settings);
 
-            $payment = $this->checkoutPaymentService->getPaymentDetails($checkoutPaymentId, $order->getSalesChannelId());
-            if (!$payment->canRefund()) {
-                $message = sprintf('Checkout payment status is not captured to refund for the order number: %s', $order->getOrderNumber());
-                $this->logger->warning($message);
-
-                throw new CheckoutComException($message);
-            }
-
-            // Have to get refund status (partial refund/full refund)
-            $refundStatus = $this->getRefundStatus($order, $requestLineItems, $settings);
-
-            $refundedAmount = abs(CheckoutComUtil::formatPriceCheckout(
-                $requestLineItems->getPrices()->sum()->getTotalPrice(),
-                $orderCurrency->getIsoCode()
-            ));
-
-            $refundRequest = new RefundRequest();
-            $refundRequest->amount = $refundedAmount;
-
-            $actionId = $paymentHandler->refundPayment($checkoutPaymentId, $refundRequest, $order);
-            $orderCustomFields->setLastCheckoutActionId($actionId);
-
-            $this->logger->info('Starting request refund', [
-                'status' => $refundStatus,
-                'request' => get_object_vars($refundRequest),
-            ]);
-
-            $this->addRefundedLineItemsToOrder($order, $requestLineItems, $context);
-            $this->updateStockForProduct($requestLineItems, $context);
-
-            $this->orderService->updateCheckoutCustomFields($order, $orderCustomFields, $context);
-            $this->orderTransactionService->processTransition($orderTransaction, $refundStatus, $context);
-            $this->orderService->processTransition($order, $settings, $refundStatus, $context);
-        } catch (Throwable $ex) {
-            $message = sprintf('Error while refund payment for order ID: %s, checkoutPaymentId: %s', $order->getOrderNumber(), $checkoutPaymentId);
-            $this->logger->error($message, [
-                'error' => $ex->getMessage(),
-            ]);
-
-            throw new CheckoutComException($message);
-        }
+        $this->handleRefundPayment(
+            $order,
+            $orderCustomFields,
+            $orderCurrency,
+            $requestLineItems,
+            $settings,
+            $productPromotions,
+            $refundStatus,
+            $context
+        );
     }
 
     public function refundPaymentByWebhook(OrderEntity $order, WebhookReceiveDataStruct $receiveDataStruct, Context $context): void
@@ -194,7 +160,7 @@ class PaymentRefundFacade
             // Get plugin settings
             $settings = $this->settingsFactory->getSettings($order->getSalesChannelId());
 
-            $this->addRefundedLineItemsToOrder($order, $requestLineItems, $context);
+            $this->addRefundedLineItemsToOrder($order, $requestLineItems, null, $context);
 
             $this->orderService->updateCheckoutCustomFields($order, $orderCustomFields, $context);
             $this->orderTransactionService->processTransition($orderTransaction, $refundStatus, $context);
@@ -207,6 +173,44 @@ class PaymentRefundFacade
 
             throw new CheckoutComException($message);
         }
+    }
+
+    public function fixPriceDifference(string $orderId, Context $context): void
+    {
+        $order = $this->getOrder($orderId, $context);
+        $orderCurrency = $this->orderExtractor->extractCurrency($order);
+
+        $deliveryTotalPrice = 0.0;
+        $orderCustomFields = OrderService::getCheckoutOrderCustomFields($order);
+        if (!$orderCustomFields->isShippingCostRefunded()) {
+            $shippingCostsLineItems = $this->refundBuilder->buildLineItemsShippingCosts($order);
+            $deliveryTotalPrice = abs($shippingCostsLineItems->getPrices()->sum()->getTotalPrice());
+        }
+
+        $price = FloatComparator::cast(
+            $order->getPrice()->getTotalPrice() - $deliveryTotalPrice
+        );
+
+        if (FloatComparator::lessThanOrEquals($price, 0.0)) {
+            $message = 'The order total price can not less than or equals 0';
+            $this->logger->warning($message);
+
+            throw new CheckoutComException($message);
+        }
+
+        $orderCustomFields = OrderService::getCheckoutOrderCustomFields($order);
+        $requestLineItems = $this->refundBuilder->buildLineItemsForFixPriceDifference($price);
+
+        $this->handleRefundPayment(
+            $order,
+            $orderCustomFields,
+            $orderCurrency,
+            $requestLineItems,
+            $this->settingsFactory->getSettings($order->getSalesChannelId()),
+            null,
+            CheckoutPaymentService::STATUS_REFUNDED,
+            $context,
+        );
     }
 
     private function getWebhookRefundStatus(OrderEntity $order, LineItemCollection $requestLineItems): string
@@ -229,11 +233,21 @@ class PaymentRefundFacade
         ) ? CheckoutPaymentService::STATUS_REFUNDED : CheckoutPaymentService::STATUS_PARTIALLY_REFUNDED;
     }
 
-    private function getRefundStatus(OrderEntity $order, LineItemCollection $requestLineItems, SettingStruct $settingStruct): string
-    {
-        $shippingCostsLineItems = $this->refundBuilder->buildLineItemsShippingCosts($order);
-        if (!$this->orderService->isOnlyHaveShippingCosts($order, $requestLineItems, $shippingCostsLineItems)) {
+    private function getRefundStatus(
+        OrderEntity $order,
+        OrderCustomFieldsStruct $orderCustomFields,
+        LineItemCollection $requestLineItems,
+        SettingStruct $settingStruct
+    ): string {
+        if (!$this->isRefundAllProducts($order, $requestLineItems)) {
             return CheckoutPaymentService::STATUS_PARTIALLY_REFUNDED;
+        }
+
+        $shippingCostsLineItems = $this->refundBuilder->buildLineItemsShippingCosts($order);
+        if ($this->orderService->isOnlyHaveShippingCosts($order, $requestLineItems, $shippingCostsLineItems)) {
+            $status = CheckoutPaymentService::STATUS_REFUNDED;
+        } else {
+            $status = CheckoutPaymentService::STATUS_PARTIALLY_REFUNDED;
         }
 
         if ($settingStruct->isIncludeShippingCostsRefund()) {
@@ -241,16 +255,116 @@ class PaymentRefundFacade
             foreach ($shippingCostsLineItems as $shippingCostsLineItem) {
                 $requestLineItems->add($shippingCostsLineItem);
             }
+
+            $orderCustomFields->setIsShippingCostRefunded(true);
         }
 
-        return CheckoutPaymentService::STATUS_REFUNDED;
+        return $status;
     }
 
-    private function addRefundedLineItemsToOrder(OrderEntity $order, LineItemCollection $requestLineItems, Context $context): void
+    private function isRefundAllProducts(OrderEntity $order, LineItemCollection $requestLineItems): bool
     {
+        $totalRefunded = 0;
+        $totalProduct = 0;
+
+        foreach ($order->getLineItems() as $lineItem) {
+            $lineItemPayload = $this->refundBuilder->getCheckoutLineItemPayload($lineItem);
+            if ($lineItem->getType() === LineItem::PRODUCT_LINE_ITEM_TYPE) {
+                $totalProduct += $lineItem->getQuantity();
+            }
+
+            if (empty($lineItemPayload->getRefundLineItemId())) {
+                continue;
+            }
+
+            // If the line item has line-item ID, it means the line-item is refunded line item
+            $totalRefunded += $lineItem->getQuantity();
+        }
+
+        return ($requestLineItems->getTotalQuantity() + $totalRefunded) === $totalProduct;
+    }
+
+    private function handleRefundPayment(
+        OrderEntity $order,
+        OrderCustomFieldsStruct $orderCustomFields,
+        CurrencyEntity $orderCurrency,
+        LineItemCollection $requestLineItems,
+        SettingStruct $settings,
+        ?ProductPromotionCollection $productPromotions,
+        string $refundStatus,
+        Context $context
+    ): void {
+        if ($orderCustomFields->isRefundedFromHub()) {
+            $message = sprintf('This order has already been refunded from checkout.com hub: %s', $order->getId());
+            $this->logger->error($message);
+
+            throw new CheckoutComException($message);
+        }
+
+        $checkoutPaymentId = $orderCustomFields->getCheckoutPaymentId();
+        if (empty($checkoutPaymentId)) {
+            $this->logger->error(sprintf('Error while getting checkoutPaymentId from custom fields of order number: %s', $order->getOrderNumber()));
+
+            throw new CheckoutPaymentIdNotFoundException($order);
+        }
+
+        $orderTransaction = $this->orderExtractor->extractLatestOrderTransaction($order);
+        $paymentHandler = $this->getPaymentHandler($orderTransaction);
+
+        try {
+            $payment = $this->checkoutPaymentService->getPaymentDetails($checkoutPaymentId, $order->getSalesChannelId());
+            if (!$payment->canRefund()) {
+                $message = sprintf('Checkout payment status is not captured to refund for the order number: %s', $order->getOrderNumber());
+                $this->logger->warning($message);
+
+                throw new CheckoutComException($message);
+            }
+
+            $refundedAmount = abs(CheckoutComUtil::formatPriceCheckout(
+                $requestLineItems->getPrices()->sum()->getTotalPrice(),
+                $orderCurrency->getIsoCode()
+            ));
+
+            $refundRequest = new RefundRequest();
+            $refundRequest->amount = $refundedAmount;
+
+            $this->logger->info('Starting request refund', [
+                'status' => $refundStatus,
+                'request' => get_object_vars($refundRequest),
+            ]);
+
+            $actionId = $paymentHandler->refundPayment($checkoutPaymentId, $refundRequest, $order);
+            $orderCustomFields->setLastCheckoutActionId($actionId);
+
+            $this->addRefundedLineItemsToOrder($order, $requestLineItems, $productPromotions, $context);
+            $this->updateStockForProduct($requestLineItems, $context);
+
+            $this->orderService->updateCheckoutCustomFields($order, $orderCustomFields, $context);
+            $this->orderTransactionService->processTransition($orderTransaction, $refundStatus, $context);
+            $this->orderService->processTransition($order, $settings, $refundStatus, $context);
+        } catch (Throwable $ex) {
+            $message = sprintf('Error while refund payment for order ID: %s, checkoutPaymentId: %s', $order->getOrderNumber(), $checkoutPaymentId);
+            $this->logger->error($message, [
+                'error' => $ex->getMessage(),
+            ]);
+
+            throw new CheckoutComException($message);
+        }
+    }
+
+    private function addRefundedLineItemsToOrder(
+        OrderEntity $order,
+        LineItemCollection $requestLineItems,
+        ?ProductPromotionCollection $productPromotions,
+        Context $context
+    ): void {
         $salesChannelContext = $this->orderConverter->assembleSalesChannelContext($order, $context);
         $cart = $this->orderConverter->convertToCart($order, $context);
         $cart->addLineItems($requestLineItems);
+
+        if ($productPromotions instanceof ProductPromotionCollection) {
+            $this->updateCartLineItemsByProductPromotions($cart, $productPromotions);
+        }
 
         $recalculatedCart = $this->cartService->recalculateByCart($cart, $salesChannelContext);
 
@@ -264,6 +378,39 @@ class PaymentRefundFacade
         $orderData['id'] = $order->getId();
 
         $this->orderService->updateOrder($orderData, $context);
+    }
+
+    private function updateCartLineItemsByProductPromotions(Cart $cart, ProductPromotionCollection $productPromotions): void
+    {
+        $lineItemsData = [];
+        foreach ($productPromotions as $productPromotion) {
+            foreach ($productPromotion->getPromotions() as $promotionComposition) {
+                if (\array_key_exists($promotionComposition->getLineItemId(), $lineItemsData)) {
+                    $lineItemData = $lineItemsData[$promotionComposition->getLineItemId()];
+                } else {
+                    $lineItemData = [];
+                }
+
+                $lineItemData[$promotionComposition->getReferencedId()] = [
+                    'referenceId' => $promotionComposition->getReferencedId(),
+                    'refundedQuantity' => $promotionComposition->getRefundedQuantity(),
+                ];
+
+                $lineItemsData[$promotionComposition->getLineItemId()] = $lineItemData;
+            }
+        }
+
+        foreach ($lineItemsData as $lineItemId => $lineItemData) {
+            $lineItem = $cart->get($lineItemId);
+            if (!$lineItem instanceof LineItem) {
+                $message = sprintf('Could not find line item within line item ID: %s', $lineItemId);
+                $this->logger->critical($message);
+
+                throw new CheckoutComException($message);
+            }
+
+            $lineItem->setPayloadValue(RefundBuilder::LINE_ITEM_PROMOTION_PAYLOAD, $lineItemData);
+        }
     }
 
     private function updateStockForProduct(LineItemCollection $requestLineItems, Context $context): void

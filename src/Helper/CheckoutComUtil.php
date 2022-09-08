@@ -203,6 +203,13 @@ class CheckoutComUtil
         return (float) $price / 100;
     }
 
+    public static function floorp(float $val, int $precision = 0): float
+    {
+        $multiple = pow(10, $precision);
+
+        return floor($val * $multiple) / $multiple;
+    }
+
     /**
      * @see https://www.checkout.com/docs/resources/calculating-the-value#Option_1:_The_full_value
      */

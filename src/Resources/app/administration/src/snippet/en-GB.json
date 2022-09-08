@@ -92,7 +92,8 @@
           "returnQuantityColumn": "Return Quantity"
         },
         "lineItems": {
-          "prefixRefundLabel": "Refunded: {itemLabel}"
+          "prefixRefundLabel": "Refunded: {itemLabel}",
+          "prefixCompositionLabel": "- {itemLabel}"
         },
         "summary": {
           "totalBeforeRefundLabel": "Total before refund",
@@ -103,6 +104,16 @@
         },
         "tooltip": {
           "refundFromHubDisabled": "You cannot use Refund manager because this order has been refunded from Checkout.com hub. Please continue the action on Checkout.com hub."
+        }
+      },
+      "fixPriceDifference": {
+        "fixPriceDifferenceButton": "Fix price difference",
+        "modal": {
+          "title": "Fix price difference",
+          "description": "This action can only be executed once. Are you sure you want to fix the price difference?"
+        },
+        "message": {
+          "fixPriceDifferenceExecuted": "Fix price difference was successfully executed"
         }
       },
       "flow": {

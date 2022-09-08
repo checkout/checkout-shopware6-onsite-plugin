@@ -1,14 +1,12 @@
 import template from './sw-order-detail.html.twig';
 import './sw-order-detail.scss';
 import checkoutComOrder from './state';
-import { ORDER_CHECKOUT_COM_CUSTOM_FIELDS } from '../../../../constant/settings';
 
 const {
     Component,
     State,
 } = Shopware;
 const {
-    mapState,
     mapGetters,
 } = Component.getComponentHelper();
 
@@ -24,11 +22,8 @@ Component.override('sw-order-detail', {
     ],
 
     computed: {
-        ...mapState('checkoutComOrder', [
-            'checkoutComOrder',
-        ]),
-
         ...mapGetters('checkoutComOrder', [
+            'checkoutOrderCustomFields',
             'isAuthorizedPayment',
         ]),
 
@@ -41,17 +36,11 @@ Component.override('sw-order-detail', {
                 return false;
             }
 
-            if (!this.checkoutComOrder.customFields) {
+            if (!this.checkoutOrderCustomFields) {
                 return false;
             }
 
-            const checkoutCustomFields = this.checkoutComOrder.customFields[ORDER_CHECKOUT_COM_CUSTOM_FIELDS];
-            if (!checkoutCustomFields) {
-                return false;
-            }
-
-
-            return checkoutCustomFields.manualCapture;
+            return this.checkoutOrderCustomFields.manualCapture;
         },
     },
 

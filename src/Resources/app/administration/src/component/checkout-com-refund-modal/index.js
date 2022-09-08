@@ -1,6 +1,5 @@
 import template from './checkout-com-refund-modal.html.twig';
 import './checkout-com-refund-modal.scss';
-import { LINE_ITEM_PAYLOAD } from '../../constant/settings';
 
 const {
     Component,
@@ -23,7 +22,7 @@ Component.register('checkout-com-refund-modal', {
             type: Object,
             required: true,
         },
-        orderLineItems: {
+        refundableLineItems: {
             type: Array,
             required: true,
         },
@@ -31,7 +30,6 @@ Component.register('checkout-com-refund-modal', {
 
     data() {
         return {
-            refundableLineItems: null,
             isLoading: false,
             isConfirmRefund: false,
         };
@@ -101,48 +99,7 @@ Component.register('checkout-com-refund-modal', {
         },
     },
 
-    created() {
-        this.createdComponent();
-    },
-
     methods: {
-        createdComponent() {
-            this.setRefundableLineItems();
-        },
-
-        setRefundableLineItems() {
-            const refundLineItems = [];
-            const refundableLineItems = [];
-
-            // Foreach line items of order to separate 2 types:
-            // 1. refundedLineItems = The order line items has property `LINE_ITEM_PAYLOAD`(refunded line items)
-            // 2. refundableLineItems = The refundable order line items that can be shown in the refund manager modal
-            this.orderLineItems.forEach((orderLineItem) => {
-                if (!orderLineItem || !orderLineItem.payload || !orderLineItem.payload.hasOwnProperty(LINE_ITEM_PAYLOAD)) {
-                    refundableLineItems.push({ ...orderLineItem });
-                } else {
-                    refundLineItems.push({ ...orderLineItem });
-                }
-            });
-
-            refundableLineItems.forEach((item) => {
-                // Get all refunded line items of the current order
-                const mappingRefundLineItems = refundLineItems.filter(
-                    (refundItem) => refundItem.payload[LINE_ITEM_PAYLOAD].refundLineItemId === item.id,
-                );
-
-                // Calculate the refunded quantity of the line item
-                item.refundedQuantity = mappingRefundLineItems.reduce((
-                    totalRefunded,
-                    itemRefund,
-                ) => totalRefunded + itemRefund.quantity, 0);
-
-                item.remainingQuantity = item.quantity - item.refundedQuantity;
-            });
-
-            this.refundableLineItems = refundableLineItems;
-        },
-
         closeModal() {
             this.$emit('close-modal');
         },

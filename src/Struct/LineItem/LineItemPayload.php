@@ -10,12 +10,15 @@ class LineItemPayload extends Struct
     public const LINE_ITEM_SHIPPING = 'shipping';
     public const LINE_ITEM_PRODUCT = 'product';
     public const LINE_ITEM_WEBHOOK = 'webhook';
+    public const LINE_ITEM_FIX_PRICE = 'fix_price';
 
     protected ?string $refundLineItemId = null;
 
     protected ?string $productId = null;
 
     protected ?string $type = null;
+
+    protected ?array $discountCompositions = [];
 
     public function getRefundLineItemId(): ?string
     {
@@ -45,5 +48,15 @@ class LineItemPayload extends Struct
     public function setType(?string $type): void
     {
         $this->type = $type;
+    }
+
+    public function getDiscountCompositions(): ?array
+    {
+        return $this->discountCompositions;
+    }
+
+    public function setDiscountCompositions(?array $discountCompositions): void
+    {
+        $this->discountCompositions = $discountCompositions;
     }
 }

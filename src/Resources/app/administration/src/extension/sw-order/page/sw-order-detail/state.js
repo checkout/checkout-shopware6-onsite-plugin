@@ -1,4 +1,4 @@
-import { CHECKOUT_STATUS } from '../../../../constant/settings';
+import { CHECKOUT_STATUS, ORDER_CHECKOUT_COM_CUSTOM_FIELDS } from '../../../../constant/settings';
 
 export default {
     namespaced: true,
@@ -17,6 +17,18 @@ export default {
             }
 
             return state.checkoutComPayment.status === CHECKOUT_STATUS.AUTHORIZED;
+        },
+
+        checkoutOrderCustomFields(state) {
+            if (!state.checkoutComOrder) {
+                return null;
+            }
+
+            if (!state.checkoutComOrder.customFields) {
+                return null;
+            }
+
+            return state.checkoutComOrder.customFields[ORDER_CHECKOUT_COM_CUSTOM_FIELDS] || null;
         },
 
         isCapturedPayment(state) {

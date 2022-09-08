@@ -37,6 +37,7 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -159,12 +160,17 @@ class PaymentRefundFacadeTest extends TestCase
         );
     }
 
-    public function testRefundPaymentOfEmptyCheckoutPaymentId(): void
+    public function testRefundPaymentOfEmptyBuildLineItems(): void
     {
         $orderId = 'foo';
 
+        $orderCurrency = new CurrencyEntity();
+        $orderCurrency->setId('foo');
+        $orderCurrency->setIsoCode('foo');
+
         $order = new OrderEntity();
         $order->setId($orderId);
+        $order->setSalesChannelId('foo');
 
         $orderRefundRequest = new OrderRefundRequest();
         $orderRefundRequest->setOrderId($orderId);
@@ -173,6 +179,56 @@ class PaymentRefundFacadeTest extends TestCase
         $this->orderService->expects(static::once())
             ->method('getOrder')
             ->willReturn($order);
+
+        $this->orderExtractor->expects(static::once())
+            ->method('extractCurrency')
+            ->willReturn($orderCurrency);
+
+        $this->refundBuilder->expects(static::once())
+            ->method('buildLineItems')
+            ->willReturn(new LineItemCollection());
+
+        static::expectException(CheckoutComException::class);
+
+        $this->paymentRefundFacade->refundPayment(
+            $orderRefundRequest,
+            $this->salesChannelContext->getContext()
+        );
+    }
+
+    public function testRefundPaymentOfEmptyCheckoutPaymentId(): void
+    {
+        $orderId = 'foo';
+
+        $orderCurrency = new CurrencyEntity();
+        $orderCurrency->setId('foo');
+        $orderCurrency->setIsoCode('foo');
+
+        $order = new OrderEntity();
+        $order->setId($orderId);
+        $order->setSalesChannelId('foo');
+        $order->setLineItems(new OrderLineItemCollection());
+
+        $orderRefundRequest = new OrderRefundRequest();
+        $orderRefundRequest->setOrderId($orderId);
+        $orderRefundRequest->setItems(new RefundItemRequestCollection());
+
+        $lineItems = new LineItemCollection([new LineItem('foo', 'bar')]);
+
+        $this->orderService->expects(static::once())
+            ->method('getOrder')
+            ->willReturn($order);
+
+        $this->orderExtractor->expects(static::once())
+            ->method('extractCurrency')
+            ->willReturn($orderCurrency);
+
+        $this->refundBuilder->expects(static::once())
+            ->method('buildLineItems')
+            ->willReturn($lineItems);
+
+        $this->settingsFactory->expects(static::once())
+            ->method('getSettings');
 
         static::expectException(CheckoutPaymentIdNotFoundException::class);
 
@@ -212,47 +268,6 @@ class PaymentRefundFacadeTest extends TestCase
         );
     }
 
-    public function testRefundPaymentOfEmptyBuildLineItems(): void
-    {
-        $orderId = 'foo';
-
-        $orderCurrency = new CurrencyEntity();
-        $orderCurrency->setId('foo');
-        $orderCurrency->setIsoCode('foo');
-
-        $checkoutOrderCustomFields = new OrderCustomFieldsStruct();
-        $checkoutOrderCustomFields->setCheckoutPaymentId('foo');
-
-        $order = new OrderEntity();
-        $order->setId($orderId);
-        $order->setCustomFields([
-            OrderService::CHECKOUT_CUSTOM_FIELDS => $checkoutOrderCustomFields->jsonSerialize(),
-        ]);
-
-        $orderRefundRequest = new OrderRefundRequest();
-        $orderRefundRequest->setOrderId($orderId);
-        $orderRefundRequest->setItems(new RefundItemRequestCollection());
-
-        $this->orderService->expects(static::once())
-            ->method('getOrder')
-            ->willReturn($order);
-
-        $this->orderExtractor->expects(static::once())
-            ->method('extractCurrency')
-            ->willReturn($orderCurrency);
-
-        $this->refundBuilder->expects(static::once())
-            ->method('buildLineItems')
-            ->willReturn(new LineItemCollection());
-
-        static::expectException(CheckoutComException::class);
-
-        $this->paymentRefundFacade->refundPayment(
-            $orderRefundRequest,
-            $this->salesChannelContext->getContext()
-        );
-    }
-
     public function testRefundPaymentOfNullPaymentHandler(): void
     {
         $orderId = 'foo';
@@ -270,6 +285,8 @@ class PaymentRefundFacadeTest extends TestCase
 
         $order = new OrderEntity();
         $order->setId($orderId);
+        $order->setLineItems(new OrderLineItemCollection());
+        $order->setSalesChannelId('foo');
         $order->setCustomFields([
             OrderService::CHECKOUT_CUSTOM_FIELDS => $checkoutOrderCustomFields->jsonSerialize(),
         ]);
@@ -309,69 +326,6 @@ class PaymentRefundFacadeTest extends TestCase
         );
     }
 
-    public function testRefundPaymentOfThrowExceptionBecauseCallGetDetailsFailed(): void
-    {
-        $orderId = 'foo';
-
-        $orderCurrency = new CurrencyEntity();
-        $orderCurrency->setId('foo');
-        $orderCurrency->setIsoCode('foo');
-
-        $checkoutOrderCustomFields = new OrderCustomFieldsStruct();
-        $checkoutOrderCustomFields->setCheckoutPaymentId('foo');
-
-        $orderTransaction = new OrderTransactionEntity();
-        $orderTransaction->setId('foo');
-        $orderTransactions = new OrderTransactionCollection([$orderTransaction]);
-
-        $order = new OrderEntity();
-        $order->setId($orderId);
-        $order->setSalesChannelId('foo');
-        $order->setCustomFields([
-            OrderService::CHECKOUT_CUSTOM_FIELDS => $checkoutOrderCustomFields->jsonSerialize(),
-        ]);
-        $order->setTransactions($orderTransactions);
-
-        $orderRefundRequest = new OrderRefundRequest();
-        $orderRefundRequest->setOrderId($orderId);
-        $orderRefundRequest->setItems(new RefundItemRequestCollection());
-
-        $paymentHandler = $this->createMock(PaymentHandler::class);
-
-        $lineItems = new LineItemCollection([new LineItem('foo', 'bar')]);
-
-        $this->orderService->expects(static::once())
-            ->method('getOrder')
-            ->willReturn($order);
-
-        $this->orderExtractor->expects(static::once())
-            ->method('extractCurrency')
-            ->willReturn($orderCurrency);
-
-        $this->refundBuilder->expects(static::once())
-            ->method('buildLineItems')
-            ->willReturn($lineItems);
-
-        $this->orderExtractor->expects(static::once())
-            ->method('extractLatestOrderTransaction')
-            ->willReturn($orderTransaction);
-
-        $this->paymentMethodService->expects(static::once())
-            ->method('getPaymentHandlerByOrderTransaction')
-            ->willReturn($paymentHandler);
-
-        $this->checkoutPaymentService->expects(static::once())
-            ->method('getPaymentDetails')
-            ->willThrowException(new Exception('foo'));
-
-        static::expectException(CheckoutComException::class);
-
-        $this->paymentRefundFacade->refundPayment(
-            $orderRefundRequest,
-            $this->salesChannelContext->getContext()
-        );
-    }
-
     public function testRefundPaymentOfThrowExceptionBecauseStatusCanNotRefund(): void
     {
         $orderId = 'foo';
@@ -389,6 +343,7 @@ class PaymentRefundFacadeTest extends TestCase
 
         $order = new OrderEntity();
         $order->setId($orderId);
+        $order->setLineItems(new OrderLineItemCollection());
         $order->setSalesChannelId('foo');
         $order->setCustomFields([
             OrderService::CHECKOUT_CUSTOM_FIELDS => $checkoutOrderCustomFields->jsonSerialize(),
@@ -465,6 +420,7 @@ class PaymentRefundFacadeTest extends TestCase
 
         $order = new OrderEntity();
         $order->setId($orderId);
+        $order->setLineItems(new OrderLineItemCollection());
         $order->setSalesChannelId('foo');
         $order->setCustomFields([
             OrderService::CHECKOUT_CUSTOM_FIELDS => $checkoutOrderCustomFields->jsonSerialize(),
@@ -519,13 +475,6 @@ class PaymentRefundFacadeTest extends TestCase
             ->method('getPaymentDetails')
             ->willReturn($payment);
 
-        $this->refundBuilder->expects(static::once())
-            ->method('buildLineItemsShippingCosts');
-
-        $this->orderService->expects(static::once())
-            ->method('isOnlyHaveShippingCosts')
-            ->willReturn(false);
-
         $paymentHandler->expects(static::once())
             ->method('refundPayment')
             ->willThrowException(new Exception('foo'));
@@ -566,6 +515,7 @@ class PaymentRefundFacadeTest extends TestCase
 
         $order = new OrderEntity();
         $order->setId($orderId);
+        $order->setLineItems(new OrderLineItemCollection());
         $order->setSalesChannelId('foo');
         $order->setCustomFields([
             OrderService::CHECKOUT_CUSTOM_FIELDS => $checkoutOrderCustomFields->jsonSerialize(),
@@ -628,14 +578,6 @@ class PaymentRefundFacadeTest extends TestCase
         $this->checkoutPaymentService->expects(static::once())
             ->method('getPaymentDetails')
             ->willReturn($payment);
-
-        $this->refundBuilder->expects(static::once())
-            ->method('buildLineItemsShippingCosts')
-            ->willReturn(new LineItemCollection());
-
-        $this->orderService->expects(static::once())
-            ->method('isOnlyHaveShippingCosts')
-            ->willReturn(true);
 
         $paymentHandler->expects(static::once())
             ->method('refundPayment');

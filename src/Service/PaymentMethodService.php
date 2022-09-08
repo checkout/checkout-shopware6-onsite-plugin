@@ -147,7 +147,6 @@ class PaymentMethodService
         $paymentData = [];
         $rulesData = [];
 
-        /** @var PaymentHandler $paymentHandler */
         foreach ($paymentHandlers->getElements() as $paymentHandler) {
             $paymentMethodData = [
                 'handlerIdentifier' => $paymentHandler->getClassName(),
@@ -269,7 +268,6 @@ class PaymentMethodService
      */
     private function setActivatePaymentMethods(PaymentHandlerCollection $paymentHandlers, InstalledPaymentMethodCollection $installedPaymentMethods, Context $context, bool $isActive = true): void
     {
-        /** @var PaymentHandler $paymentHandler */
         foreach ($paymentHandlers->getElements() as $paymentHandler) {
             // We skip if empty payment method handler or if it is not in the installed payment methods
             if (!$installedPaymentMethods->has($paymentHandler->getClassName())) {
