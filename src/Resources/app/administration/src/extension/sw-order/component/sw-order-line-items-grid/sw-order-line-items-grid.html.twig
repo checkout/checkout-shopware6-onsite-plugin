@@ -91,7 +91,7 @@
                 {{ $tc("checkout-payments.order.refund.lineItems.prefixRefundLabel", 0, {itemLabel: item.label}) }}
             </span>
             <span
-                v-for="(index, compositionItem) in getDiscountCompositionsItem(item)"
+                v-for="(compositionItem, index) in getDiscountCompositionsItem(item)"
                 :key="index"
                 class="sw-order-line-items-grid__item-composition-label"
             >
