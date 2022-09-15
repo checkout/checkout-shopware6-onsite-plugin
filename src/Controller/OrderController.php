@@ -117,6 +117,27 @@ class OrderController extends AbstractController
         ]);
     }
 
+    /**
+     * Fix price difference of payment by the order id
+     *
+     * @Route("/api/_action/checkout-com/order/fix-price-difference", name="api.action.checkout-com.order.fix-price-difference", methods={"POST"})
+     */
+    public function fixPriceDifference(RequestDataBag $request, Context $context): JsonResponse
+    {
+        $dataValidation = $this->getFixPriceDifferenceValidation();
+        $data = $request->all();
+        $this->dataValidator->validate($data, $dataValidation);
+
+        $this->paymentRefundFacade->fixPriceDifference(
+            $data['orderId'],
+            $context
+        );
+
+        return new JsonResponse([
+            'success' => true,
+        ]);
+    }
+
     private function getRefundPaymentValidation(): DataValidationDefinition
     {
         $definition = new DataValidationDefinition('checkout_com.order.refund');
@@ -138,6 +159,15 @@ class OrderController extends AbstractController
                 ],
             ])
         );
+
+        return $definition;
+    }
+
+    private function getFixPriceDifferenceValidation(): DataValidationDefinition
+    {
+        $definition = new DataValidationDefinition('checkout_com.order.fix-price-difference');
+
+        $definition->add('orderId', new Type('string'), new NotBlank());
 
         return $definition;
     }

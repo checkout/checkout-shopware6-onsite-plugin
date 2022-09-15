@@ -6,6 +6,7 @@ import './component/checkout-com-order-detail-payment';
 import './component/checkout-com-refund-modal';
 import './component/checkout-com-flow-full-refund-modal';
 import './component/checkout-com-flow-capture-payment-modal';
+import './component/checkout-com-fix-price-difference';
 import './extension/sw-flow-sequence-action';
 import './extension/sw-settings-payment';
 import './extension/sw-system-config';

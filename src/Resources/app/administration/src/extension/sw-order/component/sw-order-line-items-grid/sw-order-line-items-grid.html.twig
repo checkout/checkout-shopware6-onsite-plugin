@@ -2,7 +2,7 @@
     {% parent() %}
 
     {% block sw_order_line_items_grid_condition %}
-        <template v-if="canRefund">
+        <template v-if="canRefund || isPriceDifferent">
             {% block sw_order_line_items_grid_checkout_com %}
                 <sw-container
                     v-show="!editable"
@@ -17,38 +17,68 @@
                     {% block sw_order_line_items_grid_checkout_com_actions %}
                         <div align="right">
                             {% block sw_order_line_items_grid_checkout_com_actions_group %}
-                                <sw-button-group>
-                                    {% block sw_order_line_items_grid_checkout_com_actions_group_refund %}
-                                        <sw-button
-                                            v-tooltip="{
-                                                message: $tc('checkout-payments.order.refund.tooltip.refundFromHubDisabled'),
-                                                disabled: !isOrderRefundedFromHub,
-                                                showOnDisabledElements: true
-                                            }"
-                                            class="sw-order-line-items-grid__actions-btn"
-                                            variant="ghost"
-                                            size="small"
-                                            :block="true"
-                                            :disabled="isOrderRefundedFromHub"
-                                            @click="onOpenRefundModal"
-                                        >
-                                            {{ $tc('checkout-payments.order.refund.refundButton') }}
-                                        </sw-button>
-                                    {% endblock %}
-                                </sw-button-group>
+                                {% block sw_order_line_items_grid_checkout_com_actions_group_refund_condition %}
+                                    <template v-if="canRefund">
+                                        {% block sw_order_line_items_grid_checkout_com_actions_group_refund_condition_button %}
+                                            <sw-button-group>
+                                                <sw-button
+                                                    v-tooltip="{
+                                                        message: $tc('checkout-payments.order.refund.tooltip.refundFromHubDisabled'),
+                                                        disabled: !isOrderRefundedFromHub,
+                                                        showOnDisabledElements: true
+                                                    }"
+                                                    class="sw-order-line-items-grid__actions-btn"
+                                                    variant="ghost"
+                                                    size="small"
+                                                    :block="true"
+                                                    :disabled="isOrderRefundedFromHub"
+                                                    @click="onOpenRefundModal"
+                                                >
+                                                    {{ $tc('checkout-payments.order.refund.refundButton') }}
+                                                </sw-button>
+                                            </sw-button-group>
+                                        {% endblock %}
+
+                                        {% block sw_order_line_items_grid_checkout_com_actions_group_refund_condition_modal %}
+                                            <checkout-com-refund-modal
+                                                v-if="isShowRefundModal"
+                                                :order="order"
+                                                :refundable-line-items="refundableLineItems"
+                                                @close-modal="closeRefundModal"
+                                            />
+                                        {% endblock %}
+                                    </template>
+                                {% endblock %}
+
+                                {% block sw_order_line_items_grid_checkout_com_actions_group_price_different_condition %}
+                                    <template v-if="isPriceDifferent">
+                                        {% block sw_order_line_items_grid_checkout_com_actions_group_price_different_condition_button %}
+                                            <sw-button-group>
+                                                <sw-button
+                                                    class="sw-order-line-items-grid__actions-btn"
+                                                    variant="danger"
+                                                    size="small"
+                                                    :block="true"
+                                                    @click="onOpenFixPriceDifferenceModal"
+                                                >
+                                                    {{ $tc('checkout-payments.order.fixPriceDifference.fixPriceDifferenceButton') }}
+                                                </sw-button>
+                                            </sw-button-group>
+                                        {% endblock %}
+
+                                        {% block sw_order_line_items_grid_checkout_com_actions_group_price_different_condition_modal %}
+                                            <checkout-com-fix-price-difference
+                                                v-if="isShowFixPriceDifferenceModal"
+                                                :order="order"
+                                                @close-modal="closeFixPriceDifferenceModal"
+                                            />
+                                        {% endblock %}
+                                    </template>
+                                {% endblock %}
                             {% endblock %}
                         </div>
                     {% endblock %}
                 </sw-container>
-            {% endblock %}
-
-            {% block checkout_com_refund_modal %}
-                <checkout-com-refund-modal
-                    v-if="isShowRefundModal"
-                    :order="order"
-                    :order-line-items="orderLineItems"
-                    @close-modal="closeRefundModal"
-                />
             {% endblock %}
         </template>
     {% endblock %}
@@ -59,6 +89,13 @@
         <template v-if="isCheckoutComRefundedItem(item)">
             <span class="sw-order-line-items-grid__item-label">
                 {{ $tc("checkout-payments.order.refund.lineItems.prefixRefundLabel", 0, {itemLabel: item.label}) }}
+            </span>
+            <span
+                v-for="(index, compositionItem) in getDiscountCompositionsItem(item)"
+                :key="index"
+                class="sw-order-line-items-grid__item-composition-label"
+            >
+                {{ $tc("checkout-payments.order.refund.lineItems.prefixCompositionLabel", 0, {itemLabel: compositionItem.label}) }}
             </span>
         </template>
     {% endblock %}

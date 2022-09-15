@@ -81,6 +81,7 @@
                                     <sw-button
                                         size="large"
                                         class="checkout-com-refund-modal__button-cancel"
+                                        :disabled="isLoading"
                                         @click="closeModal"
                                     >
                                         {{ $tc('global.default.cancel') }}
@@ -92,7 +93,7 @@
                                         variant="primary"
                                         size="large"
                                         class="checkout-com-refund-modal__button-refund"
-                                        :disabled="!canRefund"
+                                        :disabled="!canRefund || isLoading"
                                         @click="onRefund"
                                     >
                                         {{ $tc('checkout-payments.order.refund.modal.refundSelectedItemsButton') }}

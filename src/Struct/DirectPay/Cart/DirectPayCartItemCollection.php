@@ -4,14 +4,20 @@ namespace CheckoutCom\Shopware6\Struct\DirectPay\Cart;
 
 use Shopware\Core\Framework\Struct\Collection;
 
+/**
+ * @method DirectPayCartItemStruct[]    getIterator()
+ * @method DirectPayCartItemStruct[]    getElements()
+ * @method DirectPayCartItemStruct|null get(string $key)
+ * @method DirectPayCartItemStruct|null first()
+ * @method DirectPayCartItemStruct|null last()
+ */
 class DirectPayCartItemCollection extends Collection
 {
     public function getTotalAmount(): float
     {
         $amount = 0;
 
-        /** @var DirectPayCartItemStruct $item */
-        foreach ($this->elements as $item) {
+        foreach ($this->getElements() as $item) {
             $amount += ($item->getQuantity() * $item->getPrice());
         }
 

@@ -4,6 +4,13 @@ namespace CheckoutCom\Shopware6\Struct\PaymentMethod;
 
 use Shopware\Core\Framework\Struct\Collection;
 
+/**
+ * @method DisplayNameTranslationStruct[]    getIterator()
+ * @method DisplayNameTranslationStruct[]    getElements()
+ * @method DisplayNameTranslationStruct|null get(string $key)
+ * @method DisplayNameTranslationStruct|null first()
+ * @method DisplayNameTranslationStruct|null last()
+ */
 class DisplayNameTranslationCollection extends Collection
 {
     public function addLangData(string $lang, string $name): void
@@ -20,7 +27,6 @@ class DisplayNameTranslationCollection extends Collection
         }
 
         $translations = [];
-        /** @var DisplayNameTranslationStruct $translation */
         foreach ($this->getElements() as $translation) {
             $translations[$translation->getLang()] = $translation->getName();
         }

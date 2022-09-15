@@ -20,6 +20,8 @@ class OrderCustomFieldsStruct extends Struct
 
     protected bool $manualCapture = false;
 
+    protected bool $isShippingCostRefunded = false;
+
     public function __construct(?string $checkoutPaymentId = null, string $checkoutReturnUrl = '', string $transactionReturnUrl = '')
     {
         $this->checkoutPaymentId = $checkoutPaymentId;
@@ -100,5 +102,15 @@ class OrderCustomFieldsStruct extends Struct
     public function setManualCapture(bool $manualCapture): void
     {
         $this->manualCapture = $manualCapture;
+    }
+
+    public function isShippingCostRefunded(): bool
+    {
+        return $this->isShippingCostRefunded;
+    }
+
+    public function setIsShippingCostRefunded(bool $isShippingCostRefunded): void
+    {
+        $this->isShippingCostRefunded = $isShippingCostRefunded;
     }
 }
