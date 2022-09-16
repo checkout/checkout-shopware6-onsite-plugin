@@ -13,7 +13,7 @@
                     :label="$tc('checkout-payments.config.api.accountTypeLabel')"
                     :options="accountTypeOptions"
                     :disabled="props.isInherited || isLoading"
-                    :value="props.currentValue.accountType"
+                    :value="getValue(props.currentValue, 'accountType', ACCOUNT_TYPE.ABC)"
                     @change="updateInheritedValue('accountType', props.currentValue, $event, props.updateCurrentValue)"
                 />
             {% endblock %}
@@ -26,7 +26,7 @@
                     :label="$tc('checkout-payments.config.api.secretKeyLabel')"
                     :placeholder="$tc('checkout-payments.config.api.secretKeyLabel')"
                     :disabled="props.isInherited || isLoading"
-                    :value="props.currentValue.secretKey"
+                    :value="getValue(props.currentValue, 'secretKey', null)"
                     @input="updateInheritedValue('secretKey', props.currentValue, $event, props.updateCurrentValue)"
                     @change="updateInheritedValue('secretKey', props.currentValue, $event, props.updateCurrentValue)"
                 />
@@ -40,7 +40,7 @@
                     :label="$tc('checkout-payments.config.api.publicKeyLabel')"
                     :placeholder="$tc('checkout-payments.config.api.publicKeyLabel')"
                     :disabled="props.isInherited || isLoading"
-                    :value="props.currentValue.publicKey"
+                    :value="getValue(props.currentValue, 'publicKey', null)"
                     @input="updateInheritedValue('publicKey', props.currentValue, $event, props.updateCurrentValue)"
                     @change="updateInheritedValue('publicKey', props.currentValue, $event, props.updateCurrentValue)"
                 />
@@ -52,7 +52,7 @@
                     :label="$tc('checkout-payments.config.api.sandboxModeLabel')"
                     :help-text="$tc('checkout-payments.config.api.sandboxModeHelpText')"
                     :disabled="props.isInherited || isLoading"
-                    :value="props.currentValue.sandboxMode"
+                    :value="getValue(props.currentValue, 'sandboxMode', false)"
                     @input="updateInheritedValue('sandboxMode', props.currentValue, $event, props.updateCurrentValue)"
                     @change="updateInheritedValue('sandboxMode', props.currentValue, $event, props.updateCurrentValue)"
                 />

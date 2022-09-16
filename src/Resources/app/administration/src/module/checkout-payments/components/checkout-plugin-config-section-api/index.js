@@ -19,7 +19,8 @@ Component.register('checkout-plugin-config-section-api', {
     props: {
         inheritedValue: {
             type: Object,
-            required: true,
+            default: null,
+            required: false,
         },
         actualConfigData: {
             type: Object,
@@ -33,9 +34,8 @@ Component.register('checkout-plugin-config-section-api', {
 
     data() {
         return {
-            config: this.actualConfigData || {
-                accountType: ACCOUNT_TYPE.ABC,
-            },
+            ACCOUNT_TYPE,
+            config: this.actualConfigData,
             error: {
                 secretKey: false,
                 publicKey: false,
@@ -46,7 +46,7 @@ Component.register('checkout-plugin-config-section-api', {
 
     computed: {
         apiLink() {
-            const { sandboxMode } = this.config;
+            const sandboxMode = !!(this.config && this.config.sandboxMode);
 
             return sandboxMode ? DASHBOARD_LINK.SANDBOX : DASHBOARD_LINK.LIVE;
         },
@@ -71,9 +71,24 @@ Component.register('checkout-plugin-config-section-api', {
             },
             deep: true,
         },
+
+        actualConfigData: {
+            handler(actualConfigData) {
+                this.config = actualConfigData;
+            },
+            deep: true,
+        },
     },
 
     methods: {
+        getValue(value, field, defaultValue = null) {
+            if (!value) {
+                return defaultValue;
+            }
+
+            return value[field] ?? defaultValue;
+        },
+
         updateInheritedValue(field, currentValue, value, updateCurrentValueCB) {
             updateCurrentValueCB({
                 ...currentValue,
