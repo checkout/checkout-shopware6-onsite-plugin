@@ -7,12 +7,11 @@ use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\Previous\PaymentRequest;
 use Checkout\Payments\Previous\Source\Apm\RequestPayPalSource;
 use Checkout\Payments\Product;
-use CheckoutCom\Shopware6\Exception\CheckoutComException;
 use CheckoutCom\Shopware6\Handler\PaymentHandler;
 use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
 use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
 use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
-use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -68,24 +67,17 @@ class PayPalHandler extends PaymentHandler
     {
         $currency = $this->orderExtractor->extractCurrency($order);
 
-        $lineItems = $order->getLineItems();
-        if (!$lineItems instanceof OrderLineItemCollection) {
-            $message = sprintf('The orderLineItems must be instance of OrderLineItemCollection with Order ID: %s', $order->getId());
-            $this->logger->error($message);
-
-            throw new CheckoutComException($message);
-        }
-
         $products = [];
-
-        foreach ($lineItems as $lineItem) {
-            $product = new Product();
-            $product->name = $lineItem->getLabel();
-            $product->unit_price = CheckoutComUtil::formatPriceCheckout($lineItem->getUnitPrice(), $currency->getIsoCode());
-            $product->quantity = $lineItem->getQuantity();
-
-            $products[] = $product;
+        $product = new Product();
+        $product->quantity = 1;
+        $product->name = $this->translator->trans('checkoutCom.payments.totalPriceLabel');
+        if ($order->getTaxStatus() === CartPrice::TAX_STATE_FREE) {
+            $product->unit_price = CheckoutComUtil::formatPriceCheckout($order->getAmountNet(), $currency->getIsoCode());
+        } else {
+            $product->unit_price = CheckoutComUtil::formatPriceCheckout($order->getAmountTotal(), $currency->getIsoCode());
         }
+
+        $products[] = $product;
 
         return $products;
     }
