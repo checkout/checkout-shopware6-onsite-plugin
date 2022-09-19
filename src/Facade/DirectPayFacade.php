@@ -235,33 +235,34 @@ class DirectPayFacade
         $paymentMethodType = $data->get('paymentMethodType');
         $cartToken = $data->get('cartToken');
 
+        $paymentHandler = $this->paymentMethodService->getPaymentHandlersByType($paymentMethodType);
+        $paymentMethod = $this->paymentMethodService->getPaymentMethodByHandlerIdentifier(
+            $context->getContext(),
+            $paymentHandler->getClassName(),
+            true
+        );
+
+        $country = $this->countryService->getCountryByIsoCode(
+            $shippingContact->get('countryCode'),
+            $context->getContext()
+        );
+        $salutation = $this->customerService->getNotSpecifiedSalutation($context->getContext());
+
+        $countryState = null;
+        $countryStateCode = $shippingContact->get('countryStateCode');
+        if (!empty($countryStateCode)) {
+            $countryState = $this->countryService->getCountryState(
+                $countryStateCode,
+                $country,
+                $context->getContext()
+            );
+        }
+
         $originCartTokenKey = $this->cartBackupService->getBackupCartTokenKey($context);
 
         try {
             // Need to switch to our direct cart to handle the cart in the context
             $this->cartBackupService->copyDirectCartToCartContext($cartToken, $context);
-
-            $paymentHandler = $this->paymentMethodService->getPaymentHandlersByType($paymentMethodType);
-            $paymentMethod = $this->paymentMethodService->getPaymentMethodByHandlerIdentifier(
-                $context->getContext(),
-                $paymentHandler->getClassName(),
-                true
-            );
-
-            $country = $this->countryService->getCountryByIsoCode(
-                $shippingContact->get('countryCode'),
-                $context->getContext()
-            );
-            $salutation = $this->customerService->getNotSpecifiedSalutation($context->getContext());
-
-            $countryState = null;
-            if ($shippingContact->has('countryStateCode')) {
-                $countryState = $this->countryService->getCountryState(
-                    $shippingContact->get('countryStateCode'),
-                    $country,
-                    $context->getContext()
-                );
-            }
 
             // If the customer is not logged in, we need to create and log in a new customer.
             if (!$context->getCustomer() instanceof CustomerEntity) {
