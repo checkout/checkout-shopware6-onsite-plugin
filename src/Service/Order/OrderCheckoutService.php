@@ -2,6 +2,8 @@
 
 namespace CheckoutCom\Shopware6\Service\Order;
 
+use Checkout\CheckoutApiException;
+use Checkout\HttpMetadata;
 use CheckoutCom\Shopware6\Exception\CheckoutComException;
 use CheckoutCom\Shopware6\Exception\CheckoutPaymentIdNotFoundException;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
@@ -17,6 +19,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class OrderCheckoutService extends AbstractOrderCheckoutService
@@ -72,12 +75,32 @@ class OrderCheckoutService extends AbstractOrderCheckoutService
 
         try {
             $payment = $this->checkoutPaymentService->getPaymentDetails($checkoutPaymentId, $order->getSalesChannelId());
-            $actions = $this->checkoutPaymentService->getPaymentActions($checkoutPaymentId, $order->getSalesChannelId());
-
-            return $payment->assign(['actions' => $actions]);
         } catch (Throwable $ex) {
             $message = sprintf('Error while getting payment details for order ID: %s, checkoutPaymentId: %s', $orderId, $checkoutPaymentId);
             $this->logger->error($message);
+
+            throw new CheckoutComException($message);
+        }
+
+        try {
+            $actions = $this->checkoutPaymentService->getPaymentActions($checkoutPaymentId, $order->getSalesChannelId());
+
+            return $payment->assign(['actions' => $actions]);
+        } catch (CheckoutApiException $e) {
+            $httpMetaData = $e->http_metadata;
+
+            // If the status of API response is 404, it means actions are empty. Keep response the payment details
+            if ($httpMetaData instanceof HttpMetadata && $httpMetaData->getStatusCode() === Response::HTTP_NOT_FOUND) {
+                return $payment->assign(['actions' => []]);
+            }
+
+            $message = sprintf('Error while call API payment actions for order ID: %s, checkoutPaymentId: %s', $orderId, $checkoutPaymentId);
+            $this->logger->error($message, ['e' => $e->getMessage()]);
+
+            throw new CheckoutComException($message);
+        } catch (Throwable $e) {
+            $message = sprintf('Error while getting payment actions for order ID: %s, checkoutPaymentId: %s', $orderId, $checkoutPaymentId);
+            $this->logger->error($message, ['e' => $e->getMessage()]);
 
             throw new CheckoutComException($message);
         }
