@@ -4,7 +4,6 @@ namespace CheckoutCom\Shopware6\Tests\Services;
 
 use CheckoutCom\Shopware6\Exception\CheckoutComKlarnaException;
 use CheckoutCom\Shopware6\Exception\CountryCodeNotFoundException;
-use CheckoutCom\Shopware6\Exception\CountryStateNotFoundException;
 use CheckoutCom\Shopware6\Service\CountryService;
 use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Tests\Fakes\FakeEntityRepository;
@@ -96,10 +95,6 @@ class CountryServiceTest extends TestCase
      */
     public function testGetCountryState(?string $stateCode, bool $expectFound): void
     {
-        if (!$expectFound) {
-            static::expectException(CountryStateNotFoundException::class);
-        }
-
         $mock = $this->createMock(CountryStateEntity::class);
 
         $country = $this->createConfiguredMock(CountryEntity::class, [
@@ -115,7 +110,11 @@ class CountryServiceTest extends TestCase
 
         $countryState = $this->countryService->getCountryState($stateCode, $country, $this->salesChannelContext->getContext());
 
-        static::assertInstanceOf(CountryStateEntity::class, $countryState);
+        if (!$expectFound) {
+            static::assertNull($countryState);
+        } else {
+            static::assertInstanceOf(CountryStateEntity::class, $countryState);
+        }
     }
 
     /**

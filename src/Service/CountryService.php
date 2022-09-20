@@ -4,7 +4,6 @@ namespace CheckoutCom\Shopware6\Service;
 
 use CheckoutCom\Shopware6\Exception\CheckoutComKlarnaException;
 use CheckoutCom\Shopware6\Exception\CountryCodeNotFoundException;
-use CheckoutCom\Shopware6\Exception\CountryStateNotFoundException;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
@@ -61,23 +60,13 @@ class CountryService
         return $this->countryRepository->searchIds($criteria, $context)->getIds();
     }
 
-    public function getCountryState(string $stateCode, CountryEntity $country, Context $context): CountryStateEntity
+    public function getCountryState(string $stateCode, CountryEntity $country, Context $context): ?CountryStateEntity
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('countryId', $country->getId()));
         $criteria->addFilter(new EqualsFilter('shortCode', \sprintf('%s-%s', $country->getIso(), strtoupper($stateCode))));
 
-        $countryState = $this->countryStateRepository->search($criteria, $context)->first();
-
-        if (!$countryState instanceof CountryStateEntity) {
-            $this->logger->critical(
-                sprintf('Could not fetch country state with state code: %s', $stateCode)
-            );
-
-            throw new CountryStateNotFoundException($stateCode);
-        }
-
-        return $countryState;
+        return $this->countryStateRepository->search($criteria, $context)->first();
     }
 
     public function getPurchaseCountryIsoCodeFromOrder(OrderEntity $order): string
