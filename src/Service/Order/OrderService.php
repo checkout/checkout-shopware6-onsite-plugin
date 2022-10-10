@@ -2,13 +2,13 @@
 
 namespace CheckoutCom\Shopware6\Service\Order;
 
+use CheckoutCom\Shopware6\Exception\OrderNotFoundException;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\Transition\AbstractOrderTransitionService;
 use CheckoutCom\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
 use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;

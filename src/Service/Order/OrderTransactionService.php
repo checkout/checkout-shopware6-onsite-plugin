@@ -2,11 +2,11 @@
 
 namespace CheckoutCom\Shopware6\Service\Order;
 
+use CheckoutCom\Shopware6\Exception\OrderTransactionNotFoundException;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\Transition\OrderTransactionTransitionService;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Cart\Exception\OrderTransactionNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;

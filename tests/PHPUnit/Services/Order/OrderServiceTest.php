@@ -2,6 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Tests\Services\Order;
 
+use CheckoutCom\Shopware6\Exception\OrderNotFoundException;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Service\Order\OrderService;
@@ -13,7 +14,6 @@ use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;

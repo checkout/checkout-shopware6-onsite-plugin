@@ -2,6 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Tests\Services\Order;
 
+use CheckoutCom\Shopware6\Exception\OrderTransactionNotFoundException;
 use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use CheckoutCom\Shopware6\Service\LoggerService;
 use CheckoutCom\Shopware6\Service\Order\OrderTransactionService;
@@ -12,7 +13,6 @@ use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Cart\Exception\OrderTransactionNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\EntityNotFoundException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
