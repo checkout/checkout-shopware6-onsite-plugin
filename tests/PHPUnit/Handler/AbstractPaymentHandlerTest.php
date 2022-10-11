@@ -2,6 +2,7 @@
 
 namespace CheckoutCom\Shopware6\Tests\Handler;
 
+use CheckoutCom\Shopware6\Exception\OrderNotFoundException;
 use CheckoutCom\Shopware6\Facade\PaymentFinalizeFacade;
 use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
 use CheckoutCom\Shopware6\Factory\SettingsFactory;
@@ -19,7 +20,6 @@ use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
 use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
