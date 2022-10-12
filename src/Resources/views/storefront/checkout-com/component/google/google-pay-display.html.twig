@@ -8,8 +8,8 @@
                 </script>
             {% endblock %}
 
-            {% set ENV_TEST = constant('CheckoutCom\\Shopware6\\Handler\\Method\\GooglePayHandler::ENV_TEST') %}
-            {% set ENV_PRODUCTION = constant('CheckoutCom\\Shopware6\\Handler\\Method\\GooglePayHandler::ENV_PRODUCTION') %}
+            {% set ENV_TEST = constant('Cko\\Shopware6\\Handler\\Method\\GooglePayHandler::ENV_TEST') %}
+            {% set ENV_PRODUCTION = constant('Cko\\Shopware6\\Handler\\Method\\GooglePayHandler::ENV_PRODUCTION') %}
             {% block checkout_com_google_pay_display_script_define %}
                 <script type="text/javascript">
                     // We have to register the window.googlePayClient to be able to use it in Shopware Plugin

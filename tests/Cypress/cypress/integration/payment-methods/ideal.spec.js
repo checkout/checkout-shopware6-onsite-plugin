@@ -6,7 +6,7 @@ import accountOrderRepository from '../../support/repositories/storefront/Accoun
 import storefrontLoginAction from '../../support/actions/storefront/LoginAction';
 
 const paymentEndpoint = 'payment-method';
-const paymentHandler = 'CheckoutCom\\Shopware6\\Handler\\Method\\IdealHandler';
+const paymentHandler = 'Cko\\Shopware6\\Handler\\Method\\IdealHandler';
 
 describe('Testing Storefront iDEAL Payment', () => {
     before(() => {

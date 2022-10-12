@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Content\Flow\Dispatching\Action;
+namespace Cko\Shopware6\Content\Flow\Dispatching\Action;
 
-use CheckoutCom\Shopware6\Service\Order\AbstractOrderCheckoutService;
+use Cko\Shopware6\Service\Order\AbstractOrderCheckoutService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Flow\Dispatching\Action\FlowAction;
 use Shopware\Core\Framework\Event\FlowEvent;

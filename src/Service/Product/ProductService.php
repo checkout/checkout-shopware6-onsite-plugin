@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\Product;
+namespace Cko\Shopware6\Service\Product;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\Exception\ProductNotFoundException;

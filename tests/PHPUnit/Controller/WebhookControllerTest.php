@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Controller;
+namespace Cko\Shopware6\Tests\Controller;
 
 use Checkout\CheckoutAuthorizationException;
-use CheckoutCom\Shopware6\Controller\WebhookController;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
-use CheckoutCom\Shopware6\Service\Webhook\WebhookService;
+use Cko\Shopware6\Controller\WebhookController;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
+use Cko\Shopware6\Service\Webhook\WebhookService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;

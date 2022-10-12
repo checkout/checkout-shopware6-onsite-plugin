@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Helper;
+namespace Cko\Shopware6\Helper;
 
 use Exception;
 use Shopware\Core\Framework\Struct\Struct;

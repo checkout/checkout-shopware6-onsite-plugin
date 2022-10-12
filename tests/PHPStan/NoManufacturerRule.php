@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\PHPStan;
+namespace Cko\Shopware6\PHPStan;
 
 use PhpParser\Comment\Doc;
 use PhpParser\Node;

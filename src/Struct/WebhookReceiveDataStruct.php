@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Struct;
+namespace Cko\Shopware6\Struct;
 
 use Shopware\Core\Framework\Struct\Struct;
 

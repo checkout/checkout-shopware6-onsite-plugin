@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Struct\Response;
+namespace Cko\Shopware6\Struct\Response;
 
-use CheckoutCom\Shopware6\Struct\Extension\PublicConfigStruct;
+use Cko\Shopware6\Struct\Extension\PublicConfigStruct;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\SalesChannel\StoreApiResponse;

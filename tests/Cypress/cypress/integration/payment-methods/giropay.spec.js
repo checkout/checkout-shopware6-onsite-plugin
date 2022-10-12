@@ -4,7 +4,7 @@ import shopware from '../../support/services/shopware/Shopware';
 import dummyCheckoutScenario from '../../support/scenarios/DummyCheckoutScenario';
 
 const paymentEndpoint = 'payment-method';
-const paymentHandler = 'CheckoutCom\\Shopware6\\Handler\\Method\\GiropayHandler';
+const paymentHandler = 'Cko\\Shopware6\\Handler\\Method\\GiropayHandler';
 
 // We can not test the whole Giropay payment process
 // because for Giropay we need to visit an external site - the Giropay site.

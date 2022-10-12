@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services\Klarna;
+namespace Cko\Shopware6\Tests\Services\Klarna;
 
-use CheckoutCom\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService;
-use CheckoutCom\Shopware6\Service\ContextService;
-use CheckoutCom\Shopware6\Service\CountryService;
-use CheckoutCom\Shopware6\Service\Extractor\OrderExtractor;
-use CheckoutCom\Shopware6\Service\Klarna\KlarnaService;
-use CheckoutCom\Shopware6\Struct\LineItemTotalPrice;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
-use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
+use Cko\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService;
+use Cko\Shopware6\Service\ContextService;
+use Cko\Shopware6\Service\CountryService;
+use Cko\Shopware6\Service\Extractor\OrderExtractor;
+use Cko\Shopware6\Service\Klarna\KlarnaService;
+use Cko\Shopware6\Struct\LineItemTotalPrice;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Tests\Traits\OrderTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\Delivery;

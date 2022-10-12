@@ -4,7 +4,7 @@ import shopware from '../../support/services/shopware/Shopware';
 import dummyCheckoutScenario from '../../support/scenarios/DummyCheckoutScenario';
 
 const paymentEndpoint = 'payment-method';
-const paymentHandler = 'CheckoutCom\\Shopware6\\Handler\\Method\\SofortHandler';
+const paymentHandler = 'Cko\\Shopware6\\Handler\\Method\\SofortHandler';
 
 // We can not test the whole Sofort payment process
 // because for Sofort we need to visit an external site - the Sofort site.

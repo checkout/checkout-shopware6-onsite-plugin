@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\Transition;
+namespace Cko\Shopware6\Service\Transition;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Framework\Context;

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Struct\CustomFields;
+namespace Cko\Shopware6\Struct\CustomFields;
 
 use Shopware\Core\Framework\Struct\Struct;
 

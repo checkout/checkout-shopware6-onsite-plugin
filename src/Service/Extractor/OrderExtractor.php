@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\Extractor;
+namespace Cko\Shopware6\Service\Extractor;
 
-use CheckoutCom\Shopware6\Service\AddressService;
+use Cko\Shopware6\Service\AddressService;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;

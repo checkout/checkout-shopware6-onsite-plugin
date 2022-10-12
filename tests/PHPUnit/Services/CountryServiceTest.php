@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services;
+namespace Cko\Shopware6\Tests\Services;
 
-use CheckoutCom\Shopware6\Exception\CheckoutComKlarnaException;
-use CheckoutCom\Shopware6\Exception\CountryCodeNotFoundException;
-use CheckoutCom\Shopware6\Service\CountryService;
-use CheckoutCom\Shopware6\Service\LoggerService;
-use CheckoutCom\Shopware6\Tests\Fakes\FakeEntityRepository;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Exception\CheckoutComKlarnaException;
+use Cko\Shopware6\Exception\CountryCodeNotFoundException;
+use Cko\Shopware6\Service\CountryService;
+use Cko\Shopware6\Service\LoggerService;
+use Cko\Shopware6\Tests\Fakes\FakeEntityRepository;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerDefinition;

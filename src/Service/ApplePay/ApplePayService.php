@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\ApplePay;
+namespace Cko\Shopware6\Service\ApplePay;
 
-use CheckoutCom\Shopware6\Exception\CheckoutComException;
-use CheckoutCom\Shopware6\Factory\SettingsFactory;
-use CheckoutCom\Shopware6\Service\MediaService;
-use CheckoutCom\Shopware6\Struct\SystemConfig\ApplePaySettingStruct;
+use Cko\Shopware6\Exception\CheckoutComException;
+use Cko\Shopware6\Factory\SettingsFactory;
+use Cko\Shopware6\Service\MediaService;
+use Cko\Shopware6\Struct\SystemConfig\ApplePaySettingStruct;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;

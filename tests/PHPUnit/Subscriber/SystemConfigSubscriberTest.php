@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Subscriber;
+namespace Cko\Shopware6\Tests\Subscriber;
 
-use CheckoutCom\Shopware6\Exception\CheckoutComWebhookNotFoundException;
-use CheckoutCom\Shopware6\Factory\SettingsFactory;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWorkflowService;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Webhook;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
-use CheckoutCom\Shopware6\Subscriber\SystemConfigSubscriber;
+use Cko\Shopware6\Exception\CheckoutComWebhookNotFoundException;
+use Cko\Shopware6\Factory\SettingsFactory;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutWorkflowService;
+use Cko\Shopware6\Struct\CheckoutApi\Webhook;
+use Cko\Shopware6\Struct\SystemConfig\SettingStruct;
+use Cko\Shopware6\Subscriber\SystemConfigSubscriber;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\System\SystemConfig\Event\BeforeSystemConfigChangedEvent;

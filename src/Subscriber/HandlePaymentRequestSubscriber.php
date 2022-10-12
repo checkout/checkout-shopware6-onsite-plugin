@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Subscriber;
+namespace Cko\Shopware6\Subscriber;
 
-use CheckoutCom\Shopware6\Helper\RequestUtil;
+use Cko\Shopware6\Helper\RequestUtil;
 use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 

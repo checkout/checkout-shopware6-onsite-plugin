@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Factory;
+namespace Cko\Shopware6\Factory;
 
 use Checkout\CheckoutApi;
 use Checkout\CheckoutSdkBuilder;
 use Checkout\Environment;
 use Checkout\Previous\CheckoutApi as CheckoutPreviousApi;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutStaticKeysSdkBuilder;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutStaticKeysSdkBuilder;
+use Cko\Shopware6\Struct\SystemConfig\SettingStruct;
 
 class CheckoutApiFactory
 {

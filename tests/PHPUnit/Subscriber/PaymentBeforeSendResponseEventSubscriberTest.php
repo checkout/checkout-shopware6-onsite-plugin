@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Subscriber;
+namespace Cko\Shopware6\Tests\Subscriber;
 
-use CheckoutCom\Shopware6\Helper\RequestUtil;
-use CheckoutCom\Shopware6\Service\LoggerService;
-use CheckoutCom\Shopware6\Service\Order\OrderService;
-use CheckoutCom\Shopware6\Subscriber\PaymentBeforeSendResponseEventSubscriber;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
-use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
+use Cko\Shopware6\Helper\RequestUtil;
+use Cko\Shopware6\Service\LoggerService;
+use Cko\Shopware6\Service\Order\OrderService;
+use Cko\Shopware6\Subscriber\PaymentBeforeSendResponseEventSubscriber;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Tests\Traits\OrderTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Event\BeforeSendResponseEvent;

@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service;
+namespace Cko\Shopware6\Service;
 
-use CheckoutCom\Shopware6\Exception\CheckoutComException;
+use Cko\Shopware6\Exception\CheckoutComException;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Content\Newsletter\Exception\SalesChannelDomainNotFoundException;

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Subscriber;
+namespace Cko\Shopware6\Tests\Subscriber;
 
-use CheckoutCom\Shopware6\Helper\RequestUtil;
-use CheckoutCom\Shopware6\Subscriber\HandlePaymentRequestSubscriber;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Helper\RequestUtil;
+use Cko\Shopware6\Subscriber\HandlePaymentRequestSubscriber;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services;
+namespace Cko\Shopware6\Tests\Services;
 
-use CheckoutCom\Shopware6\Service\ShippingMethodService;
-use CheckoutCom\Shopware6\Tests\Fakes\FakeEntityRepository;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Service\ShippingMethodService;
+use Cko\Shopware6\Tests\Fakes\FakeEntityRepository;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
 use Shopware\Core\Checkout\Shipping\ShippingMethodDefinition;

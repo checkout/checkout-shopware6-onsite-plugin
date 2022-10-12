@@ -43,7 +43,7 @@ describe('Testing CheckoutCom dashboard view', () => {
 
     describe('make payment with CheckoutCom payment method', () => {
         beforeEach(() => {
-            shopConfigurationAction.setSystemConfig('CheckoutCom.config.enable3dSecure', false);
+            shopConfigurationAction.setSystemConfig('CkoShopware6.config.enable3dSecure', false);
 
             dummyCheckoutScenario.execute();
 

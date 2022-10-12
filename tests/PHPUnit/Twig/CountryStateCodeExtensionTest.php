@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Twig;
+namespace Cko\Shopware6\Tests\Twig;
 
-use CheckoutCom\Shopware6\Service\CountryService;
-use CheckoutCom\Shopware6\Twig\CountryStateCodeExtension;
+use Cko\Shopware6\Service\CountryService;
+use Cko\Shopware6\Twig\CountryStateCodeExtension;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;

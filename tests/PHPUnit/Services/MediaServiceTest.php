@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services;
+namespace Cko\Shopware6\Tests\Services;
 
-use CheckoutCom\Shopware6\Service\MediaService;
-use CheckoutCom\Shopware6\Service\PaymentMethodService;
-use CheckoutCom\Shopware6\Tests\Fakes\FakeEntityRepository;
+use Cko\Shopware6\Service\MediaService;
+use Cko\Shopware6\Service\PaymentMethodService;
+use Cko\Shopware6\Tests\Fakes\FakeEntityRepository;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
 use Monolog\Logger;

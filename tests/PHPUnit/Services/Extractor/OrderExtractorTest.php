@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services\Extractor;
+namespace Cko\Shopware6\Tests\Services\Extractor;
 
-use CheckoutCom\Shopware6\Service\AddressService;
-use CheckoutCom\Shopware6\Service\Extractor\OrderExtractor;
-use CheckoutCom\Shopware6\Service\LoggerService;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
-use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
+use Cko\Shopware6\Service\AddressService;
+use Cko\Shopware6\Service\Extractor\OrderExtractor;
+use Cko\Shopware6\Service\LoggerService;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Tests\Traits\OrderTrait;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

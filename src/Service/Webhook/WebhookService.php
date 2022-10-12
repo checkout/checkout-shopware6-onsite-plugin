@@ -1,17 +1,17 @@
 <?php
 declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\Webhook;
+namespace Cko\Shopware6\Service\Webhook;
 
-use CheckoutCom\Shopware6\Exception\CheckoutComException;
-use CheckoutCom\Shopware6\Facade\PaymentRefundFacade;
-use CheckoutCom\Shopware6\Factory\SettingsFactory;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
-use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
-use CheckoutCom\Shopware6\Service\Order\AbstractOrderTransactionService;
-use CheckoutCom\Shopware6\Service\Order\OrderService;
-use CheckoutCom\Shopware6\Struct\WebhookReceiveDataStruct;
+use Cko\Shopware6\Exception\CheckoutComException;
+use Cko\Shopware6\Facade\PaymentRefundFacade;
+use Cko\Shopware6\Factory\SettingsFactory;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
+use Cko\Shopware6\Service\Order\AbstractOrderService;
+use Cko\Shopware6\Service\Order\AbstractOrderTransactionService;
+use Cko\Shopware6\Service\Order\OrderService;
+use Cko\Shopware6\Struct\WebhookReceiveDataStruct;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;

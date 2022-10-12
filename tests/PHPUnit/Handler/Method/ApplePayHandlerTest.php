@@ -1,20 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Handler\Method;
+namespace Cko\Shopware6\Tests\Handler\Method;
 
 use Checkout\Payments\Previous\PaymentRequest;
 use Checkout\Tokens\TokenType;
-use CheckoutCom\Shopware6\Handler\Method\ApplePayHandler;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Token;
-use CheckoutCom\Shopware6\Struct\DirectPay\AbstractShippingOptionCollection;
-use CheckoutCom\Shopware6\Struct\DirectPay\ApplePay\AppleShippingOptionCollection;
-use CheckoutCom\Shopware6\Struct\DirectPay\ApplePay\AppleShippingOptionStruct;
-use CheckoutCom\Shopware6\Struct\DirectPay\ApplePay\AppleShippingPayloadStruct;
-use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartItemCollection;
-use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
-use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
+use Cko\Shopware6\Handler\Method\ApplePayHandler;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutTokenService;
+use Cko\Shopware6\Struct\CheckoutApi\Resources\Token;
+use Cko\Shopware6\Struct\DirectPay\AbstractShippingOptionCollection;
+use Cko\Shopware6\Struct\DirectPay\ApplePay\AppleShippingOptionCollection;
+use Cko\Shopware6\Struct\DirectPay\ApplePay\AppleShippingOptionStruct;
+use Cko\Shopware6\Struct\DirectPay\ApplePay\AppleShippingPayloadStruct;
+use Cko\Shopware6\Struct\DirectPay\Cart\DirectPayCartItemCollection;
+use Cko\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
+use Cko\Shopware6\Struct\SystemConfig\SettingStruct;
+use Cko\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use PHPUnit\Framework\MockObject\MockObject;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;

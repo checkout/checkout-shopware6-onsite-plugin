@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service;
+namespace Cko\Shopware6\Service;
 
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;

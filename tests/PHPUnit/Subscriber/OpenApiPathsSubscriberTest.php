@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Subscriber;
+namespace Cko\Shopware6\Tests\Subscriber;
 
-use CheckoutCom\Shopware6\Subscriber\OpenApiPathsSubscriber;
+use Cko\Shopware6\Subscriber\OpenApiPathsSubscriber;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Api\ApiDefinition\Generator\OpenApi\Event\OpenApiPathsEvent;
 

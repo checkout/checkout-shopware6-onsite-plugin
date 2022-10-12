@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Struct\CustomFields;
+namespace Cko\Shopware6\Tests\Struct\CustomFields;
 
-use CheckoutCom\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
+use Cko\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
 use PHPUnit\Framework\TestCase;
 
 class OrderCustomFieldsStructTest extends TestCase

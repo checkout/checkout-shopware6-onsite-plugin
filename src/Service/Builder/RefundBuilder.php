@@ -1,18 +1,18 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\Builder;
+namespace Cko\Shopware6\Service\Builder;
 
-use CheckoutCom\Shopware6\Exception\CheckoutComException;
-use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
-use CheckoutCom\Shopware6\Struct\LineItem\LineItemPayload;
-use CheckoutCom\Shopware6\Struct\LineItem\ProductPromotion;
-use CheckoutCom\Shopware6\Struct\LineItem\ProductPromotionCollection;
-use CheckoutCom\Shopware6\Struct\LineItem\PromotionComposition;
-use CheckoutCom\Shopware6\Struct\LineItem\PromotionCompositionCollection;
-use CheckoutCom\Shopware6\Struct\Request\Refund\OrderRefundRequest;
-use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequest;
-use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
-use CheckoutCom\Shopware6\Struct\WebhookReceiveDataStruct;
+use Cko\Shopware6\Exception\CheckoutComException;
+use Cko\Shopware6\Helper\CheckoutComUtil;
+use Cko\Shopware6\Struct\LineItem\LineItemPayload;
+use Cko\Shopware6\Struct\LineItem\ProductPromotion;
+use Cko\Shopware6\Struct\LineItem\ProductPromotionCollection;
+use Cko\Shopware6\Struct\LineItem\PromotionComposition;
+use Cko\Shopware6\Struct\LineItem\PromotionCompositionCollection;
+use Cko\Shopware6\Struct\Request\Refund\OrderRefundRequest;
+use Cko\Shopware6\Struct\Request\Refund\RefundItemRequest;
+use Cko\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
+use Cko\Shopware6\Struct\WebhookReceiveDataStruct;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;

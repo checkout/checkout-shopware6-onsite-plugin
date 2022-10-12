@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\Cart;
+namespace Cko\Shopware6\Service\Cart;
 
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;

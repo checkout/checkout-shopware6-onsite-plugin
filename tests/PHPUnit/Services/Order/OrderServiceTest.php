@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services\Order;
+namespace Cko\Shopware6\Tests\Services\Order;
 
-use CheckoutCom\Shopware6\Exception\OrderNotFoundException;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
-use CheckoutCom\Shopware6\Service\LoggerService;
-use CheckoutCom\Shopware6\Service\Order\OrderService;
-use CheckoutCom\Shopware6\Service\Transition\OrderTransitionService;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
-use CheckoutCom\Shopware6\Tests\Fakes\FakeEntityRepository;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
-use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
+use Cko\Shopware6\Exception\OrderNotFoundException;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
+use Cko\Shopware6\Service\LoggerService;
+use Cko\Shopware6\Service\Order\OrderService;
+use Cko\Shopware6\Service\Transition\OrderTransitionService;
+use Cko\Shopware6\Struct\SystemConfig\SettingStruct;
+use Cko\Shopware6\Tests\Fakes\FakeEntityRepository;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Tests\Traits\OrderTrait;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

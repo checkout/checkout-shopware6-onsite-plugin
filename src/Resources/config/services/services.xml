@@ -6,31 +6,31 @@
     <services>
         <service id="checkout_com.guzzle" class="GuzzleHttp\Client"/>
 
-        <service id="checkout_com.shopware6.logger" class="CheckoutCom\Shopware6\Service\LoggerService">
+        <service id="checkout_com.shopware6.logger" class="Cko\Shopware6\Service\LoggerService">
             <argument type="service" id="session"/>
             <argument type="service" id="monolog.logger.checkout_com"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\PaymentMethodService"
+        <service id="Cko\Shopware6\Service\PaymentMethodService"
                  public="true">
             <argument type="tagged" tag="checkout_com.shopware6.payment_handler"/>
             <argument type="service" id="payment_method.repository"/>
             <argument type="service" id="rule.repository"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\CountryService"/>
+            <argument type="service" id="Cko\Shopware6\Service\CountryService"/>
             <argument type="service" id="Shopware\Core\Framework\Plugin\Util\PluginIdProvider"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\ContextService">
+        <service id="Cko\Shopware6\Service\ContextService">
             <argument type="service" id="monolog.logger.checkout_com"/>
             <argument type="service" id="language.repository"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\AddressService">
+        <service id="Cko\Shopware6\Service\AddressService">
             <argument type="service" id="order_address.repository"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\CustomerService">
+        <service id="Cko\Shopware6\Service\CustomerService">
             <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
             <argument type="service" id="checkout_com.shopware6.logger"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
@@ -38,156 +38,156 @@
             <argument type="service" id="salutation.repository"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\CountryService">
+        <service id="Cko\Shopware6\Service\CountryService">
             <argument type="service" id="checkout_com.shopware6.logger"/>
             <argument type="service" id="country.repository"/>
             <argument type="service" id="country_state.repository"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\ShippingMethodService">
+        <service id="Cko\Shopware6\Service\ShippingMethodService">
             <argument type="service" id="shipping_method.repository"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\Product\ProductService">
+        <service id="Cko\Shopware6\Service\Product\ProductService">
             <argument type="service" id="checkout_com.shopware6.logger"/>
             <argument type="service" id="product.repository"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\MediaService">
+        <service id="Cko\Shopware6\Service\MediaService">
             <argument type="service" id="checkout_com.shopware6.logger"/>
             <argument type="service" id="shopware.filesystem.public"/>
             <argument type="service" id="media.repository"/>
             <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\Order\OrderService">
+        <service id="Cko\Shopware6\Service\Order\OrderService">
             <argument type="service" id="checkout_com.shopware6.logger"/>
             <argument type="service" id="order.repository"/>
             <argument type="service" id="order_address.repository"/>
             <argument type="service" id="order_delivery.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\SalesChannel\OrderService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Transition\OrderTransitionService"/>
+            <argument type="service" id="Cko\Shopware6\Service\Transition\OrderTransitionService"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\Order\OrderCheckoutService">
+        <service id="Cko\Shopware6\Service\Order\OrderCheckoutService">
             <argument type="service" id="checkout_com.shopware6.logger"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Extractor\OrderExtractor"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderTransactionService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\PaymentMethodService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
+            <argument type="service" id="Cko\Shopware6\Service\Order\OrderService"/>
+            <argument type="service" id="Cko\Shopware6\Service\Extractor\OrderExtractor"/>
+            <argument type="service" id="Cko\Shopware6\Service\Order\OrderTransactionService"/>
+            <argument type="service" id="Cko\Shopware6\Service\CheckoutApi\CheckoutPaymentService"/>
+            <argument type="service" id="Cko\Shopware6\Service\PaymentMethodService"/>
+            <argument type="service" id="Cko\Shopware6\Factory\SettingsFactory"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\Order\OrderTransactionService">
+        <service id="Cko\Shopware6\Service\Order\OrderTransactionService">
             <argument type="service" id="checkout_com.shopware6.logger"/>
             <argument type="service" id="order_transaction.repository"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Transition\OrderTransactionTransitionService"/>
+            <argument type="service" id="Cko\Shopware6\Service\Transition\OrderTransactionTransitionService"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\Cart\CartBackupService">
+        <service id="Cko\Shopware6\Service\Cart\CartBackupService">
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\CartPersister"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\Cart\CartService">
+        <service id="Cko\Shopware6\Service\Cart\CartService">
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\ContextService"/>
+            <argument type="service" id="Cko\Shopware6\Service\ContextService"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute"/>
             <argument type="service" id="Shopware\Core\Content\Product\Cart\ProductLineItemFactory"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\Processor"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\Webhook\WebhookService">
+        <service id="Cko\Shopware6\Service\Webhook\WebhookService">
             <argument type="service" id="checkout_com.shopware6.logger"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderTransactionService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Facade\PaymentRefundFacade"/>
+            <argument type="service" id="Cko\Shopware6\Service\Order\OrderService"/>
+            <argument type="service" id="Cko\Shopware6\Service\Order\OrderTransactionService"/>
+            <argument type="service" id="Cko\Shopware6\Factory\SettingsFactory"/>
+            <argument type="service" id="Cko\Shopware6\Facade\PaymentRefundFacade"/>
         </service>
 
         <!--    BUILDER    -->
-        <service id="CheckoutCom\Shopware6\Service\Builder\RefundBuilder">
+        <service id="Cko\Shopware6\Service\Builder\RefundBuilder">
             <argument type="service" id="checkout_com.shopware6.logger"/>
         </service>
 
         <!--    APPLE PAY    -->
-        <service id="CheckoutCom\Shopware6\Service\ApplePay\ApplePayService">
+        <service id="Cko\Shopware6\Service\ApplePay\ApplePayService">
             <argument type="service" id="checkout_com.shopware6.logger"/>
             <argument type="service" id="checkout_com.guzzle"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\MediaService"/>
+            <argument type="service" id="Cko\Shopware6\Factory\SettingsFactory"/>
+            <argument type="service" id="Cko\Shopware6\Service\MediaService"/>
         </service>
 
         <!--    CARD PAYMENT    -->
-        <service id="CheckoutCom\Shopware6\Service\CardPayment\CardPaymentService">
+        <service id="Cko\Shopware6\Service\CardPayment\CardPaymentService">
             <argument type="service" id="checkout_com.shopware6.logger"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService"/>
+            <argument type="service" id="Cko\Shopware6\Factory\SettingsFactory"/>
+            <argument type="service" id="Cko\Shopware6\Service\CheckoutApi\CheckoutTokenService"/>
         </service>
 
         <!--    TRANSITION    -->
-        <service id="CheckoutCom\Shopware6\Service\Transition\TransitionService">
+        <service id="Cko\Shopware6\Service\Transition\TransitionService">
             <argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\Transition\OrderTransitionService">
+        <service id="Cko\Shopware6\Service\Transition\OrderTransitionService">
             <argument type="service" id="checkout_com.shopware6.logger"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Transition\TransitionService"/>
+            <argument type="service" id="Cko\Shopware6\Service\Transition\TransitionService"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\Transition\OrderTransactionTransitionService">
+        <service id="Cko\Shopware6\Service\Transition\OrderTransactionTransitionService">
             <argument type="service" id="checkout_com.shopware6.logger"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Transition\TransitionService"/>
+            <argument type="service" id="Cko\Shopware6\Service\Transition\TransitionService"/>
         </service>
 
         <!--    CHECKOUT API    -->
         <service id="checkout_com.shopware6.service.checkout_api.abstract_checkout_service"
-                class="CheckoutCom\Shopware6\Service\CheckoutApi\AbstractCheckoutService"
+                class="Cko\Shopware6\Service\CheckoutApi\AbstractCheckoutService"
                  abstract="true"
         >
             <argument type="service" id="checkout_com.shopware6.logger"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Factory\CheckoutApiFactory"/>
+            <argument type="service" id="Cko\Shopware6\Factory\CheckoutApiFactory"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService"
+        <service id="Cko\Shopware6\Service\CheckoutApi\CheckoutPaymentService"
                  parent="checkout_com.shopware6.service.checkout_api.abstract_checkout_service"
         />
 
-        <service id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService"
+        <service id="Cko\Shopware6\Service\CheckoutApi\CheckoutTokenService"
                  parent="checkout_com.shopware6.service.checkout_api.abstract_checkout_service"
         />
 
-        <service id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService"
+        <service id="Cko\Shopware6\Service\CheckoutApi\CheckoutWebhookService"
                  parent="checkout_com.shopware6.service.checkout_api.abstract_checkout_service">
             <argument type="service" id="router"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWorkflowService"
+        <service id="Cko\Shopware6\Service\CheckoutApi\CheckoutWorkflowService"
                  parent="checkout_com.shopware6.service.checkout_api.abstract_checkout_service">
             <argument type="service" id="router"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutSourceService"
+        <service id="Cko\Shopware6\Service\CheckoutApi\CheckoutSourceService"
                  parent="checkout_com.shopware6.service.checkout_api.abstract_checkout_service">
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService"
+        <service id="Cko\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService"
                  parent="checkout_com.shopware6.service.checkout_api.abstract_checkout_service">
         </service>
 
-        <service id="CheckoutCom\Shopware6\Service\Klarna\KlarnaService">
-            <argument type="service" id="CheckoutCom\Shopware6\Service\ContextService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\CountryService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Extractor\OrderExtractor"/>
+        <service id="Cko\Shopware6\Service\Klarna\KlarnaService">
+            <argument type="service" id="Cko\Shopware6\Service\ContextService"/>
+            <argument type="service" id="Cko\Shopware6\Service\CountryService"/>
+            <argument type="service" id="Cko\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService"/>
+            <argument type="service" id="Cko\Shopware6\Service\Extractor\OrderExtractor"/>
         </service>
 
         <!--   EXTRACTOR    -->
-        <service id="CheckoutCom\Shopware6\Service\Extractor\OrderExtractor">
+        <service id="Cko\Shopware6\Service\Extractor\OrderExtractor">
             <argument type="service" id="checkout_com.shopware6.logger"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\AddressService"/>
+            <argument type="service" id="Cko\Shopware6\Service\AddressService"/>
         </service>
     </services>
 </container>

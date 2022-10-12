@@ -6,7 +6,7 @@ import klarnaScenario from '../../support/scenarios/KlarnaScenario';
 import orderListRepository from '../../support/repositories/administration/OrderListRepository';
 
 const paymentEndpoint = 'payment-method';
-const paymentHandler = 'CheckoutCom\\Shopware6\\Handler\\Method\\KlarnaHandler';
+const paymentHandler = 'Cko\\Shopware6\\Handler\\Method\\KlarnaHandler';
 
 describe('Testing Storefront Klarna Payment', () => {
     before(() => {

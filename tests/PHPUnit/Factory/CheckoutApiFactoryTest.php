@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Factory;
+namespace Cko\Shopware6\Tests\Factory;
 
 use Checkout\Previous\CheckoutApi;
-use CheckoutCom\Shopware6\Factory\CheckoutApiFactory;
-use CheckoutCom\Shopware6\Factory\SettingsFactory;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
+use Cko\Shopware6\Factory\CheckoutApiFactory;
+use Cko\Shopware6\Factory\SettingsFactory;
+use Cko\Shopware6\Struct\SystemConfig\SettingStruct;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 

@@ -44,13 +44,13 @@ class ShopConfigurationAction {
         const data = {};
 
         data[channelId] = {
-            'CheckoutCom.config.checkoutPluginConfigSectionApi': {
+            'CkoShopware6.config.checkoutPluginConfigSectionApi': {
                 'publicKey': Cypress.env('publicKey'),
                 'secretKey': Cypress.env('secretKey'),
                 'sandboxMode': true,
             },
             // ------------------------------------------------------------------
-            'CheckoutCom.config.checkoutPluginConfigSectionOrderState': {
+            'CkoShopware6.config.checkoutPluginConfigSectionOrderState': {
                 orderStateForAuthorizedPayment: 'checkout_com.skip',
                 orderStateForFailedPayment: 'checkout_com.skip',
                 orderStateForPaidPayment: 'checkout_com.skip',

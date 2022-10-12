@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Struct\Extension;
+namespace Cko\Shopware6\Struct\Extension;
 
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Struct\Struct;

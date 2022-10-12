@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services\CheckoutApi;
+namespace Cko\Shopware6\Tests\Services\CheckoutApi;
 
 use Checkout\Tokens\ApplePayTokenRequest;
 use Checkout\Tokens\CardTokenRequest;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Token;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutTokenService;
+use Cko\Shopware6\Struct\CheckoutApi\Resources\Token;
 
 class CheckoutTokenServiceTest extends AbstractCheckoutTest
 {

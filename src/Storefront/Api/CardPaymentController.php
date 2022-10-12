@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Storefront\Api;
+namespace Cko\Shopware6\Storefront\Api;
 
-use CheckoutCom\Shopware6\Service\CardPayment\AbstractCardPaymentService;
-use CheckoutCom\Shopware6\Struct\Response\CardPaymentTokenResponse;
+use Cko\Shopware6\Service\CardPayment\AbstractCardPaymentService;
+use Cko\Shopware6\Struct\Response\CardPaymentTokenResponse;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;

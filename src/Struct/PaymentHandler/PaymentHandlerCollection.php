@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Struct\PaymentHandler;
+namespace Cko\Shopware6\Struct\PaymentHandler;
 
-use CheckoutCom\Shopware6\Handler\PaymentHandler;
-use CheckoutCom\Shopware6\Helper\Util;
+use Cko\Shopware6\Handler\PaymentHandler;
+use Cko\Shopware6\Helper\Util;
 use Shopware\Core\Framework\Struct\Collection;
 
 /**

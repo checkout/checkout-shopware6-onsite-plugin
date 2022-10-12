@@ -1,6 +1,6 @@
 {% block checkout_com_apple_pay_direct %}
     {% set applePayDirectOptions = {
-        "paymentMethodType": staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\ApplePayHandler::getPaymentMethodType'),
+        "paymentMethodType": staticFuncCall('Cko\\Shopware6\\Handler\\Method\\ApplePayHandler::getPaymentMethodType'),
         "shopName": config('core.basicInformation.shopName'),
         "validateMerchantEndpoint": path('store-api.checkout-com.validate-merchant'),
         "addProductToCartEndpoint": path('store-api.checkout-com.direct.add-product-to-cart'),

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Storefront\Controller;
+namespace Cko\Shopware6\Storefront\Controller;
 
-use CheckoutCom\Shopware6\Service\ApplePay\AbstractApplePayService;
-use CheckoutCom\Shopware6\Service\ContextService;
-use CheckoutCom\Shopware6\Service\MediaService;
+use Cko\Shopware6\Service\ApplePay\AbstractApplePayService;
+use Cko\Shopware6\Service\ContextService;
+use Cko\Shopware6\Service\MediaService;
 use League\Flysystem\FileNotFoundException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;

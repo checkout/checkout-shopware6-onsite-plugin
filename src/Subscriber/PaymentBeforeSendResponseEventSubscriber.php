@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Subscriber;
+namespace Cko\Shopware6\Subscriber;
 
-use CheckoutCom\Shopware6\Helper\RequestUtil;
-use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
-use CheckoutCom\Shopware6\Service\Order\OrderService;
+use Cko\Shopware6\Helper\RequestUtil;
+use Cko\Shopware6\Service\Order\AbstractOrderService;
+use Cko\Shopware6\Service\Order\OrderService;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;

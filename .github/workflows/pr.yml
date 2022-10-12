@@ -49,7 +49,7 @@ jobs:
     steps:
 
       - name: Clone Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -69,7 +69,7 @@ jobs:
     steps:
 
       - name: Clone Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -91,7 +91,7 @@ jobs:
         php: [ '8.1' ]
     steps:
       - name: Clone Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -115,7 +115,7 @@ jobs:
     steps:
 
       - name: Clone Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -186,7 +186,7 @@ jobs:
       - name: Install/Configure Plugin
         run: |
           docker exec shop bash -c 'php bin/console plugin:refresh'
-          docker exec shop bash -c 'php bin/console plugin:install CheckoutCom --activate'
+          docker exec shop bash -c 'php bin/console plugin:install CkoShopware6 --activate'
           docker exec shop bash -c "mysql -u root -proot shopware -e \"UPDATE sales_channel_domain SET url='https://local.checkout.shop' WHERE url NOT LIKE 'default.%';\""
           docker exec shop bash -c 'PUPPETEER_SKIP_DOWNLOAD=1 ./bin/build-js.sh'
           docker exec shop bash -c 'php bin/console cache:clear'

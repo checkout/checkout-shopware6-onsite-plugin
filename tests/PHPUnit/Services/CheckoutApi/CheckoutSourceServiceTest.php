@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services\CheckoutApi;
+namespace Cko\Shopware6\Tests\Services\CheckoutApi;
 
 use Checkout\Sources\Previous\SepaSourceRequest;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutSourceService;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Source;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutSourceService;
+use Cko\Shopware6\Struct\CheckoutApi\Resources\Source;
 
 class CheckoutSourceServiceTest extends AbstractCheckoutTest
 {

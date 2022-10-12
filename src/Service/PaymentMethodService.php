@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service;
+namespace Cko\Shopware6\Service;
 
-use CheckoutCom\Shopware6\CheckoutCom;
-use CheckoutCom\Shopware6\Exception\PaymentMethodNotFoundException;
-use CheckoutCom\Shopware6\Handler\PaymentHandler;
-use CheckoutCom\Shopware6\Struct\PaymentHandler\PaymentHandlerCollection;
-use CheckoutCom\Shopware6\Struct\PaymentMethod\InstalledPaymentMethodCollection;
-use CheckoutCom\Shopware6\Struct\PaymentMethod\InstalledPaymentMethodStruct;
+use Cko\Shopware6\CkoShopware6;
+use Cko\Shopware6\Exception\PaymentMethodNotFoundException;
+use Cko\Shopware6\Handler\PaymentHandler;
+use Cko\Shopware6\Struct\PaymentHandler\PaymentHandlerCollection;
+use Cko\Shopware6\Struct\PaymentMethod\InstalledPaymentMethodCollection;
+use Cko\Shopware6\Struct\PaymentMethod\InstalledPaymentMethodStruct;
 use Exception;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
@@ -85,7 +85,7 @@ class PaymentMethodService
             return;
         }
 
-        $pluginId = $this->pluginIdProvider->getPluginIdByBaseClass(CheckoutCom::class, $context);
+        $pluginId = $this->pluginIdProvider->getPluginIdByBaseClass(CkoShopware6::class, $context);
 
         $this->addPaymentMethods(
             $this->installablePaymentHandlers,
@@ -103,7 +103,7 @@ class PaymentMethodService
             return;
         }
 
-        $pluginId = $this->pluginIdProvider->getPluginIdByBaseClass(CheckoutCom::class, $context);
+        $pluginId = $this->pluginIdProvider->getPluginIdByBaseClass(CkoShopware6::class, $context);
 
         // Get installed payment methods in the shop
         $installedPaymentMethodHandlers = $this->getInstalledPaymentMethodHandlers($pluginId, $context);

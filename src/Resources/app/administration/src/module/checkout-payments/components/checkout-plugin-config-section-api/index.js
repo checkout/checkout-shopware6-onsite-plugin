@@ -86,7 +86,7 @@ Component.register('checkout-plugin-config-section-api', {
                 return defaultValue;
             }
 
-            return value[field] ?? defaultValue;
+            return value[field] ? value[field] : defaultValue;
         },
 
         updateInheritedValue(field, currentValue, value, updateCurrentValueCB) {

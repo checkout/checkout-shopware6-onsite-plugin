@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Subscriber;
+namespace Cko\Shopware6\Subscriber;
 
-use CheckoutCom\Shopware6\CheckoutCom;
-use CheckoutCom\Shopware6\Helper\Util;
-use CheckoutCom\Shopware6\Service\CustomerService;
-use CheckoutCom\Shopware6\Struct\Customer\CustomerSourceCollection;
+use Cko\Shopware6\CkoShopware6;
+use Cko\Shopware6\Helper\Util;
+use Cko\Shopware6\Service\CustomerService;
+use Cko\Shopware6\Struct\Customer\CustomerSourceCollection;
 use ReflectionClass;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
@@ -46,7 +46,7 @@ class CheckoutPaymentMethodPageSubscriber implements EventSubscriberInterface
 
     private function addCheckoutSource(bool $setToAll, PaymentMethodCollection $paymentMethods, SalesChannelContext $context): void
     {
-        $checkoutComNamespace = (new ReflectionClass(CheckoutCom::class))->getNamespaceName();
+        $checkoutComNamespace = (new ReflectionClass(CkoShopware6::class))->getNamespaceName();
         $customer = $context->getCustomer();
         if (!$customer instanceof CustomerEntity) {
             return;

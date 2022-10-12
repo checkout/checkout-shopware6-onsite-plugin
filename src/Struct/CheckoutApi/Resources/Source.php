@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Struct\CheckoutApi\Resources;
+namespace Cko\Shopware6\Struct\CheckoutApi\Resources;
 
 use Shopware\Core\Framework\Struct\Struct;
 

@@ -1,14 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Helper;
+namespace Cko\Shopware6\Helper;
 
 use Checkout\Common\Address;
 use Checkout\Common\Currency;
 use Checkout\Common\CustomerRequest;
 use Checkout\Payments\ShippingDetails;
-use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartItemCollection;
-use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
-use CheckoutCom\Shopware6\Struct\LineItemTotalPrice;
+use Cko\Shopware6\Struct\DirectPay\Cart\DirectPayCartItemCollection;
+use Cko\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
+use Cko\Shopware6\Struct\LineItemTotalPrice;
 use Exception;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;

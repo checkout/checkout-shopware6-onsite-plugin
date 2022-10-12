@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6;
+namespace Cko\Shopware6;
 
-use CheckoutCom\Shopware6\Service\CompatibilityService;
-use CheckoutCom\Shopware6\Service\PaymentMethodService;
+use Cko\Shopware6\Service\CompatibilityService;
+use Cko\Shopware6\Service\PaymentMethodService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
@@ -11,7 +11,7 @@ use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-class CheckoutCom extends Plugin
+class CkoShopware6 extends Plugin
 {
     /**
      * @throws \Exception

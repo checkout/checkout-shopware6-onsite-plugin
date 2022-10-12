@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Factory;
+namespace Cko\Shopware6\Tests\Factory;
 
-use CheckoutCom\Shopware6\Exception\CheckoutComException;
-use CheckoutCom\Shopware6\Factory\SettingsFactory;
-use CheckoutCom\Shopware6\Handler\Method\ApplePayHandler;
-use CheckoutCom\Shopware6\Struct\Extension\PublicConfigStruct;
-use CheckoutCom\Shopware6\Struct\SystemConfig\ApplePaySettingStruct;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
+use Cko\Shopware6\Exception\CheckoutComException;
+use Cko\Shopware6\Factory\SettingsFactory;
+use Cko\Shopware6\Handler\Method\ApplePayHandler;
+use Cko\Shopware6\Struct\Extension\PublicConfigStruct;
+use Cko\Shopware6\Struct\SystemConfig\ApplePaySettingStruct;
+use Cko\Shopware6\Struct\SystemConfig\SettingStruct;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

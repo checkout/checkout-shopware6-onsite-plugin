@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Struct\DirectPay\ApplePay;
+namespace Cko\Shopware6\Struct\DirectPay\ApplePay;
 
-use CheckoutCom\Shopware6\Struct\DirectPay\AbstractShippingOptionCollection;
-use CheckoutCom\Shopware6\Struct\DirectPay\AbstractShippingPayloadStruct;
+use Cko\Shopware6\Struct\DirectPay\AbstractShippingOptionCollection;
+use Cko\Shopware6\Struct\DirectPay\AbstractShippingPayloadStruct;
 use OpenApi\Annotations as OA;
 
 /**

@@ -4,7 +4,7 @@ import shopware from '../../support/services/shopware/Shopware';
 import dummyCheckoutScenario from '../../support/scenarios/DummyCheckoutScenario';
 
 const paymentEndpoint = 'payment-method';
-const paymentHandler = 'CheckoutCom\\Shopware6\\Handler\\Method\\EpsHandler';
+const paymentHandler = 'Cko\\Shopware6\\Handler\\Method\\EpsHandler';
 
 // We can not test the whole EPS payment process
 // because for EPS we need to visit an external site - the EPS site.

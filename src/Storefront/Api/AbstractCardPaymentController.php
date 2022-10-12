@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Storefront\Api;
+namespace Cko\Shopware6\Storefront\Api;
 
-use CheckoutCom\Shopware6\Struct\Response\CardPaymentTokenResponse;
+use Cko\Shopware6\Struct\Response\CardPaymentTokenResponse;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 

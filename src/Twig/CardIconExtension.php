@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Twig;
+namespace Cko\Shopware6\Twig;
 
 use Symfony\Component\Asset\Packages;
 use Twig\Extension\AbstractExtension;
@@ -9,7 +9,7 @@ use Twig\TwigFunction;
 class CardIconExtension extends AbstractExtension
 {
     public const PATH_CARD_ICONS = 'static/img/card-icons';
-    public const CHECKOUT_BUNDLE = '@CheckoutCom';
+    public const CHECKOUT_BUNDLE = '@CkoShopware6';
     public const CARD_ICONS_MAPPING = [
         'amex' => 'american express.svg',
         'dinersclub' => 'diners club.svg',

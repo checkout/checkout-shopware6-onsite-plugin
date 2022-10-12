@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services\Cart;
+namespace Cko\Shopware6\Tests\Services\Cart;
 
-use CheckoutCom\Shopware6\Service\Cart\CartService;
-use CheckoutCom\Shopware6\Service\ContextService;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Service\Cart\CartService;
+use Cko\Shopware6\Service\ContextService;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Cart;

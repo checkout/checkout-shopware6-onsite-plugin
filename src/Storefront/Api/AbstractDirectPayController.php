@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Storefront\Api;
+namespace Cko\Shopware6\Storefront\Api;
 
-use CheckoutCom\Shopware6\Struct\Response\AddProductToDirectCartResponse;
-use CheckoutCom\Shopware6\Struct\Response\DirectProcessResponse;
-use CheckoutCom\Shopware6\Struct\Response\DirectShippingResponse;
+use Cko\Shopware6\Struct\Response\AddProductToDirectCartResponse;
+use Cko\Shopware6\Struct\Response\DirectProcessResponse;
+use Cko\Shopware6\Struct\Response\DirectShippingResponse;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SuccessResponse;

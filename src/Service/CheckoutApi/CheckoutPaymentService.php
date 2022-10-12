@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\CheckoutApi;
+namespace Cko\Shopware6\Service\CheckoutApi;
 
 use Checkout\CheckoutApiException;
 use Checkout\Payments\Previous\PaymentRequest;
 use Checkout\Payments\RefundRequest;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
+use Cko\Shopware6\Struct\CheckoutApi\Resources\Payment;
 
 class CheckoutPaymentService extends AbstractCheckoutService
 {

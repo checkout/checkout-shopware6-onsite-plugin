@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Subscriber;
+namespace Cko\Shopware6\Subscriber;
 
 use Checkout\CheckoutApiException;
 use Checkout\HttpMetadata;
-use CheckoutCom\Shopware6\Exception\CheckoutComWebhookNotFoundException;
-use CheckoutCom\Shopware6\Factory\SettingsFactory;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWorkflowService;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
+use Cko\Shopware6\Exception\CheckoutComWebhookNotFoundException;
+use Cko\Shopware6\Factory\SettingsFactory;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutWorkflowService;
+use Cko\Shopware6\Struct\SystemConfig\SettingStruct;
 use Shopware\Core\System\SystemConfig\Event\BeforeSystemConfigChangedEvent;
 use Shopware\Core\System\SystemConfig\Event\SystemConfigChangedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -18,7 +18,7 @@ use Throwable;
 
 /**
  * This subscriber is used to register the webhook to Checkout.com whenever
- * CheckoutCom.config.checkoutPluginConfigSectionApi config key is updated
+ * CkoShopware6.config.checkoutPluginConfigSectionApi config key is updated
  */
 class SystemConfigSubscriber implements EventSubscriberInterface
 {

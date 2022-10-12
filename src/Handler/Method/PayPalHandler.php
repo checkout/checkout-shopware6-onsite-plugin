@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Handler\Method;
+namespace Cko\Shopware6\Handler\Method;
 
 use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\Previous\PaymentRequest;
 use Checkout\Payments\Previous\Source\Apm\RequestPayPalSource;
 use Checkout\Payments\Product;
-use CheckoutCom\Shopware6\Handler\PaymentHandler;
-use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
-use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
+use Cko\Shopware6\Handler\PaymentHandler;
+use Cko\Shopware6\Helper\CheckoutComUtil;
+use Cko\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
+use Cko\Shopware6\Struct\SystemConfig\SettingStruct;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;

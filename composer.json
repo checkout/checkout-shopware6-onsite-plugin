@@ -1,5 +1,5 @@
 {
-  "name": "checkoutcom/shopware",
+  "name": "cko/shopware6",
   "description": "Checkout.com plugin for Shopware",
   "version": "1.0.0",
   "type": "shopware-platform-plugin",
@@ -15,7 +15,7 @@
     "CKO"
   ],
   "extra": {
-    "shopware-plugin-class": "CheckoutCom\\Shopware6\\CheckoutCom",
+    "shopware-plugin-class": "Cko\\Shopware6\\CkoShopware6",
     "copyright": "(c) by Checkout.com",
     "label": {
       "de-DE": "Checkout.com Zahlungen",
@@ -31,14 +31,14 @@
   ],
   "autoload": {
     "psr-4": {
-      "CheckoutCom\\Shopware6\\": "src/",
+      "Cko\\Shopware6\\": "src/",
       "Checkout\\": "vendor/checkout/checkout-sdk-php/lib/Checkout"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "CheckoutCom\\Shopware6\\Tests\\": "tests/PHPUnit/",
-      "CheckoutCom\\Shopware6\\PHPStan\\": "tests/PHPStan/"
+      "Cko\\Shopware6\\Tests\\": "tests/PHPUnit/",
+      "Cko\\Shopware6\\PHPStan\\": "tests/PHPStan/"
     }
   },
   "minimum-stability": "dev",
@@ -52,12 +52,12 @@
   },
   "require": {
     "php": ">= 7.4",
-    "checkout/checkout-sdk-php": "~3.0.1",
-    "shopware/core": "^6.4.0"
+    "checkout/checkout-sdk-php": "~3.0.1"
   },
   "require-dev": {
-    "shopware/administration": "*",
-    "shopware/storefront": "*",
+    "shopware/core": "~6.4.0",
+    "shopware/administration": "~6.4.0",
+    "shopware/storefront": "~6.4.0",
     "phpunit/phpunit": "^9.5",
     "phpstan/phpstan": "^0.12.82",
     "phpcompatibility/php-compatibility": "^9.3",

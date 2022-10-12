@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\CardPayment;
+namespace Cko\Shopware6\Service\CardPayment;
 
 use Checkout\CheckoutApiException;
 use Checkout\Tokens\CardTokenRequest;
-use CheckoutCom\Shopware6\Factory\SettingsFactory;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Token;
+use Cko\Shopware6\Factory\SettingsFactory;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutTokenService;
+use Cko\Shopware6\Struct\CheckoutApi\Resources\Token;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;

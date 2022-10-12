@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Traits;
+namespace Cko\Shopware6\Tests\Traits;
 
-use CheckoutCom\Shopware6\Service\Order\OrderService;
+use Cko\Shopware6\Service\Order\OrderService;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;

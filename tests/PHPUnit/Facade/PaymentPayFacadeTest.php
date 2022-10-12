@@ -1,21 +1,21 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Facade;
+namespace Cko\Shopware6\Tests\Facade;
 
-use CheckoutCom\Shopware6\Facade\PaymentPayFacade;
-use CheckoutCom\Shopware6\Factory\SettingsFactory;
-use CheckoutCom\Shopware6\Handler\PaymentHandler;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
-use CheckoutCom\Shopware6\Service\CustomerService;
-use CheckoutCom\Shopware6\Service\Extractor\OrderExtractor;
-use CheckoutCom\Shopware6\Service\LoggerService;
-use CheckoutCom\Shopware6\Service\Order\OrderService;
-use CheckoutCom\Shopware6\Service\Order\OrderTransactionService;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
-use CheckoutCom\Shopware6\Struct\PaymentHandler\HandlerPrepareProcessStruct;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
-use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
+use Cko\Shopware6\Facade\PaymentPayFacade;
+use Cko\Shopware6\Factory\SettingsFactory;
+use Cko\Shopware6\Handler\PaymentHandler;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
+use Cko\Shopware6\Service\CustomerService;
+use Cko\Shopware6\Service\Extractor\OrderExtractor;
+use Cko\Shopware6\Service\LoggerService;
+use Cko\Shopware6\Service\Order\OrderService;
+use Cko\Shopware6\Service\Order\OrderTransactionService;
+use Cko\Shopware6\Struct\CheckoutApi\Resources\Payment;
+use Cko\Shopware6\Struct\PaymentHandler\HandlerPrepareProcessStruct;
+use Cko\Shopware6\Struct\SystemConfig\SettingStruct;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Tests\Traits\OrderTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;

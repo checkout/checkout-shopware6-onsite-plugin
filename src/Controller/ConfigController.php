@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Controller;
+namespace Cko\Shopware6\Controller;
 
 use Checkout\CheckoutApi;
 use Checkout\CheckoutApiException;
@@ -12,7 +12,7 @@ use Checkout\Previous\CheckoutApi as CheckoutPreviousApi;
 use Checkout\Previous\CheckoutStaticKeysPreviousSdkBuilder;
 use Checkout\Sources\Previous\SepaSourceRequest;
 use Checkout\Tokens\CardTokenRequest;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
+use Cko\Shopware6\Struct\SystemConfig\SettingStruct;
 use Exception;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;

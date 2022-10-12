@@ -1,20 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Facade;
+namespace Cko\Shopware6\Facade;
 
-use CheckoutCom\Shopware6\Event\CheckoutFinalizeStatusEvent;
-use CheckoutCom\Shopware6\Exception\CheckoutPaymentIdNotFoundException;
-use CheckoutCom\Shopware6\Factory\SettingsFactory;
-use CheckoutCom\Shopware6\Handler\PaymentHandler;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
-use CheckoutCom\Shopware6\Service\CustomerService;
-use CheckoutCom\Shopware6\Service\Extractor\AbstractOrderExtractor;
-use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
-use CheckoutCom\Shopware6\Service\Order\AbstractOrderTransactionService;
-use CheckoutCom\Shopware6\Service\Order\OrderService;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\PaymentSource;
-use CheckoutCom\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
+use Cko\Shopware6\Event\CheckoutFinalizeStatusEvent;
+use Cko\Shopware6\Exception\CheckoutPaymentIdNotFoundException;
+use Cko\Shopware6\Factory\SettingsFactory;
+use Cko\Shopware6\Handler\PaymentHandler;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
+use Cko\Shopware6\Service\CustomerService;
+use Cko\Shopware6\Service\Extractor\AbstractOrderExtractor;
+use Cko\Shopware6\Service\Order\AbstractOrderService;
+use Cko\Shopware6\Service\Order\AbstractOrderTransactionService;
+use Cko\Shopware6\Service\Order\OrderService;
+use Cko\Shopware6\Struct\CheckoutApi\Resources\Payment;
+use Cko\Shopware6\Struct\CheckoutApi\Resources\PaymentSource;
+use Cko\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;

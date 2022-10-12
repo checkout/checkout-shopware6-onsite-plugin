@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Controller;
+namespace Cko\Shopware6\Controller;
 
-use CheckoutCom\Shopware6\Service\MediaService;
+use Cko\Shopware6\Service\MediaService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

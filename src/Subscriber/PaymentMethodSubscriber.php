@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Subscriber;
+namespace Cko\Shopware6\Subscriber;
 
-use CheckoutCom\Shopware6\Handler\PaymentHandler;
-use CheckoutCom\Shopware6\Helper\Util;
-use CheckoutCom\Shopware6\Service\PaymentMethodService;
-use CheckoutCom\Shopware6\Struct\PaymentMethod\PaymentMethodCustomFieldsStruct;
+use Cko\Shopware6\Handler\PaymentHandler;
+use Cko\Shopware6\Helper\Util;
+use Cko\Shopware6\Service\PaymentMethodService;
+use Cko\Shopware6\Struct\PaymentMethod\PaymentMethodCustomFieldsStruct;
 use Shopware\Core\Checkout\Payment\PaymentEvents;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityLoadedEvent;

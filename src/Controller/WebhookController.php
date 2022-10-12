@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Controller;
+namespace Cko\Shopware6\Controller;
 
 use Checkout\CheckoutAuthorizationException;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
-use CheckoutCom\Shopware6\Service\Webhook\AbstractWebhookService;
-use CheckoutCom\Shopware6\Struct\WebhookReceiveDataStruct;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
+use Cko\Shopware6\Service\Webhook\AbstractWebhookService;
+use Cko\Shopware6\Struct\WebhookReceiveDataStruct;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;

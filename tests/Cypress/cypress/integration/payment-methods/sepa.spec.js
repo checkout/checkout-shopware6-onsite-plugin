@@ -8,7 +8,7 @@ import sepaRepository from '../../support/repositories/storefront/payment-method
 import accountOrderRepository from '../../support/repositories/storefront/AccountOrderRepository';
 
 const paymentEndpoint = 'payment-method';
-const paymentHandler = 'CheckoutCom\\Shopware6\\Handler\\Method\\SepaHandler';
+const paymentHandler = 'Cko\\Shopware6\\Handler\\Method\\SepaHandler';
 
 describe('Testing Storefront SEPA payment', () => {
     before(() => {

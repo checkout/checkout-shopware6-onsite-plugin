@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Struct\PaymentMethod;
+namespace Cko\Shopware6\Struct\PaymentMethod;
 
 use Shopware\Core\Framework\Struct\Collection;
 

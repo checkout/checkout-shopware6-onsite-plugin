@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Twig;
+namespace Cko\Shopware6\Tests\Twig;
 
-use CheckoutCom\Shopware6\Twig\CardIconExtension;
+use Cko\Shopware6\Twig\CardIconExtension;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Asset\Packages;

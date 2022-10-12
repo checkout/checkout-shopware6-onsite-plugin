@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\Transition;
+namespace Cko\Shopware6\Service\Transition;
 
 use Exception;
 use Psr\Log\LoggerInterface;

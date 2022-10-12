@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services\CheckoutApi;
+namespace Cko\Shopware6\Tests\Services\CheckoutApi;
 
 use Checkout\ApiClient;
 use Checkout\CheckoutApiException;
@@ -11,9 +11,9 @@ use Checkout\HttpMetadata;
 use Checkout\Previous\CheckoutApi;
 use Checkout\SdkAuthorization;
 use Checkout\SdkCredentialsInterface;
-use CheckoutCom\Shopware6\Factory\CheckoutApiFactory;
-use CheckoutCom\Shopware6\Service\LoggerService;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Factory\CheckoutApiFactory;
+use Cko\Shopware6\Service\LoggerService;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;

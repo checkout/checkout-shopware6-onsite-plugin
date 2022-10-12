@@ -5,12 +5,12 @@
     {% set isSelectedPaymentMethod = payment.id is same as selectedPaymentMethodId %}
     {% set paymentMethodType = payment.customFields.checkoutConfig.methodType %}
 
-    {% set METHOD_TYPE_CARD_PAYMENT = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\CardPaymentHandler::getPaymentMethodType') %}
-    {% set METHOD_TYPE_APPLE_PAY = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\ApplePayHandler::getPaymentMethodType') %}
-    {% set METHOD_TYPE_GOOGLE_PAY = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\GooglePayHandler::getPaymentMethodType') %}
-    {% set METHOD_TYPE_SEPA_PAY = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\SepaHandler::getPaymentMethodType') %}
-    {% set METHOD_TYPE_IDEAL = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\IdealHandler::getPaymentMethodType') %}
-    {% set METHOD_TYPE_KLARNA = staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\KlarnaHandler::getPaymentMethodType') %}
+    {% set METHOD_TYPE_CARD_PAYMENT = staticFuncCall('Cko\\Shopware6\\Handler\\Method\\CardPaymentHandler::getPaymentMethodType') %}
+    {% set METHOD_TYPE_APPLE_PAY = staticFuncCall('Cko\\Shopware6\\Handler\\Method\\ApplePayHandler::getPaymentMethodType') %}
+    {% set METHOD_TYPE_GOOGLE_PAY = staticFuncCall('Cko\\Shopware6\\Handler\\Method\\GooglePayHandler::getPaymentMethodType') %}
+    {% set METHOD_TYPE_SEPA_PAY = staticFuncCall('Cko\\Shopware6\\Handler\\Method\\SepaHandler::getPaymentMethodType') %}
+    {% set METHOD_TYPE_IDEAL = staticFuncCall('Cko\\Shopware6\\Handler\\Method\\IdealHandler::getPaymentMethodType') %}
+    {% set METHOD_TYPE_KLARNA = staticFuncCall('Cko\\Shopware6\\Handler\\Method\\KlarnaHandler::getPaymentMethodType') %}
 
     {{ parent() }}
     {% block checkout_com_payment_method %}
@@ -29,7 +29,7 @@
         {% if paymentMethodType == METHOD_TYPE_CARD_PAYMENT %}
             {% block checkout_com_payment_method_form_card_payment_confirm %}
                 {% if isSelectedPaymentMethod or isAccountPaymentPage %}
-                    {% sw_include '@CheckoutCom/storefront/checkout-com/component/card-payment-fields.html.twig' with {
+                    {% sw_include '@CkoShopware6/storefront/checkout-com/component/card-payment-fields.html.twig' with {
                         'isAccountPaymentPage': isAccountPaymentPage
                     } %}
                 {% endif %}
@@ -37,31 +37,31 @@
         {% elseif paymentMethodType == METHOD_TYPE_APPLE_PAY %}
             {% block checkout_com_payment_method_form_apple_pay_confirm %}
                 {% if isSelectedPaymentMethod %}
-                    {% sw_include '@CheckoutCom/storefront/checkout-com/component/apple/apple-pay-confirm.html.twig' %}
+                    {% sw_include '@CkoShopware6/storefront/checkout-com/component/apple/apple-pay-confirm.html.twig' %}
                 {% endif %}
             {% endblock %}
         {% elseif paymentMethodType == METHOD_TYPE_GOOGLE_PAY %}
             {% block checkout_com_payment_method_form_google_pay_confirm %}
                 {% if isSelectedPaymentMethod %}
-                    {% sw_include '@CheckoutCom/storefront/checkout-com/component/google/google-pay-confirm.html.twig' %}
+                    {% sw_include '@CkoShopware6/storefront/checkout-com/component/google/google-pay-confirm.html.twig' %}
                 {% endif %}
             {% endblock %}
         {% elseif paymentMethodType == METHOD_TYPE_SEPA_PAY %}
             {% block checkout_com_payment_method_form_sepa_confirm %}
                 {% if isSelectedPaymentMethod %}
-                    {% sw_include '@CheckoutCom/storefront/checkout-com/component/sepa-fields.html.twig' %}
+                    {% sw_include '@CkoShopware6/storefront/checkout-com/component/sepa-fields.html.twig' %}
                 {% endif %}
             {% endblock %}
         {% elseif paymentMethodType == METHOD_TYPE_IDEAL %}
             {% block checkout_com_payment_method_form_ideal_confirm %}
                 {% if isSelectedPaymentMethod %}
-                    {% sw_include '@CheckoutCom/storefront/checkout-com/component/ideal-fields.html.twig' %}
+                    {% sw_include '@CkoShopware6/storefront/checkout-com/component/ideal-fields.html.twig' %}
                 {% endif %}
             {% endblock %}
         {% elseif paymentMethodType == METHOD_TYPE_KLARNA %}
             {% block checkout_com_payment_method_form_klarna_confirm %}
                 {% if isSelectedPaymentMethod %}
-                    {% sw_include '@CheckoutCom/storefront/checkout-com/component/klarna-widget.html.twig' %}
+                    {% sw_include '@CkoShopware6/storefront/checkout-com/component/klarna-widget.html.twig' %}
                 {% endif %}
             {% endblock %}
         {% endif %}

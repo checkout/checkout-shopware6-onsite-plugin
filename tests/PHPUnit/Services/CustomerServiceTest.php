@@ -1,17 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services;
+namespace Cko\Shopware6\Tests\Services;
 
-use CheckoutCom\Shopware6\Exception\SalutationNotFoundException;
-use CheckoutCom\Shopware6\Handler\Method\CardPaymentHandler;
-use CheckoutCom\Shopware6\Service\CustomerService;
-use CheckoutCom\Shopware6\Service\LoggerService;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\PaymentSource;
-use CheckoutCom\Shopware6\Struct\Customer\RegisterAndLoginGuestStruct;
-use CheckoutCom\Shopware6\Struct\Request\RegisterAndLoginGuestRequest;
-use CheckoutCom\Shopware6\Tests\Fakes\FakeEntityRepository;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
-use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
+use Cko\Shopware6\Exception\SalutationNotFoundException;
+use Cko\Shopware6\Handler\Method\CardPaymentHandler;
+use Cko\Shopware6\Service\CustomerService;
+use Cko\Shopware6\Service\LoggerService;
+use Cko\Shopware6\Struct\CheckoutApi\Resources\PaymentSource;
+use Cko\Shopware6\Struct\Customer\RegisterAndLoginGuestStruct;
+use Cko\Shopware6\Struct\Request\RegisterAndLoginGuestRequest;
+use Cko\Shopware6\Tests\Fakes\FakeEntityRepository;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Tests\Traits\OrderTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Customer\CustomerDefinition;
