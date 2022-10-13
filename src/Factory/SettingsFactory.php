@@ -1,20 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Factory;
+namespace Cko\Shopware6\Factory;
 
-use CheckoutCom\Shopware6\Exception\CheckoutComException;
-use CheckoutCom\Shopware6\Helper\Url;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Webhook;
-use CheckoutCom\Shopware6\Struct\Extension\PublicConfigStruct;
-use CheckoutCom\Shopware6\Struct\SystemConfig\AbstractPaymentMethodSettingStruct;
-use CheckoutCom\Shopware6\Struct\SystemConfig\GooglePaySettingStruct;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
+use Cko\Shopware6\Exception\CheckoutComException;
+use Cko\Shopware6\Helper\Url;
+use Cko\Shopware6\Struct\CheckoutApi\Webhook;
+use Cko\Shopware6\Struct\Extension\PublicConfigStruct;
+use Cko\Shopware6\Struct\SystemConfig\AbstractPaymentMethodSettingStruct;
+use Cko\Shopware6\Struct\SystemConfig\GooglePaySettingStruct;
+use Cko\Shopware6\Struct\SystemConfig\SettingStruct;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Throwable;
 
 class SettingsFactory
 {
-    public const SYSTEM_CONFIG_DOMAIN = 'CheckoutCom.config.';
+    public const SYSTEM_CONFIG_DOMAIN = 'CkoShopware6.config.';
     public const SYSTEM_COMPONENT_PAYMENT_METHOD = 'paymentMethod';
     public const CHECKOUT_PLUGIN_CONFIG_SECTION = 'checkoutPluginConfigSectionApi';
     public const CHECKOUT_PLUGIN_CONFIG_WEBHOOK = 'checkoutPluginConfigWebhook';

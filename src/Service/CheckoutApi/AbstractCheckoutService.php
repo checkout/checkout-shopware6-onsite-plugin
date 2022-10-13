@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\CheckoutApi;
+namespace Cko\Shopware6\Service\CheckoutApi;
 
 use Checkout\CheckoutApiException;
-use CheckoutCom\Shopware6\Factory\CheckoutApiFactory;
+use Cko\Shopware6\Factory\CheckoutApiFactory;
 use Psr\Log\LoggerInterface;
 
 abstract class AbstractCheckoutService

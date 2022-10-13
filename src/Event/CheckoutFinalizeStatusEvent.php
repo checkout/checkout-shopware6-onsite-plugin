@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Event;
+namespace Cko\Shopware6\Event;
 
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
+use Cko\Shopware6\Struct\CheckoutApi\Resources\Payment;
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Event\EventData\EntityType;

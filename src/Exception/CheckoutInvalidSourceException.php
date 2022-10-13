@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Exception;
+namespace Cko\Shopware6\Exception;
 
 class CheckoutInvalidSourceException extends CheckoutComException
 {

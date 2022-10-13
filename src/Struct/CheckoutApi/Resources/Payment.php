@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Struct\CheckoutApi\Resources;
+namespace Cko\Shopware6\Struct\CheckoutApi\Resources;
 
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
 use Shopware\Core\Framework\Struct\Struct;
 
 class Payment extends Struct

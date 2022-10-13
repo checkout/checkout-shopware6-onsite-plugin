@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\CheckoutApi;
+namespace Cko\Shopware6\Service\CheckoutApi;
 
 use Checkout\CheckoutApiException;
 use Checkout\Tokens\CardTokenRequest;
 use Checkout\Tokens\WalletTokenRequest;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Token;
+use Cko\Shopware6\Struct\CheckoutApi\Resources\Token;
 
 class CheckoutTokenService extends AbstractCheckoutService
 {

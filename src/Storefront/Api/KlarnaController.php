@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Storefront\Api;
+namespace Cko\Shopware6\Storefront\Api;
 
-use CheckoutCom\Shopware6\Exception\CheckoutComException;
-use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
-use CheckoutCom\Shopware6\Service\Klarna\KlarnaService;
-use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
-use CheckoutCom\Shopware6\Struct\LineItemTotalPrice;
-use CheckoutCom\Shopware6\Struct\Response\CreditSessionResponse;
+use Cko\Shopware6\Exception\CheckoutComException;
+use Cko\Shopware6\Helper\CheckoutComUtil;
+use Cko\Shopware6\Service\Klarna\KlarnaService;
+use Cko\Shopware6\Service\Order\AbstractOrderService;
+use Cko\Shopware6\Struct\LineItemTotalPrice;
+use Cko\Shopware6\Struct\Response\CreditSessionResponse;
 use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Cart;

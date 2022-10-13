@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\ApplePay;
+namespace Cko\Shopware6\Service\ApplePay;
 
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;

@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Helper;
+namespace Cko\Shopware6\Tests\Helper;
 
-use CheckoutCom\Shopware6\Helper\Util;
+use Cko\Shopware6\Helper\Util;
 use Exception;
 use PHPUnit\Framework\TestCase;
 

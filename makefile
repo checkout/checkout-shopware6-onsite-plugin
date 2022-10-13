@@ -31,7 +31,7 @@ clean: ## Cleans all dependencies
 
 build: ## Installs the plugin, and builds
 	cd /var/www/html && php bin/console plugin:refresh
-	cd /var/www/html && php bin/console plugin:install /CheckoutCom --activate | true
+	cd /var/www/html && php bin/console plugin:install CkoShopware6 --activate | true
 	cd /var/www/html && php bin/console plugin:refresh
 	cd /var/www/html && php bin/console theme:dump
 	cd /var/www/html && PUPPETEER_SKIP_DOWNLOAD=1 ./bin/build-js.sh

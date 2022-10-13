@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Handler\Method;
+namespace Cko\Shopware6\Tests\Handler\Method;
 
 use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\Previous\PaymentRequest;
 use Checkout\Payments\Previous\Source\Apm\RequestIdealSource;
-use CheckoutCom\Shopware6\Handler\Method\IdealHandler;
-use CheckoutCom\Shopware6\Handler\PaymentHandler;
-use CheckoutCom\Shopware6\Helper\RequestUtil;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
-use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
+use Cko\Shopware6\Handler\Method\IdealHandler;
+use Cko\Shopware6\Handler\PaymentHandler;
+use Cko\Shopware6\Helper\RequestUtil;
+use Cko\Shopware6\Struct\SystemConfig\SettingStruct;
+use Cko\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\Currency\CurrencyFormatter;

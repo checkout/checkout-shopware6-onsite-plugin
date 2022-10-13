@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Struct\Request\Refund;
+namespace Cko\Shopware6\Struct\Request\Refund;
 
 use Shopware\Core\Framework\Struct\Collection;
 

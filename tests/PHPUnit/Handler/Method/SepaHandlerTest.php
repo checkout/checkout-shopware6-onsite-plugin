@@ -1,18 +1,18 @@
 <?php
 declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Handler\Method;
+namespace Cko\Shopware6\Tests\Handler\Method;
 
 use Checkout\Payments\Previous\PaymentRequest;
 use Checkout\Payments\Previous\Source\RequestIdSource;
 use Checkout\Sources\Previous\SourceType;
-use CheckoutCom\Shopware6\Exception\CheckoutInvalidSourceException;
-use CheckoutCom\Shopware6\Handler\Method\SepaHandler;
-use CheckoutCom\Shopware6\Handler\PaymentHandler;
-use CheckoutCom\Shopware6\Helper\RequestUtil;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Source;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
-use CheckoutCom\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
+use Cko\Shopware6\Exception\CheckoutInvalidSourceException;
+use Cko\Shopware6\Handler\Method\SepaHandler;
+use Cko\Shopware6\Handler\PaymentHandler;
+use Cko\Shopware6\Helper\RequestUtil;
+use Cko\Shopware6\Struct\CheckoutApi\Resources\Source;
+use Cko\Shopware6\Struct\SystemConfig\SettingStruct;
+use Cko\Shopware6\Tests\Handler\AbstractPaymentHandlerTest;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;

@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Content\Flow\Dispatching\Action;
+namespace Cko\Shopware6\Tests\Content\Flow\Dispatching\Action;
 
-use CheckoutCom\Shopware6\Content\Flow\Dispatching\Action\FullRefundAction;
-use CheckoutCom\Shopware6\Facade\PaymentRefundFacade;
-use CheckoutCom\Shopware6\Service\Builder\RefundBuilder;
-use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
-use CheckoutCom\Shopware6\Struct\Request\Refund\OrderRefundRequest;
-use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
-use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
+use Cko\Shopware6\Content\Flow\Dispatching\Action\FullRefundAction;
+use Cko\Shopware6\Facade\PaymentRefundFacade;
+use Cko\Shopware6\Service\Builder\RefundBuilder;
+use Cko\Shopware6\Service\Order\AbstractOrderService;
+use Cko\Shopware6\Struct\Request\Refund\OrderRefundRequest;
+use Cko\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Tests\Traits\OrderTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;

@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service;
+namespace Cko\Shopware6\Service;
 
-use CheckoutCom\Shopware6\Exception\CheckoutComKlarnaException;
-use CheckoutCom\Shopware6\Exception\CountryCodeNotFoundException;
+use Cko\Shopware6\Exception\CheckoutComKlarnaException;
+use Cko\Shopware6\Exception\CountryCodeNotFoundException;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;

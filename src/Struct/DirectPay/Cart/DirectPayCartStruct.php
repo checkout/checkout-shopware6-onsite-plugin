@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Struct\DirectPay\Cart;
+namespace Cko\Shopware6\Struct\DirectPay\Cart;
 
 use Shopware\Core\Framework\Struct\Struct;
 

@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\Order;
+namespace Cko\Shopware6\Service\Order;
 
-use CheckoutCom\Shopware6\Exception\OrderNotFoundException;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
-use CheckoutCom\Shopware6\Service\Transition\AbstractOrderTransitionService;
-use CheckoutCom\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
+use Cko\Shopware6\Exception\OrderNotFoundException;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
+use Cko\Shopware6\Service\Transition\AbstractOrderTransitionService;
+use Cko\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
+use Cko\Shopware6\Struct\SystemConfig\SettingStruct;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
@@ -38,7 +38,7 @@ class OrderService extends AbstractOrderService
      * It will be set whenever the order is created
      * Do not change class to a Non-Shared class, otherwise it won't work
      *
-     * @see \CheckoutCom\Shopware6\Subscriber\CheckoutOrderPlacedEventSubscriber::onCheckoutOrderPlaced
+     * @see \Cko\Shopware6\Subscriber\CheckoutOrderPlacedEventSubscriber::onCheckoutOrderPlaced
      */
     private ?string $requestLastOrderId = null;
 

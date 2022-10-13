@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Content\Flow\Dispatching\Action;
+namespace Cko\Shopware6\Content\Flow\Dispatching\Action;
 
-use CheckoutCom\Shopware6\Facade\PaymentRefundFacade;
-use CheckoutCom\Shopware6\Service\Builder\RefundBuilder;
-use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
-use CheckoutCom\Shopware6\Service\Order\OrderService;
-use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
+use Cko\Shopware6\Facade\PaymentRefundFacade;
+use Cko\Shopware6\Service\Builder\RefundBuilder;
+use Cko\Shopware6\Service\Order\AbstractOrderService;
+use Cko\Shopware6\Service\Order\OrderService;
+use Cko\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Flow\Dispatching\Action\FlowAction;
 use Shopware\Core\Framework\Context;

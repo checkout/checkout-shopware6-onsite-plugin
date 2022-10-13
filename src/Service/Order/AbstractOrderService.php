@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\Order;
+namespace Cko\Shopware6\Service\Order;
 
-use CheckoutCom\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
+use Cko\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
+use Cko\Shopware6\Struct\SystemConfig\SettingStruct;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;

@@ -4,16 +4,16 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="CheckoutCom\Shopware6\Twig\StaticCallExtension">
+        <service id="Cko\Shopware6\Twig\StaticCallExtension">
             <tag name="twig.extension"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Twig\CountryStateCodeExtension">
-            <argument type="service" id="CheckoutCom\Shopware6\Service\CountryService"/>
+        <service id="Cko\Shopware6\Twig\CountryStateCodeExtension">
+            <argument type="service" id="Cko\Shopware6\Service\CountryService"/>
             <tag name="twig.extension"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Twig\CardIconExtension">
+        <service id="Cko\Shopware6\Twig\CardIconExtension">
             <argument type="service" id="assets.packages"/>
             <tag name="twig.extension"/>
         </service>

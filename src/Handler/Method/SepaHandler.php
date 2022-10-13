@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Handler\Method;
+namespace Cko\Shopware6\Handler\Method;
 
 use Checkout\Common\Country;
 use Checkout\Payments\Previous\PaymentRequest;
@@ -9,12 +9,12 @@ use Checkout\Payments\Previous\Source\RequestIdSource;
 use Checkout\Sources\Previous\SepaSourceRequest;
 use Checkout\Sources\Previous\SourceData;
 use Checkout\Sources\Previous\SourceType;
-use CheckoutCom\Shopware6\Exception\CheckoutInvalidSourceException;
-use CheckoutCom\Shopware6\Handler\PaymentHandler;
-use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
-use CheckoutCom\Shopware6\Helper\RequestUtil;
-use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
+use Cko\Shopware6\Exception\CheckoutInvalidSourceException;
+use Cko\Shopware6\Handler\PaymentHandler;
+use Cko\Shopware6\Helper\CheckoutComUtil;
+use Cko\Shopware6\Helper\RequestUtil;
+use Cko\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
+use Cko\Shopware6\Struct\SystemConfig\SettingStruct;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\DataValidationDefinition;

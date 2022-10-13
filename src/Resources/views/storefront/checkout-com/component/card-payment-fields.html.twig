@@ -14,7 +14,7 @@
     {% set checkoutSource = payment.customFields.checkoutSource %}
 
     {% block checkout_com_card_payment_import_source %}
-        {% sw_include '@CheckoutCom/storefront/checkout-com/component/card-source.html.twig' with {
+        {% sw_include '@CkoShopware6/storefront/checkout-com/component/card-source.html.twig' with {
             'sources': checkoutSource,
             'removable': isAccountPaymentPage
         } %}
@@ -24,7 +24,7 @@
         {% if not isAccountPaymentPage %}
             {% set cardOptions = {
                 "publicKey": page.extensions.checkoutCom.publicKey,
-                "cardIconsPath": asset('static/img/card-icons', '@CheckoutCom'),
+                "cardIconsPath": asset('static/img/card-icons', '@CkoShopware6'),
                 "localization": {
                     cardNumberPlaceholder: "checkoutCom.components.card.cardNumberPlaceholder"|trans|striptags,
                     expiryMonthPlaceholder: "checkoutCom.components.card.expiryMonthPlaceholder"|trans|striptags,

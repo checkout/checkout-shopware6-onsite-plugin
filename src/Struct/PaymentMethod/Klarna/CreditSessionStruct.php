@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Struct\PaymentMethod\Klarna;
+namespace Cko\Shopware6\Struct\PaymentMethod\Klarna;
 
-use CheckoutCom\Shopware6\Struct\ApiStruct;
+use Cko\Shopware6\Struct\ApiStruct;
 use OpenApi\Annotations as OA;
 
 /**

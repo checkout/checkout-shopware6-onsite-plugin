@@ -1,19 +1,19 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services\Webhook;
+namespace Cko\Shopware6\Tests\Services\Webhook;
 
-use CheckoutCom\Shopware6\Facade\PaymentRefundFacade;
-use CheckoutCom\Shopware6\Factory\SettingsFactory;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
-use CheckoutCom\Shopware6\Service\Order\OrderService;
-use CheckoutCom\Shopware6\Service\Order\OrderTransactionService;
-use CheckoutCom\Shopware6\Service\Webhook\WebhookService;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Webhook;
-use CheckoutCom\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
-use CheckoutCom\Shopware6\Struct\WebhookReceiveDataStruct;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Facade\PaymentRefundFacade;
+use Cko\Shopware6\Factory\SettingsFactory;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
+use Cko\Shopware6\Service\Order\OrderService;
+use Cko\Shopware6\Service\Order\OrderTransactionService;
+use Cko\Shopware6\Service\Webhook\WebhookService;
+use Cko\Shopware6\Struct\CheckoutApi\Webhook;
+use Cko\Shopware6\Struct\CustomFields\OrderCustomFieldsStruct;
+use Cko\Shopware6\Struct\SystemConfig\SettingStruct;
+use Cko\Shopware6\Struct\WebhookReceiveDataStruct;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

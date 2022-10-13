@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services\CheckoutApi;
+namespace Cko\Shopware6\Tests\Services\CheckoutApi;
 
 use Checkout\Payments\Previous\PaymentRequest;
 use Checkout\Payments\RefundRequest;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
+use Cko\Shopware6\Struct\CheckoutApi\Resources\Payment;
 
 class CheckoutPaymentServiceTest extends AbstractCheckoutTest
 {

@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Controller;
+namespace Cko\Shopware6\Controller;
 
-use CheckoutCom\Shopware6\Facade\PaymentRefundFacade;
-use CheckoutCom\Shopware6\Service\Order\AbstractOrderCheckoutService;
-use CheckoutCom\Shopware6\Struct\Request\Refund\OrderRefundRequest;
-use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequest;
-use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
+use Cko\Shopware6\Facade\PaymentRefundFacade;
+use Cko\Shopware6\Service\Order\AbstractOrderCheckoutService;
+use Cko\Shopware6\Struct\Request\Refund\OrderRefundRequest;
+use Cko\Shopware6\Struct\Request\Refund\RefundItemRequest;
+use Cko\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;

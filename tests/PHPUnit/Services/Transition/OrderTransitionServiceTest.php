@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services\Transition;
+namespace Cko\Shopware6\Tests\Services\Transition;
 
-use CheckoutCom\Shopware6\Service\LoggerService;
-use CheckoutCom\Shopware6\Service\Transition\OrderTransitionService;
-use CheckoutCom\Shopware6\Service\Transition\TransitionService;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
-use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
+use Cko\Shopware6\Service\LoggerService;
+use Cko\Shopware6\Service\Transition\OrderTransitionService;
+use Cko\Shopware6\Service\Transition\TransitionService;
+use Cko\Shopware6\Struct\SystemConfig\SettingStruct;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Tests\Traits\OrderTrait;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

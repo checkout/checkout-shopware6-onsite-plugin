@@ -4,59 +4,59 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="CheckoutCom\Shopware6\Subscriber\PaymentMethodSubscriber">
-            <argument type="service" id="CheckoutCom\Shopware6\Service\PaymentMethodService"/>
+        <service id="Cko\Shopware6\Subscriber\PaymentMethodSubscriber">
+            <argument type="service" id="Cko\Shopware6\Service\PaymentMethodService"/>
 
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Subscriber\CheckoutPaymentMethodPageSubscriber">
+        <service id="Cko\Shopware6\Subscriber\CheckoutPaymentMethodPageSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Subscriber\CheckoutSettingsGenericPageSubscriber">
-            <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
+        <service id="Cko\Shopware6\Subscriber\CheckoutSettingsGenericPageSubscriber">
+            <argument type="service" id="Cko\Shopware6\Factory\SettingsFactory"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Subscriber\MediaSubscriber">
+        <service id="Cko\Shopware6\Subscriber\MediaSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Subscriber\HandlePaymentRequestSubscriber">
+        <service id="Cko\Shopware6\Subscriber\HandlePaymentRequestSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Subscriber\CheckoutOrderPlacedEventSubscriber">
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
+        <service id="Cko\Shopware6\Subscriber\CheckoutOrderPlacedEventSubscriber">
+            <argument type="service" id="Cko\Shopware6\Service\Order\OrderService"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Subscriber\PaymentBeforeSendResponseEventSubscriber">
+        <service id="Cko\Shopware6\Subscriber\PaymentBeforeSendResponseEventSubscriber">
             <argument type="service" id="router"/>
             <argument type="service" id="checkout_com.shopware6.logger"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
+            <argument type="service" id="Cko\Shopware6\Service\Order\OrderService"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Subscriber\OrderStateMachineSubscriber">
-            <argument type="service" id="CheckoutCom\Shopware6\Service\PaymentMethodService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderTransactionService"/>
+        <service id="Cko\Shopware6\Subscriber\OrderStateMachineSubscriber">
+            <argument type="service" id="Cko\Shopware6\Service\PaymentMethodService"/>
+            <argument type="service" id="Cko\Shopware6\Factory\SettingsFactory"/>
+            <argument type="service" id="Cko\Shopware6\Service\CheckoutApi\CheckoutPaymentService"/>
+            <argument type="service" id="Cko\Shopware6\Service\Order\OrderService"/>
+            <argument type="service" id="Cko\Shopware6\Service\Order\OrderTransactionService"/>
 
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Subscriber\OpenApiPathsSubscriber">
+        <service id="Cko\Shopware6\Subscriber\OpenApiPathsSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Subscriber\SystemConfigSubscriber">
-            <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWorkflowService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
+        <service id="Cko\Shopware6\Subscriber\SystemConfigSubscriber">
+            <argument type="service" id="Cko\Shopware6\Service\CheckoutApi\CheckoutWebhookService"/>
+            <argument type="service" id="Cko\Shopware6\Service\CheckoutApi\CheckoutWorkflowService"/>
+            <argument type="service" id="Cko\Shopware6\Factory\SettingsFactory"/>
 
             <tag name="kernel.event_subscriber"/>
         </service>

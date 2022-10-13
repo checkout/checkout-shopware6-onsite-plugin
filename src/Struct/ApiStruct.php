@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Struct;
+namespace Cko\Shopware6\Struct;
 
-use CheckoutCom\Shopware6\Exception\CheckoutComException;
+use Cko\Shopware6\Exception\CheckoutComException;
 use Shopware\Core\Framework\Struct\Collection;
 use Shopware\Core\Framework\Struct\Struct;
 

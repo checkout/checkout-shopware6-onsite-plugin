@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Twig;
+namespace Cko\Shopware6\Twig;
 
-use CheckoutCom\Shopware6\Helper\Util;
+use Cko\Shopware6\Helper\Util;
 use Exception;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;

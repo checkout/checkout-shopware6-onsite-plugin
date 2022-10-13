@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Subscriber;
+namespace Cko\Shopware6\Tests\Subscriber;
 
-use CheckoutCom\Shopware6\Handler\Method\CardPaymentHandler;
-use CheckoutCom\Shopware6\Service\CustomerService;
-use CheckoutCom\Shopware6\Subscriber\CheckoutPaymentMethodPageSubscriber;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
-use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
+use Cko\Shopware6\Handler\Method\CardPaymentHandler;
+use Cko\Shopware6\Service\CustomerService;
+use Cko\Shopware6\Subscriber\CheckoutPaymentMethodPageSubscriber;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Tests\Traits\OrderTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Customer\CustomerEntity;

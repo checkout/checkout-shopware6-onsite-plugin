@@ -4,7 +4,7 @@ import shopware from '../../support/services/shopware/Shopware';
 import dummyCheckoutScenario from '../../support/scenarios/DummyCheckoutScenario';
 
 const paymentEndpoint = 'payment-method';
-const paymentHandler = 'CheckoutCom\\Shopware6\\Handler\\Method\\PayPalHandler';
+const paymentHandler = 'Cko\\Shopware6\\Handler\\Method\\PayPalHandler';
 
 // We can not test the whole PayPal payment process
 // because for PayPal we need to visit an external site - the PayPal site.

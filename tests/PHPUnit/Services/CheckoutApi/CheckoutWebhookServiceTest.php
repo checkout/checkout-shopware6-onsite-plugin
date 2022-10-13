@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services\CheckoutApi;
+namespace Cko\Shopware6\Tests\Services\CheckoutApi;
 
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Webhook;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutWebhookService;
+use Cko\Shopware6\Struct\CheckoutApi\Webhook;
 use PHPUnit\Framework\MockObject\MockObject;
 use Shopware\Storefront\Framework\Routing\Router;
 use Symfony\Component\Routing\RouterInterface;

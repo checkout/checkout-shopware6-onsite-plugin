@@ -1,21 +1,21 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services\Order;
+namespace Cko\Shopware6\Tests\Services\Order;
 
-use CheckoutCom\Shopware6\Exception\CheckoutComException;
-use CheckoutCom\Shopware6\Exception\CheckoutPaymentIdNotFoundException;
-use CheckoutCom\Shopware6\Factory\SettingsFactory;
-use CheckoutCom\Shopware6\Handler\PaymentHandler;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
-use CheckoutCom\Shopware6\Service\Extractor\OrderExtractor;
-use CheckoutCom\Shopware6\Service\LoggerService;
-use CheckoutCom\Shopware6\Service\Order\OrderCheckoutService;
-use CheckoutCom\Shopware6\Service\Order\OrderService;
-use CheckoutCom\Shopware6\Service\Order\OrderTransactionService;
-use CheckoutCom\Shopware6\Service\PaymentMethodService;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
-use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
+use Cko\Shopware6\Exception\CheckoutComException;
+use Cko\Shopware6\Exception\CheckoutPaymentIdNotFoundException;
+use Cko\Shopware6\Factory\SettingsFactory;
+use Cko\Shopware6\Handler\PaymentHandler;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutPaymentService;
+use Cko\Shopware6\Service\Extractor\OrderExtractor;
+use Cko\Shopware6\Service\LoggerService;
+use Cko\Shopware6\Service\Order\OrderCheckoutService;
+use Cko\Shopware6\Service\Order\OrderService;
+use Cko\Shopware6\Service\Order\OrderTransactionService;
+use Cko\Shopware6\Service\PaymentMethodService;
+use Cko\Shopware6\Struct\CheckoutApi\Resources\Payment;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Tests\Traits\OrderTrait;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

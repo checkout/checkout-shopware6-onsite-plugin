@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services;
+namespace Cko\Shopware6\Tests\Services;
 
-use CheckoutCom\Shopware6\Handler\Method\CardPaymentHandler;
-use CheckoutCom\Shopware6\Handler\Method\GooglePayHandler;
-use CheckoutCom\Shopware6\Handler\PaymentHandler;
-use CheckoutCom\Shopware6\Service\CountryService;
-use CheckoutCom\Shopware6\Service\PaymentMethodService;
-use CheckoutCom\Shopware6\Struct\PaymentHandler\PaymentHandlerCollection;
-use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Handler\Method\CardPaymentHandler;
+use Cko\Shopware6\Handler\Method\GooglePayHandler;
+use Cko\Shopware6\Handler\PaymentHandler;
+use Cko\Shopware6\Service\CountryService;
+use Cko\Shopware6\Service\PaymentMethodService;
+use Cko\Shopware6\Struct\PaymentHandler\PaymentHandlerCollection;
+use Cko\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;

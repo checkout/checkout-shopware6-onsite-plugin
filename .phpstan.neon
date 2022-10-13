@@ -10,6 +10,6 @@ parameters:
         - ./src/Resources/app/storefront/node_modules/*
 
 services:
-    - class: CheckoutCom\Shopware6\PHPStan\NoManufacturerRule
+    - class: Cko\Shopware6\PHPStan\NoManufacturerRule
       tags:
         - phpstan.rules.rule

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service;
+namespace Cko\Shopware6\Service;
 
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;

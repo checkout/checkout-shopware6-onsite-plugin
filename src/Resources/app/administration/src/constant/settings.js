@@ -5,7 +5,7 @@ export const DASHBOARD_LINK = {
 
 export const ORDER_CHECKOUT_COM_CUSTOM_FIELDS = 'checkoutComPayments';
 export const LINE_ITEM_PAYLOAD = 'checkoutComPayments';
-export const CHECKOUT_DOMAIN = 'CheckoutCom.config';
+export const CHECKOUT_DOMAIN = 'CkoShopware6.config';
 export const CHECKOUT_DOMAIN_PAYMENT_METHOD = `${CHECKOUT_DOMAIN}.paymentMethod`;
 
 export const FLOW_ACTION = {
@@ -23,7 +23,7 @@ export const ACCOUNT_TYPE = {
 };
 
 /**
- * @see CheckoutCom\Shopware6\Handler\PaymentHandler::getPaymentMethodType()
+ * @see Cko\Shopware6\Handler\PaymentHandler::getPaymentMethodType()
  */
 export const PAYMENT_METHOD_TYPE = {
     CARD_PAYMENT: 'card',

@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Storefront\Api;
+namespace Cko\Shopware6\Storefront\Api;
 
-use CheckoutCom\Shopware6\Service\CustomerService;
+use Cko\Shopware6\Service\CustomerService;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Customer\CustomerEntity;

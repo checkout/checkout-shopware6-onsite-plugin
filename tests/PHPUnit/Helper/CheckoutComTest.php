@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Helper;
+namespace Cko\Shopware6\Tests\Helper;
 
 use Checkout\Common\Address;
 use Checkout\Common\Currency;
 use Checkout\Common\CustomerRequest;
 use Checkout\Payments\ShippingDetails;
-use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
-use CheckoutCom\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
-use CheckoutCom\Shopware6\Struct\LineItemTotalPrice;
-use CheckoutCom\Shopware6\Tests\Traits\OrderTrait;
+use Cko\Shopware6\Helper\CheckoutComUtil;
+use Cko\Shopware6\Struct\DirectPay\Cart\DirectPayCartStruct;
+use Cko\Shopware6\Struct\LineItemTotalPrice;
+use Cko\Shopware6\Tests\Traits\OrderTrait;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Cart;

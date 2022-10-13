@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\CheckoutApi;
+namespace Cko\Shopware6\Service\CheckoutApi;
 
 use Checkout\CheckoutApiException;
 use Checkout\Webhooks\Previous\WebhookRequest;
-use CheckoutCom\Shopware6\Factory\CheckoutApiFactory;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Webhook;
+use Cko\Shopware6\Factory\CheckoutApiFactory;
+use Cko\Shopware6\Struct\CheckoutApi\Webhook;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;

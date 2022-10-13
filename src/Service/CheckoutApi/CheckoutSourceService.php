@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\CheckoutApi;
+namespace Cko\Shopware6\Service\CheckoutApi;
 
 use Checkout\CheckoutApiException;
 use Checkout\Sources\Previous\SepaSourceRequest;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Source;
+use Cko\Shopware6\Struct\CheckoutApi\Resources\Source;
 
 class CheckoutSourceService extends AbstractCheckoutService
 {

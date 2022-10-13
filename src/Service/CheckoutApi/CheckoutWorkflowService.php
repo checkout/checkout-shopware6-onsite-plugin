@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\CheckoutApi;
+namespace Cko\Shopware6\Service\CheckoutApi;
 
 use Checkout\CheckoutApiException;
 use Checkout\Workflows\Actions\WebhookWorkflowActionRequest;
 use Checkout\Workflows\Conditions\EventWorkflowConditionRequest;
 use Checkout\Workflows\CreateWorkflowRequest;
-use CheckoutCom\Shopware6\Factory\CheckoutApiFactory;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Webhook;
+use Cko\Shopware6\Factory\CheckoutApiFactory;
+use Cko\Shopware6\Struct\CheckoutApi\Webhook;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;

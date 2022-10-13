@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\CheckoutApi\Apm;
+namespace Cko\Shopware6\Service\CheckoutApi\Apm;
 
 use Checkout\Apm\Previous\Klarna\CreditSessionRequest;
 use Checkout\Apm\Previous\Klarna\OrderCaptureRequest;
 use Checkout\CheckoutApiException;
 use Checkout\Payments\VoidRequest;
-use CheckoutCom\Shopware6\Service\CheckoutApi\AbstractCheckoutService;
-use CheckoutCom\Shopware6\Struct\PaymentMethod\Klarna\CreditSessionStruct;
+use Cko\Shopware6\Service\CheckoutApi\AbstractCheckoutService;
+use Cko\Shopware6\Struct\PaymentMethod\Klarna\CreditSessionStruct;
 
 class CheckoutKlarnaService extends AbstractCheckoutService
 {

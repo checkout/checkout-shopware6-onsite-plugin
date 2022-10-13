@@ -9,13 +9,13 @@
         {% if buyable %}
             {% block checkout_com_buy_widget_buy_container_direct_apple_pay_component %}
                 <div class="{{ checkoutComFormRowClass }} mt-3 justify-content-end checkout-com-direct-pay-container d-none">
-                    {% sw_include '@CheckoutCom/storefront/checkout-com/component/apple/apple-pay-button.html.twig' with {cols: 'col-8'} %}
+                    {% sw_include '@CkoShopware6/storefront/checkout-com/component/apple/apple-pay-button.html.twig' with {cols: 'col-8'} %}
                 </div>
             {% endblock %}
 
             {% block checkout_com_buy_widget_buy_container_direct_google_pay_component %}
                 <div class="{{ checkoutComFormRowClass }} mt-3 justify-content-end checkout-com-direct-pay-container d-none">
-                    {% sw_include '@CheckoutCom/storefront/checkout-com/component/google/google-pay-button.html.twig' with {cols: 'col-8'} %}
+                    {% sw_include '@CkoShopware6/storefront/checkout-com/component/google/google-pay-button.html.twig' with {cols: 'col-8'} %}
                 </div>
             {% endblock %}
         {% endif %}

@@ -4,12 +4,12 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="CheckoutCom\Shopware6\Factory\SettingsFactory">
+        <service id="Cko\Shopware6\Factory\SettingsFactory">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Factory\CheckoutApiFactory">
-            <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
+        <service id="Cko\Shopware6\Factory\CheckoutApiFactory">
+            <argument type="service" id="Cko\Shopware6\Factory\SettingsFactory"/>
         </service>
     </services>
 </container>

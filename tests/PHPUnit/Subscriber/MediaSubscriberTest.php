@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Subscriber;
+namespace Cko\Shopware6\Tests\Subscriber;
 
-use CheckoutCom\Shopware6\Subscriber\MediaSubscriber;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Subscriber\MediaSubscriber;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Media\Event\MediaFileExtensionWhitelistEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;

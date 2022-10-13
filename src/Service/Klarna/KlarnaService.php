@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service\Klarna;
+namespace Cko\Shopware6\Service\Klarna;
 
 use Checkout\Apm\Previous\Klarna\CreditSessionRequest;
 use Checkout\Apm\Previous\Klarna\Klarna;
@@ -9,13 +9,13 @@ use Checkout\Apm\Previous\Klarna\OrderCaptureRequest;
 use Checkout\CheckoutApiException;
 use Checkout\Payments\Previous\Source\Apm\KlarnaProduct;
 use Checkout\Payments\VoidRequest;
-use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
-use CheckoutCom\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService;
-use CheckoutCom\Shopware6\Service\ContextService;
-use CheckoutCom\Shopware6\Service\CountryService;
-use CheckoutCom\Shopware6\Service\Extractor\AbstractOrderExtractor;
-use CheckoutCom\Shopware6\Struct\LineItemTotalPrice;
-use CheckoutCom\Shopware6\Struct\PaymentMethod\Klarna\CreditSessionStruct;
+use Cko\Shopware6\Helper\CheckoutComUtil;
+use Cko\Shopware6\Service\CheckoutApi\Apm\CheckoutKlarnaService;
+use Cko\Shopware6\Service\ContextService;
+use Cko\Shopware6\Service\CountryService;
+use Cko\Shopware6\Service\Extractor\AbstractOrderExtractor;
+use Cko\Shopware6\Struct\LineItemTotalPrice;
+use Cko\Shopware6\Struct\PaymentMethod\Klarna\CreditSessionStruct;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\Delivery;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;

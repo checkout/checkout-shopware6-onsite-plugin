@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Service;
+namespace Cko\Shopware6\Service;
 
-use CheckoutCom\Shopware6\Exception\SalutationNotFoundException;
-use CheckoutCom\Shopware6\Handler\Method\CardPaymentHandler;
-use CheckoutCom\Shopware6\Helper\Util;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\PaymentSource;
-use CheckoutCom\Shopware6\Struct\Customer\CustomerSourceCollection;
-use CheckoutCom\Shopware6\Struct\Customer\CustomerSourceCustomFieldsStruct;
-use CheckoutCom\Shopware6\Struct\Customer\RegisterAndLoginGuestStruct;
-use CheckoutCom\Shopware6\Struct\Request\RegisterAndLoginGuestRequest;
+use Cko\Shopware6\Exception\SalutationNotFoundException;
+use Cko\Shopware6\Handler\Method\CardPaymentHandler;
+use Cko\Shopware6\Helper\Util;
+use Cko\Shopware6\Struct\CheckoutApi\Resources\PaymentSource;
+use Cko\Shopware6\Struct\Customer\CustomerSourceCollection;
+use Cko\Shopware6\Struct\Customer\CustomerSourceCustomFieldsStruct;
+use Cko\Shopware6\Struct\Customer\RegisterAndLoginGuestStruct;
+use Cko\Shopware6\Struct\Request\RegisterAndLoginGuestRequest;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\Exception\CustomerNotFoundByIdException;

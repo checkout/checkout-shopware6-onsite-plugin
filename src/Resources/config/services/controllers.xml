@@ -5,7 +5,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <!--    ADMIN API    -->
-        <service id="CheckoutCom\Shopware6\Controller\ConfigController" public="true">
+        <service id="Cko\Shopware6\Controller\ConfigController" public="true">
             <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
 
             <call method="setContainer">
@@ -13,36 +13,36 @@
             </call>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Controller\MediaController" public="true">
-            <argument type="service" id="CheckoutCom\Shopware6\Service\MediaService"/>
+        <service id="Cko\Shopware6\Controller\MediaController" public="true">
+            <argument type="service" id="Cko\Shopware6\Service\MediaService"/>
 
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Controller\OrderController" public="true">
+        <service id="Cko\Shopware6\Controller\OrderController" public="true">
             <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderCheckoutService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Facade\PaymentRefundFacade"/>
+            <argument type="service" id="Cko\Shopware6\Service\Order\OrderCheckoutService"/>
+            <argument type="service" id="Cko\Shopware6\Facade\PaymentRefundFacade"/>
 
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Controller\ReturnUrlController" public="true">
+        <service id="Cko\Shopware6\Controller\ReturnUrlController" public="true">
             <argument type="service" id="Shopware\Core\Checkout\Payment\Controller\PaymentController"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
+            <argument type="service" id="Cko\Shopware6\Service\Order\OrderService"/>
 
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Controller\WebhookController" public="true">
+        <service id="Cko\Shopware6\Controller\WebhookController" public="true">
             <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Webhook\WebhookService"/>
+            <argument type="service" id="Cko\Shopware6\Service\Webhook\WebhookService"/>
             <argument type="service" id="checkout_com.shopware6.logger"/>
 
             <call method="setContainer">
@@ -51,10 +51,10 @@
         </service>
 
         <!--    STOREFRONT     -->
-        <service id="CheckoutCom\Shopware6\Storefront\Controller\MediaController" public="true">
-            <argument type="service" id="CheckoutCom\Shopware6\Service\ContextService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\MediaService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\ApplePay\ApplePayService"/>
+        <service id="Cko\Shopware6\Storefront\Controller\MediaController" public="true">
+            <argument type="service" id="Cko\Shopware6\Service\ContextService"/>
+            <argument type="service" id="Cko\Shopware6\Service\MediaService"/>
+            <argument type="service" id="Cko\Shopware6\Service\ApplePay\ApplePayService"/>
 
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
@@ -62,39 +62,39 @@
         </service>
 
         <!--     STOREFRONT API   -->
-        <service id="CheckoutCom\Shopware6\Storefront\Api\CardPaymentController" public="true">
+        <service id="Cko\Shopware6\Storefront\Api\CardPaymentController" public="true">
             <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\CardPayment\CardPaymentService"/>
+            <argument type="service" id="Cko\Shopware6\Service\CardPayment\CardPaymentService"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Storefront\Api\ConfigController" public="true">
-            <argument type="service" id="CheckoutCom\Shopware6\Factory\SettingsFactory"/>
+        <service id="Cko\Shopware6\Storefront\Api\ConfigController" public="true">
+            <argument type="service" id="Cko\Shopware6\Factory\SettingsFactory"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Storefront\Api\ApplePayController" public="true">
+        <service id="Cko\Shopware6\Storefront\Api\ApplePayController" public="true">
             <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\ApplePay\ApplePayService"/>
+            <argument type="service" id="Cko\Shopware6\Service\ApplePay\ApplePayService"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Storefront\Api\DirectPayController" public="true">
+        <service id="Cko\Shopware6\Storefront\Api\DirectPayController" public="true">
             <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Facade\DirectPayFacade"/>
+            <argument type="service" id="Cko\Shopware6\Facade\DirectPayFacade"/>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Storefront\Api\KlarnaController" public="true">
+        <service id="Cko\Shopware6\Storefront\Api\KlarnaController" public="true">
             <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
             <argument type="service" id="checkout_com.shopware6.logger"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Order\OrderService"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\Klarna\KlarnaService"/>
+            <argument type="service" id="Cko\Shopware6\Service\Order\OrderService"/>
+            <argument type="service" id="Cko\Shopware6\Service\Klarna\KlarnaService"/>
 
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
         </service>
 
-        <service id="CheckoutCom\Shopware6\Storefront\Api\SourceController" public="true">
+        <service id="Cko\Shopware6\Storefront\Api\SourceController" public="true">
             <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
-            <argument type="service" id="CheckoutCom\Shopware6\Service\CustomerService"/>
+            <argument type="service" id="Cko\Shopware6\Service\CustomerService"/>
         </service>
     </services>
 </container>

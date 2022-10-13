@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Controller;
+namespace Cko\Shopware6\Controller;
 
-use CheckoutCom\Shopware6\Exception\OrderNotFoundException;
-use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
-use CheckoutCom\Shopware6\Service\Order\OrderService;
+use Cko\Shopware6\Exception\OrderNotFoundException;
+use Cko\Shopware6\Service\Order\AbstractOrderService;
+use Cko\Shopware6\Service\Order\OrderService;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Controller\PaymentController;
 use Shopware\Core\Framework\Context;

@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Twig;
+namespace Cko\Shopware6\Twig;
 
-use CheckoutCom\Shopware6\Service\CountryService;
+use Cko\Shopware6\Service\CountryService;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;

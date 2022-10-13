@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Struct\Request;
+namespace Cko\Shopware6\Struct\Request;
 
 use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;

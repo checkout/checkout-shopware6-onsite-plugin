@@ -3,7 +3,7 @@ import storefrontLoginAction from '../../support/actions/storefront/LoginAction'
 import dummyCheckoutScenario from '../../support/scenarios/DummyCheckoutScenario';
 
 const paymentEndpoint = 'payment-method';
-const paymentHandler = 'CheckoutCom\\Shopware6\\Handler\\Method\\GooglePayHandler';
+const paymentHandler = 'Cko\\Shopware6\\Handler\\Method\\GooglePayHandler';
 
 describe('Testing Storefront Google Pay visibility', () => {
     beforeEach(() => {

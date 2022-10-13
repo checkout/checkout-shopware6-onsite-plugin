@@ -1,14 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services\ApplePay;
+namespace Cko\Shopware6\Tests\Services\ApplePay;
 
-use CheckoutCom\Shopware6\Exception\CheckoutComException;
-use CheckoutCom\Shopware6\Factory\SettingsFactory;
-use CheckoutCom\Shopware6\Service\ApplePay\ApplePayService;
-use CheckoutCom\Shopware6\Service\LoggerService;
-use CheckoutCom\Shopware6\Service\MediaService;
-use CheckoutCom\Shopware6\Struct\SystemConfig\ApplePaySettingStruct;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Exception\CheckoutComException;
+use Cko\Shopware6\Factory\SettingsFactory;
+use Cko\Shopware6\Service\ApplePay\ApplePayService;
+use Cko\Shopware6\Service\LoggerService;
+use Cko\Shopware6\Service\MediaService;
+use Cko\Shopware6\Struct\SystemConfig\ApplePaySettingStruct;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;

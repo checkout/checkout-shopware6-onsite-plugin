@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services\Builder;
+namespace Cko\Shopware6\Tests\Services\Builder;
 
 use Checkout\Common\Currency;
-use CheckoutCom\Shopware6\Exception\CheckoutComException;
-use CheckoutCom\Shopware6\Service\Builder\RefundBuilder;
-use CheckoutCom\Shopware6\Struct\LineItem\LineItemPayload;
-use CheckoutCom\Shopware6\Struct\LineItem\ProductPromotionCollection;
-use CheckoutCom\Shopware6\Struct\Request\Refund\OrderRefundRequest;
-use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequest;
-use CheckoutCom\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
-use CheckoutCom\Shopware6\Struct\WebhookReceiveDataStruct;
+use Cko\Shopware6\Exception\CheckoutComException;
+use Cko\Shopware6\Service\Builder\RefundBuilder;
+use Cko\Shopware6\Struct\LineItem\LineItemPayload;
+use Cko\Shopware6\Struct\LineItem\ProductPromotionCollection;
+use Cko\Shopware6\Struct\Request\Refund\OrderRefundRequest;
+use Cko\Shopware6\Struct\Request\Refund\RefundItemRequest;
+use Cko\Shopware6\Struct\Request\Refund\RefundItemRequestCollection;
+use Cko\Shopware6\Struct\WebhookReceiveDataStruct;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;

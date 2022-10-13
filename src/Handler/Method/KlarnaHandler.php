@@ -1,20 +1,20 @@
 <?php
 declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Handler\Method;
+namespace Cko\Shopware6\Handler\Method;
 
 use Checkout\Common\Country;
 use Checkout\Common\PaymentSourceType;
 use Checkout\Payments\Previous\PaymentRequest;
 use Checkout\Payments\Previous\Source\Apm\RequestKlarnaSource;
-use CheckoutCom\Shopware6\Exception\CheckoutInvalidTokenException;
-use CheckoutCom\Shopware6\Handler\PaymentHandler;
-use CheckoutCom\Shopware6\Helper\CheckoutComUtil;
-use CheckoutCom\Shopware6\Helper\RequestUtil;
-use CheckoutCom\Shopware6\Service\Klarna\KlarnaService;
-use CheckoutCom\Shopware6\Service\Order\AbstractOrderService;
-use CheckoutCom\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
-use CheckoutCom\Shopware6\Struct\SystemConfig\SettingStruct;
+use Cko\Shopware6\Exception\CheckoutInvalidTokenException;
+use Cko\Shopware6\Handler\PaymentHandler;
+use Cko\Shopware6\Helper\CheckoutComUtil;
+use Cko\Shopware6\Helper\RequestUtil;
+use Cko\Shopware6\Service\Klarna\KlarnaService;
+use Cko\Shopware6\Service\Order\AbstractOrderService;
+use Cko\Shopware6\Struct\PaymentMethod\DisplayNameTranslationCollection;
+use Cko\Shopware6\Struct\SystemConfig\SettingStruct;
 use Exception;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;

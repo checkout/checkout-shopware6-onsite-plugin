@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Struct\DirectPay\GooglePay;
+namespace Cko\Shopware6\Struct\DirectPay\GooglePay;
 
-use CheckoutCom\Shopware6\Struct\DirectPay\AbstractShippingOptionCollection;
+use Cko\Shopware6\Struct\DirectPay\AbstractShippingOptionCollection;
 
 class GoogleShippingOptionCollection extends AbstractShippingOptionCollection
 {

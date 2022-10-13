@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Storefront\Api;
+namespace Cko\Shopware6\Storefront\Api;
 
-use CheckoutCom\Shopware6\Facade\DirectPayFacade;
-use CheckoutCom\Shopware6\Handler\Method\ApplePayHandler;
-use CheckoutCom\Shopware6\Handler\Method\GooglePayHandler;
-use CheckoutCom\Shopware6\Struct\Response\AddProductToDirectCartResponse;
-use CheckoutCom\Shopware6\Struct\Response\DirectProcessResponse;
-use CheckoutCom\Shopware6\Struct\Response\DirectShippingResponse;
+use Cko\Shopware6\Facade\DirectPayFacade;
+use Cko\Shopware6\Handler\Method\ApplePayHandler;
+use Cko\Shopware6\Handler\Method\GooglePayHandler;
+use Cko\Shopware6\Struct\Response\AddProductToDirectCartResponse;
+use Cko\Shopware6\Struct\Response\DirectProcessResponse;
+use Cko\Shopware6\Struct\Response\DirectShippingResponse;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;

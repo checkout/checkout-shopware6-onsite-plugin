@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Struct\CheckoutApi\Resources;
+namespace Cko\Shopware6\Tests\Struct\CheckoutApi\Resources;
 
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Payment;
+use Cko\Shopware6\Struct\CheckoutApi\Resources\Payment;
 use PHPUnit\Framework\TestCase;
 
 class PaymentTest extends TestCase

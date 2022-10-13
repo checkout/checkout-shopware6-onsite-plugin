@@ -1,14 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Tests\Services\CardPayment;
+namespace Cko\Shopware6\Tests\Services\CardPayment;
 
 use Checkout\CheckoutApiException;
-use CheckoutCom\Shopware6\Factory\SettingsFactory;
-use CheckoutCom\Shopware6\Service\CardPayment\CardPaymentService;
-use CheckoutCom\Shopware6\Service\CheckoutApi\CheckoutTokenService;
-use CheckoutCom\Shopware6\Service\LoggerService;
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\Token;
-use CheckoutCom\Shopware6\Tests\Traits\ContextTrait;
+use Cko\Shopware6\Factory\SettingsFactory;
+use Cko\Shopware6\Service\CardPayment\CardPaymentService;
+use Cko\Shopware6\Service\CheckoutApi\CheckoutTokenService;
+use Cko\Shopware6\Service\LoggerService;
+use Cko\Shopware6\Struct\CheckoutApi\Resources\Token;
+use Cko\Shopware6\Tests\Traits\ContextTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;

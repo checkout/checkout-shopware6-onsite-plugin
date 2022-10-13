@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace CheckoutCom\Shopware6\Struct\Customer;
+namespace Cko\Shopware6\Struct\Customer;
 
-use CheckoutCom\Shopware6\Struct\CheckoutApi\Resources\PaymentSource;
+use Cko\Shopware6\Struct\CheckoutApi\Resources\PaymentSource;
 use Shopware\Core\Framework\Struct\Collection;
 
 /**

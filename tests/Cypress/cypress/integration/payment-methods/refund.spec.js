@@ -25,7 +25,7 @@ describe('Testing Refund Manager', () => {
 
     describe('Check Refund Manager visibility', () => {
         before(() => {
-            shopConfigurationAction.setSystemConfig('CheckoutCom.config.enable3dSecure', false);
+            shopConfigurationAction.setSystemConfig('CkoShopware6.config.enable3dSecure', false);
         })
 
         beforeEach(() => {
@@ -79,7 +79,7 @@ describe('Testing Refund Manager', () => {
 
     describe('Check Refund Manager functionality', () => {
         before(() => {
-            shopConfigurationAction.setSystemConfig('CheckoutCom.config.enable3dSecure', false);
+            shopConfigurationAction.setSystemConfig('CkoShopware6.config.enable3dSecure', false);
 
             cy.intercept({
                 url: 'https://api.sandbox.checkout.com/tokens',
@@ -178,7 +178,7 @@ describe('Testing Refund Manager', () => {
 
             cy.wait('@makePayment');
 
-            shopConfigurationAction.setSystemConfig('CheckoutCom.config.enable3dSecure', false);
+            shopConfigurationAction.setSystemConfig('CkoShopware6.config.enable3dSecure', false);
 
             cy.loginAndOpenAdmin(`${Cypress.env('admin')}#/sw/order/index`);
             cy.get('.sw-data-grid__row--0 .sw-data-grid__cell--orderNumber a').click();
@@ -189,7 +189,7 @@ describe('Testing Refund Manager', () => {
         });
 
         it('check and include shipping cost to the refunded amount', () => {
-            shopConfigurationAction.setSystemConfig('CheckoutCom.config.includeShippingCostsRefund', true);
+            shopConfigurationAction.setSystemConfig('CkoShopware6.config.includeShippingCostsRefund', true);
 
             // Return the remaining item
             if (shopware.isVersionLower('6.4.8')) {
@@ -216,7 +216,7 @@ describe('Testing Refund Manager', () => {
         });
 
         it('uncheck and exclude shipping cost out of the refunded amount', () => {
-            shopConfigurationAction.setSystemConfig('CheckoutCom.config.includeShippingCostsRefund', false);
+            shopConfigurationAction.setSystemConfig('CkoShopware6.config.includeShippingCostsRefund', false);
 
             // Return 1 item
             if (shopware.isVersionLower('6.4.8')) {
@@ -245,7 +245,7 @@ describe('Testing Refund Manager', () => {
 
     describe('Check refund in flow builder', () => {
         before(() => {
-            shopConfigurationAction.setSystemConfig('CheckoutCom.config.enable3dSecure', false);
+            shopConfigurationAction.setSystemConfig('CkoShopware6.config.enable3dSecure', false);
 
             cy.intercept({
                 url: 'https://api.sandbox.checkout.com/tokens',

@@ -1,6 +1,6 @@
 {% block checkout_com_google_pay_direct %}
-    {% set ENV_TEST = constant('CheckoutCom\\Shopware6\\Handler\\Method\\GooglePayHandler::ENV_TEST') %}
-    {% set ENV_PRODUCTION = constant('CheckoutCom\\Shopware6\\Handler\\Method\\GooglePayHandler::ENV_PRODUCTION') %}
+    {% set ENV_TEST = constant('Cko\\Shopware6\\Handler\\Method\\GooglePayHandler::ENV_TEST') %}
+    {% set ENV_PRODUCTION = constant('Cko\\Shopware6\\Handler\\Method\\GooglePayHandler::ENV_PRODUCTION') %}
 
     {% set googlePayDirectOptions = {
         "environment": page.extensions.checkoutCom.sandboxMode ? ENV_TEST : ENV_PRODUCTION,
@@ -9,7 +9,7 @@
         "totalPriceLabel": "checkoutCom.payments.totalPriceLabel"|trans|striptags,
         "subtotalLabel": "checkoutCom.payments.subtotalLabel"|trans|striptags,
         "unknownError": "checkoutCom.error.unknownError"|trans|striptags,
-        "paymentMethodType": staticFuncCall('CheckoutCom\\Shopware6\\Handler\\Method\\GooglePayHandler::getPaymentMethodType'),
+        "paymentMethodType": staticFuncCall('Cko\\Shopware6\\Handler\\Method\\GooglePayHandler::getPaymentMethodType'),
         "shopName": config('core.basicInformation.shopName'),
         "addProductToCartEndpoint": path('store-api.checkout-com.direct.add-product-to-cart'),
         "removeBackupEndpoint": path('store-api.checkout-com.direct.remove-backup'),
