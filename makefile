@@ -28,6 +28,9 @@ core: ## Installs all core dependencies
 
 clean: ## Cleans all dependencies
 	rm -rf vendor
+	rm -rf ./src/Resources/app/administration/node_modules/*
+	rm -rf ./src/Resources/app/administration/coverage/*
+	rm -rf ./src/Resources/app/storefront/node_modules/*
 
 build: ## Installs the plugin, and builds
 	cd /var/www/html && php bin/console plugin:refresh

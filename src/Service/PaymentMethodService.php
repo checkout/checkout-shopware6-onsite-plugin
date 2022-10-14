@@ -150,7 +150,7 @@ class PaymentMethodService
         foreach ($paymentHandlers->getElements() as $paymentHandler) {
             $paymentMethodData = [
                 'handlerIdentifier' => $paymentHandler->getClassName(),
-                'name' => $paymentHandler->getPaymentMethodDisplayName()->toTranslationArray(),
+                'name' => current($paymentHandler->getPaymentMethodDisplayName()->toTranslationArray()),
                 'description' => '',
                 'pluginId' => $pluginId,
                 'afterOrderEnabled' => true,

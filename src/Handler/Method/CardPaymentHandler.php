@@ -29,7 +29,6 @@ class CardPaymentHandler extends PaymentHandler
         $displayNames = new DisplayNameTranslationCollection();
 
         $displayNames->addLangData('en-GB', 'Card Payments');
-        $displayNames->addLangData('de-DE', 'Kartenzahlungen');
 
         return $displayNames;
     }
