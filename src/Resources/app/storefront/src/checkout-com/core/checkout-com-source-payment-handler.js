@@ -1,5 +1,4 @@
 import Plugin from 'src/plugin-system/plugin.class';
-import isEmpty from 'lodash/isEmpty';
 import ButtonLoadingIndicator from 'src/utility/loading-indicator/button-loading-indicator.util';
 import DomAccess from 'src/helper/dom-access.helper';
 import HttpClient from 'src/service/http-client.service';
@@ -91,7 +90,7 @@ export default class CheckoutComSourcePaymentHandler extends Plugin {
             return null;
         }
 
-        if (isEmpty(sourceCheckedInput.value) || sourceCheckedInput.value === 'null') {
+        if (!sourceCheckedInput.value || sourceCheckedInput.value === 'null') {
             return null;
         }
 
