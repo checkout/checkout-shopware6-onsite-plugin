@@ -1,5 +1,8 @@
 {
   "checkoutCom": {
+    "cookie": {
+      "paymentMethodDescription" : "Checkout.com - Some payment methods require a cookie to fully work."
+    },
     "error": {
       "unknownError": "An unknown error occurred.",
       "paymentMethodError": "An unknown error occurred. Please change your payment method or try again later."

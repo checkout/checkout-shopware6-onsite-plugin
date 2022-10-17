@@ -1,5 +1,8 @@
 {
   "checkoutCom": {
+    "cookie": {
+      "paymentMethodDescription" : "Checkout.com - Einige Zahlungsmethoden benötigen ein Cookie, um vollständig zu funktionieren."
+    },
     "error": {
       "unknownError": "Ein unbekannter Fehler ist aufgetreten.",
       "paymentMethodError": "Ein unbekannter Fehler ist aufgetreten. Bitte ändern Sie Ihre Zahlungsmethode oder versuchen Sie es später noch einmal."

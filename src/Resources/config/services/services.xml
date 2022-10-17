@@ -6,6 +6,12 @@
     <services>
         <service id="checkout_com.guzzle" class="GuzzleHttp\Client"/>
 
+        <service id="Cko\Shopware6\Service\PaymentMethodCookieProvider"
+                 decorates="Shopware\Storefront\Framework\Cookie\CookieProviderInterface">
+            <argument type="service"
+                      id="Cko\Shopware6\Service\PaymentMethodCookieProvider.inner" />
+        </service>
+
         <service id="checkout_com.shopware6.logger" class="Cko\Shopware6\Service\LoggerService">
             <argument type="service" id="session"/>
             <argument type="service" id="monolog.logger.checkout_com"/>
