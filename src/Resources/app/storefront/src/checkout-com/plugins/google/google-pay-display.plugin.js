@@ -26,29 +26,33 @@ export default class CheckoutComGooglePayDisplay extends DisplayPaymentHandler {
         }
 
         const googlePayAnalytics = CookieStorage.getItem(COOKIE_KEY.GOOGLE_PAY);
-        if (!googlePayAnalytics) {
-            this.toggleDisplayPaymentMethod(false, false);
-            document.$emitter.subscribe(COOKIE_CONFIGURATION_UPDATE, this._onCookieConfigurationUpdate.bind(this));
+        if (googlePayAnalytics) {
+            this.googleReadyToPay().then(() => {
+                this.showDirectButtons();
+            });
 
             return;
         }
 
-        this.googleReadyToPay();
+        this.toggleDisplayPaymentMethod(false, false);
+        document.$emitter.subscribe(COOKIE_CONFIGURATION_UPDATE, this._onCookieConfigurationUpdate.bind(this));
     }
 
     googleReadyToPay() {
-        window.googlePayClient
-            .isReadyToPay(this.getGoogleIsReadyToPayRequest())
-            .then(({ result }) => {
-                if (!result) {
-                    return;
-                }
+        return new Promise((resolve) => {
+            window.googlePayClient
+                .isReadyToPay(this.getGoogleIsReadyToPayRequest())
+                .then(({ result }) => {
+                    if (!result) {
+                        return;
+                    }
 
-                this.toggleDisplayPaymentMethod(false, true);
-            })
-            .catch(() => {
-                this.toggleDisplayPaymentMethod(false, true);
-            });
+                    resolve()
+                })
+                .catch(() => {
+                    this.toggleDisplayPaymentMethod(false, true);
+                });
+        })
     }
 
     getGoogleIsReadyToPayRequest() {
@@ -60,16 +64,19 @@ export default class CheckoutComGooglePayDisplay extends DisplayPaymentHandler {
     }
 
     _onCookieConfigurationUpdate(cookieUpdatedEvent) {
-        if(!cookieUpdatedEvent.detail){
+        if (!cookieUpdatedEvent.detail) {
             return;
         }
 
         const googlePayCookie = cookieUpdatedEvent.detail[COOKIE_KEY.GOOGLE_PAY];
-        if(!googlePayCookie){
+        if (!googlePayCookie) {
             return;
         }
 
-        this.toggleDisplayPaymentMethod(true, false);
         document.$emitter.unsubscribe(COOKIE_CONFIGURATION_UPDATE);
+
+        this.googleReadyToPay().then(() => {
+            this.toggleDisplayPaymentMethod(true, false);
+        })
     }
 }
