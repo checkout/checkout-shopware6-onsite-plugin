@@ -23,6 +23,6 @@ export default class CheckoutComApplePayDisplay extends DisplayPaymentHandler {
         }
 
         // Otherwise, we need to hide the Apple Pay payment method
-        this.hideUnavailablePaymentMethod();
+        this.toggleDisplayPaymentMethod(false, true);
     }
 }

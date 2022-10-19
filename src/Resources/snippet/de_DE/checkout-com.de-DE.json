@@ -1,7 +1,11 @@
 {
   "checkoutCom": {
     "cookie": {
-      "paymentMethodDescription" : "Checkout.com - Einige Zahlungsmethoden benötigen ein Cookie, um vollständig zu funktionieren."
+      "analytics": {
+        "groupNameLabel": "Checkout.com Analytik",
+        "groupNameDescription": "Einige Zahlungsmethoden benötigen ein Cookie, um vollständig zu funktionieren.",
+        "googlePayLabel": "Google Pay"
+      }
     },
     "error": {
       "unknownError": "Ein unbekannter Fehler ist aufgetreten.",

@@ -42,7 +42,7 @@ export default class DisplayPaymentHandler extends Plugin {
 
         if (!active) {
             // If the Payment Method is not active, hide everything related to this Payment Method
-            this.hideUnavailablePaymentMethod();
+            this.toggleDisplayPaymentMethod(false, true);
 
             return false;
         }
@@ -55,30 +55,28 @@ export default class DisplayPaymentHandler extends Plugin {
     }
 
     /**
-     * Hide the direct pay buttons
-     * Hide the payment method option on the checkout page
-     * Hide the `Submit button` on the payment form if the payment method is selected
+     * show or hide/remove the direct pay buttons
+     * show or hide/remove the payment method option on the checkout page
+     * show or hide/remove the `Submit button` on the payment form if the payment method is selected
+     * @param {boolean} isShow
+     * @param {boolean} removable
      */
-    hideUnavailablePaymentMethod() {
-        this._removePaymentOptions();
-        this.showDirectButtons(false);
+    toggleDisplayPaymentMethod(isShow, removable) {
+        this.showPaymentOptions(isShow, removable);
+        this.showDirectButtons(isShow, removable);
     }
 
     /**
-     * Show/Remove all direct pay buttons
-     *
-     * @param {boolean} isShow
+     * Show or hide/remove all direct pay buttons
      */
-    showDirectButtons(isShow = true) {
+    showDirectButtons(isShow = true, removable = true) {
         const {
             paymentMethodIdentify,
             checkoutDirectPayContainerClass,
             checkoutDirectPayButtonClass,
-            hiddenClass,
         } = this.options;
 
         const checkoutDirectPayButtons = DomAccess.querySelectorAll(document, checkoutDirectPayButtonClass, false);
-
         if (!checkoutDirectPayButtons) {
             return;
         }
@@ -93,31 +91,17 @@ export default class DisplayPaymentHandler extends Plugin {
             const directPayContainer = checkoutDirectPayButton.closest(checkoutDirectPayContainerClass);
 
             if (directPayContainer) {
-                if (!isShow) {
-                    directPayContainer.remove();
-
-                    // No need to do anything because the closest element has already been removed
-                    return;
-                }
-
-                // Because the container already has the `hiddenClass` class, we need to remove it
-                directPayContainer.classList.remove(hiddenClass);
+                this._displayElement(directPayContainer, isShow, removable)
             }
 
-            if (isShow) {
-                // Because the button already has the `hiddenClass` class, we need to remove it
-                checkoutDirectPayButton.classList.remove(hiddenClass);
-                return;
-            }
-
-            checkoutDirectPayButton.remove();
+            this._displayElement(checkoutDirectPayButton, isShow, removable);
         });
     }
 
     /**
-     * Remove all payment options and disable the submit button depending on the selected payment method
+     * show or hide/remove all payment options and the submit button depending on the selected payment method
      */
-    _removePaymentOptions() {
+    showPaymentOptions(isShow = true, removable = true) {
         const {
             selectedPaymentMethodId,
             prefixCheckoutPaymentMethodId,
@@ -128,7 +112,6 @@ export default class DisplayPaymentHandler extends Plugin {
         } = this.options;
 
         const checkoutPaymentMethods = DomAccess.querySelectorAll(document, checkoutPaymentMethodClass, false);
-
         if (!checkoutPaymentMethods) {
             return;
         }
@@ -145,32 +128,60 @@ export default class DisplayPaymentHandler extends Plugin {
             // We only remove the `Submit Form` whenever the payment method ID is the same as the selected payment method
             // and the selected payment method ID is not null.
             if (selectedPaymentMethodId && selectedPaymentMethodId === id) {
-                this._removeSubmitForm(paymentFormId);
+                this._showFormButton(paymentFormId, isShow, removable);
             }
 
-            this._removePaymentMethodById(`${prefixCheckoutPaymentMethodId}${id}`);
+            this._showPaymentMethodById(`${prefixCheckoutPaymentMethodId}${id}`, isShow, removable);
         });
     }
 
-    _removePaymentMethodById(innerIdentifier) {
-        const { paymentMethodClass } = this.options;
+    _showPaymentMethodById(innerIdentifier, isShow = true, removable = true) {
+        const {
+            paymentMethodClass,
+        } = this.options;
         const element = DomAccess.querySelector(document, innerIdentifier, false);
         if (!element) {
             return;
         }
 
         const rootElement = element.closest(paymentMethodClass);
-
-        if (rootElement) {
-            rootElement.remove();
+        if (!rootElement) {
+            return;
         }
+
+        this._displayElement(rootElement, isShow, removable);
     }
 
-    _removeSubmitForm(innerIdentifierButton) {
+    _showFormButton(innerIdentifierButton, enabled = true, removable = true) {
         const element = DomAccess.querySelector(document, innerIdentifierButton, false);
-
-        if (element) {
-            element.remove();
+        if (!element) {
+            return;
         }
+
+        this._displayElement(element, enabled, removable);
+    }
+
+    /**
+     * Handle how the element should display, it should remove/hide or show
+     */
+    _displayElement(element, display = true, removable = false) {
+        if (!element) {
+            return;
+        }
+
+        const { hiddenClass } = this.options;
+        if (display) {
+            element.classList.remove(hiddenClass);
+
+            return;
+        }
+
+        if (removable) {
+            element.remove();
+
+            return;
+        }
+
+        element.classList.add(hiddenClass);
     }
 }

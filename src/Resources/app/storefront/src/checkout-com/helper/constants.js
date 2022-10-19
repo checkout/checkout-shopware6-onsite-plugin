@@ -3,6 +3,10 @@
  */
 export const DATA_BAG_KEY = 'checkoutComDetails';
 
+export const COOKIE_KEY = {
+    GOOGLE_PAY: 'cko-payment_google-pay',
+};
+
 export const APPLE_PAY = {
     APPLE_PAY_VERSION: 3,
     MERCHANT_CAPABILITIES: ['supports3DS'],

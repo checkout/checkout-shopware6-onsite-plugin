@@ -6,10 +6,15 @@ use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
 
 class PaymentMethodCookieProvider implements CookieProviderInterface
 {
-    private const entitiesCookieGroupRequired = [
-        [
-            'snippet_name' => 'checkoutCom.cookie.paymentMethodDescription',
-            'cookie' => 'cko-payment',
+    private const ANALYTICS_COOKIE = [
+        'snippet_name' => 'checkoutCom.cookie.analytics.groupNameLabel',
+        'snippet_description' => 'checkoutCom.cookie.analytics.groupNameDescription',
+        'entries' => [
+            [
+                'snippet_name' => 'checkoutCom.cookie.analytics.googlePayLabel',
+                'cookie' => 'cko-payment_google-pay',
+                'value' => '1',
+            ],
         ],
     ];
 
@@ -22,17 +27,11 @@ class PaymentMethodCookieProvider implements CookieProviderInterface
 
     public function getCookieGroups(): array
     {
-        return array_map(function ($cookie) {
-            if ($cookie['snippet_name'] !== 'cookie.groupRequired') {
-                return $cookie;
-            }
-
-            $cookie['entries'] = array_merge(
-                $cookie['entries'],
-                self::entitiesCookieGroupRequired
-            );
-
-            return $cookie;
-        }, $this->originalService->getCookieGroups());
+        return array_merge(
+            $this->originalService->getCookieGroups(),
+            [
+                self::ANALYTICS_COOKIE,
+            ]
+        );
     }
 }
