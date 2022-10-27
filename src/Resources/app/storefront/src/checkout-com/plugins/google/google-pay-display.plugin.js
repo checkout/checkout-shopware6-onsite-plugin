@@ -3,6 +3,9 @@ import CookieStorage from 'src/helper/storage/cookie-storage.helper';
 import { COOKIE_CONFIGURATION_UPDATE } from 'src/plugin/cookie/cookie-configuration.plugin';
 import DisplayPaymentHandler from '../../core/display-payment-handler';
 import { COOKIE_KEY, GOOGLE_PAY } from '../../helper/constants';
+import { loadScript } from '../../helper/utils';
+
+export const GOOGLE_PAY_READY_PAY = 'CheckoutCom_GooglePayReadyPay'
 
 /**
  * This Class is responsible for displaying Google Pay payment method
@@ -10,18 +13,12 @@ import { COOKIE_KEY, GOOGLE_PAY } from '../../helper/constants';
 export default class CheckoutComGooglePayDisplay extends DisplayPaymentHandler {
     static options = deepmerge(DisplayPaymentHandler.options, {
         paymentMethodIdentify: 'data-google-pay',
+        environment: null,
     });
 
     init() {
         const active = super.init();
         if (!active) {
-            return;
-        }
-
-        // If the Google Pay client is not defined, hide everything related to the payment method
-        if (!window.googlePayClient) {
-            this.toggleDisplayPaymentMethod(false, true);
-
             return;
         }
 
@@ -34,11 +31,15 @@ export default class CheckoutComGooglePayDisplay extends DisplayPaymentHandler {
             return;
         }
 
+        // If Google Pay Analytics from Cookie is not accepted, we hide all relative to this payment method,
+        // and listen to `cookie configuration update` event
         this.toggleDisplayPaymentMethod(false, false);
         document.$emitter.subscribe(COOKIE_CONFIGURATION_UPDATE, this._onCookieConfigurationUpdate.bind(this));
     }
 
-    googleReadyToPay() {
+    async googleReadyToPay() {
+        await this.loadGoogleScript()
+
         return new Promise((resolve) => {
             window.googlePayClient
                 .isReadyToPay(this.getGoogleIsReadyToPayRequest())
@@ -47,11 +48,22 @@ export default class CheckoutComGooglePayDisplay extends DisplayPaymentHandler {
                         return;
                     }
 
+                    // Emit event Google Pay is ready to Pay
+                    document.$emitter.publish(GOOGLE_PAY_READY_PAY);
                     resolve()
                 })
                 .catch(() => {
                     this.toggleDisplayPaymentMethod(false, true);
                 });
+        })
+    }
+
+    async loadGoogleScript() {
+        const { environment } = this.options
+        await loadScript(GOOGLE_PAY.LIBRARY_URL);
+
+        window.googlePayClient = new google.payments.api.PaymentsClient({
+            environment,
         })
     }
 

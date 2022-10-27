@@ -1,5 +1,6 @@
 import deepmerge from 'deepmerge';
 import CheckoutComDirectPaymentHandler from '../../core/checkout-com-direct-payment-handler';
+import { GOOGLE_PAY_READY_PAY } from './google-pay-display.plugin';
 import { GOOGLE_PAY } from '../../helper/constants';
 
 const googleIsReadyToPayRequest = {
@@ -25,6 +26,11 @@ export default class GooglePayDirectPlugin extends CheckoutComDirectPaymentHandl
 
     init() {
         super.init();
+        document.$emitter.subscribe(GOOGLE_PAY_READY_PAY, this.onGooglePayReadyToPay.bind(this));
+    }
+
+    onGooglePayReadyToPay() {
+        document.$emitter.unsubscribe(GOOGLE_PAY_READY_PAY);
         const { environment } = this.options;
 
         const directButtons = this.getDirectButtons();
@@ -48,7 +54,7 @@ export default class GooglePayDirectPlugin extends CheckoutComDirectPaymentHandl
                     return;
                 }
 
-                directButtons.forEach(this.showGoogleDirectPayButton.bind(this));
+                directButtons.forEach(this.createGoogleDirectPayButton.bind(this));
             });
     }
 
@@ -67,7 +73,7 @@ export default class GooglePayDirectPlugin extends CheckoutComDirectPaymentHandl
         };
     }
 
-    showGoogleDirectPayButton(directButton) {
+    createGoogleDirectPayButton(directButton) {
         const {
             buttonColorName,
         } = this.options;
@@ -289,7 +295,7 @@ export default class GooglePayDirectPlugin extends CheckoutComDirectPaymentHandl
         };
     }
 
-    getShippingContactPayload(email, googleShippingAddress){
+    getShippingContactPayload(email, googleShippingAddress) {
         const nameData = this.getNameData(googleShippingAddress.name);
 
         return {

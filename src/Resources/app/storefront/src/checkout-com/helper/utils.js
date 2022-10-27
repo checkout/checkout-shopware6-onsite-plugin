@@ -34,3 +34,43 @@ export const getInputValue = (rootElement, elementId) => {
 
     return input.value;
 };
+
+/**
+ * Using URL to load script into a page
+ *
+ * @param {string} src
+ * @returns {Promise<unknown>}
+ */
+export const loadScript = (src) => {
+    return new Promise((resolve, reject) => {
+        // Create script
+        const script = document.createElement('script');
+        script.src = src;
+        script.async = true;
+
+        // Script event listener callbacks for load and error
+        const onScriptLoad = () => {
+            resolve();
+        }
+
+        const onScriptError = () => {
+            cleanup();
+            script.remove();
+
+            reject(new Error(`Unable to load script ${src}`));
+        }
+
+
+        script.addEventListener('load', onScriptLoad);
+        script.addEventListener('error', onScriptError);
+
+        // Add script to document body
+        document.body.appendChild(script);
+
+        // Remove event listeners on cleanup
+        const cleanup = () => {
+            script.removeEventListener('load', onScriptLoad);
+            script.removeEventListener('error', onScriptError);
+        }
+    });
+}
