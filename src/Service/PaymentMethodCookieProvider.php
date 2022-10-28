@@ -13,6 +13,7 @@ class PaymentMethodCookieProvider implements CookieProviderInterface
             [
                 'snippet_name' => 'checkoutCom.cookie.analytics.googlePayLabel',
                 'cookie' => 'cko-payment_google-pay',
+                'expiration' => '30', // Same value with `cookie-preference`
                 'value' => '1',
             ],
         ],
