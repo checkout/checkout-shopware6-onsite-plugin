@@ -24,6 +24,7 @@ export const APPLE_PAY = {
 };
 
 export const GOOGLE_PAY = {
+    LIBRARY_URL: 'https://pay.google.com/gp/p/js/pay.js',
     BUTTON_SIZE_MODE: 'fill',
     PAYMENT_GATEWAY: 'PAYMENT_GATEWAY',
     GATEWAY: 'checkoutltd',
