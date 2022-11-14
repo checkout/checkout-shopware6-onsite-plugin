@@ -95,7 +95,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: cypress_results_sw${{ github.event.inputs.SHOPWARE_VERSION }}_php${{ github.event.inputs.PHP_VERSION }}
-          retention-days: 1
+          retention-days: 3
           path: |
             tests/Cypress/cypress/logs
             tests/Cypress/cypress/videos
