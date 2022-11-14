@@ -2,8 +2,12 @@
 
 namespace Cko\Shopware6\Tests\Subscriber;
 
+use Cko\Shopware6\Factory\SettingsFactory;
 use Cko\Shopware6\Handler\Method\CardPaymentHandler;
+use Cko\Shopware6\Handler\PaymentHandler;
+use Cko\Shopware6\Service\Cart\AbstractCartService;
 use Cko\Shopware6\Service\CustomerService;
+use Cko\Shopware6\Service\PaymentMethodService;
 use Cko\Shopware6\Subscriber\CheckoutPaymentMethodPageSubscriber;
 use Cko\Shopware6\Tests\Traits\ContextTrait;
 use Cko\Shopware6\Tests\Traits\OrderTrait;
@@ -28,6 +32,21 @@ class CheckoutPaymentMethodPageSubscriberTest extends TestCase
     use OrderTrait;
 
     /**
+     * @var MockObject|SettingsFactory
+     */
+    private $settingsFactory;
+
+    /**
+     * @var MockObject|PaymentMethodService
+     */
+    private $paymentMethodService;
+
+    /**
+     * @var MockObject|AbstractCartService
+     */
+    private $cartService;
+
+    /**
      * @var MockObject|SalesChannelContext
      */
     private $salesChannelContext;
@@ -36,7 +55,14 @@ class CheckoutPaymentMethodPageSubscriberTest extends TestCase
 
     public function setUp(): void
     {
-        $this->subscriber = new CheckoutPaymentMethodPageSubscriber();
+        $this->settingsFactory = $this->createMock(SettingsFactory::class);
+        $this->paymentMethodService = $this->createMock(PaymentMethodService::class);
+        $this->cartService = $this->createMock(AbstractCartService::class);
+        $this->subscriber = new CheckoutPaymentMethodPageSubscriber(
+            $this->settingsFactory,
+            $this->paymentMethodService,
+            $this->cartService,
+        );
         $this->salesChannelContext = $this->getSaleChannelContext($this);
     }
 
@@ -58,6 +84,13 @@ class CheckoutPaymentMethodPageSubscriberTest extends TestCase
 
         $this->salesChannelContext->method('getCustomer')
             ->willReturn($customer);
+
+        $this->paymentMethodService->method('getPaymentHandlersByHandlerIdentifier')
+            ->willReturn(
+                $this->createConfiguredMock(PaymentHandler::class, [
+                    'shouldHideByAccountType' => false,
+                ])
+            );
 
         $event = new CheckoutConfirmPageLoadedEvent(
             $page,
@@ -84,6 +117,13 @@ class CheckoutPaymentMethodPageSubscriberTest extends TestCase
         $this->salesChannelContext->method('getCustomer')
             ->willReturn($customer);
 
+        $this->paymentMethodService->method('getPaymentHandlersByHandlerIdentifier')
+            ->willReturn(
+                $this->createConfiguredMock(PaymentHandler::class, [
+                    'shouldHideByAccountType' => false,
+                ])
+            );
+
         $event = new AccountEditOrderPageLoadedEvent(
             $page,
             $this->salesChannelContext,
@@ -108,6 +148,13 @@ class CheckoutPaymentMethodPageSubscriberTest extends TestCase
 
         $this->salesChannelContext->method('getCustomer')
             ->willReturn($customer);
+
+        $this->paymentMethodService->method('getPaymentHandlersByHandlerIdentifier')
+            ->willReturn(
+                $this->createConfiguredMock(PaymentHandler::class, [
+                    'shouldHideByAccountType' => false,
+                ])
+            );
 
         $event = new AccountPaymentMethodPageLoadedEvent(
             $page,
