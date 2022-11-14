@@ -15,7 +15,7 @@ class KlarnaScenario {
         cy.wait('@initKlarna');
 
         // Fill in necessary information
-        klarnaRepository.getEmailOrPhoneInput().type('017614287464');
+        klarnaRepository.getEmailOrPhoneInput().type('01761428434');
         klarnaRepository.getContinueButton().click();
 
         // Wait until Klarna fetch new content

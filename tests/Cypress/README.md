@@ -10,7 +10,7 @@ Follow these steps to set up the test environment ff you run E2E for the first t
 ```ruby
 ./psh.phar init-database --DB_NAME=shopware_e2e --APP_ENV=e2e
 bin/console system:install --basic-setup --force
-bin/console plugin:install --activate CheckoutCom -c
+bin/console plugin:install --activate CkoShopware6 -c
 bin/console e2e:dump-db
 ```
 

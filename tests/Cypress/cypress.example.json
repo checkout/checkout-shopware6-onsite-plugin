@@ -9,7 +9,13 @@
     "salesChannelName": "Storefront",
     "admin": "/admin",
     "apiPath": "api",
-    "secretKey": "",
-    "publicKey": ""
+    "nas": {
+      "secretKey": "",
+      "publicKey": ""
+    },
+    "abc": {
+      "secretKey": "",
+      "publicKey": ""
+    }
   }
 }

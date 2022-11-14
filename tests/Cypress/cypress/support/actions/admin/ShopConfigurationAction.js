@@ -5,20 +5,24 @@ class ShopConfigurationAction {
         this.apiClient = AdminAPIClient;
     }
 
-
     /**
      * Setup necessary data for the plugin and clear cache
+     * @param accountType
      */
-    setupShop() {
-        this.setupPlugin();
+    setupShop(accountType = 'abc') {
+        this.setupPlugin(accountType);
         this._clearCache();
     }
 
-
     /**
      * Set default data for the CheckoutCom plugin to work with all sales channels
+     * @param accountType
+     * @returns {Promise<void>}
      */
-    setupPlugin() {
+    async setupPlugin(accountType = 'abc') {
+        // Config plugin
+        this.configCheckoutComPlugin(null, accountType);
+
         // assign all payment methods to
         // all available sales channels
         this.apiClient.get('/sales-channel')
@@ -30,7 +34,6 @@ class ShopConfigurationAction {
 
                 channels.forEach(async channel => {
                     await this._activatePaymentMethods(channel.id);
-                    await this._configCheckoutComPlugin(channel.id);
                 });
             });
     }
@@ -38,24 +41,25 @@ class ShopConfigurationAction {
     /**
      * Initialize CheckoutCom plugin by sales channel
      * @param channelId
-     * @private
+     * @param accountType
      */
-    _configCheckoutComPlugin(channelId) {
-        const data = {};
-
-        data[channelId] = {
-            'CkoShopware6.config.checkoutPluginConfigSectionApi': {
-                'publicKey': Cypress.env('publicKey'),
-                'secretKey': Cypress.env('secretKey'),
-                'sandboxMode': true,
-            },
-            // ------------------------------------------------------------------
-            'CkoShopware6.config.checkoutPluginConfigSectionOrderState': {
-                orderStateForAuthorizedPayment: 'checkout_com.skip',
-                orderStateForFailedPayment: 'checkout_com.skip',
-                orderStateForPaidPayment: 'checkout_com.skip',
-                orderStateForVoidedPayment: 'checkout_com.skip',
-            },
+    configCheckoutComPlugin(channelId = null, accountType = 'abc') {
+        const data = {
+            [channelId]: {
+                'CkoShopware6.config.checkoutPluginConfigSectionApi': {
+                    'publicKey': Cypress.env(accountType).publicKey,
+                    'secretKey': Cypress.env(accountType).secretKey,
+                    'sandboxMode': true,
+                    accountType
+                },
+                // ------------------------------------------------------------------
+                'CkoShopware6.config.checkoutPluginConfigSectionOrderState': {
+                    orderStateForAuthorizedPayment: 'checkout_com.skip',
+                    orderStateForFailedPayment: 'checkout_com.skip',
+                    orderStateForPaidPayment: 'checkout_com.skip',
+                    orderStateForVoidedPayment: 'checkout_com.skip',
+                },
+            }
         };
 
         this.apiClient.post('/_action/system-config/batch', data);

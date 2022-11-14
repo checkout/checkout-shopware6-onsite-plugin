@@ -172,7 +172,7 @@ jobs:
         run: |
           cd tests/Cypress
           rm -f cypress.json
-          echo '{"responseTimeout":80000,"defaultCommandTimeout":20000,"chromeWebSecurity":false,"video":false,"env":{"user":"admin","pass":"shopware","salesChannelName":"Storefront","admin":"/admin","apiPath":"api","secretKey":"${{ secrets.CKO_SK_KEY }}","publicKey":"${{ secrets.CKO_PK_KEY }}"}}' >> cypress.json
+          echo '{"responseTimeout":80000,"defaultCommandTimeout":20000,"pageLoadTimeout": 120000,"retries": 2,"chromeWebSecurity":false,"video":false,"env":{"user":"admin","pass":"shopware","salesChannelName":"Storefront","admin":"/admin","apiPath":"api","abc":{"secretKey":"${{ secrets.CKO_ABC_SK_KEY }}","publicKey":"${{ secrets.CKO_ABC_PK_KEY }}"},"nas":{"secretKey":"${{ secrets.CKO_NAS_SK_KEY }}","publicKey":"${{ secrets.CKO_NAS_PK_KEY }}"}}}' >> cypress.json
           cd ../../
           docker cp $(pwd)/. shop:/var/www/html/custom/plugins/CheckoutCom
           docker exec shop bash -c 'sudo chown www-data:www-data custom/plugins -R'
