@@ -113,7 +113,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shopware: [ '6.4.16.0', '6.4.15.2', '6.4.14.0', '6.4.12.0', '6.4.11.1', '6.4.10.0', '6.4.9.0', '6.4.8.2', '6.4.0.0',]
+        shopware: [ '6.4.17.1', '6.4.16.1', '6.4.15.2', '6.4.14.0', '6.4.12.0', '6.4.11.1', '6.4.10.0', '6.4.9.0', '6.4.8.2', '6.4.0.0',]
     steps:
 
       - name: Clone Code
@@ -151,7 +151,9 @@ jobs:
       max-parallel: 5
       matrix:
         include:
-          - shopware: '6.4.16.0'
+          - shopware: '6.4.17.1'
+            php: '8.1'
+          - shopware: '6.4.16.2'
             php: '8.1'
           - shopware: '6.4.15.2'
             php: '8.1'
@@ -252,8 +254,8 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
-          name: cypress_results_sw${{ github.event.inputs.SHOPWARE_VERSION }}_php${{ github.event.inputs.PHP_VERSION }}
-          retention-days: 1
+          name: cypress_results_sw${{ matrix.shopware }}_php${{ matrix.php }}
+          retention-days: 3
           path: |
             tests/Cypress/cypress/logs
             tests/Cypress/cypress/videos
