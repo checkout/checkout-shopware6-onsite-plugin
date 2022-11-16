@@ -9,7 +9,7 @@ const paymentEndpoint = 'payment-method';
 const paymentHandler = 'Cko\\Shopware6\\Handler\\Method\\KlarnaHandler';
 
 describe('Testing Storefront Klarna Payment', () => {
-    describe('Testing Klarna Payment with ABC', () => {
+    describe.skip('Testing Klarna Payment with ABC', () => {
         before(() => {
             cy.setToInitialState().then(() => {
                 return cy.loginViaApi();
@@ -153,6 +153,35 @@ describe('Testing Storefront Klarna Payment', () => {
                 orderDetailRepository.getCurrentPaymentStatus().contains('Cancelled');
                 orderDetailRepository.getVoidButton().should('not.exist');
             });
+        });
+    });
+
+    describe('Testing Klarna Payment with NAS', () => {
+        before(() => {
+            cy.setToInitialState().then(() => {
+                return cy.loginViaApi();
+            }).then(() => {
+                return cy.createProductFixture();
+            }).then(() => {
+                shopConfigurationAction.setupShop('nas');
+                cy.createCustomerFixtureStorefront();
+
+                // Activate payment method
+                cy.updateViaAdminApiWithIdentifier(paymentEndpoint, paymentHandler, { active: true });
+            });
+        });
+
+        it('hide Klarna option on checkout page', () => {
+            dummyCheckoutScenario.execute();
+
+            cy.get('.payment-methods').contains('Klarna').should('not.exist');
+        });
+
+        it('hide Klarna option on account page', () => {
+            storefrontLoginAction.login('test@example.com', 'shopware');
+            cy.visit('/account/payment');
+
+            cy.get('.payment-methods').contains('Klarna').should('not.exist');
         });
     });
 });

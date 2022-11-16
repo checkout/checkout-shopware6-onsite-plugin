@@ -36,6 +36,12 @@ class SepaHandler extends PaymentHandler
         return $displayNames;
     }
 
+    // Hide this payment method on account type NAS because checkout.com haven't supported yet
+    public function shouldHideByAccountType(string $accountType): bool
+    {
+        return $accountType === SettingStruct::ACCOUNT_TYPE_NAS;
+    }
+
     public static function getPaymentMethodType(): string
     {
         return SourceType::$sepa;
