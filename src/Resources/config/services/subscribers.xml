@@ -11,6 +11,9 @@
         </service>
 
         <service id="Cko\Shopware6\Subscriber\CheckoutPaymentMethodPageSubscriber">
+            <argument type="service" id="Cko\Shopware6\Factory\SettingsFactory"/>
+            <argument type="service" id="Cko\Shopware6\Service\PaymentMethodService"/>
+            <argument type="service" id="Cko\Shopware6\Service\Cart\CartService"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 

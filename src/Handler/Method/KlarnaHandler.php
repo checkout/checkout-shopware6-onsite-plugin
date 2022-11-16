@@ -51,6 +51,11 @@ class KlarnaHandler extends PaymentHandler
         return PaymentSourceType::$klarna;
     }
 
+    public function shouldHideByAccountType(string $accountType): bool
+    {
+        return $accountType === SettingStruct::ACCOUNT_TYPE_NAS;
+    }
+
     public function getAvailableCountries(): array
     {
         return [

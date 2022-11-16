@@ -272,6 +272,11 @@ abstract class PaymentHandler implements AsynchronousPaymentHandlerInterface
         return false;
     }
 
+    public function shouldHideByAccountType(string $accountType): bool
+    {
+        return false;
+    }
+
     /**
      * Enable 3DS for payment request
      */
