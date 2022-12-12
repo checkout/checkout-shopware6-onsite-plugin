@@ -10,6 +10,7 @@ import orderDetailRepository from '../../support/repositories/storefront/OrderDe
 import refundRepository from '../../support/repositories/administration/RefundRepository';
 import orderListRepository from '../../support/repositories/administration/OrderListRepository';
 import shopware from '../../support/services/shopware/Shopware';
+import cardPaymentAction from '../../support/actions/payment-methods/CardPaymentAction';
 
 describe('Testing Refund Manager', () => {
     describe('Testing Refund Manager with ABC', () => {
@@ -57,11 +58,7 @@ describe('Testing Refund Manager', () => {
                 }).as('makePayment');
 
                 // Place an order using Card payments
-                checkoutAction.selectPaymentMethod('Card Payments');
-                checkoutAction.fillCardPayment(null, '4242424242424242', '0224', '100');
-                checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
-
-                cy.wait('@makePayment');
+                cardPaymentAction.makePayment();
 
                 cy.loginAndOpenAdmin(`${Cypress.env('admin')}#/sw/order/index`);
 
@@ -89,12 +86,7 @@ describe('Testing Refund Manager', () => {
 
                 // Place an order using Card payments
                 dummyCheckoutScenario.execute(true, 2);
-                checkoutAction.selectPaymentMethod('Card Payments');
-                checkoutAction.fillCardPayment(null, '4242424242424242', '0224', '100');
-
-                checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
-
-                cy.wait('@makePayment');
+                cardPaymentAction.makePayment();
             });
 
             beforeEach(() => {
@@ -172,10 +164,7 @@ describe('Testing Refund Manager', () => {
 
                 // Place an order using Card payments
                 dummyCheckoutScenario.execute(true, 1);
-                checkoutAction.selectPaymentMethod('Card Payments');
-                checkoutAction.fillCardPayment(null, '4242424242424242', '0224', '100');
-
-                checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
+                cardPaymentAction.makePayment();
 
                 cy.wait('@makePayment');
 
@@ -255,12 +244,7 @@ describe('Testing Refund Manager', () => {
 
                 // Place an order using Card payments
                 dummyCheckoutScenario.execute(2);
-                checkoutAction.selectPaymentMethod('Card Payments');
-                checkoutAction.fillCardPayment(null, '4242424242424242', '0224', '100');
-
-                checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
-
-                cy.wait('@makePayment');
+                cardPaymentAction.makePayment();
 
                 // Lower Shopware version does not support Flow builder
                 if (!shopware.isVersionLower('6.4.9')) {
@@ -289,6 +273,7 @@ describe('Testing Refund Manager', () => {
             });
         });
     })
+
     describe('Testing Refund Manager with NAS', () => {
         before(() => {
             cy.setToInitialState().then(() => {
@@ -312,10 +297,7 @@ describe('Testing Refund Manager', () => {
 
                 // Place an order using Card payments
                 dummyCheckoutScenario.execute(true, 2);
-                checkoutAction.selectPaymentMethod('Card Payments');
-                checkoutAction.fillCardPayment(null, '4242424242424242', '0224', '100');
-
-                checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
+                cardPaymentAction.makePayment();
 
                 cy.wait('@makePayment');
             });
@@ -395,12 +377,7 @@ describe('Testing Refund Manager', () => {
 
                 // Place an order using Card payments
                 dummyCheckoutScenario.execute(true, 1);
-                checkoutAction.selectPaymentMethod('Card Payments');
-                checkoutAction.fillCardPayment(null, '4242424242424242', '0224', '100');
-
-                checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
-
-                cy.wait('@makePayment');
+                cardPaymentAction.makePayment();
 
                 shopConfigurationAction.setSystemConfig('CkoShopware6.config.enable3dSecure', false);
 
@@ -478,12 +455,7 @@ describe('Testing Refund Manager', () => {
 
                 // Place an order using Card payments
                 dummyCheckoutScenario.execute(2);
-                checkoutAction.selectPaymentMethod('Card Payments');
-                checkoutAction.fillCardPayment(null, '4242424242424242', '0224', '100');
-
-                checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
-
-                cy.wait('@makePayment');
+                cardPaymentAction.makePayment();
 
                 // Lower Shopware version does not support Flow builder
                 if (!shopware.isVersionLower('6.4.9')) {
