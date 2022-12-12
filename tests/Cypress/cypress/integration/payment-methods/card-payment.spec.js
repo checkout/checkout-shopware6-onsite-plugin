@@ -18,8 +18,8 @@ describe('Testing Storefront Card Payments Payment', () => {
                 return cy.loginViaApi();
             }).then(() => {
                 return cy.createProductFixture();
-            }).then(() => {
-                shopConfigurationAction.setupShop();
+            }).then(async () => {
+                await shopConfigurationAction.setupShop();
                 cy.createCustomerFixtureStorefront();
             });
         });
@@ -139,6 +139,8 @@ describe('Testing Storefront Card Payments Payment', () => {
                 checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
 
                 cy.wait('@makePayment');
+
+                cy.url().should('include', '/checkout/finish');
             });
 
             it('Capture payment', () => {

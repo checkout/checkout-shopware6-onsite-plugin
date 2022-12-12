@@ -9,8 +9,8 @@ class ShopConfigurationAction {
      * Setup necessary data for the plugin and clear cache
      * @param accountType
      */
-    setupShop(accountType = 'abc') {
-        this.setupPlugin(accountType);
+    async setupShop(accountType = 'abc') {
+        await this.setupPlugin(accountType);
         this._clearCache();
     }
 
@@ -25,7 +25,7 @@ class ShopConfigurationAction {
 
         // assign all payment methods to
         // all available sales channels
-        this.apiClient.get('/sales-channel')
+        return this.apiClient.get('/sales-channel')
             .then(channels => {
 
                 if (channels === undefined || channels === null) {
