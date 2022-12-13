@@ -10,8 +10,7 @@ class ShopConfigurationAction {
      * @param accountType
      */
     async setupShop(accountType = 'abc') {
-        await this.setupPlugin(accountType);
-        this._clearCache();
+        return this.setupPlugin(accountType).then(() => this._clearCache())
     }
 
     /**
@@ -21,21 +20,20 @@ class ShopConfigurationAction {
      */
     async setupPlugin(accountType = 'abc') {
         // Config plugin
-        this.configCheckoutComPlugin(null, accountType);
+        return this.configCheckoutComPlugin(null, accountType).then(() => {
+            // assign all payment methods to
+            // all available sales channels
+            return this.apiClient.get('/sales-channel');
+        }).then(channels => {
 
-        // assign all payment methods to
-        // all available sales channels
-        return this.apiClient.get('/sales-channel')
-            .then(channels => {
+            if (channels === undefined || channels === null) {
+                throw new Error('Attention, No Sales Channels found from Shopware API');
+            }
 
-                if (channels === undefined || channels === null) {
-                    throw new Error('Attention, No Sales Channels found from Shopware API');
-                }
-
-                channels.forEach(async channel => {
-                    await this._activatePaymentMethods(channel.id);
-                });
+            channels.forEach(async channel => {
+                await this._activatePaymentMethods(channel.id);
             });
+        });
     }
 
     /**
@@ -59,13 +57,11 @@ class ShopConfigurationAction {
                     orderStateForPaidPayment: 'checkout_com.skip',
                     orderStateForVoidedPayment: 'checkout_com.skip',
                 },
+                'core.mailerSettings.disableDelivery': true,
             }
         };
 
-        this.apiClient.post('/_action/system-config/batch', data);
-        this.apiClient.post('/_action/system-config', {
-            'core.mailerSettings.disableDelivery': true,
-        });
+        return this.apiClient.post('/_action/system-config/batch', data);
     }
 
     /**
