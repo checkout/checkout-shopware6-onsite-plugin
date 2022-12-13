@@ -18,8 +18,9 @@ describe('Testing Storefront Card Payments Payment', () => {
                 return cy.loginViaApi();
             }).then(() => {
                 return cy.createProductFixture();
-            }).then(async () => {
-                await shopConfigurationAction.setupShop();
+            }).then(() => {
+                return shopConfigurationAction.setupShop();
+            }).then(() => {
                 cy.createCustomerFixtureStorefront();
             });
         });
@@ -62,7 +63,6 @@ describe('Testing Storefront Card Payments Payment', () => {
 
             it('Invalid CVV', () => {
                 checkoutAction.fillCardPayment(null, '4242424242424242', '0224', '111');
-
                 checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
 
                 cy.url().should('include', '3ds2');
@@ -81,7 +81,13 @@ describe('Testing Storefront Card Payments Payment', () => {
 
         describe('Make payment with 3DS', () => {
             before(() => {
+                cy.intercept({
+                    url: 'api/_action/system-config/batch',
+                    method: 'POST'
+                }).as('configPlugin');
+
                 shopConfigurationAction.setSystemConfig('CkoShopware6.config.enable3dSecure', true);
+                cy.wait('@configPlugin');
             });
 
             it('Successful payment', () => {
@@ -105,7 +111,13 @@ describe('Testing Storefront Card Payments Payment', () => {
 
         describe('Make payment without 3DS', () => {
             before(() => {
+                cy.intercept({
+                    url: 'api/_action/system-config/batch',
+                    method: 'POST'
+                }).as('configPlugin');
+
                 shopConfigurationAction.setSystemConfig('CkoShopware6.config.enable3dSecure', false);
+                cy.wait('@configPlugin');
             });
 
             it('Successful payment', () => {
@@ -123,7 +135,13 @@ describe('Testing Storefront Card Payments Payment', () => {
 
         describe('Enable "Manual capture"', () => {
             before(() => {
+                cy.intercept({
+                    url: 'api/_action/system-config/batch',
+                    method: 'POST'
+                }).as('configPlugin');
+
                 shopConfigurationAction.setSystemConfig('CkoShopware6.config.enable3dSecure', false);
+                cy.wait('@configPlugin');
             });
 
             beforeEach(() => {
@@ -132,14 +150,17 @@ describe('Testing Storefront Card Payments Payment', () => {
                     method: 'POST'
                 }).as('makePayment');
 
+                cy.intercept({
+                    url: 'api/_action/system-config/batch',
+                    method: 'POST'
+                }).as('configPlugin');
+
                 shopConfigurationAction.setSystemConfig('CkoShopware6.config.paymentMethod.card.manualCapture', true);
+                cy.wait('@configPlugin');
 
                 checkoutAction.fillCardPayment(null, '4242424242424242', '0224', '100');
-
                 checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
-
                 cy.wait('@makePayment');
-
                 cy.url().should('include', '/checkout/finish');
             });
 
@@ -211,7 +232,13 @@ describe('Testing Storefront Card Payments Payment', () => {
 
         describe('Testing "Save card details for future payments"', () => {
             before(() => {
+                cy.intercept({
+                    url: 'api/_action/system-config/batch',
+                    method: 'POST'
+                }).as('configPlugin');
+
                 shopConfigurationAction.setSystemConfig('CkoShopware6.config.enable3dSecure', false);
+                cy.wait('@configPlugin');
             });
 
             it('Uncheck and make payment', () => {
@@ -296,9 +323,8 @@ describe('Testing Storefront Card Payments Payment', () => {
             }).then(() => {
                 return cy.createProductFixture();
             }).then(() => {
-                shopConfigurationAction.setupShop('nas');
-                cy.createCustomerFixtureStorefront();
-            });
+                return shopConfigurationAction.setupShop('nas');
+            }).then(() => cy.createCustomerFixtureStorefront());
         });
 
         beforeEach(() => {
@@ -340,7 +366,13 @@ describe('Testing Storefront Card Payments Payment', () => {
 
         describe('Make payment with 3DS', () => {
             before(() => {
+                cy.intercept({
+                    url: 'api/_action/system-config/batch',
+                    method: 'POST'
+                }).as('configPlugin');
+
                 shopConfigurationAction.setSystemConfig('CkoShopware6.config.enable3dSecure', true);
+                cy.wait('@configPlugin');
             });
 
             it('Successful payment', () => {
@@ -364,7 +396,13 @@ describe('Testing Storefront Card Payments Payment', () => {
 
         describe('Make payment without 3DS', () => {
             before(() => {
+                cy.intercept({
+                    url: 'api/_action/system-config/batch',
+                    method: 'POST'
+                }).as('configPlugin');
+
                 shopConfigurationAction.setSystemConfig('CkoShopware6.config.enable3dSecure', false);
+                cy.wait('@configPlugin');
             });
 
             it('Successful payment', () => {
@@ -382,7 +420,13 @@ describe('Testing Storefront Card Payments Payment', () => {
 
         describe('Enable "Manual capture"', () => {
             before(() => {
+                cy.intercept({
+                    url: 'api/_action/system-config/batch',
+                    method: 'POST'
+                }).as('configPlugin');
+
                 shopConfigurationAction.setSystemConfig('CkoShopware6.config.enable3dSecure', false);
+                cy.wait('@configPlugin');
             });
 
             beforeEach(() => {
@@ -391,13 +435,18 @@ describe('Testing Storefront Card Payments Payment', () => {
                     method: 'POST'
                 }).as('makePayment');
 
+                cy.intercept({
+                    url: 'api/_action/system-config/batch',
+                    method: 'POST'
+                }).as('configPlugin');
+
                 shopConfigurationAction.setSystemConfig('CkoShopware6.config.paymentMethod.card.manualCapture', true);
+                cy.wait('@configPlugin');
 
                 checkoutAction.fillCardPayment(null, '4242424242424242', '0224', '100');
-
                 checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
-
                 cy.wait('@makePayment');
+                cy.url().should('include', 'checkout/finish');
             });
 
             it('Capture payment', () => {
@@ -468,7 +517,13 @@ describe('Testing Storefront Card Payments Payment', () => {
 
         describe('Testing "Save card details for future payments"', () => {
             before(() => {
+                cy.intercept({
+                    url: 'api/_action/system-config/batch',
+                    method: 'POST'
+                }).as('configPlugin');
+
                 shopConfigurationAction.setSystemConfig('CkoShopware6.config.enable3dSecure', false);
+                cy.wait('@configPlugin');
             });
 
             it('Uncheck and make payment', () => {
