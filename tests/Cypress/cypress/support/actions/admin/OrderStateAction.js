@@ -12,7 +12,12 @@ class OrderStateAction {
         adminOrderDetailRepository.getUploadDocumentButton().click();
 
         // Wait until the order status changed and finish reloading order detail page
-        cy.wait(5000);
+        cy.intercept({
+            url: `${Cypress.env('apiPath')}/search/order`,
+            method: 'POST'
+        }).as('payment');
+
+        cy.wait('@payment');
     }
 }
 

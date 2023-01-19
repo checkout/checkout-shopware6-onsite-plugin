@@ -100,7 +100,7 @@ describe('Testing Storefront Google Pay visibility', () => {
 
             storefrontLoginAction.login('test@example.com', 'shopware');
 
-            cy.get('.gpay-card-info-container-fill').should('exist');
+            cy.get('.checkout-com-direct-google-pay').should('exist');
         });
     });
 })
