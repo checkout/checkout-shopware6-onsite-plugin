@@ -244,7 +244,7 @@ class PaymentPayFacade
         // We will `Capture` this payment in @finalize function
         $paymentRequest->capture = false;
         $paymentRequest->reference = $this->orderExtractor->extractOrderNumber($order);
-        $paymentRequest->description = "Order " . $paymentRequest->reference;
+        $paymentRequest->description = 'Order ' . $paymentRequest->reference;
         $paymentRequest->customer = CheckoutComUtil::buildCustomer($orderCustomer);
 
         // Prepare data for the payment depending on the payment method
