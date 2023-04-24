@@ -8,11 +8,11 @@ help:
 # ---------------------------------------------------------------------------------------------
 
 install: ## Installs all dependencies
-	npm install cypress@9.6.0 --save-dev --save .
-	npm install @shopware-ag/e2e-testsuite-platform --save .
-	npm install webpack@4.18.1 --save-dev --save .
-	npm install @cypress/webpack-preprocessor --save-dev --save .
-	npm install axios --save-dev --save .
+	npm install cypress@9.6.0 --legacy-peer-deps  --save-dev --save .
+	npm install @shopware-ag/e2e-testsuite-platform --legacy-peer-deps --save .
+	npm install webpack@4.18.1 --legacy-peer-deps --save-dev --save .
+	npm install @cypress/webpack-preprocessor --legacy-peer-deps --save-dev --save .
+	npm install axios --legacy-peer-deps --save-dev --save .
 
 clean: ## Clean all dependencies
 	rm -rf node_modules
