@@ -95,7 +95,7 @@ describe('Testing Storefront Card Payments Payment', () => {
 
                 checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
 
-                cy.url().should('include', '3ds2');
+                cy.url().should('include', 'sessions-interceptor');
 
                 // Wait until iframe is fully loaded
                 cy.wait(8000);
@@ -266,7 +266,7 @@ describe('Testing Storefront Card Payments Payment', () => {
 
                 checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
 
-                cy.url().should('include', '3ds2');
+                cy.url().should('include', 'sessions-interceptor');
 
                 // Wait until iframe is fully loaded
                 cy.wait(8000);
@@ -294,7 +294,7 @@ describe('Testing Storefront Card Payments Payment', () => {
 
                 checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
 
-                cy.url().should('include', '3ds2');
+                cy.url().should('include', 'sessions-interceptor');
 
                 // Wait until iframe is fully loaded
                 cy.wait(8000);
