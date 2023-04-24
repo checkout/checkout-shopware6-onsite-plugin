@@ -65,7 +65,7 @@ describe('Testing Storefront Card Payments Payment', () => {
                 checkoutAction.fillCardPayment(null, '4242424242424242', '0224', '111');
                 checkoutConfirmRepository.getConfirmSubmitButton().should('not.be.disabled').click();
 
-                cy.url().should('include', '3ds2');
+                cy.url().should('include', 'sessions-interceptor');
 
                 // Wait until iframe is fully loaded
                 cy.wait(8000);
